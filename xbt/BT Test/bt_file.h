@@ -14,10 +14,14 @@
 #include "bt_peer_link.h"
 #include "bt_tracker_link.h"
 #include "data_counter.h"
+#include "stream_reader.h"
 
 class Cbt_file  
 {
 public:
+	void load_state(Cstream_reader&);
+	int pre_save_state() const;
+	void save_state(Cstream_writer&) const;
 	int size() const;
 	int c_seeders() const;
 	int c_leechers() const;
@@ -29,16 +33,17 @@ public:
 	int read_piece(int a, byte* d);
 	void write_data(int o, const char* s, int cb_s);
 	void close();
-	int open(const string& name);
+	int open(const string& name, bool validate);
 	int c_invalid_pieces() const;
 	int c_pieces() const;
 	int c_valid_pieces() const;
+	void insert_peer(int h, int p);
 	void insert_peer(const sockaddr_in& a);
 	void insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a, const Csocket& s);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
-	int info(const Cvirtual_binary&);
-	int info(const Cbvalue&);
+	int info(const Cvirtual_binary&, bool torrent);
+	int info(const Cbvalue&, bool torrent);
 	Cbt_file();
 	~Cbt_file();
 
@@ -61,6 +66,7 @@ public:
 		}
 	};
 
+	typedef map<int, int> t_new_peers;
 	typedef vector<t_sub_file> t_sub_files;
 	typedef vector<Cbt_peer_link> t_peers;
 	typedef vector<Cbt_piece> t_pieces;
@@ -70,10 +76,12 @@ public:
 	string m_name;
 	string m_peer_id;
 	t_sub_files m_sub_files;
+	t_new_peers m_new_peers;
 	t_peers m_peers;
 	t_pieces m_pieces;
 	Cbt_tracker_link m_tracker;
 	t_trackers m_trackers;
+	Cvirtual_binary m_info;
 
 	int mcb_piece;
 	__int64 mcb_f;
