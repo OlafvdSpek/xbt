@@ -724,6 +724,37 @@ void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+void CXBTClientDlg::OnGetdispinfoGlobalEvents(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
+	string& buffer = m_peers.get_buffer();
+	const t_event& e = m_events[pDispInfo->item.lParam];
+	switch (m_peers_columns[pDispInfo->item.iSubItem])
+	{
+	case gec_time:
+		{
+			tm* time = localtime(&e.time);
+			if (!time)
+				break;
+			char time_string[16];
+			sprintf(time_string, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
+			buffer = time_string;
+		}
+		break;
+	case gec_level:
+		buffer = n(e.level);
+		break;
+	case gec_source:
+		buffer = e.source;
+		break;
+	case gec_message:
+		buffer = e.message;
+		break;
+	}
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
+	*pResult = 0;
+}
+
 void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	switch (m_bottom_view)
@@ -742,6 +773,9 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		return;
 	case v_trackers:
 		OnGetdispinfoTrackers(pNMHDR, pResult);
+		return;
+	case v_global_events:
+		OnGetdispinfoGlobalEvents(pNMHDR, pResult);
 		return;
 	}
 	if (!m_file)
@@ -962,6 +996,10 @@ void CXBTClientDlg::fill_peers()
 		for (t_trackers::const_iterator i = m_file->m_trackers.begin(); i != m_file->m_trackers.end(); i++)
 			m_peers.InsertItemData(i - m_file->m_trackers.begin());
 		break;
+	case v_global_events:
+		for (int i = 0; i < m_events.size(); i++)
+			m_peers.InsertItemData(0, i);
+		break;
 	}
 	sort_peers();
 	m_peers.auto_size();
@@ -988,10 +1026,25 @@ void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
 		for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
 			i->second.m_removed = true;
 	}
+	m_events.clear();
+	for (int c_alerts = sr.read_int(4); c_alerts--; )
+	{
+		t_event e;
+		e.time = sr.read_int(4);
+		e.level = sr.read_int(4);
+		e.message = sr.read_string();
+		e.source = sr.read_string();
+		m_events.push_back(e);
+	}
 	{
 		int c_files = sr.read_int(4);
 		for (int i = 0; i < c_files; i++)
 			read_file_dump(sr);
+	}
+	if (m_bottom_view == v_global_events)
+	{
+		while (m_peers.GetItemCount() < m_events.size())
+			m_peers.InsertItemData(0, m_peers.GetItemCount());
 	}
 	{
 		for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); )
@@ -1137,8 +1190,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		case v_events:
 			while (m_peers.GetItemCount() < f.events.size())
 			{
-				int id = m_peers.GetItemCount();
-				m_peers.InsertItemData(0, id);
+				m_peers.InsertItemData(0, m_peers.GetItemCount());
 				inserted = true;
 			}
 			while (m_peers.GetItemCount() > f.events.size())
@@ -1147,8 +1199,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		case v_files:
 			while (m_peers.GetItemCount() < f.m_sub_files.size())
 			{
-				int id = m_peers.GetItemCount();
-				m_peers.InsertItemData(id);
+				m_peers.InsertItemData(m_peers.GetItemCount());
 				inserted = true;
 			}
 			break;

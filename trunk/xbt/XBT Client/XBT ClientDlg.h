@@ -166,6 +166,7 @@ protected:
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoGlobalEvents(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult);
