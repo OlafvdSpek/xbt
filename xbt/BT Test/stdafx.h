@@ -10,7 +10,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable: 4503 4786 4800)
+#pragma warning(disable: 4503 4554 4786 4800)
 
 #include <cassert>
 #include <ctime>
