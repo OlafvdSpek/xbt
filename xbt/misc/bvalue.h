@@ -46,6 +46,7 @@ public:
 	typedef vector<Cbvalue> t_list;
 
 	void clear();
+	const t_map& d() const;
 	const Cbvalue& d(const string&) const;
 	const t_list& l() const;
 	__int64 i() const;
