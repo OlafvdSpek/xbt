@@ -124,7 +124,7 @@ public:
 	void read_db_files();
 	void read_db_users();
 	void clean_up();
-	void insert_peer(const Ctracker_input&, bool udp);
+	void insert_peer(const Ctracker_input&, bool listen_check, bool udp);
 	void update_peer(const string& file_id, int peer_id, bool listening);
 	string debug(const Ctracker_input&) const;
 	Cbvalue select_peers(const Ctracker_input&);
@@ -137,9 +137,10 @@ public:
 		return m_announce_interval;
 	}
 
-	const t_files& files() const
+	const t_file* file(const string& id) const
 	{
-		return m_files;
+		t_files::const_iterator i = m_files.find(id);
+		return i == m_files.end() ? NULL : &i->second;
 	}
 
 	bool anonymous_connect() const

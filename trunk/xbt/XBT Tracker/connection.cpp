@@ -168,7 +168,7 @@ void Cconnection::read(const string& v)
 		gzip = m_server->gzip_announce() && !ti.m_compact;
 		if (ti.valid())
 		{
-			m_server->insert_peer(ti, false);
+			m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false);
 			s = m_server->select_peers(ti).read();
 		}
 		break;
