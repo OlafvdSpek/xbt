@@ -210,7 +210,7 @@ int Cserver::run()
 					{
 						if (s.blocking(false))
 							cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-						m_connections.push_front(Cconnection(this, s, a));
+						m_connections.push_front(Cconnection(this, s, a, m_log_access));
 					}
 				}
 			}

@@ -17,7 +17,7 @@ Cconnection::Cconnection()
 {
 }
 
-Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a)
+Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a, bool log_access)
 {
 	m_server = server;
 	m_s = s;
@@ -27,6 +27,7 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_state = 0;
 	m_read_b.resize(4 << 10);
 	m_w = 0;
+	m_log_access = log_access;
 }
 
 int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
@@ -138,6 +139,7 @@ void Cconnection::read(const string& v)
 #ifndef NDEBUG
 	cout << v << endl;
 #endif
+	if (m_log_access)
 	{
 		static ofstream f("xbt_tracker_raw.log");
 		f << time(NULL) << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << endl;
