@@ -61,18 +61,19 @@ void Cbt_piece::erase_peer(Cbt_peer_link* peer)
 	}
 }
 
-void Cbt_piece::write(int offset, const char* s, int cb_s)
+int Cbt_piece::write(int offset, const char* s, int cb_s)
 {
 	int b = offset / cb_sub_piece();
 	assert(b < m_sub_pieces.size());
 	if (m_valid || offset < 0 || offset >= size() || offset % cb_sub_piece() || cb_s != cb_sub_piece(b)
 		|| b >= m_sub_pieces.size() || m_sub_pieces[b].valid())
-		return;
+		return 1;
 	if (m_sub_pieces[b].m_peers.empty())
 		mc_unrequested_sub_pieces--;
 	m_sub_pieces[b].valid(true);
 	if (!--mc_sub_pieces_left)
 		m_sub_pieces.clear();
+	return 0;
 }
 
 bool Cbt_piece::check_peer(Cbt_peer_link* peer, int time_out)
@@ -104,9 +105,9 @@ int Cbt_piece::cb_sub_piece(int b)
 
 int Cbt_piece::rank() const
 {
-	return 20000 * max(0, min(9 - m_priority, 19)) 
-		+ 2000 * min(mc_peers, 9)
-		+ 1000 * m_sub_pieces.empty()
+	return 1000000 * max(0, min(9 - m_priority, 19)) 
+		+ 100000 * min(mc_peers, 9)
+		+ 1000 * (m_sub_pieces.empty() ? 99 : min(c_sub_pieces_left(), 99))
 		+ min(mc_peers, 999);
 }
 
