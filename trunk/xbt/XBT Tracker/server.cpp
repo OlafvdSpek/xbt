@@ -796,20 +796,9 @@ void Cserver::write_db_users()
 		m_files_users_updates_buffer.erase(m_files_users_updates_buffer.size() - 1);
 		try
 		{
-			if (1)
-			{
-				m_database.query("insert into xbt_files_users (announced, completed, downloaded, uploaded, info_hash, uid) values " 
-					+ m_files_users_updates_buffer
-					+ " on duplicate key update announced = announced + values(announced), completed = completed + values(completed), downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
-			}
-			else
-			{
-				m_database.query("insert into xbt_files_users_updates (announced, completed, downloaded, uploaded, info_hash, uid) values " + m_files_users_updates_buffer);
-				m_database.query("insert ignore into xbt_files_users (info_hash, uid) select info_hash, uid from xbt_files_users_updates");
-				m_database.query("update xbt_files_users fu inner join xbt_files_users_updates fuu using (info_hash, uid)"
-					" set fu.announced = fu.announced + fuu.announced, fu.completed = fu.completed + fuu.completed, fu.downloaded = fu.downloaded + fuu.downloaded, fu.uploaded = fu.uploaded + fuu.uploaded");
-				m_database.query("delete from xbt_files_users_updates");
-			}
+			m_database.query("insert into xbt_files_users (announced, completed, downloaded, uploaded, info_hash, uid) values " 
+				+ m_files_users_updates_buffer
+				+ " on duplicate key update announced = announced + values(announced), completed = completed + values(completed), downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
 		}
 		catch (Cxcc_error)
 		{
@@ -821,20 +810,9 @@ void Cserver::write_db_users()
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
 		try
 		{
-			if (1)
-			{
-				m_database.query("insert into xbt_users (downloaded, uploaded, uid) values " 
-					+ m_users_updates_buffer
-					+ " on duplicate key update downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
-			}
-			else
-			{
-				m_database.query("insert into xbt_users_updates (downloaded, uploaded, uid) values " + m_users_updates_buffer);
-				m_database.query("insert ignore into xbt_users (uid) select uid from xbt_users_updates");
-				m_database.query("update xbt_users u inner join xbt_users_updates uu using (uid)"
-					" set u.downloaded = u.downloaded + uu.downloaded, u.uploaded = u.uploaded + uu.uploaded");
-				m_database.query("delete from xbt_users_updates");
-			}
+			m_database.query("insert into xbt_users (downloaded, uploaded, uid) values " 
+				+ m_users_updates_buffer
+				+ " on duplicate key update downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
 		}
 		catch (Cxcc_error)
 		{
@@ -1040,11 +1018,9 @@ int Cserver::test_sql()
 		m_database.query("select fid, info_hash, leechers, seeders, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, completed, started, stopped, flags, mtime, ctime from xbt_files where 0 = 1");
 		m_database.query("select fid, leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp from xbt_files_updates where 0 = 1");
 		m_database.query("select info_hash, uid, announced, completed, downloaded, uploaded from xbt_files_users where 0 = 1");
-		m_database.query("select info_hash, uid, announced, completed, downloaded, uploaded from xbt_files_users_updates where 0 = 1");
 		m_database.query("select ipa, uid, mtime from xbt_ipas where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from xbt_scrape_log where 0 = 1");
 		m_database.query("select uid, name, pass, fid_end, torrent_pass, downloaded, uploaded from xbt_users where 0 = 1");
-		m_database.query("select uid, downloaded, uploaded from xbt_users_updates where 0 = 1");
 		return 0;
 	}
 	catch (Cxcc_error)
