@@ -408,24 +408,21 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		m_tracker.event(Cbt_tracker_link::e_completed);
 	{
 		offset = a * mcb_piece;
-		size = mcb_piece;
+		size = piece.mcb_d;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		{
-			if (offset < i->size())
+			if (offset >= i->offset() + i->size())
+				continue;
+			int cb_write = min(size, i->offset() + i->size() - offset);
+			if (!i->left(i->left() - cb_write))
 			{
-				int cb_write = min(size, i->size() - offset);
-				if (!i->left(i->left() - cb_write))
-				{
-					i->close();
-					i->open(m_name, O_RDONLY);
-				}
-				size -= cb_write;
-				if (!size)
-					break;
-				offset = 0;
+				i->close();
+				i->open(m_name, O_RDONLY);
 			}
-			else
-				offset -= i->size();
+			size -= cb_write;
+			if (!size)
+				break;
+			offset += cb_write;
 		}
 		for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 			i->write_have(a);
