@@ -36,20 +36,20 @@ public:
 	Cbt_tracker_link();
 	~Cbt_tracker_link();
 
-	Cvirtual_binary m_d;
+	int m_announce_time;
+private:
+	__int64 m_connection_id;
 	byte* m_w;
 	Cbt_tracker_url m_url;
 	Csocket m_s;
-	int m_state;
-	int m_announce_time;
-	__int64 m_connection_id;
-	int m_transaction_id;
-private:
+	Cvirtual_binary m_d;
 	int m_announce_send;
-	int mc_attempts;
 	int m_connect_send;
 	int m_current_tracker;
 	int m_event;
+	int m_state;
+	int m_transaction_id;
+	int mc_attempts;
 };
 
 #endif // !defined(AFX_BT_TRACKER_LINK_H__19566F35_0475_4CE0_BF87_19345BBD0E42__INCLUDED_)
