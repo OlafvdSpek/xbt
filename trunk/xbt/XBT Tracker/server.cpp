@@ -127,7 +127,7 @@ void Cserver::run()
 		cerr << "daemon failed" << endl;
 	ofstream(g_pid_fname) << getpid() << endl;
 	struct sigaction act;
-	act.sa_handler = Cserver::sig_handler;
+	act.sa_handler = sig_handler;
 	sigemptyset(&act.sa_mask);
 	act.sa_flags = 0;
 	if (sigaction(SIGHUP, &act, NULL)
