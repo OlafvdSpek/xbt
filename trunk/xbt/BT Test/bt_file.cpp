@@ -404,7 +404,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 				i->write(i->size() - 1, &b, 1);
 			}
 			else
-				alert(Calert(Calert::error, "File " + m_name + i->name() + ": open failed"));
+				alert(Calert(Calert::error, "File " + native_slashes(m_name + i->name()) + ": open failed"));
 		}
 		int cb_write = min(size, i->offset() + i->size() - offset);
 		if (i->write(offset - i->offset(), r, cb_write))
