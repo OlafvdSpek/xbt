@@ -34,6 +34,7 @@ public:
 		if (m_incomplete)
 			v.d(bts_incomplete, m_incomplete);
 		v.d(bts_interval, m_interval);
+		v.d(bts_min_interval, m_interval);
 		v.d(bts_peers, m_peers);
 		return v;
 	}
@@ -69,6 +70,7 @@ public:
 		if (m_incomplete)
 			v.d(bts_incomplete, m_incomplete);
 		v.d(bts_interval, m_interval);
+		v.d(bts_min_interval, m_interval);
 		v.d(bts_peers, m_peers);
 		return v;
 	}
