@@ -41,7 +41,6 @@ public:
 	void unregister_tray();
 	void update_tray();
 	void update_tray(const char* info_title, const char* info);
-	void auto_size();
 	void fill_peers();
 	void open(const string& name, bool ask_for_location);
 	void open_url(const string&);
