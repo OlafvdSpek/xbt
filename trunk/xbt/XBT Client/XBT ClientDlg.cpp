@@ -909,7 +909,7 @@ void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 		struct _stati64 b;
 		if (_stati64(name, &b))
 			continue;
-		if (b.st_mode & _S_IFDIR
+		if (b.st_mode & S_IFDIR
 			|| b.st_size > 512 << 10)
 			names.insert(name);
 		else
