@@ -139,7 +139,7 @@ void CXBTManagerDlg::insert(const string& name)
 		return;
 	Cvirtual_binary d = v.d("info").read();
 	char h[20];
-	compute_sha1(d, d.size(), h);
+	Csha1(d, d.size()).read(h);
 	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
 	{
 		if (i->second.info_hash == string(h, 20))
