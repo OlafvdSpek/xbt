@@ -110,7 +110,7 @@ int Cconnection::recv()
 
 int Cconnection::send()
 {
-	for (int r; r = m_s.send(&m_write_b.front() + m_r, m_write_b.size() - m_r); )
+	for (int r; !m_write_b.empty() && (r = m_s.send(&m_write_b.front() + m_r, m_write_b.size() - m_r)); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -244,4 +244,16 @@ void Cconnection::read(const string& v)
 		memcpy(&m_write_b.front(), d + r, d.size() - r);
 		m_r = 0;
 	}
+}
+
+int Cconnection::process_events(int events)
+{
+	if (events & (EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP) && recv()
+		|| events & EPOLLOUT && send()
+		|| m_state == 5 && m_write_b.empty())
+	{
+		m_s.close();
+		return 1;
+	}
+	return 0;
 }

@@ -9,19 +9,22 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "client.h"
+
 class Cserver;
 
 class Cpeer_link  
 {
 public:
+	virtual int process_events(int);
 	int pre_select(fd_set* fd_write_set, fd_set* fd_except_set);
 	int post_select(fd_set* fd_write_set, fd_set* fd_except_set);
 	Cpeer_link();
 	Cpeer_link(int h, int p, Cserver* server, const string& file_id, int peer_id);
 
-	operator bool() const
+	Csocket& s()
 	{
-		return m_s != INVALID_SOCKET;
+		return m_s;
 	}
 private:
 	Csocket m_s;
