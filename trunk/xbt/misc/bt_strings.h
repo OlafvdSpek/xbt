@@ -48,5 +48,6 @@ const string bts_peers = "peers";
 const string bts_piece_length = "piece length";
 const string bts_pieces = "pieces";
 const string bts_port = "port";
+const string bts_unregistered_torrent = "unregistered torrent";
 
 #endif // !defined(AFX_BT_STRINGS_H__2BC4A814_E7F6_45BF_AEA3_59B270DA3A9A__INCLUDED_)

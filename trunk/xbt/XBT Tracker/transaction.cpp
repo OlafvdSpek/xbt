@@ -6,6 +6,7 @@
 #include "transaction.h"
 
 #include "bt_misc.h"
+#include "bt_strings.h"
 #include "server.h"
 #include "sha1.h"
 
@@ -140,7 +141,7 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 	Cserver::t_files::const_iterator i = files.find(ti.m_info_hash);
 	if (i == files.end())
 	{
-		send_error(uti, "invalid info hash");
+		send_error(uti, bts_unregistered_torrent);
 		return;
 	}
 	const int cb_b = 2 << 10;
