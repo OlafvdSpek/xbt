@@ -84,6 +84,16 @@ public:
 		return m_admin_port;
 	}
 
+	bool bind_before_connect() const
+	{
+		return m_bind_before_connect;
+	}
+
+	void bind_before_connect(bool v)
+	{
+		m_bind_before_connect = v;
+	}
+
 	string dir() const
 	{
 		return m_dir;
@@ -159,6 +169,7 @@ private:
 	Cudp_tracker m_udp_tracker;
 
 	int m_admin_port;
+	bool m_bind_before_connect;
 	string m_dir;
 	bool m_end_mode;
 	int m_new_admin_port;

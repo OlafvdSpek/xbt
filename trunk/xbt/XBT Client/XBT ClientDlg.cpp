@@ -146,6 +146,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
 	m_ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
+	m_server.bind_before_connect(AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false));
 	set_dir(static_cast<string>(AfxGetApp()->GetProfileString(m_reg_key, "files_location")));
 	m_server.dir(static_cast<string>(m_dir));
 	lower_process_priority(AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true));
@@ -820,6 +821,7 @@ void CXBTClientDlg::OnPopupOptions()
 	Cdlg_options::t_data data;
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
 	data.ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
+	data.bind_before_connect = AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false);
 	data.end_mode = m_server.end_mode();
 	data.files_location = m_dir;
 	data.lower_process_priority = AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true);
@@ -839,6 +841,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data = dlg.get();
 	m_server.admin_port(data.admin_port);
 	m_ask_for_location = data.ask_for_location;
+	m_server.bind_before_connect(data.bind_before_connect);
 	m_server.end_mode(data.end_mode);
 	set_dir(data.files_location);
 	lower_process_priority(data.lower_process_priority);
@@ -854,6 +857,7 @@ void CXBTClientDlg::OnPopupOptions()
 	m_server.upload_slots(data.upload_slots);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "ask_for_location", data.ask_for_location);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "bind_before_connect", data.bind_before_connect);
 	AfxGetApp()->WriteProfileString(m_reg_key, "files_location", data.files_location.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "lower_process_priority", data.lower_process_priority);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_limit", data.peer_limit);
