@@ -270,9 +270,16 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 		}
 	}
 	int n = m_tracker.pre_select(*this, fd_read_set, fd_write_set, fd_except_set);
-	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); )
 	{
 		int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
+		if (i->m_state == -1)
+		{
+			i->close();
+			i = m_peers.erase(i);
+		}
+		else
+			i++;
 		n = max(n, z);
 	}
 	return n;
@@ -285,7 +292,7 @@ void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd
 	m_tracker.post_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); )
 	{
-		if (i->post_select(fd_read_set, fd_write_set, fd_except_set) || i->m_state == -1)
+		if (i->post_select(fd_read_set, fd_write_set, fd_except_set))
 		{
 			i->close();
 			i = m_peers.erase(i);
