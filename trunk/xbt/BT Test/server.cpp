@@ -906,7 +906,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	else if (action == bts_open_torrent) 
 		open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), "");
 	else if (action == bts_pause_torrent)
-		stop_file(s.d(bts_hash).s());
+		pause_file(s.d(bts_hash).s());
 	else if (action == bts_set_options)
 	{
 		if (s.d_has(bts_peer_port))
@@ -920,7 +920,11 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		if (s.d_has(bts_seeding_ratio))
 			seeding_ratio(s.d(bts_seeding_ratio).i());
 	}
-	else if (action == bts_unpause_torrent)
+	else if (action == bts_start_torrent)
 		start_file(s.d(bts_hash).s());
+	else if (action == bts_stop_torrent)
+		stop_file(s.d(bts_hash).s());
+	else if (action == bts_unpause_torrent)
+		unpause_file(s.d(bts_hash).s());
 	return d;
 }
