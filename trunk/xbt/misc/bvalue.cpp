@@ -64,6 +64,13 @@ Cbvalue::Cbvalue(const Cbvalue& v)
 	}
 }
 
+Cbvalue::Cbvalue(const Cvirtual_binary& v)
+{
+	m_value_type = vt_int;
+	if (write(v))
+		clear();
+}
+
 Cbvalue::~Cbvalue()
 {
 	clear();

@@ -63,6 +63,7 @@ public:
 	Cbvalue(t_value_type t);
 	Cbvalue(const string& v);
 	Cbvalue(const Cbvalue&);
+	Cbvalue(const Cvirtual_binary&);
 	const Cbvalue& operator=(const Cbvalue&);
 	~Cbvalue();
 private:

@@ -44,9 +44,7 @@ public:
 	void insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a, const Csocket& s);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
-	int torrent(const Cvirtual_binary&);
 	int torrent(const Cbvalue&);
-	int info(const Cvirtual_binary&);
 	int info(const Cbvalue&);
 	Cbt_file();
 	~Cbt_file();
