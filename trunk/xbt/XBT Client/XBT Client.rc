@@ -127,6 +127,17 @@ BEGIN
     LTEXT           "Password:",IDC_PASS_STATIC,7,41,37,8
 END
 
+IDD_ABOUT DIALOG DISCARDABLE  0, 0, 118, 62
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About XBT Client"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Version: 0.0.9",IDC_STATIC,7,7,44,8
+    LTEXT           "Site: http://xbtt.sourceforge.net/",IDC_SITE,7,20,104,8
+    LTEXT           "Author: Olaf van der Spek",IDC_STATIC,7,33,83,8
+    LTEXT           "License: GPL",IDC_STATIC,7,46,44,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -192,6 +203,14 @@ BEGIN
         BOTTOMMARGIN, 75
         HORZGUIDE, 23
         HORZGUIDE, 41
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 111
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -291,6 +310,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Options...",                  ID_POPUP_OPTIONS
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
+        MENUITEM "About",                       ID_POPUP_ABOUT
     END
 END
 

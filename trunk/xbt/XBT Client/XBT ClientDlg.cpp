@@ -7,6 +7,7 @@
 
 #include "bt_misc.h"
 #include "bt_torrent.h"
+#include "dlg_about.h"
 #include "dlg_files.h"
 #include "dlg_options.h"
 #include "dlg_torrent.h"
@@ -113,6 +114,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_TRACKERS, OnPopupTrackers)
 	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
 	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
+	ON_COMMAND(ID_POPUP_ABOUT, OnPopupAbout)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -791,6 +793,11 @@ void CXBTClientDlg::OnPopupTrackers()
 void CXBTClientDlg::OnPopupExit() 
 {
 	EndDialog(IDCANCEL);
+}
+
+void CXBTClientDlg::OnPopupAbout() 
+{
+	Cdlg_about().DoModal();	
 }
 
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult) 
