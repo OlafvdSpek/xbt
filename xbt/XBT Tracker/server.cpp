@@ -289,7 +289,7 @@ void Cserver::read_db()
 				continue;
 			t_file& file = m_files[string(row.f(0), 20)];
 			file.completed = row.f_int(1, 0);
-			file.dirty = false;
+			file.dirty = true;
 			file.fid = row.f_int(2, 0);
 			file.started = row.f_int(3, 0);
 			file.stopped = row.f_int(4, 0);
