@@ -186,14 +186,14 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 				}					
 			}
-			if (m_write_b.empty() && time(NULL) - m_stime > 120)
+			if (!m_write_b.empty())
+				write_haves();
+			else if (time(NULL) - m_stime > 120)
 			{
 				write_haves();
 				if (m_write_b.empty())
 					write_keepalive();
 			}
-			else
-				write_haves();
 		}
 		break;
 	}
