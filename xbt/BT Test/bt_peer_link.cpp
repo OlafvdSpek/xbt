@@ -435,12 +435,8 @@ void Cbt_peer_link::write_have(int a)
 {
 	if (m_remote_pieces.empty())
 		return;
-	if (m_remote_pieces[a])
-	{
-		if (m_local_interested && m_pieces.empty())
-			interested(m_f->next_invalid_piece(*this) != -1);
-		return;
-	}
+	if (m_local_interested && m_pieces.empty() && m_remote_pieces[a])
+		interested(m_f->next_invalid_piece(*this) != -1);
 	Cvirtual_binary d;
 	byte* w = d.write_start(9);
 	w = write(w, d.size() - 4);
@@ -518,7 +514,7 @@ void Cbt_peer_link::choked(bool v)
 	w = write(w, d.size() - 4);
 	*w++ = bti_unchoke - v;
 	write(d);
-	if (v)
+	if (0 && v)
 		m_remote_requests.clear();
 }
 
