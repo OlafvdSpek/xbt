@@ -25,7 +25,6 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 		m_sub_pieces.resize(mc_sub_pieces_left = c_sub_pieces());
 	if (m_sub_pieces[b])
 		return;
-	memcpy(m_d.write_start(mcb_d) + offset, s, cb_s);
 	m_sub_pieces[offset / mcb_sub_piece] = true;
 	if (!--mc_sub_pieces_left)
 	{
@@ -33,10 +32,6 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 			(*i)->m_pieces.erase(this);
 		m_peers.clear();
 		m_sub_pieces.clear();
-		if (memcmp(compute_sha1(m_d).c_str(), m_hash, 20))
-			m_d.clear();
-		else
-			m_valid = true;
 	}
 }
 
