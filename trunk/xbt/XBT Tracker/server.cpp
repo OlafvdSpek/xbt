@@ -362,10 +362,11 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 	if (i != file.peers.end())
 	{
 		(i->second.left ? file.leechers : file.seeders)--;
-		if (i->second.uid && find_user_by_uid(i->second.uid))
-			find_user_by_uid(i->second.uid)->torrents--;
+		t_user* old_user = i->second.uid ? find_user_by_uid(i->second.uid) : NULL;
+		if (old_user)
+			(i->second.left ? old_user->incompletes : old_user->completes)--;
 	}
-	else if (user && user->torrents_limit && user->torrents >= user->torrents_limit)
+	else if (v.m_left && user && user->torrents_limit && user->incompletes >= user->torrents_limit)
 		return bts_torrents_limit_reached;
 	if (m_use_sql && user)
 	{
@@ -408,7 +409,7 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
 		if (user)
-			user->torrents++;
+			(i->second.left ? user->incompletes : user->completes)++;
 
 		if (!m_config.m_listen_check || !listen_check)
 			peer.listening = true;
@@ -526,8 +527,9 @@ void Cserver::t_file::clean_up(int t, Cserver& server)
 		if (i->second.mtime < t)
 		{
 			(i->second.left ? leechers : seeders)--;
-			if (i->second.uid && server.find_user_by_uid(i->second.uid))
-				server.find_user_by_uid(i->second.uid)->torrents--;
+			t_user* user = i->second.uid ? server.find_user_by_uid(i->second.uid) : NULL;
+			if (user)
+				(i->second.left ? user->incompletes : user->completes)--;
 			peers.erase(i++);
 			dirty = true;
 		}

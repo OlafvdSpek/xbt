@@ -122,13 +122,15 @@ public:
 	{
 		t_user()
 		{
-			torrents = 0;
+			completes = 0;
+			incompletes = 0;
 		}
 
 		bool marked;
 		int uid;
 		int fid_end;
-		int torrents;
+		int completes;
+		int incompletes;
 		int torrents_limit;
 		string pass;
 	};
