@@ -31,7 +31,7 @@ Cconfig::Cconfig()
 	m_read_db_interval = 60;
 	m_redirect_url.erase();
 	m_scrape_interval = 0;
-	m_update_files_method = 0;
+	m_update_files_method = 1;
 	m_write_db_interval = 60;
 }
 
