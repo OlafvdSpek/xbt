@@ -44,6 +44,7 @@ Cserver::Cserver()
 {
 	m_admin_port = m_new_admin_port = 6879;
 	m_end_mode = false;
+	m_peer_limit = 0;
 	m_peer_port = m_new_peer_port = 6881;
 	m_public_ipa = 0;
 	m_run = false;
@@ -179,31 +180,16 @@ int Cserver::run()
 			FD_ZERO(&fd_read_set);
 			FD_ZERO(&fd_write_set);
 			FD_ZERO(&fd_except_set);
-			FD_SET(l, &fd_read_set);
+			int n = pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
+			if (below_peer_limit())
+			{
+				FD_SET(l, &fd_read_set);
+				n = max(n, l);
+			}
 			FD_SET(la, &fd_read_set);
+			n = max(n, la);
 			FD_SET(lt, &fd_read_set);
-			int n = max(l, max(la, lt));
-			{
-				for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); i++)
-				{
-					int z = i->pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
-					n = max(n, z);
-				}
-			}
-			{
-				for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-				{
-					int z = i->pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
-					n = max(n, z);
-				}
-			}
-			{
-				for (t_links::iterator i = m_links.begin(); i != m_links.end(); i++)
-				{
-					int z = i->pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
-					n = max(n, z);
-				}
-			}
+			n = max(n, lt);
 			unlock();
 			TIMEVAL tv;
 			tv.tv_sec = 1;
@@ -212,6 +198,21 @@ int Cserver::run()
 			{
 				alert(Calert(Calert::error, "Server", "select failed: " + error2a(WSAGetLastError())));
 				break;
+			}
+			if (0)
+			{
+				static ofstream f("/temp/select log.txt");
+				f << time(NULL);
+				f << "\tR:";
+				for (int i = 0; i < fd_read_set.fd_count; i++)
+					f << ' ' << fd_read_set.fd_array[i];
+				f << "\tW:";
+				for (int i = 0; i < fd_write_set.fd_count; i++)
+					f << ' ' << fd_write_set.fd_array[i];
+				f << "\tE:";
+				for (int i = 0; i < fd_except_set.fd_count; i++)
+					f << ' ' << fd_except_set.fd_array[i];
+				f << endl;
 			}
 			lock();
 			if (FD_ISSET(l, &fd_read_set))
@@ -243,33 +244,8 @@ int Cserver::run()
 				}
 			}
 			if (FD_ISSET(lt, &fd_read_set))
-			{
 				m_udp_tracker.recv(lt);
-			}
-			{
-				for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); )
-				{
-					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-					if (*i)
-						i++;
-					else
-						i = m_admins.erase(i);
-				}
-			}
-			{
-				for (t_links::iterator i = m_links.begin(); i != m_links.end(); )
-				{
-					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-					if (*i)
-						i++;
-					else
-						i = m_links.erase(i);
-				}
-			}
-			{
-				for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-			}
+			post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 			if (time(NULL) - m_update_chokes_time > 10)
 				update_chokes();
 			unlock();
@@ -279,6 +255,55 @@ int Cserver::run()
 	}
 	save_state(false).save(state_fname());
 	return 0;
+}
+
+int Cserver::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
+{
+	int n = 0;
+	{
+		for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); i++)
+		{
+			int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
+			n = max(n, z);
+		}
+	}
+	{
+		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		{
+			int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
+			n = max(n, z);
+		}
+	}
+	{
+		for (t_links::iterator i = m_links.begin(); i != m_links.end(); i++)
+		{
+			int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
+			n = max(n, z);
+		}
+	}
+	return n;
+}
+
+void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
+{
+	for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); )
+	{
+		i->post_select(fd_read_set, fd_write_set, fd_except_set);
+		if (*i)
+			i++;
+		else
+			i = m_admins.erase(i);
+	}
+	for (t_links::iterator i = m_links.begin(); i != m_links.end(); )
+	{
+		i->post_select(fd_read_set, fd_write_set, fd_except_set);
+		if (*i)
+			i++;
+		else
+			i = m_links.erase(i);
+	}
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		i->post_select(fd_read_set, fd_write_set, fd_except_set);
 }
 
 void Cserver::stop()
@@ -686,3 +711,7 @@ string Cserver::torrents_dir()
 	return m_dir + "\\Torrents";
 }
 
+bool Cserver::below_peer_limit()
+{
+	return true;
+}

@@ -28,6 +28,9 @@ public:
 		df_trackers = 8,
 	};
 
+	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
+	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
+	bool below_peer_limit();
 	void sub_file_priority(const string& file_id, const string& sub_file_id, int priority);
 	string completes_dir();
 	string incompletes_dir();
@@ -100,6 +103,16 @@ public:
 		m_end_mode = v;
 	}
 	
+	int peer_limit() const
+	{
+		return m_peer_limit;
+	}
+
+	void peer_limit(int v)
+	{
+		m_peer_limit = v;
+	}
+	
 	int peer_port() const
 	{
 		return m_peer_port;
@@ -148,6 +161,7 @@ private:
 	int m_new_admin_port;
 	int m_new_peer_port;
 	int m_new_tracker_port;
+	int m_peer_limit;
 	int m_peer_port;
 	int m_public_ipa;
 	int m_send_quota;

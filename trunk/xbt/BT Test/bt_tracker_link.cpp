@@ -54,7 +54,11 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 	switch (m_state)
 	{
 	case 0:
-		if (!f.m_run || m_announce_time > time(NULL) || m_current_tracker < 0 || m_current_tracker >= f.m_trackers.size())
+		if (!f.m_run 
+			|| m_announce_time > time(NULL) 
+			|| m_current_tracker < 0 
+			|| m_current_tracker >= f.m_trackers.size() 
+			|| !f.m_server->below_peer_limit())
 			return 0;
 		m_url = f.m_trackers[m_current_tracker];
 		if (!m_url.valid())

@@ -205,19 +205,20 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 		m_run = false;
 	else if (m_run)
 	{
-		for (t_new_peers::const_iterator i = m_new_peers.begin(); i != m_new_peers.end(); i++)
+		for (t_new_peers::const_iterator i = m_new_peers.begin(); i != m_new_peers.end() && m_server->below_peer_limit(); )
 		{
-			if (find_peer(i->first))
-				continue;
-			Cbt_peer_link peer;
-			peer.m_a.sin_family = AF_INET;
-			peer.m_a.sin_addr.s_addr = i->first;
-			peer.m_a.sin_port = i->second;
-			peer.m_f = this;
-			peer.m_local_link = true;
-			m_peers.push_back(peer);
+			if (!find_peer(i->first))
+			{
+				Cbt_peer_link peer;
+				peer.m_a.sin_family = AF_INET;
+				peer.m_a.sin_addr.s_addr = i->first;
+				peer.m_a.sin_port = i->second;
+				peer.m_f = this;
+				peer.m_local_link = true;
+				m_peers.push_back(peer);
+			}
+			m_new_peers.erase(i++->first);
 		}
-		m_new_peers.clear();
 	}
 	int n = m_tracker.pre_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
