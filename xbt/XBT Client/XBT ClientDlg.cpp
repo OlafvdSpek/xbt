@@ -1322,7 +1322,7 @@ void CXBTClientDlg::OnPopupExploreTracker()
 	if (f.m_trackers.empty())
 		return;
 	Cbt_tracker_url url = f.m_trackers.front().url;
-	ShellExecute(m_hWnd, "open", ("http://" + url.m_host).c_str(), NULL, NULL, SW_SHOW);
+	ShellExecute(m_hWnd, "open", ("http://" + url.m_host + "/?info_hash=" + uri_encode(f.m_info_hash)).c_str(), NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnUpdatePopupExploreTracker(CCmdUI* pCmdUI)
