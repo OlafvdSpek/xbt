@@ -307,7 +307,7 @@ void Cbt_peer_link::remote_has(int v)
 		m_f->m_pieces[v].mc_peers++;
 		m_left -= m_f->m_pieces[v].size();
 		m_remote_pieces[v] = true;
-		if (!m_local_interested && !m_f->m_pieces[v].m_valid)
+		if (!m_local_interested && !m_f->m_pieces[v].valid())
 			interested(true);
 	}
 }
@@ -315,7 +315,7 @@ void Cbt_peer_link::remote_has(int v)
 void Cbt_peer_link::remote_requests(int piece, int offset, int size)
 {
 	if (piece < 0 || piece >= m_f->c_pieces() || offset < 0 || size < 0 || size > min(m_f->m_pieces[piece].size(), 1 << 17) 
-		|| m_remote_requests.size() >= 256 || !m_f->m_pieces[piece].m_valid || m_local_choked)
+		|| m_remote_requests.size() >= 256 || !m_f->m_pieces[piece].valid() || m_local_choked)
 		return;
 	m_remote_requests.push_back(t_remote_request(m_f->mcb_piece * piece + offset, size, 0));
 }
@@ -323,7 +323,7 @@ void Cbt_peer_link::remote_requests(int piece, int offset, int size)
 void Cbt_peer_link::remote_merkle_requests(__int64 offset, int c_hashes)
 {
 	int piece = offset / m_f->mcb_piece;
-	if (offset < 0 || m_remote_requests.size() >= 256 || piece >= m_f->m_pieces.size() || !m_f->m_pieces[piece].m_valid || m_local_choked)
+	if (offset < 0 || m_remote_requests.size() >= 256 || piece >= m_f->m_pieces.size() || !m_f->m_pieces[piece].valid() || m_local_choked)
 		return;
 	m_remote_requests.push_back(t_remote_request(offset, min(m_f->m_pieces[piece].size() - offset % m_f->mcb_piece, 32 << 10), c_hashes));
 }
@@ -440,7 +440,7 @@ void Cbt_peer_link::write_bitfield()
 	{
 		if (!j)
 			*w = 0;
-		if (i->m_valid)
+		if (i->valid())
 			*w |= 0x80 >> j;
 		if (j == 7)
 		{

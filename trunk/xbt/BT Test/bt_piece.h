@@ -44,6 +44,8 @@ private:
 class Cbt_piece  
 {
 public:
+	typedef vector<Cbt_sub_piece> t_sub_pieces;
+	
 	int resize(int);
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;
@@ -73,22 +75,35 @@ public:
 		return 32 << 10;
 	}
 
+	const t_sub_pieces& sub_pieces() const
+	{
+		return m_sub_pieces;
+	}
+
 	int size() const
 	{
 		return m_size;
-	}	
+	}
 
-	typedef vector<Cbt_sub_piece> t_sub_pieces;
-	
+	bool valid() const
+	{
+		return m_valid;
+	}
+
+	void valid(bool v)
+	{
+		m_valid = v;
+	}
+
 	char m_hash[20];
 	int mc_peers;
-	t_sub_pieces m_sub_pieces;
-	bool m_valid;
 	char m_priority;
 private:
 	int mc_sub_pieces_left;
 	int mc_unrequested_sub_pieces;
 	int m_size;
+	t_sub_pieces m_sub_pieces;
+	bool m_valid;
 };
 
 #endif // !defined(AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_)

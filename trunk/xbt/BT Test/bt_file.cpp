@@ -185,7 +185,7 @@ int Cbt_file::open(const string& name)
 		{
 			int b = (offset + i->size() - 1) / mcb_piece;
 			for (int a = offset / mcb_piece; a <= b; a++)
-				m_pieces[a].m_valid = false;
+				m_pieces[a].valid(false);
 		}
 		offset += i->size();
 	}
@@ -359,7 +359,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 	if (a >= m_pieces.size())
 		return;
 	Cbt_piece& piece = m_pieces[a];
-	if (piece.m_valid)
+	if (piece.valid())
 	{
 		alert(Calert(Calert::debug, "Piece " + n(a) + ": already valid"));
 		return;
@@ -414,7 +414,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		logger().invalid(m_info_hash, false, a);
 		return;
 	}
-	piece.m_valid = true;
+	piece.valid(true);
 	m_left -= piece.size();
 	if (!m_left)
 	{
@@ -495,12 +495,12 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	int rank = INT_MAX;
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
-		if (m_pieces[i].m_valid 
+		if (m_pieces[i].valid()
 			|| m_pieces[i].m_priority == -10
 			|| !peer.m_remote_pieces[i] 
 			|| !m_pieces[i].c_unrequested_sub_pieces())
 			continue;
-		if (begin_mode && !m_pieces[i].m_sub_pieces.empty())
+		if (begin_mode && !m_pieces[i].sub_pieces().empty())
 			return i;
 		int piece_rank = m_pieces[i].rank();
 		if (piece_rank > rank)
@@ -562,15 +562,15 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	int c_valid_chunks = 0;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
 	{
-		c_distributed_copies = min(c_distributed_copies, i->mc_peers + i->m_valid);
-		if (!i->m_sub_pieces.empty() && i->c_sub_pieces_left() != i->c_sub_pieces())
+		c_distributed_copies = min(c_distributed_copies, i->mc_peers + i->valid());
+		if (!i->sub_pieces().empty() && i->c_sub_pieces_left() != i->c_sub_pieces())
 		{
 			c_invalid_chunks += i->c_sub_pieces_left();
 			c_valid_chunks += i->c_sub_pieces() - i->c_sub_pieces_left();
 		}
 	}
 	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
-		c_distributed_copies_remainder += i->mc_peers + i->m_valid > c_distributed_copies;
+		c_distributed_copies_remainder += i->mc_peers + i->valid() > c_distributed_copies;
 	w.write_int(8, m_downloaded);
 	w.write_int(8, m_downloaded_l5);
 	w.write_int(8, m_left);
