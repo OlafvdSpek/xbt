@@ -31,10 +31,16 @@ int Cdata_counter::rate() const
 
 void Cdata_counter::update_rate()
 {
-	if (time(NULL) - m_start_time > 10)
-	{
+	if (time(NULL) - m_start_time)
 		m_rate = m_got / (time(NULL) - m_start_time);
+	if (time(NULL) - m_start_time > 15)
+	{
 		m_got = 0;
-		m_start_time = time(NULL);
+		m_start_time = time(NULL) - 5;
+	}
+	else if (time(NULL) - m_start_time > 10)
+	{
+		m_got = 5 * m_rate;
+		m_start_time = time(NULL) - 5;
 	}
 }
