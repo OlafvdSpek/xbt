@@ -140,6 +140,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			strstream os;
 			os << "GET " << m_path 
 				<< "?info_hash=" << uri_encode(f.m_info_hash) 
+				<< "&compact=1"
 				<< "&no_peer_id=1"
 				<< "&peer_id=" << uri_encode(f.m_peer_id) 
 				// << "&ip=" << uri_encode("62.163.33.227")
@@ -287,20 +288,35 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 					if (v.d(bts_failure_reason).s().empty())
 					{
 						m_announce_time = time(NULL) + max(300, v.d(bts_interval).i());
-						const Cbvalue::t_list& peers = v.d(bts_peers).l();
-						for (Cbvalue::t_list::const_iterator i = peers.begin(); i != peers.end(); i++)
+						if (v.d(bts_peers).s().empty())
 						{
-							int ipa = htonl(inet_addr(i->d(bts_ipa).s().c_str()));
-							if (!ipa)
+							const Cbvalue::t_list& peers = v.d(bts_peers).l();
+							for (Cbvalue::t_list::const_iterator i = peers.begin(); i != peers.end(); i++)
 							{
-								cout << i->d(bts_ipa).s() << endl;
-								ipa = Csocket::get_host(i->d(bts_ipa).s());
+								int ipa = htonl(inet_addr(i->d(bts_ipa).s().c_str()));
+								if (!ipa)
+								{
+									cout << i->d(bts_ipa).s() << endl;
+									ipa = Csocket::get_host(i->d(bts_ipa).s());
+								}
+								sockaddr_in a;
+								a.sin_family = AF_INET;
+								a.sin_port = htons(i->d(bts_port).i());
+								a.sin_addr.s_addr = htonl(ipa);
+								f.insert_peer(a);
 							}
-							sockaddr_in a;
-							a.sin_family = AF_INET;
-							a.sin_port = htons(i->d(bts_port).i());
-							a.sin_addr.s_addr = htonl(ipa);
-							f.insert_peer(a);
+						}
+						else
+						{
+							string peers = v.d(bts_peers).s();
+							for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
+							{
+								sockaddr_in a;
+								a.sin_family = AF_INET;
+								a.sin_addr.s_addr = *reinterpret_cast<const __int32*>(r);
+								a.sin_port = *reinterpret_cast<const __int16*>(r + 4);
+								f.insert_peer(a);
+							}
 						}
 						return 0;
 					}
