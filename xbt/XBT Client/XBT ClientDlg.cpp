@@ -11,6 +11,7 @@
 #include "dlg_about.h"
 #include "dlg_make_torrent.h"
 #include "dlg_options.h"
+#include "dlg_profiles.h"
 #include "dlg_scheduler.h"
 #include "dlg_torrent_options.h"
 #include "dlg_trackers.h"
@@ -244,9 +245,10 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_STOPPED, OnUpdatePopupStateStopped)
 	ON_COMMAND(ID_POPUP_TORRENT_OPTIONS, OnPopupTorrentOptions)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_OPTIONS, OnUpdatePopupTorrentOptions)
+	ON_COMMAND(ID_POPUP_SCHEDULER, OnPopupScheduler)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
-	ON_COMMAND(ID_POPUP_SCHEDULER, OnPopupScheduler)
+	ON_COMMAND(ID_POPUP_PROFILES, OnPopupProfiles)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1441,6 +1443,13 @@ void CXBTClientDlg::OnPopupOptions()
 		register_tray();
 	else
 		unregister_tray();
+}
+
+void CXBTClientDlg::OnPopupProfiles() 
+{
+	Cdlg_profiles dlg;
+	if (IDOK != dlg.DoModal())
+		return;
 }
 
 void CXBTClientDlg::OnPopupScheduler()
