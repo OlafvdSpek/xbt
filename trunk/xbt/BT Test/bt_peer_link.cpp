@@ -648,7 +648,7 @@ ostream& Cbt_peer_link::dump(ostream& os) const
 		<< "<td align=right>" << time(NULL) - m_piece_rtime
 		<< "<td align=right>";
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
-		os << *i - m_f->m_pieces.begin() << ' ';
+		os << *i - &m_f->m_pieces.front() << ' ';
 	os << "<td align=right>";
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 		os << ((*i)->m_sub_pieces.empty() ? (*i)->c_sub_pieces() : (*i)->mc_sub_pieces_left) << ' ';
