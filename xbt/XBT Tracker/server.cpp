@@ -5,9 +5,14 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <signal.h>
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "transaction.h"
+
+const char* g_pid_fname = "xbt_tracker.pid";
+static volatile bool g_sig_hup = false;
+static volatile bool g_sig_term = false;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -120,7 +125,14 @@ void Cserver::run()
 #ifndef WIN32
 	if (m_daemon && daemon(true, false))
 		cerr << "daemon failed" << endl;
-	ofstream("xbt_tracker.pid") << getpid() << endl;
+	ofstream(g_pid_fname) << getpid() << endl;
+	struct sigaction act;
+	act.sa_handler = Cserver::sig_handler;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+	if (sigaction(SIGHUP, &act, NULL)
+		|| sigaction(SIGTERM, &act, NULL))
+		cerr << "sigaction failed" << endl;
 #endif
 	clean_up();
 	read_db_files();
@@ -129,7 +141,7 @@ void Cserver::run()
 	fd_set fd_read_set;
 	fd_set fd_write_set;
 	fd_set fd_except_set;
-	while (1)
+	while (!g_sig_term)
 	{
 		FD_ZERO(&fd_read_set);
 		FD_ZERO(&fd_write_set);
@@ -214,6 +226,10 @@ void Cserver::run()
 		if (time(NULL) - m_write_db_time > m_write_db_interval)
 			write_db();
 	}
+	write_db();
+#ifndef WIN32
+	unlink(g_pid_fname);
+#endif
 }
 
 void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, int uid)
@@ -693,4 +709,19 @@ const Cserver::t_user* Cserver::find_user(const string& v) const
 {
 	t_users::const_iterator i = m_users.find(v);
 	return i == m_users.end() ? NULL : &i->second;
+}
+
+void Cserver::sig_handler(int v)
+{
+	switch (v)
+	{
+#ifndef WIN32
+	case SIGHUP:
+		g_sig_hup = true;
+		break;
+#endif
+	case SIGTERM:
+		g_sig_term = true;
+		break;
+	}
 }
