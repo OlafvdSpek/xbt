@@ -865,21 +865,47 @@ void Cserver::update_chokes()
 	random_shuffle(links1.begin(), links1.end());
 	random_shuffle(links2.begin(), links2.end());
 	int slots_left = max(4, m_config.m_upload_slots);
-	for (t_links0::iterator i = links0.begin(); slots_left && i != links0.end(); i++)
+	for (int a = 0; a < 3; a++)
 	{
-		if (i->second->m_remote_interested)
+		for (t_links0::iterator i = links0.begin(); slots_left && i != links0.end(); i++)
+		{
+			pair<int, int>& file_limits = files_limits.find(i->second->m_f)->second;
+			if (!i->second->m_local_choked_goal
+				|| !a && file_limits.first < 1
+				|| a == 1 && file_limits.second < 1)
+				continue;
+			if (i->second->m_remote_interested)
+			{
+				file_limits.first--;
+				file_limits.second--;
+				slots_left--;
+			}
+			i->second->choked(false);
+		}
+		for (t_links1::const_iterator i = links1.begin(); slots_left && i != links1.end(); i++)
+		{
+			pair<int, int>& file_limits = files_limits.find((*i)->m_f)->second;
+			if (!(*i)->m_local_choked_goal
+				|| !a && file_limits.first < 1
+				|| a == 1 && file_limits.second < 1)
+				continue;
+			file_limits.first--;
+			file_limits.second--;
 			slots_left--;
-		i->second->choked(false);
-	}
-	for (t_links1::const_iterator i = links1.begin(); slots_left && i != links1.end(); i++)
-	{
-		slots_left--;
-		(*i)->choked(false);
-	}
-	for (t_links1::const_iterator i = links2.begin(); slots_left && i != links2.end(); i++)
-	{
-		slots_left--;
-		(*i)->choked(false);
+			(*i)->choked(false);
+		}
+		for (t_links1::const_iterator i = links2.begin(); slots_left && i != links2.end(); i++)
+		{
+			pair<int, int>& file_limits = files_limits.find((*i)->m_f)->second;
+			if (!(*i)->m_local_choked_goal
+				|| !a && file_limits.first < 1
+				|| a == 1 && file_limits.second < 1)
+				continue;
+			file_limits.first--;
+			file_limits.second--;
+			slots_left--;
+			(*i)->choked(false);
+		}
 	}
 	m_update_chokes_time = time();
 }
