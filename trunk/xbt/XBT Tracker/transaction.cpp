@@ -47,20 +47,20 @@ void Ctransaction::recv()
 	{
 	case uta_connect:
 		if (r >= sizeof(t_udp_tracker_input_connect))
-			send_connect(*reinterpret_cast<t_udp_tracker_input_connect*>(b));
+			send_connect(*reinterpret_cast<t_udp_tracker_input_connect*>(b), b + sizeof(t_udp_tracker_input_connect), b + r);
 		break;
 	case uta_announce:
 		if (r >= sizeof(t_udp_tracker_input_announce))
-			send_announce(*reinterpret_cast<t_udp_tracker_input_announce*>(b));
+			send_announce(*reinterpret_cast<t_udp_tracker_input_announce*>(b), b + sizeof(t_udp_tracker_input_announce), b + r);
 		break;
 	case uta_scrape:
 		if (r >= sizeof(t_udp_tracker_input_scrape))
-			send_scrape(*reinterpret_cast<t_udp_tracker_input_scrape*>(b));
+			send_scrape(*reinterpret_cast<t_udp_tracker_input_scrape*>(b), b + sizeof(t_udp_tracker_input_scrape), b + r);
 		break;
 	}
 }
 
-void Ctransaction::send_connect(const t_udp_tracker_input_connect& uti)
+void Ctransaction::send_connect(const t_udp_tracker_input_connect& uti, const char* r, const char* r_end)
 {
 	t_udp_tracker_output_connect uto;
 	uto.action(uta_connect);
@@ -69,7 +69,7 @@ void Ctransaction::send_connect(const t_udp_tracker_input_connect& uti)
 	send(&uto, sizeof(t_udp_tracker_output_connect));
 }
 
-void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti)
+void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const char* r, const char* r_end)
 {
 	if (uti.m_connection_id != connection_id())
 		return;
@@ -99,6 +99,8 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti)
 	uto.action(uta_announce);
 	uto.transaction_id(uti.transaction_id());
 	uto.interval(m_server.announce_interval());
+	uto.leechers(i->second.leechers);
+	uto.seeders(i->second.seeders);
 	t_udp_tracker_output_peer* peer = reinterpret_cast<t_udp_tracker_output_peer*>(b + sizeof(t_udp_tracker_output_announce));
 	int c = ti.m_num_want < 0 ? 100 : min(ti.m_num_want, 100);
 	for (Cserver::t_peers::const_iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
@@ -114,7 +116,7 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti)
 	send(b, reinterpret_cast<char*>(peer) - b);
 }
 
-void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti)
+void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti, const char* r, const char* r_end)
 {
 	if (uti.m_connection_id != connection_id())
 		return;
@@ -122,20 +124,26 @@ void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti)
 	char b[cb_b];
 	t_udp_tracker_output_scrape& uto = *reinterpret_cast<t_udp_tracker_output_scrape*>(b);
 	uto.transaction_id(uti.transaction_id());
-	const Cserver::t_files& files = m_server.files();
-	Cserver::t_files::const_iterator i = files.find(uti.info_hash());
-	if (i == files.end())
-	{
-		send_error(uti, "invalid info hash");
-		return;
-	}
 	uto.action(uta_scrape);
 	t_udp_tracker_output_file* file = reinterpret_cast<t_udp_tracker_output_file*>(b + sizeof(t_udp_tracker_output_scrape));
-	file->info_hash(i->first);
-	file->complete(i->second.seeders);
-	file->downloaded(i->second.completed);
-	file->incomplete(i->second.leechers);
-	file++;
+	const Cserver::t_files& files = m_server.files();
+	for (; r + 20 <= r_end && reinterpret_cast<char*>(file + 1) <= b + cb_b; r += 20)
+	{
+		Cserver::t_files::const_iterator i = files.find(string(r, 20));
+		if (i == files.end())
+		{
+			file->complete(0);
+			file->downloaded(0);
+			file->incomplete(0);
+		}
+		else
+		{
+			file->complete(i->second.seeders);
+			file->downloaded(i->second.completed);
+			file->incomplete(i->second.leechers);
+		}
+		file++;
+	}
 	send(b, reinterpret_cast<char*>(file) - b);
 }
 
