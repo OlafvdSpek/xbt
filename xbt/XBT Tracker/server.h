@@ -47,15 +47,17 @@ public:
 
 		t_file()
 		{
-			completed = fid = leechers = seeders = started = stopped = 0;
+			announced = completed = fid = leechers = scraped = seeders = started = stopped = 0;
 			dirty = true;
 		}
 
 		t_peers peers;
+		int announced;
 		int completed;
 		bool dirty;
 		int fid;
 		int leechers;
+		int scraped;
 		int seeders;
 		int started;
 		int stopped;

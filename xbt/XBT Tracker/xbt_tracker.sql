@@ -26,6 +26,8 @@ CREATE TABLE xbt_files
   info_hash blob NOT NULL,
   leechers int NOT NULL,
   seeders int NOT NULL,
+  announced int NOT NULL,
+  scraped int NOT NULL,
   completed int NOT NULL,
   started int NOT NULL,
   stopped int NOT NULL,
