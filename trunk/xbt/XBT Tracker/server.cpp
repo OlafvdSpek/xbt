@@ -234,8 +234,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 {
 	if (m_log_announce)
 	{
-		Csql_query q(m_database);
-		q = "(%d,%d,%d,%s,%s,%d,%d,%d,%d,%d),";
+		Csql_query q(m_database, "(%d,%d,%d,%s,%s,%d,%d,%d,%d,%d),");
 		q.p(ntohl(v.m_ipa));
 		q.p(ntohs(v.m_port));
 		q.p(v.m_event);
@@ -394,8 +393,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 {
 	if (m_log_scrape)
 	{
-		Csql_query q(m_database);
-		q = "(%d,%s,%d),";
+		Csql_query q(m_database, "(%d,%s,%d),");
 		q.p(ntohl(ti.m_ipa));
 		if (ti.m_info_hash.empty())
 			q.p("NULL");
@@ -485,8 +483,7 @@ void Cserver::read_db_users()
 {
 	try
 	{
-		Csql_query q(m_database);
-		q = "select uid, name, pass from xbt_users";
+		Csql_query q(m_database, "select uid, name, pass from xbt_users");
 		Csql_result result = q.execute();
 		m_users.clear();
 		for (Csql_row row; row = result.fetch_row(); )
