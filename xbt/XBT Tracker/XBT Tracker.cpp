@@ -4,8 +4,6 @@
 #include "static_config.h"
 
 const char* g_service_name = "XBT Tracker";
-static SERVICE_STATUS g_service_status;
-static SERVICE_STATUS_HANDLE gh_service_status;
 
 int main1()
 {
@@ -21,6 +19,9 @@ int main1()
 }
 
 #ifdef WIN32
+static SERVICE_STATUS g_service_status;
+static SERVICE_STATUS_HANDLE gh_service_status;
+
 void WINAPI nt_service_handler(DWORD op)
 {
 	switch (op)
