@@ -470,10 +470,24 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] += " / " + n(e.c_seeders_total);
 		break;
 	case fc_state:
-		if (e.hashing)
+		switch (e.state)
+		{
+		case Cbt_file::s_queued:
+			m_buffer[m_buffer_w] = 'Q';
+			break;
+		case Cbt_file::s_hashing:
 			m_buffer[m_buffer_w] = 'H';
-		else if (e.running)
+			break;
+		case Cbt_file::s_running:
 			m_buffer[m_buffer_w] = 'R';
+			break;
+		case Cbt_file::s_paused:
+			m_buffer[m_buffer_w] = 'P';
+			break;
+		case Cbt_file::s_stopped:
+			m_buffer[m_buffer_w] = 'S';
+			break;
+		}
 		break;
 	case fc_name:
 		m_buffer[m_buffer_w] = e.display_name;
@@ -962,17 +976,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.c_valid_pieces = sr.read_int(4);
 	f.cb_chunk = sr.read_int(4);
 	f.cb_piece = sr.read_int(4);
-	f.hashing = false;
-	f.running = false;
-	switch (sr.read_int(4))
-	{
-	case 1:
-		f.running = true;
-		break;
-	case 2:
-		f.hashing = true;
-		break;
-	}
+	f.state = sr.read_int(4);
 	f.started_at = sr.read_int(4);
 	f.session_started_at = sr.read_int(4);
 	f.completed_at = sr.read_int(4);
@@ -1724,7 +1728,7 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	case fc_peers:
 		return compare(a.c_leechers + a.c_seeders, b.c_leechers + b.c_seeders);
 	case fc_state:
-		return compare(a.running, b.running);
+		return compare(a.state, b.state);
 	case fc_name:
 		return compare(a.display_name, b.display_name);
 	}
