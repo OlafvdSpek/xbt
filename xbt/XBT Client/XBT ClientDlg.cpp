@@ -121,6 +121,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
 	ON_COMMAND(ID_POPUP_ABOUT, OnPopupAbout)
 	ON_COMMAND(ID_POPUP_MAKE_TORRENT, OnPopupMakeTorrent)
+	ON_COMMAND(ID_POPUP_TORRENT_DELETE, OnPopupTorrentDelete)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -754,6 +755,12 @@ void CXBTClientDlg::OnPopupClose()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+}
+
+void CXBTClientDlg::OnPopupTorrentDelete() 
+{
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash, true);
 }
 
 void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI) 

@@ -94,6 +94,7 @@ protected:
 	afx_msg void OnPopupExploreTracker();
 	afx_msg void OnPopupAbout();
 	afx_msg void OnPopupMakeTorrent();
+	afx_msg void OnPopupTorrentDelete();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

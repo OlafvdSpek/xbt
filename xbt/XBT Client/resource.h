@@ -68,13 +68,14 @@
 #define ID_POPUP_ABOUT                  32784
 #define ID_POPUP_MAKE_TORRENT           32785
 #define ID_POPUP_TORRENT_OPTIONS        32787
+#define ID_POPUP_TORRENT_DELETE         32788
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32788
+#define _APS_NEXT_COMMAND_VALUE         32789
 #define _APS_NEXT_CONTROL_VALUE         1039
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
