@@ -32,8 +32,10 @@ public:
 		s_running,
 		s_paused,
 		s_stopped,
+		s_unknown,
 	};
 
+	void state(t_state);
 	void announce();
 	void pause();
 	void unpause();
@@ -88,6 +90,16 @@ public:
 			return true;
 		}
 		return false;
+	}
+
+	int priority() const
+	{
+		return m_priority;
+	}
+
+	void priority(int v)
+	{
+		m_priority = v;
 	}
 
 	t_state state() const
@@ -212,7 +224,6 @@ public:
 	int m_completed_at;
 	int mc_leechers_total;
 	int mc_seeders_total;
-	int m_priority;
 
 	__int64 mcb_piece;
 	__int64 mcb_f;
@@ -234,6 +245,7 @@ public:
 	Cbt_logger* m_logger;
 	Cserver* m_server;
 private:
+	int m_priority;
 	t_state m_state;
 };
 

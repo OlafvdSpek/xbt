@@ -18,7 +18,7 @@
 #include "stream_writer.h"
 #include "udp_tracker.h"
 
-class Cserver  
+class Cserver
 {
 public:
 	enum
@@ -35,7 +35,8 @@ public:
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	bool below_peer_limit() const;
 	bool below_torrent_limit() const;
-	void file_priority(const string& file_id, int priority);
+	int file_priority(const string&, int priority);
+	int file_state(const string&, Cbt_file::t_state);
 	void sub_file_priority(const string& file_id, const string& sub_file_id, int priority);
 	string completes_dir() const;
 	void completes_dir(const string&);
@@ -47,6 +48,7 @@ public:
 	void torrents_dir(const string&);
 	void update_chokes();
 	void update_send_quotas();
+	void update_states();
 	void alert(const Calert&);
 	void admin_port(int);
 	void peer_port(int);
@@ -61,10 +63,6 @@ public:
 	void load_state(const Cvirtual_binary&);
 	int close(const string& id, bool erase = false);
 	int announce(const string& id);
-	int pause_file(const string& id);
-	int unpause_file(const string& id);
-	int start_file(const string& id);
-	int stop_file(const string& id);
 	string get_url(const string& id);
 	int open(const Cvirtual_binary& info, const string& name);
 	int open_url(const string&);
@@ -229,6 +227,7 @@ private:
 	int m_tracker_port;
 	int m_update_chokes_time;
 	int m_update_send_quotas_time;
+	int m_update_states_time;
 	int m_upload_rate;
 	int m_upload_slots;
 

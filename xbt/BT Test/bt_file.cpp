@@ -863,3 +863,23 @@ void Cbt_file::announce()
 {
 	m_tracker.m_announce_time = 0;
 }
+
+void Cbt_file::state(t_state v)
+{
+	switch (v)
+	{
+	case s_hashing:
+	case s_paused:
+	case s_running:
+		if (is_open())
+			m_state = v;
+		else
+			open();		
+		break;
+	case s_queued:
+	case s_stopped:
+		close();
+		m_state = v;
+		break;
+	}
+}

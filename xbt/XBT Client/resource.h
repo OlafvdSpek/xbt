@@ -104,13 +104,18 @@
 #define ID_POPUP_VIEW_PIECES            32810
 #define ID_POPUP_TORRENT_PAUSE          32811
 #define ID_POPUP_TORRENT_UNPAUSE        32812
+#define ID_POPUP_TORRENT_QUEUE          32813
+#define ID_POPUP_STATE_QUEUED           32814
+#define ID_POPUP_STATE_STARTED          32815
+#define ID_POPUP_STATE_PAUSED           32816
+#define ID_POPUP_STATE_STOPPED          32817
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32813
+#define _APS_NEXT_COMMAND_VALUE         32818
 #define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
