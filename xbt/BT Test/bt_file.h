@@ -46,6 +46,7 @@ public:
 	int read_data(__int64 o, byte* d, int cb_d);
 	void write_data(__int64 o, const char* s, int cb_s);
 	void close();
+	void erase();
 	int open(const string& name);
 	int c_invalid_pieces() const;
 	int c_pieces() const;
@@ -64,6 +65,7 @@ public:
 	{
 		void close();
 		void dump(Cstream_writer&) const;
+		void erase(const string& parent_name);
 		bool open(const string& parent_name, int oflag);
 		int pre_dump() const;
 		int read(__int64  offset, void* s, int cb_s);
