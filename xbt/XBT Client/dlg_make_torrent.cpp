@@ -271,7 +271,7 @@ void Cdlg_make_torrent::OnSave()
 	byte* w = d.write_start(cb_piece);
 	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
 	{
-		int f = _open(i->second.name.c_str(), _O_BINARY | _O_RDONLY);
+		int f = open(i->second.name.c_str(), _O_BINARY | _O_RDONLY);
 		if (!f)
 			continue;
 		__int64 cb_f = 0;
@@ -283,7 +283,7 @@ void Cdlg_make_torrent::OnSave()
 
 			t_map map;
 			char d[1025];
-			while (cb_d = _read(f, d + 1, 1024))
+			while (cb_d = read(f, d + 1, 1024))
 			{
 				if (cb_d < 0)
 					break;
@@ -315,7 +315,7 @@ void Cdlg_make_torrent::OnSave()
 		}
 		else
 		{
-			while (cb_d = _read(f, w, d.data_end() - w))
+			while (cb_d = read(f, w, d.data_end() - w))
 			{
 				if (cb_d < 0)
 					break;
@@ -328,7 +328,7 @@ void Cdlg_make_torrent::OnSave()
 				cb_f += cb_d;
 			}
 		}
-		_close(f);
+		close(f);
 		files.l(merkle_hash.empty()
 			? Cbvalue().d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name)))
 			: Cbvalue().d(bts_merkle_hash, merkle_hash).d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name))));

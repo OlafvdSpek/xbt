@@ -51,7 +51,7 @@ void insert(const string& name)
 		return;
 	if (g_map.empty())
 		g_name = base_name(name).c_str();
-	if (b.st_mode & _S_IFDIR)
+	if (b.st_mode & S_IFDIR)
 	{
 		// name is a directory, so add it's contents
 		WIN32_FIND_DATA finddata;
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 	byte* w = d.write_start(cb_piece);
 	for (t_map::const_iterator i = g_map.begin(); i != g_map.end(); i++)
 	{
-		int f = _open(i->second.name.c_str(), _O_BINARY | _O_RDONLY);
+		int f = open(i->second.name.c_str(), O_BINARY | O_RDONLY);
 		if (!f)
 			continue;
 		__int64 cb_f = 0;
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
 
 			t_map map;
 			char d[1025];
-			while (cb_d = _read(f, d + 1, 1024))
+			while (cb_d = read(f, d + 1, 1024))
 			{
 				if (cb_d < 0)
 					break;
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 		else
 		{
 			// calculate piece hashes
-			while (cb_d = _read(f, w, d.data_end() - w))
+			while (cb_d = read(f, w, d.data_end() - w))
 			{
 				if (cb_d < 0)
 					break;
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
 				cb_f += cb_d;
 			}
 		}
-		_close(f);
+		close(f);
 		// add file to files key
 		files.l(merkle_hash.empty()
 			? Cbvalue().d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name)))
