@@ -34,8 +34,6 @@ BOOL CXBTClientApp::InitInstance()
 	if (GetLastError() == ERROR_ALREADY_EXISTS)
 	{
 		HWND hWnd = FindWindow(NULL, "XBT Client");
-		ShowWindow(hWnd, SW_SHOWMAXIMIZED);
-		SetForegroundWindow(hWnd);
 		CCommandLineInfo cmdInfo;
 		ParseCommandLine(cmdInfo);
 		if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
