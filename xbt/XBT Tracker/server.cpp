@@ -167,6 +167,9 @@ int Cserver::run()
 	if (sigaction(SIGHUP, &act, NULL)
 		|| sigaction(SIGTERM, &act, NULL))
 		cerr << "sigaction failed" << endl;
+	act.sa_handler = SIG_IGN;
+	if (sigaction(SIGPIPE, &act, NULL))
+		cerr << "sigaction failed" << endl;
 #endif
 	clean_up();
 	read_db_files();
@@ -902,12 +905,15 @@ string Cserver::statistics() const
 		+ "<tr><td>listen check<td align=right>" + n(m_config.m_listen_check) 
 		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_config.m_read_config_interval)
 		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_config.m_clean_up_interval)
-		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_config.m_read_db_interval)
-		+ "<tr><td>read db ipas time<td align=right>" + n(t - m_read_db_ipas_time) + " / " + n(m_config.m_read_db_interval)
-		+ "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_config.m_read_db_interval)
-		+ "<tr><td>write db files time<td align=right>" + n(t - m_write_db_files_time) + " / " + n(m_config.m_write_db_interval)
-		+ "<tr><td>write db users time<td align=right>" + n(t - m_write_db_users_time) + " / " + n(m_config.m_write_db_interval)
-		+ "</table>";
+		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_config.m_read_db_interval);
+	if (m_use_sql)
+	{
+		page += "<tr><td>read db ipas time<td align=right>" + n(t - m_read_db_ipas_time) + " / " + n(m_config.m_read_db_interval)
+			+ "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_config.m_read_db_interval)
+			+ "<tr><td>write db files time<td align=right>" + n(t - m_write_db_files_time) + " / " + n(m_config.m_write_db_interval)
+			+ "<tr><td>write db users time<td align=right>" + n(t - m_write_db_users_time) + " / " + n(m_config.m_write_db_interval);
+	}
+	page += "</table>";
 	return page;
 }
 
