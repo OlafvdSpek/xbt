@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "transaction.h"
 
+#include "bt_misc.h"
 #include "server.h"
 #include "sha1.h"
 

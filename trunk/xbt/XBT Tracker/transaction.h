@@ -9,8 +9,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "bt_misc.h"
 #include "server.h"
+
+struct t_udp_tracker_input;
+struct t_udp_tracker_input_announce;
+struct t_udp_tracker_input_connect;
+struct t_udp_tracker_input_scrape;
 
 class Ctransaction  
 {
