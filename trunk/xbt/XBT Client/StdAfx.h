@@ -26,6 +26,7 @@
 #include <afxsock.h>		// MFC socket extensions
 #include <cassert>
 #include <fstream>
+#include <io.h>
 #include <list>
 #include <map>
 #include <set>
