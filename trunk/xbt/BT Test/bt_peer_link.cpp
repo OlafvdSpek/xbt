@@ -107,13 +107,22 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		}
 		if (!m_read_b.size() || m_read_b.cb_w())
 			FD_SET(m_s, fd_read_set);
-		if (m_write_b.empty() && time(NULL) - m_stime > 120)
+		if (m_write_b.empty())
 		{
-			if (!m_local_interested && m_f->next_invalid_piece(*this) != -1)
+			if (!m_local_interested && time(NULL) - m_stime > 30 && m_f->next_invalid_piece(*this) != -1)
+			{
+				write_haves();
 				interested(true);
-			else
-				write_keepalive();
+			}
+			else if (time(NULL) - m_stime > 120)
+			{
+				write_haves();
+				if (m_write_b.empty())
+					write_keepalive();
+			}
 		}
+		else
+			write_haves();
 		if (m_send_quota && !m_write_b.empty())
 			FD_SET(m_s, fd_write_set);
 		return m_s;
@@ -417,6 +426,11 @@ void Cbt_peer_link::write_keepalive()
 	write(d);
 }
 
+void Cbt_peer_link::queue_have(int a)
+{
+	m_have_queue.insert(a);
+}
+
 void Cbt_peer_link::write_have(int a)
 {
 	if (m_remote_pieces.empty())
@@ -433,6 +447,13 @@ void Cbt_peer_link::write_have(int a)
 	*w++ = bti_have;
 	w = write(w, a);
 	write(d);
+}
+
+void Cbt_peer_link::write_haves()
+{
+	for (t_have_queue::const_iterator i = m_have_queue.begin(); i != m_have_queue.end(); i++)
+		write_have(*i);
+	m_have_queue.clear();
 }
 
 void Cbt_peer_link::write_bitfield()

@@ -425,7 +425,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 			offset += cb_write;
 		}
 		for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
-			i->write_have(a);
+			i->queue_have(a);
 	}
 	if (!m_left && m_name.substr(0, m_server->incompletes_dir().size()) == m_server->incompletes_dir())
 	{

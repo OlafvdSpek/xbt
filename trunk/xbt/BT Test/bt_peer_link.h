@@ -30,7 +30,9 @@ public:
 	ostream& dump(ostream&) const;
 	void write_piece(int, int, int, const void*);
 	void write_merkle_piece(__int64 offset, int size, const void* s, const string& hashes);
+	void queue_have(int);
 	void write_have(int);
+	void write_haves();
 	int read_handshake(const char* r);
 	void read_message(const char* s, const char* s_end);
 	void read_info(const char* r, const char* r_end);
@@ -111,6 +113,7 @@ public:
 	};
 
 	typedef list<t_local_request> t_local_requests;
+	typedef set<int> t_have_queue;
 	typedef set<Cbt_piece*> t_pieces;
 	typedef vector<bool> t_remote_pieces;
 	typedef list<t_remote_request> t_remote_requests;
@@ -122,6 +125,7 @@ public:
 	int m_state;
 	Cring_buffer m_read_b;
 	t_write_buffer m_write_b;
+	t_have_queue m_have_queue;
 	t_pieces m_pieces;
 	int m_rtime;
 	int m_stime;
