@@ -52,13 +52,16 @@ string Csql_query::read() const
 	return r;
 }
 
-
 void Csql_query::operator=(const string& v)
 {
 	m_data = v;
 	m_list.clear();
 }
 
+void Csql_query::operator+=(const string& v)
+{
+	m_data += v;
+}
 
 void Csql_query::p(const string& v)
 {
