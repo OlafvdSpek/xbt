@@ -176,7 +176,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			int e = 0;
 			int size = sizeof(int);
 			getsockopt(m_s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&e), &size);
-			f.alert(Calert(Calert::error, "Tracker: HTTP: connect failed: " + n(e)));
+			f.alert(Calert(Calert::error, "Tracker: HTTP: connect failed: " + error2a(e)));
 			close(f);
 		}
 		break;
@@ -190,7 +190,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					int e = WSAGetLastError();
 					if (e != WSAEWOULDBLOCK)
 					{
-						f.alert(Calert(Calert::error, "Tracker: HTTP: recv failed:" + n(e)));
+						f.alert(Calert(Calert::warn, "Tracker: HTTP: recv failed:" + error2a(e)));
 						close(f);
 					}
 					return;

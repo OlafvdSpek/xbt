@@ -37,7 +37,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			close();
 			return 0;
 		}
-		if (0)
+		if (1)
 		{
 			int v = true;
 			if (!setsockopt(m_s, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)))
@@ -45,6 +45,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		}
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
+			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + error2a(WSAGetLastError())));
 			close();
 			return 0;
 		}
@@ -115,7 +116,16 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			int e = 0;
 			int size = sizeof(int);
 			getsockopt(m_s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&e), &size);
-			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + n(e)));
+			if (e == WSAEADDRINUSE)
+			{
+				if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
+				{
+					alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + error2a(WSAGetLastError())));
+					return 1;
+				}
+				return 0;
+			}
+			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + error2a(e)));
 			return 1;
 		}
 	case 3:

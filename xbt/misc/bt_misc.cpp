@@ -213,3 +213,48 @@ string peer_id2a(const string& v)
 	}
 	return hex_encode(v);
 }
+
+string error2a(int v)
+{
+	switch (v)
+	{
+	case WSAEWOULDBLOCK: return "EWOULDBLOCK";
+	case WSAEINPROGRESS: return "EINPROGRESS";
+	case WSAEALREADY: return "EALREADY";
+	case WSAENOTSOCK: return "ENOTSOCK";
+	case WSAEDESTADDRREQ: return "EDESTADDRREQ";
+	case WSAEMSGSIZE: return "EMSGSIZE";
+	case WSAEPROTOTYPE: return "EPROTOTYPE";
+	case WSAENOPROTOOPT: return "ENOPROTOOPT";
+	case WSAEPROTONOSUPPORT: return "EPROTONOSUPPORT";
+	case WSAESOCKTNOSUPPORT: return "ESOCKTNOSUPPORT";
+	case WSAEOPNOTSUPP: return "EOPNOTSUPP";
+	case WSAEPFNOSUPPORT: return "EPFNOSUPPORT";
+	case WSAEAFNOSUPPORT: return "EAFNOSUPPORT";
+	case WSAEADDRINUSE: return "EADDRINUSE";
+	case WSAEADDRNOTAVAIL: return "EADDRNOTAVAIL";
+	case WSAENETDOWN: return "ENETDOWN";
+	case WSAENETUNREACH: return "ENETUNREACH";
+	case WSAENETRESET: return "ENETRESET";
+	case WSAECONNABORTED: return "ECONNABORTED";
+	case WSAECONNRESET: return "ECONNRESET";
+	case WSAENOBUFS: return "ENOBUFS";
+	case WSAEISCONN: return "EISCONN";
+	case WSAENOTCONN: return "ENOTCONN";
+	case WSAESHUTDOWN: return "ESHUTDOWN";
+	case WSAETOOMANYREFS: return "ETOOMANYREFS";
+	case WSAETIMEDOUT: return "ETIMEDOUT";
+	case WSAECONNREFUSED: return "ECONNREFUSED";
+	case WSAELOOP: return "ELOOP";
+	case WSAENAMETOOLONG: return "ENAMETOOLONG";
+	case WSAEHOSTDOWN: return "EHOSTDOWN";
+	case WSAEHOSTUNREACH: return "EHOSTUNREACH";
+	case WSAENOTEMPTY: return "ENOTEMPTY";
+	case WSAEPROCLIM: return "EPROCLIM";
+	case WSAEUSERS: return "EUSERS";
+	case WSAEDQUOT: return "EDQUOT";
+	case WSAESTALE: return "ESTALE";
+	case WSAEREMOTE: return "EREMOTE";
+	}
+	return n(v);
+}
