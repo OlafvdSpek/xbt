@@ -60,6 +60,7 @@ public:
 	int write(const void* s, int cb_s);
 	int write(const Cvirtual_binary&);
 	Cbvalue(int v = 0);
+	Cbvalue(t_value_type t);
 	Cbvalue(const string& v);
 	Cbvalue(const Cbvalue&);
 	const Cbvalue& operator=(const Cbvalue&);
