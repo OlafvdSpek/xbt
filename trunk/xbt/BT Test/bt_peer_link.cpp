@@ -100,6 +100,7 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 	case 2:
 		if (FD_ISSET(m_s, fd_except_set))
 		{
+			alert(Calert(Calert::debug, m_a, "Peer: connect failed"));
 			close();
 			return;
 		}
@@ -119,6 +120,7 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 						|| memcmp(m.name, "BitTorrent protocol", 19)
 						|| m.info_hash() != m_f->m_info_hash)
 					{
+						alert(Calert(Calert::warn, "Peer: handshake failed"));
 						close();
 						return;
 					}
@@ -159,7 +161,10 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 		break;
 	}
 	if (!m_left && !m_f->m_left)
+	{
+		alert(Calert(Calert::debug, m_a, "Peer: seeder to seeder link closed"));
 		close();
+	}
 }
 
 void Cbt_peer_link::close()
@@ -194,11 +199,12 @@ void Cbt_peer_link::recv()
 			{
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
+				alert(Calert(Calert::debug, m_a, "Peer: connection aborted/reset"));
 				close();
 			case WSAEWOULDBLOCK:
 				break;
 			default:
-				cerr << "recv failed: " << e << endl;
+				alert(Calert(Calert::debug, m_a, "Peer: recv failed:" + n(e)));
 				close();
 			}
 			return;
@@ -206,6 +212,7 @@ void Cbt_peer_link::recv()
 		m_rtime = time(NULL);
 		m_read_b.cb_w(r);
 	}
+	alert(Calert(Calert::debug, m_a, "Peer: connection closed"));
 	close();
 }
 
@@ -222,11 +229,12 @@ void Cbt_peer_link::send()
 			{
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
+				alert(Calert(Calert::debug, m_a, "Peer: connection aborted/reset"));
 				close();
 			case WSAEWOULDBLOCK:
 				break;
 			default:
-				cerr << "send failed: " << e << endl;
+				alert(Calert(Calert::debug, m_a, "Peer: send failed:" + n(e)));
 				close();
 			}
 			return;
@@ -433,20 +441,22 @@ void Cbt_peer_link::write_info(int i)
 void Cbt_peer_link::write_get_peers()
 {
 	Cvirtual_binary d;
-	byte* w = d.write_start(9);
+	byte* w = d.write_start(7);
 	w = write(w, d.size() - 4);
 	*w++ = bti_get_info;
-	w = write(w, m_f->m_local_port);
+	*reinterpret_cast<__int16*>(w) = htons(m_f->m_local_port);
+	w += 2;
 	write(d);
 }
 
 void Cbt_peer_link::write_peers()
 {
 	Cvirtual_binary d;
-	byte* w = d.write_start(9 + 6 * m_f->m_peers.size());
+	byte* w = d.write_start(7 + 6 * m_f->m_peers.size());
 	w = write(w, d.size() - 4);
 	*w++ = bti_peers;
-	w = write(w, m_f->m_local_port);
+	*reinterpret_cast<__int16*>(w) = htons(m_f->m_local_port);
+	w += 2;
 	for (Cbt_file::t_peers::const_iterator i = m_f->m_peers.begin(); i != m_f->m_peers.end(); i++)
 	{
 		*reinterpret_cast<__int32*>(w) = i->m_a.sin_addr.s_addr;
@@ -583,4 +593,9 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int8(m_local_interested);
 	w.write_int8(m_remote_choked);
 	w.write_int8(m_remote_interested);
+}
+
+void Cbt_peer_link::alert(const Calert& v)
+{
+	m_f->alert(v);
 }

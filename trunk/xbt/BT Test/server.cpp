@@ -41,6 +41,8 @@ Cserver::Cserver()
 	m_admin_port = 6879;
 	m_peer_port = 6889;
 	m_run = false;
+	m_update_chokes_time = 0;
+	m_upload_rate = 0;
 
 	InitializeCriticalSection(&m_cs);
 }
@@ -70,26 +72,31 @@ void Cserver::peer_port(int v)
 	m_peer_port = v;
 }
 
+void Cserver::upload_rate(int v)
+{
+	m_upload_rate = v;
+}
+
 int Cserver::run()
 {
 	Csocket l, la;
 	if (l.open(SOCK_STREAM) == INVALID_SOCKET
 		|| la.open(SOCK_STREAM) == INVALID_SOCKET)
-		return cerr << "socket failed" << endl, 1;
+		return alert(Calert(Calert::emerg, "Server", "socket failed" + n(WSAGetLastError()))), 1;
 	while (admin_port() < 0x10000 && la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_admin_port++;
 	while (peer_port() < 0x10000 && l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_peer_port++;
 	if (listen(l, SOMAXCONN)
 		|| listen(la, SOMAXCONN))
-		cerr << "listen failed" << endl;
+		return alert(Calert(Calert::emerg, "Server", "listen failed" + n(WSAGetLastError()))), 1;
 	else
 	{
 		load_state(Cvirtual_binary(state_fname()));
 		save_state(true).save(state_fname());
 #ifndef WIN32
 		if (daemon(true, false))
-			cerr << "daemon failed" << endl;
+			alert(Calert(Calert::error, "Server", "daemon failed" + n(errno)));
 		ofstream("xbt.pid") << getpid() << endl;
 #endif
 		fd_set fd_read_set;
@@ -131,7 +138,7 @@ int Cserver::run()
 			tv.tv_usec = 0;
 			if (select(n, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
 			{
-				cerr << "select failed: " << WSAGetLastError() << endl;
+				alert(Calert(Calert::error, "Server", "select failed" + ::n(WSAGetLastError())));
 				break;
 			}
 			lock();
@@ -141,11 +148,11 @@ int Cserver::run()
 				socklen_t cb_a = sizeof(sockaddr_in);
 				Csocket s = accept(l, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
-					cerr << "accept failed: " << WSAGetLastError() << endl;
+					alert(Calert(Calert::error, "Server", "accept failed" + ::n(WSAGetLastError())));
 				else
 				{
 					if (s.blocking(false))
-						cerr << "ioctlsocket failed" << endl;
+						alert(Calert(Calert::error, "Server", "ioctlsocket failed" + ::n(WSAGetLastError())));
 					m_links.push_back(Cbt_link(this, a, s));
 				}
 			}
@@ -155,11 +162,11 @@ int Cserver::run()
 				socklen_t cb_a = sizeof(sockaddr_in);
 				Csocket s = accept(la, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
-					cerr << "accept failed: " << WSAGetLastError() << endl;
+					alert(Calert(Calert::error, "Server", "accept failed" + ::n(WSAGetLastError())));
 				else
 				{
 					if (s.blocking(false))
-						cerr << "ioctlsocket failed" << endl;
+						alert(Calert(Calert::error, "Server", "ioctlsocket failed" + ::n(WSAGetLastError())));
 					m_admins.push_back(Cbt_admin_link(this, a, s));
 				}
 			}
@@ -187,6 +194,8 @@ int Cserver::run()
 				for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 			}
+			if (time(NULL) - m_update_chokes_time > 10)
+				update_chokes();
 			unlock();
 		}
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -395,4 +404,14 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 string Cserver::state_fname() const
 {
 	return m_dir + "/state.bin";
+}
+
+void Cserver::alert(const Calert& v)
+{
+	m_alerts.push_back(v);
+}
+
+void Cserver::update_chokes()
+{
+	m_update_chokes_time = time(NULL);
 }

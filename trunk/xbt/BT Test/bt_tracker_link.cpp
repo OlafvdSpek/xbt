@@ -28,6 +28,7 @@ enum
 Cbt_tracker_link::Cbt_tracker_link()
 {
 	m_announce_time = 0;
+	mc_attempts = 0;
 	m_event = e_started;
 	m_state = 0;
 }
@@ -80,13 +81,13 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		{
 		case tp_http:
 			f.alert(Calert(Calert::info, "Tracker: URL: http://" + m_host + ':' + n(m_port) + m_path + "?info_hash=" + uri_encode(f.m_info_hash)));		
-			m_announce_time = time(NULL) + 300;
+			m_announce_time = time(NULL) + (300 << mc_attempts++);
 			if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
 				return 0;
 			break;
 		case tp_udp:
 			f.alert(Calert(Calert::info, "Tracker: URL: udp://" + m_host + ':' + n(m_port) + "?info_hash=" + uri_encode(f.m_info_hash)));
-			m_announce_time = time(NULL) + 60;
+			m_announce_time = time(NULL) + (60 << mc_attempts++);
 			if (m_s.open(SOCK_DGRAM) == INVALID_SOCKET)
 				return 0;
 			break;
@@ -218,7 +219,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					m_event = e_none;
 					uti.ipa(0);
 					uti.num_want(-1);
-					uti.port(f.m_local_port);
+					uti.port(htons(f.m_local_port));
 					if (m_s.send(&uti, sizeof(t_udp_tracker_input_announce)) != sizeof(t_udp_tracker_input_announce))
 					{
 						close();
@@ -245,6 +246,8 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				if (uto.action() == uta_announce && uto.transaction_id() == m_transaction_id)
 				{
 					m_announce_time = time(NULL) + max(300, uto.interval());
+					mc_attempts = 0;
+					f.alert(Calert(Calert::info, "Tracker: " + n((r - sizeof(t_udp_tracker_output_announce)) / 6) + " peers (" + n(r) + " bytes)"));
 					for (int o = sizeof(t_udp_tracker_output_announce); o + sizeof(t_udp_tracker_output_peer) <= r; o += sizeof(t_udp_tracker_output_announce))
 					{
 						const t_udp_tracker_output_peer& peer = *reinterpret_cast<const t_udp_tracker_output_peer*>(d + o);
@@ -298,10 +301,11 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 					if (v.d(bts_failure_reason).s().empty())
 					{
 						m_announce_time = time(NULL) + max(300, v.d(bts_interval).i());
+						mc_attempts = 0;
 						if (v.d(bts_peers).s().empty())
 						{
 							const Cbvalue::t_list& peers = v.d(bts_peers).l();
-							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size()) + " peers"));
+							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size()) + " peers (" + n(d.size()) + " bytes)"));
 							for (Cbvalue::t_list::const_iterator i = peers.begin(); i != peers.end(); i++)
 							{
 								int ipa = htonl(inet_addr(i->d(bts_ipa).s().c_str()));
@@ -317,7 +321,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 						else
 						{
 							string peers = v.d(bts_peers).s();
-							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers"));
+							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
 							for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
 							{
 								sockaddr_in a;
@@ -329,8 +333,8 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 						}
 						return 0;
 					}
-					else
-						f.alert(Calert(Calert::error, "Tracker: failure reason: " + v.d(bts_failure_reason).s()));
+					f.alert(Calert(Calert::error, "Tracker: failure reason: " + v.d(bts_failure_reason).s()));
+					return 1;
 				}
 			}
 		}

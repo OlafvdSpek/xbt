@@ -37,6 +37,14 @@ BOOL CXBTClientApp::InitInstance()
 		HWND hWnd = FindWindow(NULL, "XBT Client");
 		ShowWindow(hWnd, SW_SHOWMAXIMIZED);
 		SetForegroundWindow(hWnd);
+		if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen && !cmdInfo.m_strFileName.IsEmpty())
+		{
+			COPYDATASTRUCT cds;
+			cds.dwData = 0;
+			cds.lpData = const_cast<char*>(static_cast<const char*>(cmdInfo.m_strFileName));
+			cds.cbData = cmdInfo.m_strFileName.GetLength();
+			SendMessage(hWnd, WM_COPYDATA, NULL, reinterpret_cast<LPARAM>(&cds));
+		}
 		return false;
 	}
 	if (!AfxSocketInit())

@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "alerts.h"
 #include "bt_pl_write_data.h"
 #include "data_counter.h"
 #include "ring_buffer.h"
@@ -21,6 +22,7 @@ class Cbt_piece;
 class Cbt_peer_link  
 {
 public:
+	void alert(const Calert&);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	ostream& dump(ostream&) const;
