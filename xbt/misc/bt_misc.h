@@ -141,6 +141,16 @@ struct t_udp_tracker_input_announce: t_udp_tracker_input
 		m_ipa = v;
 	}
 
+	int key() const
+	{
+		return m_key;
+	}
+
+	void key(int v)
+	{
+		m_key = v;
+	}
+
 	int num_want() const
 	{
 		return ntohl(m_num_want);
@@ -191,6 +201,7 @@ private:
 	__int64 m_uploaded;
 	int m_event;
 	int m_ipa;
+	int m_key;
 	int m_num_want;
 	short m_port;
 };
