@@ -77,6 +77,7 @@ int Cbt_file::info(const Cbvalue& v)
 
 int Cbt_file::open(const string& name)
 {
+	m_name = name;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
 		i->m_full_name = i->m_name.empty() ? name : name + '/' + i->m_name;
@@ -247,7 +248,8 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 			else
 				offset -= i->m_size;
 		}
-		m_tracker.event(Cbt_tracker_link::t_event::e_completed);
+		if (!m_left)
+			m_tracker.event(Cbt_tracker_link::t_event::e_completed);
 		piece.m_d.clear();
 		{
 			for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
