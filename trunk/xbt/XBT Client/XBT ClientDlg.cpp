@@ -1298,15 +1298,19 @@ void CXBTClientDlg::set_clipboard(const string& v)
 {
 	if (v.empty())
 		return;
-	void* h = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, v.size() + 1);
-	void* p = GlobalLock(h);
-	if (!p)
-		return;
-	memcpy(p, v.c_str(), v.size() + 1);
-	GlobalUnlock(h);
-	if (!OpenClipboard())
-		return;
-	if (EmptyClipboard())
-		SetClipboardData(CF_TEXT, h);
-	CloseClipboard();	
+	void* h = GlobalAlloc(GMEM_MOVEABLE, v.size() + 1);
+	void* p = GlobalLock(NULL);
+	if (p)
+	{
+		memcpy(p, v.c_str(), v.size() + 1);
+		GlobalUnlock(h);
+		if (OpenClipboard())
+		{
+			EmptyClipboard();
+			SetClipboardData(CF_TEXT, h);
+			CloseClipboard();
+			return;
+		}
+	}
+	GlobalFree(h);
 }
