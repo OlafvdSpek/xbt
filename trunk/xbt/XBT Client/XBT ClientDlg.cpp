@@ -140,6 +140,10 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881));
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
 	start_server();
+	CCommandLineInfo cmdInfo;
+	AfxGetApp()->ParseCommandLine(cmdInfo);
+	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
+		open(static_cast<string>(cmdInfo.m_strFileName));
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_files.InsertColumn(fc_hash, "Hash");
 	m_files.InsertColumn(fc_done, "%", LVCFMT_RIGHT);

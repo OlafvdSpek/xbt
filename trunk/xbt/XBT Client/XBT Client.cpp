@@ -29,15 +29,15 @@ CXBTClientApp theApp;
 
 BOOL CXBTClientApp::InitInstance()
 {
-	CCommandLineInfo cmdInfo;
-	ParseCommandLine(cmdInfo);
 	CreateMutex(NULL, true, "9a6bfda6-7733-4b7d-92b0-3046c9191830");
 	if (GetLastError() == ERROR_ALREADY_EXISTS)
 	{
 		HWND hWnd = FindWindow(NULL, "XBT Client");
 		ShowWindow(hWnd, SW_SHOWMAXIMIZED);
 		SetForegroundWindow(hWnd);
-		if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen && !cmdInfo.m_strFileName.IsEmpty())
+		CCommandLineInfo cmdInfo;
+		ParseCommandLine(cmdInfo);
+		if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
 		{
 			COPYDATASTRUCT cds;
 			cds.dwData = 0;
@@ -64,8 +64,6 @@ BOOL CXBTClientApp::InitInstance()
 
 	CXBTClientDlg dlg;
 	m_pMainWnd = &dlg;
-	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen && !cmdInfo.m_strFileName.IsEmpty())
-		dlg.open(static_cast<string>(cmdInfo.m_strFileName));
 	dlg.DoModal();
 
 	// Since the dialog has been closed, return FALSE so that we exit the
