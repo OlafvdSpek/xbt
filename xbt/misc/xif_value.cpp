@@ -3,9 +3,10 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include <minmax.h>
-#include <zlib/zlib.h>
 #include "xif_value.h"
+
+#include <minmax.h>
+#include <zlib.h>
 
 template <class T>
 static T read(const byte*& r)
