@@ -166,6 +166,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				if (m_read_b.cb_r() < 20)
 					break;
 				m_remote_peer_id.assign(m_read_b.r(), 20);
+				if (m_remote_peer_id == m_f->m_peer_id)
+					return 1;
 				m_read_b.cb_r(20);
 				m_remote_pieces.resize(m_f->m_pieces.size());
 				write_get_peers();
