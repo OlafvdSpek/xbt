@@ -1785,6 +1785,10 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 		return compare(b.c_remote_requests, a.c_remote_requests);
 	case pc_pieces:
 		return compare(b.c_pieces, a.c_pieces);
+	case pc_recv_time:
+		return compare(b.rtime, a.rtime);
+	case pc_send_time:
+		return compare(b.stime, a.stime);
 	case pc_peer_id:
 		return compare(a.peer_id, b.peer_id);
 	case pc_client:
