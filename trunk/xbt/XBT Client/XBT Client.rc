@@ -148,7 +148,7 @@ IDD_MAKE_TORRENT DIALOGEX 0, 0, 186, 175
 STYLE DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_ACCEPTFILES
 CAPTION "Make torrent"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     EDITTEXT        IDC_NAME,42,7,137,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_TRACKER,42,26,137,14,ES_AUTOHSCROLL
@@ -332,20 +332,24 @@ CG_IDR_POPUP_XBTCLIENT_DLG MENU DISCARDABLE
 BEGIN
     POPUP "_POPUP_"
     BEGIN
-        MENUITEM "Explore",                     ID_POPUP_EXPLORE
-        MENUITEM "Explore tracker",             ID_POPUP_EXPLORE_TRACKER
-        MENUITEM "Files...",                    ID_POPUP_FILES
+        POPUP "&Torrent"
+        BEGIN
+            MENUITEM "Explore",                     ID_POPUP_EXPLORE
+            MENUITEM "Explore tracker",             ID_POPUP_EXPLORE_TRACKER
+            MENUITEM "Files...",                    ID_POPUP_FILES
+            MENUITEM SEPARATOR
+            MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
+            MENUITEM "Start",                       ID_POPUP_START
+            MENUITEM "Stop",                        ID_POPUP_STOP
+            MENUITEM SEPARATOR
+            MENUITEM "Open...",                     ID_POPUP_OPEN
+            MENUITEM "Close",                       ID_POPUP_CLOSE
+            MENUITEM "Copy URL",                    ID_POPUP_COPY
+            MENUITEM "Paste URL",                   ID_POPUP_PASTE
+            MENUITEM "Make...",                     ID_POPUP_MAKE_TORRENT
+            MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
+        END
         MENUITEM SEPARATOR
-        MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
-        MENUITEM "Start",                       ID_POPUP_START
-        MENUITEM "Stop",                        ID_POPUP_STOP
-        MENUITEM SEPARATOR
-        MENUITEM "Copy URL",                    ID_POPUP_COPY
-        MENUITEM "Paste URL",                   ID_POPUP_PASTE
-        MENUITEM "Open...",                     ID_POPUP_OPEN
-        MENUITEM "Close",                       ID_POPUP_CLOSE
-        MENUITEM SEPARATOR
-        MENUITEM "Make Torrent...",             ID_POPUP_MAKE_TORRENT
         MENUITEM "Options...",                  ID_POPUP_OPTIONS
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "About",                       ID_POPUP_ABOUT
