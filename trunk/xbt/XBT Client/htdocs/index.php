@@ -83,7 +83,7 @@
 		default:
 			foreach ($_REQUEST as $name => $value)
 			{
-				$name = urldecode($name);
+				$name = pack('H*', $name);
 				if (strlen($name) != 20 || $value != 'on')
 					continue;
 				switch ($action)
