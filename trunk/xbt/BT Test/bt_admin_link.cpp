@@ -43,8 +43,6 @@ void Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_s
 	if (m_read_b.cb_w() && FD_ISSET(m_s, fd_read_set))
 	{
 		recv();
-		if (!m_s)
-			return;
 #if 0
 		stringstream str;
 		str << "HTTP/1.0 200\r\ncontent-type: text/html\r\n\r\n"
@@ -72,6 +70,8 @@ void Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_s
 				break;
 			m_read_b.combine();
 		}
+		if (m_s == INVALID_SOCKET)
+			return;
 	}
 	if (m_write_b.cb_r() && FD_ISSET(m_s, fd_write_set))
 		send();
