@@ -277,7 +277,6 @@ void Cbt_peer_link::send()
 		if (d.m_r == d.m_s_end)
 			m_write_b.pop_front();
 	}
-	assert(!m_send_quota);
 }
 
 void Cbt_peer_link::remote_has(int v)
