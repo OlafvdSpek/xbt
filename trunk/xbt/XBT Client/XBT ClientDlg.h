@@ -141,6 +141,15 @@ private:
 		bool removed;
 	};
 
+	struct t_sub_file
+	{
+		string hash;
+		__int64 left;
+		string name;
+		int priority;
+		__int64 size;
+	};
+
 	struct t_tracker
 	{
 		string url;
@@ -148,6 +157,7 @@ private:
 
 	typedef vector<t_event> t_events;
 	typedef map<int, t_peer> t_peers;
+	typedef vector<t_sub_file> t_sub_files;
 	typedef vector<t_tracker> t_trackers;
 
 	struct t_file
@@ -158,6 +168,7 @@ private:
 		t_events events;
 		t_trackers trackers;
 		t_peers peers;
+		t_sub_files sub_files;
 		__int64 downloaded;
 		__int64 left;
 		__int64 size;
