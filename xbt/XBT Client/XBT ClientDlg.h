@@ -191,13 +191,8 @@ private:
 		int rank;
 	};
 
-	struct t_sub_file
+	struct t_sub_file: public Cbt_sub_file_data
 	{
-		string hash;
-		__int64 left;
-		string name;
-		int priority;
-		__int64 size;
 	};
 
 	struct t_tracker

@@ -143,6 +143,10 @@ SOURCE=.\bt_pl_write_data.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\bt_sub_file_data.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\bt_tracker_account.cpp
 # End Source File
 # Begin Source File
@@ -273,6 +277,10 @@ SOURCE=.\bt_piece_data.h
 # Begin Source File
 
 SOURCE=.\bt_pl_write_data.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\bt_sub_file_data.h
 # End Source File
 # Begin Source File
 
