@@ -33,6 +33,12 @@ string escape_string(const string& v)
 	return w;
 }
 
+string get_env(const string& v)
+{
+	const char* p = getenv(v.c_str());
+	return p ? p : "";
+}
+
 static int hex_decode(char v)
 {
 	if (v >= '0' && v <= '9')

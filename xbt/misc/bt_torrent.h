@@ -11,7 +11,7 @@
 
 #include "bvalue.h"
 
-class Cbt_torrent  
+class Cbt_torrent
 {
 public:
 	class Cfile

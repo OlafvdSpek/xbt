@@ -11,7 +11,7 @@
 
 #include "stream_writer.h"
 
-class Cbt_tracker_account  
+class Cbt_tracker_account
 {
 public:
 	int pre_dump() const;
