@@ -27,6 +27,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <set>
 #include <string>
 #include <strstream>
 #include <vector>
