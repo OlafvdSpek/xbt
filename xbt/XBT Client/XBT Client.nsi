@@ -14,6 +14,9 @@ Section "Install"
 	SetOutPath "$INSTDIR"
 	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
+	Delete "$INSTDIR\XBT Client.exe"
+	Delete "$INSTDIR\XBT Client Old.exe"
+	Rename "$INSTDIR\XBT Client.exe" "$INSTDIR\XBT Client Old.exe"
 	File release\*.exe
 	SetOutPath "$INSTDIR\htdocs"
 	File htdocs\*
