@@ -342,99 +342,95 @@ int Cbt_file::c_valid_pieces() const
 
 void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 {
-	if (offset < 0 || cb_s < 0 || offset + cb_s > mcb_f)
+	if (offset < 0 || cb_s < 0)
 		return;
 	int a = offset / mcb_piece;
-	if (a < m_pieces.size())
+	if (a >= m_pieces.size())
+		return;
+	Cbt_piece& piece = m_pieces[a];
+	if (piece.m_valid)
 	{
-		Cbt_piece& piece = m_pieces[a];
-		if (piece.m_valid)
+		alert(Calert(Calert::debug, "Piece " + n(a) + ": already valid"));
+		return;
+	}
+	piece.write(offset % mcb_piece, s, cb_s);
+	int size = cb_s;
+	const char* r = s;
+	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+	{
+		if (offset >= i->offset() + i->size())
+			continue;
+		if (!*i && i->size())
 		{
-			alert(Calert(Calert::debug, "Piece " + n(a) + ": already valid"));
-			return;
+			string path = m_name + i->name();
+			for (int i = 3; i < path.size(); )
+			{
+				int a = path.find_first_of("/\\", i);
+				if (a == string::npos)
+					break;
+#ifdef WIN32
+				CreateDirectory(path.substr(0, a).c_str(), NULL);
+#else
+				mkdir(path.substr(0, a).c_str(), 0777);
+#endif
+				i = a + 1;
+			}
+			if (i->open(m_name, O_CREAT | O_RDWR))
+			{
+				char b = 0;
+				i->write(i->size() - 1, &b, 1);
+			}
 		}
-		piece.write(offset % mcb_piece, s, cb_s);
-		int size = cb_s;
-		const char* r = s;
+		int cb_write = min(size, i->offset() + i->size() - offset);
+		if (i->write(offset - i->offset(), r, cb_write))
+		{
+			alert(Calert(Calert::error, "Piece " + n(a) + ": write failed"));
+			m_run = false;
+		}
+		size -= cb_write;
+		if (!size)
+			break;
+		offset += cb_write;
+		r += cb_write;
+	}
+	if (piece.mc_sub_pieces_left)
+		return;
+	Cvirtual_binary d;
+	read_data(a * mcb_piece, d.write_start(piece.mcb_d), piece.mcb_d);
+	if (!m_merkle && memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
+	{
+		alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
+		return;
+	}
+	piece.m_valid = true;
+	m_left -= piece.mcb_d;
+	if (!m_left)
+		m_tracker.event(Cbt_tracker_link::e_completed);
+	{
+		offset = a * mcb_piece;
+		size = mcb_piece;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		{
 			if (offset < i->size())
 			{
-				if (!*i && i->size())
-				{
-					string path = m_name + i->name();
-					for (int i = 3; i < path.size(); )
-					{
-						int a = path.find_first_of("/\\", i);
-						if (a == string::npos)
-							break;
-#ifdef WIN32
-						CreateDirectory(path.substr(0, a).c_str(), NULL);
-#else
-						mkdir(path.substr(0, a).c_str(), 0777);
-#endif
-						i = a + 1;
-					}
-					if (i->open(m_name, O_CREAT | O_RDWR))
-					{
-						char b = 0;
-						i->write(i->size() - 1, &b, 1);
-					}
-				}
 				int cb_write = min(size, i->size() - offset);
-				if (i->write(offset, r, cb_write))
+				if (!i->left(i->left() - cb_write))
 				{
-					alert(Calert(Calert::error, "Piece " + n(a) + ": write failed"));
-					m_run = false;
+					i->close();
+					i->open(m_name, O_RDONLY);
 				}
 				size -= cb_write;
 				if (!size)
 					break;
 				offset = 0;
-				r += cb_write;
 			}
 			else
 				offset -= i->size();
 		}
-		if (piece.mc_sub_pieces_left)
-			return;
-		Cvirtual_binary d;
-		read_data(a * mcb_piece, d.write_start(piece.mcb_d), piece.mcb_d);
-		if (!m_merkle && memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
-		{
-			alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
-			return;
-		}
-		piece.m_valid = true;
-		m_left -= piece.mcb_d;
-		if (!m_left)
-			m_tracker.event(Cbt_tracker_link::e_completed);
-		{
-			offset = a * mcb_piece;
-			size = mcb_piece;
-			for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-			{
-				if (offset < i->size())
-				{
-					int cb_write = min(size, i->size() - offset);
-					if (!i->left(i->left() - cb_write))
-					{
-						i->close();
-						i->open(m_name, O_RDONLY);
-					}
-					size -= cb_write;
-					if (!size)
-						break;
-					offset = 0;
-				}
-				else
-					offset -= i->size();
-			}
-			for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
-				i->write_have(a);
-		}
-		alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
+		for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+			i->write_have(a);
 	}
+	alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
 }
 
 int Cbt_file::read_data(__int64 offset, byte* d, int cb_d)
