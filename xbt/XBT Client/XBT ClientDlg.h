@@ -174,6 +174,7 @@ private:
 		bool remote_choked;
 		bool remote_interested;
 		int c_remote_requests;
+		int c_pieces;
 		bool removed;
 	};
 

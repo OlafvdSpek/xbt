@@ -65,6 +65,7 @@ enum
 	pc_remote_interested,
 	pc_local_requests,
 	pc_remote_requests,
+	pc_pieces,
 	pc_host,
 	pc_port,
 	pc_client,
@@ -709,6 +710,10 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		if (e.c_remote_requests)
 			m_buffer[m_buffer_w] = n(e.c_remote_requests);
 		break;
+	case pc_pieces:
+		if (e.c_pieces)
+			m_buffer[m_buffer_w] = n(e.c_pieces);
+		break;
 	case pc_peer_id:
 		m_buffer[m_buffer_w] = hex_encode(e.peer_id);
 		break;
@@ -1091,6 +1096,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	p.remote_choked = sr.read_int(1);
 	p.remote_interested = sr.read_int(1);
 	p.c_remote_requests = sr.read_int(4);
+	p.c_pieces = sr.read_int(4);
 	if (p.peer_id.empty())
 		return;
 	t_peers::iterator i;
@@ -1761,6 +1767,8 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 		return compare(a.remote_interested, b.remote_interested);
 	case pc_remote_requests:
 		return compare(b.c_remote_requests, a.c_remote_requests);
+	case pc_pieces:
+		return compare(b.c_pieces, a.c_pieces);
 	case pc_peer_id:
 		return compare(a.peer_id, b.peer_id);
 	case pc_client:
@@ -1991,6 +1999,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		{
 			m_peers_columns.push_back(pc_local_requests);
 			m_peers_columns.push_back(pc_remote_requests);
+			m_peers_columns.push_back(pc_pieces);
 			m_peers_columns.push_back(pc_host);
 			m_peers_columns.push_back(pc_port);
 			m_peers_columns.push_back(pc_peer_id);
@@ -2033,6 +2042,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		"R",
 		"LR",
 		"RR",
+		"P",
 		"Host",
 		"Port",
 		"Client",
@@ -2076,6 +2086,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
