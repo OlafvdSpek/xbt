@@ -86,7 +86,6 @@ protected:
 	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnPopupAnnounce();
 	afx_msg void OnPopupExploreTracker();
-	afx_msg void OnPopupTorrentDelete();
 	afx_msg void OnPopupViewDetails();
 	afx_msg void OnPopupViewFiles();
 	afx_msg void OnPopupViewPeers();
@@ -107,7 +106,6 @@ protected:
 	afx_msg void OnUpdatePopupViewFiles(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupViewPeers(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupViewTrackers(CCmdUI* pCmdUI);
-	afx_msg void OnUpdatePopupTorrentDelete(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupAnnounce(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupExploreTracker(CCmdUI* pCmdUI);
 	afx_msg void OnPopupUploadRateLimit();
@@ -155,6 +153,8 @@ protected:
 	afx_msg void OnToolsScheduler();
 	afx_msg void OnToolsTrackers();
 	afx_msg void OnSelchangeTab(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnFileDelete();
+	afx_msg void OnUpdateFileDelete(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
