@@ -527,15 +527,6 @@ void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
 	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, pWndPopupOwner);
 }
 
-void CXBTClientDlg::OnCancel() 
-{
-	ETSLayoutDialog::OnCancel();
-}
-
-void CXBTClientDlg::OnOK() 
-{
-}
-
 void CXBTClientDlg::OnPopupOpen() 
 {
 	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
@@ -573,4 +564,12 @@ void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 		open(name);
 	}
 	ETSLayoutDialog::OnDropFiles(hDropInfo);
+}
+
+BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg) 
+{
+	if (pMsg->message == WM_KEYDOWN &&
+		(pMsg->wParam == VK_CANCEL || pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_RETURN))
+		return true;
+	return ETSLayoutDialog::PreTranslateMessage(pMsg);
 }
