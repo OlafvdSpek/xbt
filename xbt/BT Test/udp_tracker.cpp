@@ -51,32 +51,35 @@ Cudp_tracker::Cudp_tracker()
 
 void Cudp_tracker::recv(Csocket& s)
 {
+	if (time(NULL) - m_clean_up_time > 60)
+		clean_up();
 	const int cb_b = 2 << 10;
 	char b[cb_b];
 	sockaddr_in a;
-	socklen_t cb_a = sizeof(sockaddr_in);
-	int r = s.recvfrom(b, cb_b, reinterpret_cast<sockaddr*>(&a), &cb_a);
-	if (r == SOCKET_ERROR)
-		return;
-	if (r < uti_size)
-		return;
-	switch (read<__int32>(b + uti_action, b + r))
+	while (1)
 	{
-	case uta_connect:
-		if (r >= utic_size)
-			send_connect(s, a, b, b + r);
-		break;
-	case uta_announce:
-		if (r >= utia_size)
-			send_announce(s, a, b, b + r);
-		break;
-	case uta_scrape:
-		if (r >= utis_size)
-			send_scrape(s, a, b, b + r);
-		break;
+		socklen_t cb_a = sizeof(sockaddr_in);
+		int r = s.recvfrom(b, cb_b, reinterpret_cast<sockaddr*>(&a), &cb_a);
+		if (r == SOCKET_ERROR)
+			return;
+		if (r < uti_size)
+			continue;
+		switch (read<__int32>(b + uti_action, b + r))
+		{
+		case uta_connect:
+			if (r >= utic_size)
+				send_connect(s, a, b, b + r);
+			break;
+		case uta_announce:
+			if (r >= utia_size)
+				send_announce(s, a, b, b + r);
+			break;
+		case uta_scrape:
+			if (r >= utis_size)
+				send_scrape(s, a, b, b + r);
+			break;
+		}
 	}
-	if (time(NULL) - m_clean_up_time > 60)
-		clean_up();
 }
 
 __int64 Cudp_tracker::connection_id(sockaddr_in& a) const
