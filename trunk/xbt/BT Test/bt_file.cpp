@@ -78,22 +78,6 @@ int Cbt_file::info(const Cbvalue& info)
 		|| mcb_piece < 16 << 10
 		|| mcb_piece > 16 << 20)
 		return 1;
-	{
-		byte* w = m_info_hashes.write_start((m_info.size() + 4095) / 4096 * 20 + 12);
-		*reinterpret_cast<__int32*>(w) = htonl(mcb_piece);
-		w += 4;
-		*reinterpret_cast<__int64*>(w) = htonll(mcb_f);
-		w += 8;
-		const byte* r = m_info;
-		const byte* r_end = m_info.data_end();
-		while (r < r_end)
-		{
-			Csha1(r, min(r_end - r, 4096)).read(w);
-			r += 4096;
-			w += 20;
-		}
-		m_info_hashes_hash = compute_sha1(m_info_hashes);
-	}
 	m_pieces.resize((mcb_f + mcb_piece - 1) / mcb_piece);
 	string piece_hashes = info.d(bts_pieces).s();
 	if (piece_hashes.length() != 20 * m_pieces.size())

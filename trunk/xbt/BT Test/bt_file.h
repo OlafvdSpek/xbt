@@ -137,7 +137,6 @@ public:
 	typedef vector<string> t_trackers;
 
 	string m_info_hash;
-	string m_info_hashes_hash;
 	string m_name;
 	string m_peer_id;
 	t_info_blocks_valid m_info_blocks_valid;
@@ -150,7 +149,6 @@ public:
 	Cbt_tracker_link m_tracker;
 	t_trackers m_trackers;
 	Cvirtual_binary m_info;
-	Cvirtual_binary m_info_hashes;
 	int mc_leechers_total;
 	int mc_seeders_total;
 
