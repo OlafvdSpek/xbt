@@ -32,6 +32,7 @@ public:
 	void register_tray();
 	void unregister_tray();
 	void update_tray();
+	void update_tray(const char* info_title, const char* info);
 	void auto_size_files();
 	void auto_size_peers();
 	void auto_size();
