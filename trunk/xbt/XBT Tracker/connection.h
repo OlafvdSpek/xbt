@@ -15,11 +15,10 @@ class Cconnection
 {
 public:
 	void read(const string&);
-	void close();
-	void recv();
-	void send();
+	int recv();
+	int send();
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
-	void post_select(fd_set* fd_read_set, fd_set* fd_write_set);
+	int post_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	Cconnection();
 	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a);
 

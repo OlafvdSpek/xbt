@@ -117,21 +117,19 @@ void Cserver::run()
 			{
 				for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
 				{
-					i->post_select(&fd_read_set, &fd_write_set);
-					if (*i)
-						i++;
-					else
+					if (i->post_select(&fd_read_set, &fd_write_set))
 						i = m_connections.erase(i);
+					else
+						i++;
 				}
 			}
 			{
 				for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
 				{
-					i->post_select(&fd_write_set, &fd_except_set);
-					if (*i)
-						i++;
-					else
+					if (i->post_select(&fd_write_set, &fd_except_set))
 						i = m_peer_links.erase(i);
+					else
+						i++;
 				}
 			}
 		}
