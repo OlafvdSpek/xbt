@@ -250,7 +250,7 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 {
 	if (m_hasher)
 		return 0;
-	if (m_run && !m_left && m_server->seeding_ratio() && m_total_uploaded / m_server->seeding_ratio() > mcb_f)
+	if (m_run && !m_left && m_server->seeding_ratio() && 100 * m_total_uploaded / m_server->seeding_ratio() > mcb_f)
 	{
 		alert(Calert(Calert::notice, "Seeding ratio reached"));
 		m_run = false;
