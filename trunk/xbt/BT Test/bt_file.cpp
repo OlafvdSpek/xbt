@@ -177,6 +177,14 @@ int Cbt_file::open(const string& name, bool validate)
 		alert(Calert(Calert::debug, "Torrent: " + n(c_valid_pieces()) + '/' + n(m_pieces.size())));
 		alert(Calert(Calert::debug, "Torrent: " + n(mcb_piece >> 10) + " kb/piece"));
 	}
+	if (!m_left)
+	{
+		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		{
+			i->close();
+			i->open(m_name, _O_RDONLY);
+		}
+	}
 	return 0;
 }
 
