@@ -289,11 +289,19 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case fc_total_downloaded:
 		if (e.total_downloaded)
+		{
 			m_buffer[m_buffer_w] = b2a(e.total_downloaded);
+			if (e.size)
+				m_buffer[m_buffer_w] += " (" + n(e.total_downloaded * 100 / e.size) + " %)";
+		}
 		break;
 	case fc_total_uploaded:
 		if (e.total_uploaded)
+		{
 			m_buffer[m_buffer_w] = b2a(e.total_uploaded);
+			if (e.size)
+				m_buffer[m_buffer_w] += " (" + n(e.total_uploaded * 100 / e.size) + " %)";
+		}
 		break;
 	case fc_down_rate:
 		if (e.down_rate)
