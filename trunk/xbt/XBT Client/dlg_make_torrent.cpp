@@ -30,6 +30,7 @@ Cdlg_make_torrent::Cdlg_make_torrent(CWnd* pParent):
 	//{{AFX_DATA_INIT(Cdlg_make_torrent)
 	m_tracker = _T("");
 	m_name = _T("");
+	m_use_merkle = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -42,6 +43,7 @@ void Cdlg_make_torrent::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST, m_list);
 	DDX_Text(pDX, IDC_TRACKER, m_tracker);
 	DDX_Text(pDX, IDC_NAME, m_name);
+	DDX_Check(pDX, IDC_USE_MERKLE, m_use_merkle);
 	//}}AFX_DATA_MAP
 }
 
@@ -74,6 +76,7 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 			)
 		<< item (IDC_LIST, GREEDY)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
+			<< item (IDC_USE_MERKLE, NORESIZE)
 			<< itemGrowing(HORIZONTAL)
 			<< item (IDC_SAVE, NORESIZE)
 			)
@@ -125,6 +128,8 @@ void Cdlg_make_torrent::insert(const string& name)
 	{
 		if (m_map.empty())
 		{
+			if (GetSafeHwnd())
+				UpdateData(true);
 			m_name = base_name(name).c_str();
 			if (GetSafeHwnd())
 				UpdateData(false);
@@ -157,6 +162,7 @@ void Cdlg_make_torrent::post_insert()
 {
 	if (m_map.size() == 1)
 	{
+		UpdateData(true);
 		m_name = base_name(m_map.begin()->second.name).c_str();
 		UpdateData(false);
 	}
@@ -200,16 +206,20 @@ void Cdlg_make_torrent::OnSave()
 {
 	if (!UpdateData())
 		return;
-	CFileDialog dlg(false, "torrent", m_name, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, "Torrents|*.torrent|", this);
+	CFileDialog dlg(false, "torrent", m_name + ".torrent", OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
 	AfxGetApp()->WriteProfileString(m_strRegStore, "tracker", m_tracker);
-	__int64 cb_total = 0;
-	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
-		cb_total += i->second.size;
-	int cb_piece = 256 << 10;
-	while (cb_total / cb_piece > 4 << 10)
-		cb_piece <<= 1;
+	int cb_piece = 512 << 10;
+	if (!m_use_merkle)
+	{
+		__int64 cb_total = 0;
+		for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
+			cb_total += i->second.size;
+		cb_piece = 256 << 10;
+		while (cb_total / cb_piece > 4 << 10)
+			cb_piece <<= 1;
+	}
 	Cbvalue files;
 	string pieces;
 	Cvirtual_binary d;
@@ -220,27 +230,70 @@ void Cdlg_make_torrent::OnSave()
 		if (!f)
 			continue;
 		__int64 cb_f = 0;
+		string merkle_hash;
 		int cb_d;
-		while (cb_d = _read(f, w, d.data_end() - w))
+		if (m_use_merkle)
 		{
-			if (cb_d < 0)
-				break;
-			w += cb_d;
-			if (w == d.data_end())
+			typedef map<int, string> t_map;
+
+			t_map map;
+			char d[1025];
+			while (cb_d = _read(f, d + 1, 1024))
 			{
-				pieces += Csha1(d, w - d).read();
-				w = d.data_edit();
+				if (cb_d < 0)
+					break;
+				*d = 0;
+				string h = Csha1(d, cb_d + 1).read();
+				*d = 1;
+				int i;
+				for (i = 0; map.find(i) != map.end(); i++)
+				{
+					memcpy(d + 1, map.find(i)->second.c_str(), 20);
+					memcpy(d + 21, h.c_str(), 20);
+					h = Csha1(d, 41).read();
+					map.erase(i);
+				}
+				map[i] = h;
+				cb_f += cb_d;
 			}
-			cb_f += cb_d;
+			*d = 1;
+			while (map.size() > 1)
+			{
+				memcpy(d + 21, map.begin()->second.c_str(), 20);
+				map.erase(map.begin());
+				memcpy(d + 1, map.begin()->second.c_str(), 20);
+				map.erase(map.begin());
+				map[0] = Csha1(d, 41).read();
+			}
+			if (!map.empty())
+				merkle_hash = map.begin()->second;
+		}
+		else
+		{
+			while (cb_d = _read(f, w, d.data_end() - w))
+			{
+				if (cb_d < 0)
+					break;
+				w += cb_d;
+				if (w == d.data_end())
+				{
+					pieces += Csha1(d, w - d).read();
+					w = d.data_edit();
+				}
+				cb_f += cb_d;
+			}
 		}
 		_close(f);
-		files.l(Cbvalue().d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name))));
+		files.l(merkle_hash.empty()
+			? Cbvalue().d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name)))
+			: Cbvalue().d(bts_merkle_hash, merkle_hash).d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name))));
 	}
 	if (w != d)
 		pieces += Csha1(d, w - d).read();
 	Cbvalue info;
 	info.d(bts_piece_length, cb_piece);
-	info.d(bts_pieces, pieces);
+	if (!pieces.empty())
+		info.d(bts_pieces, pieces);
 	if (m_map.size() == 1)
 	{
 		info.d(bts_length, files.l().front().d(bts_length).i());
