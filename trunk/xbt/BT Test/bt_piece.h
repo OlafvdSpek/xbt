@@ -10,12 +10,16 @@
 #endif // _MSC_VER > 1000
 
 #include "bt_peer_link.h"
+#include "stream_reader.h"
 
 class Cbt_piece  
 {
 public:
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;
+	void load_state(Cstream_reader&);
+	int pre_save_state() const;
+	void save_state(Cstream_writer&) const;
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	int rank() const;

@@ -678,11 +678,9 @@ void Cbt_file::load_state(Cstream_reader& r)
 	m_completed_at = r.read_int(4);
 	m_started_at = r.read_int(4);
 	m_priority = static_cast<char>(r.read_int(1));
-	{
-		Cvirtual_binary pieces = r.read_data();
-		for (int i = 0; i < min(pieces.size(), m_pieces.size()); i++)
-			m_pieces[i].m_valid = pieces[i];
-	}
+	int c_pieces = r.read_int(4);
+	for (int i = 0; i < c_pieces; i++)
+		m_pieces[i].load_state(r);
 	for (int c_chunks = r.read_int(4); c_chunks--; )
 	{
 		int piece = r.read_int(4);
@@ -709,11 +707,12 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 53;
+	int c = m_info.size() + m_name.size() + m_sub_files.size() + 8 * m_old_peers.size() + 53;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 	{
+		c += i->pre_save_state();
 		for (Cbt_piece::t_sub_pieces::const_iterator j = i->m_sub_pieces.begin(); j != i->m_sub_pieces.end(); j++)
 		{
 			if (*j)
@@ -740,7 +739,7 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	int c_chunks = 0;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 	{
-		w.write_int(1, i->m_valid);
+		i->save_state(w);
 		for (Cbt_piece::t_sub_pieces::const_iterator j = i->m_sub_pieces.begin(); j != i->m_sub_pieces.end(); j++)
 			c_chunks += *j;
 	}
