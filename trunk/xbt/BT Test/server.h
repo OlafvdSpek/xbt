@@ -104,6 +104,16 @@ public:
 		m_config.m_bind_before_connect = v;
 	}
 
+	const Cconfig& config() const
+	{
+		return m_config;
+	}
+
+	void config(const Cconfig& v)
+	{
+		m_config = v;
+	}
+
 	bool end_mode() const
 	{
 		return m_config.m_end_mode;

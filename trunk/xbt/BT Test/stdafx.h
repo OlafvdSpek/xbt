@@ -29,6 +29,7 @@ using namespace std;
 #define FD_SETSIZE 1024
 
 #include <io.h>
+#include <shlobj.h>
 #include <windows.h>
 
 #define atoll _atoi64
