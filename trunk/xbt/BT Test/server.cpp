@@ -696,22 +696,27 @@ void Cserver::update_send_quotas()
 	}
 }
 
-string Cserver::completes_dir()
+string Cserver::completes_dir() const
 {
 	return m_dir + "\\Completes";
 }
 
-string Cserver::incompletes_dir()
+string Cserver::incompletes_dir() const
 {
 	return m_dir + "\\Incompletes";
 }
 
-string Cserver::torrents_dir()
+string Cserver::torrents_dir() const
 {
 	return m_dir + "\\Torrents";
 }
 
-bool Cserver::below_peer_limit()
+bool Cserver::below_peer_limit() const
 {
-	return true;
+	if (!m_peer_limit)
+		return true;
+	int c = 0;
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		c += i->m_peers.size();
+	return c < m_peer_limit;
 }
