@@ -231,6 +231,7 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 	}
 	else if (torrent.files().size() == 1)
 	{
+		SetForegroundWindow();
 		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
 		if (!m_dir.IsEmpty())
 			dlg.m_ofn.lpstrInitialDir = m_dir;
@@ -240,6 +241,7 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 	}
 	else
 	{
+		SetForegroundWindow();
 		BROWSEINFO bi;
 		ZeroMemory(&bi, sizeof(BROWSEINFO));
 		bi.hwndOwner = GetSafeHwnd();
