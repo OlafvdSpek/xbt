@@ -19,6 +19,7 @@ public:
 	typedef list<Cbt_admin_link> t_admins;
 	typedef list<Cbt_file> t_files;
 
+	void dump(ostream& os);
 	void run();
 	Cserver();
 	~Cserver();

@@ -138,3 +138,14 @@ void Cserver::run()
 			i->close();
 	}
 }
+
+void Cserver::dump(ostream& os)
+{
+	os << "<link rel=stylesheet href=\"http://xccu.sourceforge.net/xcc.css\"><meta http-equiv=refresh content=5><title>XBT Client</title>";
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i != m_files.begin())
+			os << "<hr>";
+		i->dump(os);
+	}
+}
