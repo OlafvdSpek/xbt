@@ -11,8 +11,11 @@
 
 #include "sql/database.h"
 #include "connection.h"
+#include "epoll.h"
 #include "peer_link.h"
+#include "tcp_listen_socket.h"
 #include "tracker_input.h"
+#include "udp_listen_socket.h"
 
 class Cserver  
 {
@@ -120,6 +123,7 @@ public:
 
 	typedef map<string, t_user> t_users;
 
+	void accept(Csocket& l);
 	const t_user* find_user(const string&) const;
 	int get_user_id(int) const;
 	void read_config();
@@ -199,7 +203,8 @@ private:
 	typedef set<int> t_listen_ipas;
 	typedef set<int> t_listen_ports;
 	typedef list<Cpeer_link> t_peer_links;
-	typedef vector<Csocket> t_sockets;
+	typedef vector<Ctcp_listen_socket> t_tcp_sockets;
+	typedef vector<Cudp_listen_socket> t_udp_sockets;
 
 	static void sig_handler(int v);
 
@@ -236,6 +241,7 @@ private:
 	t_listen_ports m_listen_ports;
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
+	Cepoll m_epoll;
 	t_files m_files;
 	t_ipas m_ipas;
 	t_users m_users;

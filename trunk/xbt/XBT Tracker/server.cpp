@@ -96,12 +96,18 @@ Cserver::Cserver(Cdatabase& database):
 int Cserver::run()
 {
 	read_config();
-	t_sockets lt, lu;
+	if (m_epoll.create(1 << 10) == -1)
+	{
+		cerr << "epoll_create failed" << endl;
+		return 1;
+	}
+	t_tcp_sockets lt;
+	t_udp_sockets lu;
 	for (t_listen_ipas::const_iterator j = m_listen_ipas.begin(); j != m_listen_ipas.end(); j++)
 	{
 		for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
 		{
-			Csocket l0, l1;
+			Csocket l0;
 			if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
 				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l0.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
@@ -110,18 +116,48 @@ int Cserver::run()
 			else if (l0.listen())
 				cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
-				lt.push_back(l0);
+			{
+				Ctcp_listen_socket ls;
+				ls.m_s = l0;
+				ls.m_server = this;
+				lt.push_back(ls);
+#ifdef EPOLL
+				if (m_epoll.ctl(EPOLL_CTL_ADD, l0, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
+				{
+					cerr << "epoll_ctl failed" << endl;
+					return 1;
+				}
+#endif				
+				continue;
+			}
+			return 1;
+		}
+		for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
+		{
+			Csocket l1;
 			if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
 				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l1.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
 				l1.bind(*j, htons(*i)))
 				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
-				lu.push_back(l1);
+			{
+				Cudp_listen_socket ls;
+				ls.m_s = l1;
+				ls.m_server = this;
+				lu.push_back(ls);
+#ifdef EPOLL
+				if (m_epoll.ctl(EPOLL_CTL_ADD, l1, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lu.back()))
+				{
+					cerr << "epoll_ctl failed" << endl;
+					return 1;
+				}					
+#endif				
+				continue;
+			}
+			return 1;
 		}
 	}
-	if (lt.empty() || lu.empty())
-		return 1;
 #ifndef WIN32
 #if 1
 	if (m_daemon && daemon(true, false))
@@ -153,11 +189,44 @@ int Cserver::run()
 	read_db_users();
 	write_db_files();
 	write_db_users();
+#ifdef EPOLL
+	const int c_events = 64;
+
+	epoll_event events[c_events];
+#else
 	fd_set fd_read_set;
 	fd_set fd_write_set;
 	fd_set fd_except_set;
+#endif
 	while (!g_sig_term)
 	{
+#ifdef EPOLL
+		int r = m_epoll.wait(events, c_events, 1000);
+		if (r == -1)
+			cerr << "epoll_wait failed: " << errno << endl;
+		else 
+		{
+			m_time = ::time(NULL);
+			for (int i = 0; i < r; i++)
+			{
+				reinterpret_cast<Cclient*>(events[i].data.ptr)->process_events(events[i].events);
+			}
+			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
+			{
+				if (i->s() != INVALID_SOCKET)
+					i++;
+				else
+					i = m_connections.erase(i);
+			}
+			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
+			{
+				if (i->s() != INVALID_SOCKET)
+					i++;
+				else
+					i = m_peer_links.erase(i);
+			}
+		}
+#else
 		FD_ZERO(&fd_read_set);
 		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
@@ -176,15 +245,15 @@ int Cserver::run()
 				n = max(n, z);
 			}
 		}		
-		for (t_sockets::iterator i = lt.begin(); i != lt.end(); i++)
+		for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 		{
-			FD_SET(*i, &fd_read_set);
-			n = max(n, static_cast<SOCKET>(*i));
+			FD_SET(i->m_s, &fd_read_set);
+			n = max(n, static_cast<SOCKET>(i->m_s));
 		}
-		for (t_sockets::iterator i = lu.begin(); i != lu.end(); i++)
+		for (t_udp_sockets::iterator i = lu.begin(); i != lu.end(); i++)
 		{
-			FD_SET(*i, &fd_read_set);
-			n = max(n, static_cast<SOCKET>(*i));
+			FD_SET(i->m_s, &fd_read_set);
+			n = max(n, static_cast<SOCKET>(i->m_s));
 		}
 		timeval tv;
 		tv.tv_sec = 1;
@@ -194,39 +263,15 @@ int Cserver::run()
 		else 
 		{
 			m_time = ::time(NULL);
-			for (t_sockets::iterator i = lt.begin(); i != lt.end(); i++)
+			for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 			{
-				if (!FD_ISSET(*i, &fd_read_set))
-					continue;
-				sockaddr_in a;
-				while (1)
-				{
-					socklen_t cb_a = sizeof(sockaddr_in);
-					Csocket s = accept(*i, reinterpret_cast<sockaddr*>(&a), &cb_a);
-					if (s == SOCKET_ERROR)
-					{
-						if (WSAGetLastError() == WSAECONNABORTED)
-							continue;
-						if (WSAGetLastError() != WSAEWOULDBLOCK)
-							cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-						break;
-					}
-					else
-					{
-						if (s.blocking(false))
-							cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-#ifdef TCP_CORK
-						if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
-							cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-#endif
-						m_connections.push_front(Cconnection(this, s, a, m_log_access));
-					}
-				}
+				if (FD_ISSET(i->m_s, &fd_read_set))
+					accept(i->m_s);
 			}
-			for (t_sockets::iterator i = lu.begin(); i != lu.end(); i++)
+			for (t_udp_sockets::iterator i = lu.begin(); i != lu.end(); i++)
 			{
-				if (FD_ISSET(*i, &fd_read_set))
-					Ctransaction(*this, *i).recv();
+				if (FD_ISSET(i->m_s, &fd_read_set))
+					Ctransaction(*this, i->m_s).recv();
 			}
 			{
 				for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
@@ -247,6 +292,7 @@ int Cserver::run()
 				}
 			}
 		}
+#endif
 		if (time() - m_read_config_time > m_read_config_interval)
 			read_config();
 		else if (time() - m_clean_up_time > m_clean_up_interval)
@@ -266,6 +312,38 @@ int Cserver::run()
 	write_db_users();
 	unlink(g_pid_fname);
 	return 0;
+}
+
+void Cserver::accept(Csocket& l)
+{
+	sockaddr_in a;
+	while (1)
+	{
+		socklen_t cb_a = sizeof(sockaddr_in);
+		Csocket s = ::accept(l, reinterpret_cast<sockaddr*>(&a), &cb_a);
+		if (s == SOCKET_ERROR)
+		{
+			if (WSAGetLastError() == WSAECONNABORTED)
+				continue;
+			if (WSAGetLastError() != WSAEWOULDBLOCK)
+				cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+			break;
+		}
+		else
+		{
+			if (s.blocking(false))
+				cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+#ifdef TCP_CORK
+			if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
+				cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+#endif
+			m_connections.push_back(Cconnection(this, s, a, m_log_access));
+#ifdef EPOLL
+			if (m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back()))
+				cerr << "epoll_ctl failed" << endl;
+#endif				
+		}
+	}
 }
 
 void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, int uid)
@@ -318,8 +396,14 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		else if (!peer.listening && time() - peer.mtime > 900)
 		{
 			Cpeer_link peer_link(v.m_ipa, v.m_port, this, v.m_info_hash, v.m_ipa);
-			if (peer_link)
-				m_peer_links.push_front(peer_link);
+			if (peer_link.s() != INVALID_SOCKET)
+			{
+				m_peer_links.push_back(peer_link);
+#ifdef EPOLL
+				if (m_epoll.ctl(EPOLL_CTL_ADD, peer_link.s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_peer_links.back()))
+					cerr << "epoll_ctl failed" << endl;
+#endif
+			}
 		}
 		peer.mtime = time();
 	}
