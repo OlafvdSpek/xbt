@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 Cdlg_torrent_options::Cdlg_torrent_options(CWnd* pParent /*=NULL*/)
-	: CDialog(Cdlg_torrent_options::IDD, pParent)
+	: ETSLayoutDialog(Cdlg_torrent_options::IDD, pParent, "Cdlg_torrent_options")
 {
 	//{{AFX_DATA_INIT(Cdlg_torrent_options)
 	m_seeding_ratio_value = 0;
@@ -28,7 +28,7 @@ Cdlg_torrent_options::Cdlg_torrent_options(CWnd* pParent /*=NULL*/)
 
 void Cdlg_torrent_options::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	ETSLayoutDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(Cdlg_torrent_options)
 	DDX_Control(pDX, IDC_UPLOAD_SLOTS_MAX, m_upload_slots_max);
 	DDX_Control(pDX, IDC_UPLOAD_SLOTS_MIN, m_upload_slots_min);
@@ -44,7 +44,7 @@ void Cdlg_torrent_options::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(Cdlg_torrent_options, CDialog)
+BEGIN_MESSAGE_MAP(Cdlg_torrent_options, ETSLayoutDialog)
 	//{{AFX_MSG_MAP(Cdlg_torrent_options)
 	ON_BN_CLICKED(IDC_SEEDING_RATIO_OVERRIDE, OnSeedingRatioOverride)
 	ON_BN_CLICKED(IDC_UPLOAD_SLOTS_MIN_OVERRIDE, OnUploadSlotsMinOverride)
@@ -61,7 +61,28 @@ BOOL Cdlg_torrent_options::OnInitDialog()
 	m_seeding_ratio_value = m_data.seeding_ratio;
 	m_upload_slots_min_value = m_data.upload_slots_min;
 	m_upload_slots_max_value = m_data.upload_slots_max;
-	CDialog::OnInitDialog();
+	ETSLayoutDialog::OnInitDialog();
+	CreateRoot(VERTICAL)
+		<< (pane(HORIZONTAL)
+			<< (pane(VERTICAL)
+				<< item(IDC_SEEDING_RATIO_OVERRIDE, NORESIZE)
+				<< item(IDC_UPLOAD_SLOTS_MIN_OVERRIDE, NORESIZE)
+				<< item(IDC_UPLOAD_SLOTS_MAX_OVERRIDE, NORESIZE)
+				<< item(IDC_END_MODE, NORESIZE)
+				)
+			<< (pane(VERTICAL)
+				<< item(IDC_SEEDING_RATIO, ABSOLUTE_VERT)
+				<< item(IDC_UPLOAD_SLOTS_MIN, ABSOLUTE_VERT)
+				<< item(IDC_UPLOAD_SLOTS_MAX, ABSOLUTE_VERT)
+				)
+			)
+		<< (pane(HORIZONTAL)
+			<< itemGrowing(HORIZONTAL)
+			<< item(IDOK, NORESIZE)
+			<< item(IDCANCEL, NORESIZE)
+			)
+		;
+	UpdateLayout();
 	m_seeding_ratio_override.SetCheck(m_data.seeding_ratio_override);
 	m_upload_slots_min_override.SetCheck(m_data.upload_slots_min_override);
 	m_upload_slots_max_override.SetCheck(m_data.upload_slots_max_override);
@@ -93,7 +114,7 @@ void Cdlg_torrent_options::OnUploadSlotsMaxOverride()
 
 void Cdlg_torrent_options::OnOK()
 {
-	CDialog::OnOK();
+	ETSLayoutDialog::OnOK();
 	m_data.end_mode = m_end_mode;
 	m_data.seeding_ratio = m_seeding_ratio_value;
 	m_data.seeding_ratio_override = m_seeding_ratio_override.GetState() & 3;

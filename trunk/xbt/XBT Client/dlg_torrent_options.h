@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_torrent_options dialog
 
-class Cdlg_torrent_options: public CDialog
+class Cdlg_torrent_options: public ETSLayoutDialog
 {
 // Construction
 public:
