@@ -364,6 +364,7 @@ int Cserver::close(const string& id)
 			continue;
 		i->close();
 		m_files.erase(i);
+		save_state(true).save(state_fname());
 		return 0;
 	}
 	return 1;
