@@ -109,6 +109,10 @@ SOURCE=.\server.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\sha1.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\socket.cpp
 # End Source File
 # Begin Source File
@@ -134,6 +138,10 @@ SOURCE=.\tracker_input.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\transaction.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\virtual_binary.cpp
 # End Source File
 # Begin Source File
@@ -143,6 +151,10 @@ SOURCE=".\XBT Tracker.cpp"
 # Begin Source File
 
 SOURCE=..\misc\xcc_error.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\xcc_z.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -166,6 +178,10 @@ SOURCE=.\server.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\sha1.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\static_config.h
 # End Source File
 # Begin Source File
@@ -175,6 +191,14 @@ SOURCE=.\StdAfx.h
 # Begin Source File
 
 SOURCE=.\tracker_input.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\transaction.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\xcc_z.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
