@@ -161,8 +161,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				}
 				m_remote_requests.pop_front();
 			}
-			int c_max_requests_pending = m_f->end_mode() ? 1 : 8;
-			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < c_max_requests_pending)
+			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < c_max_requests_pending())
 			{
 				int a = m_f->next_invalid_piece(*this);
 				if (a < 0)
@@ -172,7 +171,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				}
 				Cbt_piece& piece = m_f->m_pieces[a];
 				m_pieces.insert(&piece);
-				for (int b; mc_local_requests_pending < c_max_requests_pending && (b = piece.next_invalid_sub_piece(this)) != -1; )
+				for (int b; mc_local_requests_pending < c_max_requests_pending() && (b = piece.next_invalid_sub_piece(this)) != -1; )
 				{
 					t_local_request request(m_f->mcb_piece * a + piece.cb_sub_piece() * b, piece.cb_sub_piece(b));
 					m_local_requests.push_back(request);
@@ -797,4 +796,9 @@ void Cbt_peer_link::check_pieces()
 			m_pieces.erase(i++);
 	}
 	m_check_pieces_time = time(NULL);
+}
+
+int Cbt_peer_link::c_max_requests_pending() const
+{
+	return m_f->c_max_requests_pending();
 }
