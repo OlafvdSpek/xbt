@@ -92,6 +92,7 @@ enum
 	dr_peers,
 	dr_pieces,
 	dr_seeders,
+	dr_size,
 	dr_uploaded,
 	dr_count
 };
@@ -412,6 +413,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Peers",
 		"Pieces",
 		"Seeders",
+		"Size",
 		"Uploaded",
 	};
 	switch (m_torrents_columns[pDispInfo->item.iSubItem])
@@ -451,6 +453,9 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = n(m_file->c_seeders);
 			if (m_file->c_seeders_total)
 				m_buffer[m_buffer_w] += " / " + n(m_file->c_seeders_total);
+			break;
+		case dr_size:
+			m_buffer[m_buffer_w] = b2a(m_file->size, "b");
 			break;
 		case dr_uploaded:
 			m_buffer[m_buffer_w] = b2a(m_file->uploaded, "b") + " / " + b2a(m_file->total_uploaded, "b");
