@@ -29,11 +29,19 @@ Cbt_torrent::Cbt_torrent(const Cbvalue& v)
 int Cbt_torrent::write(const Cbvalue& v)
 {
 	m_announce = v.d(bts_announce).s();
+	m_announces.clear();
+	const Cbvalue::t_list& announces = v.d(bts_announce_list).l();
+	for (Cbvalue::t_list::const_iterator i = announces.begin(); i != announces.end(); i++)
+	{
+		for (Cbvalue::t_list::const_iterator j = i->l().begin(); j != i->l().end(); j++)
+			m_announces.push_back(j->s());		
+	}
 	return write_info(v.d(bts_info));
 }
 
 int Cbt_torrent::write_info(const Cbvalue& v)
 {
+	m_files.clear();
 	const Cbvalue::t_list& files = v.d(bts_files).l();
 	for (Cbvalue::t_list::const_iterator i = files.begin(); i != files.end(); i++)
 	{
