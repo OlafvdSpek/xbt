@@ -75,7 +75,6 @@ protected:
 	afx_msg void OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnPopupOptions();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
 	afx_msg void OnPopupExplore();
 	afx_msg void OnDestroy();
@@ -84,7 +83,6 @@ protected:
 	afx_msg void OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnPopupTrackers();
 	afx_msg void OnPopupAnnounce();
 	afx_msg void OnPopupExploreTracker();
 	afx_msg void OnPopupTorrentDelete();
@@ -135,8 +133,6 @@ protected:
 	afx_msg void OnUpdatePopupStateStopped(CCmdUI* pCmdUI);
 	afx_msg void OnPopupTorrentOptions();
 	afx_msg void OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI);
-	afx_msg void OnPopupScheduler();
-	afx_msg void OnPopupProfiles();
 	virtual void OnCancel();
 	afx_msg void OnActivateApp(BOOL bActive, HTASK hTask);
 	afx_msg void OnFileExit();
@@ -153,6 +149,10 @@ protected:
 	afx_msg void OnEditPasteUrl();
 	afx_msg void OnFileNew();
 	afx_msg void OnEditSelectAll();
+	afx_msg void OnToolsOptions();
+	afx_msg void OnToolsProfiles();
+	afx_msg void OnToolsScheduler();
+	afx_msg void OnToolsTrackers();
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);

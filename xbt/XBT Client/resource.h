@@ -147,13 +147,17 @@
 #define ID_EDIT_COPY_HASH               32825
 #define ID_EDIT_COPY_URL                32826
 #define ID_EDIT_PASTE_URL               32827
+#define ID_TOOLS_OPTIONS                32830
+#define ID_TOOLS_SCHEDULER              32831
+#define ID_TOOLS_TRACKERS               32832
+#define ID_TOOLS_PROFILES               32834
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        144
-#define _APS_NEXT_COMMAND_VALUE         32830
+#define _APS_NEXT_COMMAND_VALUE         32835
 #define _APS_NEXT_CONTROL_VALUE         1065
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
