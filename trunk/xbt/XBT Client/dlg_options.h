@@ -23,6 +23,7 @@ public:
 		bool ask_for_location;
 		bool bind_before_connect;
 		bool hide_on_deactivate;
+		DWORD hot_key;
 		string completes_dir;
 		string incompletes_dir;
 		string torrents_dir;
@@ -48,6 +49,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(Cdlg_options)
 	enum { IDD = IDD_OPTIONS };
+	CHotKeyCtrl	m_hot_key;
 	int		m_peer_port;
 	int		m_admin_port;
 	int		m_upload_rate;
@@ -88,6 +90,8 @@ protected:
 	afx_msg void OnTorrentsDirectoryBrowse();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+private:
+	DWORD m_hot_key_value;
 };
 
 //{{AFX_INSERT_LOCATION}}
