@@ -62,6 +62,7 @@ public:
 
 protected:
 	afx_msg void OnContextMenu(CWnd*, CPoint point);
+	void OnTrayMenu();
 	afx_msg void OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg long OnHotKey(WPARAM, LPARAM);

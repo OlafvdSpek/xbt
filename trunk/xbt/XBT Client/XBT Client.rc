@@ -541,6 +541,15 @@ BEGIN
     END
 END
 
+IDR_TRAY MENU DISCARDABLE 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        MENUITEM "&Options",                    ID_TOOLS_OPTIONS
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

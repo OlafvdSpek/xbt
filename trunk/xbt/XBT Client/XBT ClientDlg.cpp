@@ -234,8 +234,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_TORRENT_OPTIONS, OnPopupTorrentOptions)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_OPTIONS, OnUpdatePopupTorrentOptions)
 	ON_WM_ACTIVATEAPP()
-	ON_COMMAND(ID_POPUP_EXIT, OnFileExit)
-	ON_COMMAND(ID_POPUP_ABOUT, OnHelpAbout)
 	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
 	ON_COMMAND(ID_FILE_CLOSE, OnFileClose)
 	ON_UPDATE_COMMAND_UI(ID_FILE_CLOSE, OnUpdateFileClose)
@@ -1240,15 +1238,8 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 
 void CXBTClientDlg::OnContextMenu(CWnd* pWnd, CPoint point)
 {
-	if (point.x == -1 && point.y == -1)
-	{
-		CRect rect;
-		GetClientRect(rect);
-		ClientToScreen(rect);
-
-		point = rect.TopLeft();
-		point.Offset(5, 5);
-	}
+	if (point.x == -1)
+		GetCursorPos(&point);
 
 	CMenu menu;
 	if (pWnd == &m_peers)
@@ -1266,7 +1257,25 @@ void CXBTClientDlg::OnContextMenu(CWnd* pWnd, CPoint point)
 		VERIFY(menu.LoadMenu(CG_IDR_POPUP_XBTCLIENT_DLG));
 
 	CMenu* pPopup = menu.GetSubMenu(0);
-	ASSERT(pPopup != NULL);
+	ASSERT(pPopup);
+	CWnd* pWndPopupOwner = this;
+
+	while (pWndPopupOwner->GetStyle() & WS_CHILD)
+		pWndPopupOwner = pWndPopupOwner->GetParent();
+
+	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, pWndPopupOwner);
+}
+
+void CXBTClientDlg::OnTrayMenu()
+{
+	CPoint point;
+	GetCursorPos(&point);
+
+	CMenu menu;
+	VERIFY(menu.LoadMenu(IDR_TRAY));
+
+	CMenu* pPopup = menu.GetSubMenu(0);
+	ASSERT(pPopup);
 	CWnd* pWndPopupOwner = this;
 
 	while (pWndPopupOwner->GetStyle() & WS_CHILD)
@@ -1513,9 +1522,12 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			switch (lParam)
 			{
 			case WM_LBUTTONUP:
-				ShowWindow(IsWindowVisible() ? SW_HIDE : m_show_tray_icon ? SW_SHOW : SW_SHOWMAXIMIZED);
+				ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOW);
 				if (IsWindowVisible())
 					SetForegroundWindow();
+				return 0;
+			case WM_RBUTTONUP:
+				OnTrayMenu();
 				return 0;
 			}
 		}
@@ -2084,7 +2096,7 @@ void CXBTClientDlg::lower_process_priority(bool v)
 
 long CXBTClientDlg::OnHotKey(WPARAM, LPARAM)
 {
-	ShowWindow(IsWindowVisible() ? SW_HIDE : m_show_tray_icon ? SW_SHOW : SW_SHOWMAXIMIZED);
+	ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOW);
 	if (IsWindowVisible())
 		SetForegroundWindow();
 	return 0;
