@@ -956,6 +956,8 @@ static int compare(const T& a, const T& b)
 
 int CXBTClientDlg::files_compare(int id_a, int id_b) const
 {
+	if (m_files_sort_reverse)
+		swap(id_a, id_b);
 	const t_file& a = m_files_map.find(id_a)->second;
 	const t_file& b = m_files_map.find(id_b)->second;
 	switch (m_files_sort_column)
@@ -994,7 +996,7 @@ static int CALLBACK files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	m_files_sort_reverse = pNMListView->iSubItem == m_files_sort_column ? !m_files_sort_reverse : false;
+	m_files_sort_reverse = pNMListView->iSubItem == m_files_sort_column && !m_files_sort_reverse;
 	m_files_sort_column = pNMListView->iSubItem;
 	sort_files();
 	*pResult = 0;
@@ -1004,6 +1006,8 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 {
 	if (!m_file)
 		return 0;
+	if (m_peers_sort_reverse)
+		swap(id_a, id_b);
 	const t_peer& a = m_file->peers.find(id_a)->second;
 	const t_peer& b = m_file->peers.find(id_b)->second;
 	switch (m_peers_sort_column)
@@ -1048,7 +1052,7 @@ static int CALLBACK peers_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	m_peers_sort_reverse = pNMListView->iSubItem == m_peers_sort_column ? m_peers_sort_reverse : false;
+	m_peers_sort_reverse = pNMListView->iSubItem == m_peers_sort_column && !m_peers_sort_reverse;
 	m_peers_sort_column = pNMListView->iSubItem;
 	sort_peers();	
 	*pResult = 0;
