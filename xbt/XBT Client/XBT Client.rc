@@ -149,14 +149,14 @@ BEGIN
     LTEXT           "Version: 0.1.8",IDC_STATIC,7,7,44,8
     LTEXT           "Site: http://xbtt.sourceforge.net/",IDC_SITE,7,20,104,8
     LTEXT           "Author: Olaf van der Spek",IDC_STATIC,7,33,83,8
-    LTEXT           "License: GPL",IDC_STATIC,7,46,44,8
+    LTEXT           "License: GPL",IDC_LICENSE,7,46,44,8
 END
 
 IDD_MAKE_TORRENT DIALOGEX 0, 0, 186, 175
 STYLE DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_ACCEPTFILES
 CAPTION "Make torrent"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     EDITTEXT        IDC_NAME,42,7,137,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_TRACKER,42,26,137,14,ES_AUTOHSCROLL
