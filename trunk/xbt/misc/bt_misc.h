@@ -257,12 +257,12 @@ struct t_udp_tracker_output_peer
 {
 	int host() const
 	{
-		return ntohl(m_host);
+		return m_host;
 	}
 
 	void host(int v)
 	{
-		m_host = htonl(v);
+		m_host = v;
 	}
 
 	int port() const
