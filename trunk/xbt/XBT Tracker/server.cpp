@@ -794,11 +794,20 @@ void Cserver::write_db_users()
 		m_files_users_updates_buffer.erase(m_files_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into xbt_files_users_updates (announced, completed, downloaded, uploaded, info_hash, uid) values " + m_files_users_updates_buffer);
-			m_database.query("insert ignore into xbt_files_users (info_hash, uid) select info_hash, uid from xbt_files_users_updates");
-			m_database.query("update xbt_files_users fu inner join xbt_files_users_updates fuu using (info_hash, uid)"
-				" set fu.announced = fu.announced + fuu.announced, fu.completed = fu.completed + fuu.completed, fu.downloaded = fu.downloaded + fuu.downloaded, fu.uploaded = fu.uploaded + fuu.uploaded");
-			m_database.query("delete from xbt_files_users_updates");
+			if (1)
+			{
+				m_database.query("insert into xbt_files_users (announced, completed, downloaded, uploaded, info_hash, uid) values " 
+					+ m_files_users_updates_buffer
+					+ " on duplicate key update announced = announced + values(announced), completed = completed + values(completed), downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
+			}
+			else
+			{
+				m_database.query("insert into xbt_files_users_updates (announced, completed, downloaded, uploaded, info_hash, uid) values " + m_files_users_updates_buffer);
+				m_database.query("insert ignore into xbt_files_users (info_hash, uid) select info_hash, uid from xbt_files_users_updates");
+				m_database.query("update xbt_files_users fu inner join xbt_files_users_updates fuu using (info_hash, uid)"
+					" set fu.announced = fu.announced + fuu.announced, fu.completed = fu.completed + fuu.completed, fu.downloaded = fu.downloaded + fuu.downloaded, fu.uploaded = fu.uploaded + fuu.uploaded");
+				m_database.query("delete from xbt_files_users_updates");
+			}
 		}
 		catch (Cxcc_error)
 		{
@@ -810,11 +819,20 @@ void Cserver::write_db_users()
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into xbt_users_updates (downloaded, uploaded, uid) values " + m_users_updates_buffer);
-			m_database.query("insert ignore into xbt_users (uid) select uid from xbt_users_updates");
-			m_database.query("update xbt_users u inner join xbt_users_updates uu using (uid)"
-				" set u.downloaded = u.downloaded + uu.downloaded, u.uploaded = u.uploaded + uu.uploaded");
-			m_database.query("delete from xbt_users_updates");
+			if (1)
+			{
+				m_database.query("insert into xbt_users (downloaded, uploaded, uid) values " 
+					+ m_users_updates_buffer
+					+ " on duplicate key update downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
+			}
+			else
+			{
+				m_database.query("insert into xbt_users_updates (downloaded, uploaded, uid) values " + m_users_updates_buffer);
+				m_database.query("insert ignore into xbt_users (uid) select uid from xbt_users_updates");
+				m_database.query("update xbt_users u inner join xbt_users_updates uu using (uid)"
+					" set u.downloaded = u.downloaded + uu.downloaded, u.uploaded = u.uploaded + uu.uploaded");
+				m_database.query("delete from xbt_users_updates");
+			}
 		}
 		catch (Cxcc_error)
 		{
