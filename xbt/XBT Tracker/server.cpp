@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "server.h"
 
-#include "../misc/bt_strings.h"
+#include "bt_strings.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -115,7 +115,11 @@ void Cserver::insert_peer(const Ctracker_input& v)
 		(peer.left ? file.leechers : file.seeders)++;
 
 		if (!peer.listening && time(NULL) - peer.mtime > 900)
-			m_peer_links.push_front(Cpeer_link(ntohl(inet_addr(v.m_ipa.c_str())), v.m_port, this, v.m_info_hash, v.m_ipa));
+		{
+			Cpeer_link peer_link(ntohl(inet_addr(v.m_ipa.c_str())), v.m_port, this, v.m_info_hash, v.m_ipa);
+			if (peer_link)
+				m_peer_links.push_front(peer_link);
+		}
 		peer.mtime = time(NULL);
 	}
 	switch (v.m_event)
@@ -230,7 +234,6 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 
 void Cserver::udp_recv(Csocket& s)
 {
-	return;
 	const int cb_b = 2 << 10;
 	char b[cb_b];
 	sockaddr_in a;
@@ -244,34 +247,89 @@ void Cserver::udp_recv(Csocket& s)
 	if (r < sizeof(t_udp_tracker_input))
 		return;
 	const t_udp_tracker_input& uti = *reinterpret_cast<t_udp_tracker_input*>(b);
-	if (uti.m_zero)
-		return;
-	string info_hash(uti.m_info_hash, 20);
+	switch (uti.action())
 	{
-		t_peer& peer = m_files[info_hash].peers[inet_ntoa(a.sin_addr)];
-		// peer.downloaded = ntohl(uti.m_downloaded);
-		// ntohl(uti.m_event);
-		peer.left = ntohl(uti.m_left);
-		peer.peer_id = string(uti.m_peer_id, 20);
-		peer.port = ntohl(uti.m_port);
-		// peer.uploaded = ntohl(uti.m_uploaded);
-		peer.mtime = time(NULL);
+	case uta_connect:
+		if (r >= sizeof(t_udp_tracker_input_connect))
+		{
+			t_udp_tracker_output_connect& uto = *reinterpret_cast<t_udp_tracker_output_connect*>(b);
+			uto.return_value(0);
+			uto.transaction_id(uti.transaction_id());
+			memset(uto.m_connection_id, 0, 8);
+			if (s.sendto(b, sizeof(t_udp_tracker_output_connect), reinterpret_cast<sockaddr*>(&a), cb_a) == SOCKET_ERROR)
+				cerr << "send failed: " << WSAGetLastError() << endl;
+		}
+		break;
+	case uta_announce:
+		if (r >= sizeof(t_udp_tracker_input_announce))
+		{
+			const t_udp_tracker_input_announce& uti = *reinterpret_cast<t_udp_tracker_input_announce*>(b);
+			Ctracker_input ti;
+			ti.m_downloaded = uti.downloaded();
+			ti.m_event = static_cast<Ctracker_input::t_event>(uti.event());
+			ti.m_info_hash = uti.info_hash();
+			ti.m_ipa = inet_ntoa(a.sin_addr);
+			ti.m_left = uti.left();
+			ti.m_num_want = uti.num_want();
+			ti.m_peer_id = uti.peer_id();
+			ti.m_port = uti.port();
+			ti.m_uploaded = uti.uploaded();
+			insert_peer(ti);
+			t_udp_tracker_output_announce& uto = *reinterpret_cast<t_udp_tracker_output_announce*>(b);
+			uto.transaction_id(uti.transaction_id());
+			t_files::const_iterator i = m_files.find(ti.m_info_hash);
+			if (i == m_files.end())
+			{
+
+				uto.return_value(-1);
+				if (s.sendto(b, sizeof(t_udp_tracker_output_announce), reinterpret_cast<sockaddr*>(&a), cb_a) == SOCKET_ERROR)
+					cerr << "send failed: " << WSAGetLastError() << endl;
+				return;
+			}
+			uto.return_value(0);
+			uto.interval(m_announce_interval);
+			t_udp_tracker_output_peer* peer = reinterpret_cast<t_udp_tracker_output_peer*>(b + sizeof(t_udp_tracker_output_announce));
+			int c = min(ti.m_num_want, 100);
+			for (t_peers::const_iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
+			{
+				if (!ti.m_left && !j->second.left || !j->second.listening)
+					continue;
+				if (!c--)
+					break;
+				peer->host(ntohl(inet_addr(j->first.c_str())));
+				peer->port(j->second.port);
+				peer++;
+			}
+			if (s.sendto(b, reinterpret_cast<char*>(peer) - b, reinterpret_cast<sockaddr*>(&a), cb_a) == SOCKET_ERROR)
+				cerr << "send failed: " << WSAGetLastError() << endl;
+		}
+		break;
+	case uta_scrape:
+		if (r >= sizeof(t_udp_tracker_input_scrape))
+		{
+			const t_udp_tracker_input_scrape& uti = *reinterpret_cast<t_udp_tracker_input_scrape*>(b);
+			t_udp_tracker_output_scrape& uto = *reinterpret_cast<t_udp_tracker_output_scrape*>(b);
+			uto.transaction_id(uti.transaction_id());
+			t_files::const_iterator i = m_files.find(uti.info_hash());
+			if (i == m_files.end())
+			{
+				uto.return_value(-1);
+				if (s.sendto(b, sizeof(t_udp_tracker_output_scrape), reinterpret_cast<sockaddr*>(&a), cb_a) == SOCKET_ERROR)
+					cerr << "send failed: " << WSAGetLastError() << endl;
+				return;
+			}
+			uto.return_value(0);
+			t_udp_tracker_output_file* file = reinterpret_cast<t_udp_tracker_output_file*>(b + sizeof(t_udp_tracker_output_scrape));
+			file->info_hash(i->first);
+			file->complete(i->second.seeders);
+			file->downloaded(i->second.completed);
+			file->incomplete(i->second.leechers);
+			file++;
+			if (s.sendto(b, reinterpret_cast<char*>(file) - b, reinterpret_cast<sockaddr*>(&a), cb_a) == SOCKET_ERROR)
+				cerr << "send failed: " << WSAGetLastError() << endl;
+		}
+		break;
 	}
-	t_files::const_iterator i = m_files.find(info_hash);
-	if (i == m_files.end())
-		return;
-	t_udp_tracker_output& uto = *reinterpret_cast<t_udp_tracker_output*>(b);
-	uto.m_zero = 0;
-	uto.m_interval = htonl(1800);
-	t_udp_tracker_output_peer* peer = reinterpret_cast<t_udp_tracker_output_peer*>(b + sizeof(t_udp_tracker_output));
-	int c = 100;
-	for (t_peers::const_iterator j = i->second.peers.begin(); c-- && j != i->second.peers.end(); j++, peer++)
-	{
-		peer->m_host = htonl(inet_addr(j->first.c_str()));
-		peer->m_port = htons(j->second.port);
-	}
-	if (s.sendto(b, reinterpret_cast<char*>(peer) - b, reinterpret_cast<sockaddr*>(&a), cb_a) == SOCKET_ERROR)
-		cerr << "send failed: " << WSAGetLastError() << endl;
 }
 
 void Cserver::read_db()

@@ -15,26 +15,259 @@ string hex_encode(int l, int v);
 string uri_decode(const string& v);
 string uri_encode(const string& v);
 
+enum
+{
+	uta_connect,
+	uta_announce,
+	uta_scrape,
+};
+
 struct t_udp_tracker_input
 {
-	int m_zero;
+	char m_connection_id[8];
+
+	int action() const
+	{
+		return ntohl(m_action);
+	}
+
+	void action(int v)
+	{
+		m_action = htonl(v);
+	}
+
+	int transaction_id() const
+	{
+		return m_transaction_id;
+	}
+
+	void transaction_id(int v)
+	{
+		m_transaction_id = v;
+	}
+private:
+	int m_action;
+	int m_transaction_id;
+};
+
+struct t_udp_tracker_input_connect: t_udp_tracker_input
+{
+};
+
+struct t_udp_tracker_input_announce: t_udp_tracker_input
+{
 	char m_info_hash[20];
 	char m_peer_id[20];
+
+	int downloaded() const
+	{
+		return ntohl(m_downloaded);
+	}
+
+	void downloaded(int v)
+	{
+		m_downloaded = htonl(v);
+	}
+
+	int event() const
+	{
+		return ntohl(m_event);
+	}
+
+	void event(int v)
+	{
+		m_event = htonl(v);
+	}
+
+	string info_hash() const
+	{
+		return string(m_info_hash, 20);
+	}
+
+	int num_want() const
+	{
+		return ntohl(m_num_want);
+	}
+
+	void num_want(int v)
+	{
+		m_num_want = htonl(v);
+	}
+
+	int left() const
+	{
+		return ntohl(m_left);
+	}
+
+	void left(int v)
+	{
+		m_left = htonl(v);
+	}
+
+	string peer_id() const
+	{
+		return string(m_peer_id, 20);
+	}
+
+	int port() const
+	{
+		return ntohl(m_port);
+	}
+
+	void port(int v)
+	{
+		m_port = htonl(v);
+	}
+
+	int uploaded() const
+	{
+		return ntohl(m_uploaded);
+	}
+
+	void uploaded(int v)
+	{
+		m_uploaded = htonl(v);
+	}
+private:
 	int m_downloaded;
 	int m_event;
+	int m_num_want;
 	int m_left;
 	int m_port;
 	int m_uploaded;
 };
 
+struct t_udp_tracker_input_scrape: t_udp_tracker_input
+{
+	char m_info_hash[20];
+
+	string info_hash() const
+	{
+		return string(m_info_hash, 20);
+	}
+};
+
 struct t_udp_tracker_output
 {
-	int m_zero;
+	int return_value() const
+	{
+		return ntohl(m_return_value);
+	}
+
+	void return_value(int v)
+	{
+		m_return_value = htonl(v);
+	}
+
+	int transaction_id() const
+	{
+		return m_transaction_id;
+	}
+
+	void transaction_id(int v)
+	{
+		m_transaction_id = v;
+	}
+private:
+	int m_return_value;
+	int m_transaction_id;
+};
+
+struct t_udp_tracker_output_connect: t_udp_tracker_output
+{
+	char m_connection_id[8];
+};
+
+struct t_udp_tracker_output_announce: t_udp_tracker_output
+{
+	int interval() const
+	{
+		return ntohl(m_interval);
+	}
+
+	void interval(int v)
+	{
+		m_interval = htonl(v);
+	}
+private:
 	int m_interval;
+};
+
+struct t_udp_tracker_output_scrape: t_udp_tracker_output
+{
+};
+
+struct t_udp_tracker_output_file
+{
+	string info_hash() const
+	{
+		return string(m_info_hash, 20);
+	}
+
+	void info_hash(string v)
+	{
+		assert(v.length() == 20);
+		memcpy(m_info_hash, v.c_str(), 20);
+	}
+
+	int complete() const
+	{
+		return ntohl(m_complete);
+	}
+
+	void complete(int v)
+	{
+		m_complete = htonl(v);
+	}
+
+	int downloaded() const
+	{
+		return ntohl(m_downloaded);
+	}
+
+	void downloaded(int v)
+	{
+		m_downloaded = htonl(v);
+	}
+
+	int incomplete() const
+	{
+		return ntohl(m_incomplete);
+	}
+
+	void incomplete(int v)
+	{
+		m_incomplete = htonl(v);
+	}
+private:
+	char m_info_hash[20];
+	int m_complete;
+	int m_downloaded;
+	int m_incomplete;
 };
 
 struct t_udp_tracker_output_peer
 {
+	int host() const
+	{
+		return ntohl(m_host);
+	}
+
+	void host(int v)
+	{
+		m_host = htonl(v);
+	}
+
+	int port() const
+	{
+		return ntohs(m_port);
+	}
+
+	void port(int v)
+	{
+		m_port = htons(v);
+	}
+private:
 	int m_host;
 	short m_port;
 };
