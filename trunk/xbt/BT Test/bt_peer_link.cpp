@@ -211,7 +211,7 @@ int Cbt_peer_link::cb_write_buffer()
 
 void Cbt_peer_link::recv()
 {
-	for (int r; r = m_s.recv(m_read_b.w(), m_read_b.cb_w()); )
+	for (int r; m_read_b.cb_w() && (r = m_s.recv(m_read_b.w(), m_read_b.cb_w())); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -233,6 +233,8 @@ void Cbt_peer_link::recv()
 		m_rtime = time(NULL);
 		m_read_b.cb_w(r);
 	}
+	if (m_read_b.cb_w())
+		return;
 	alert(Calert(Calert::debug, m_a, "Peer: connection closed"));
 	close();
 }

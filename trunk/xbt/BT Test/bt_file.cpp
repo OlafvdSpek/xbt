@@ -251,7 +251,7 @@ int Cbt_file::c_valid_pieces() const
 	return r;
 }
 
-void Cbt_file::write_data(int o, const char* s, int cb_s)
+void Cbt_file::write_data(__int64 o, const char* s, int cb_s)
 {
 	if (o < 0 || cb_s < 0 || o + cb_s > mcb_f)
 		return;
