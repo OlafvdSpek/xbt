@@ -21,6 +21,7 @@ enum
 	uta_connect,
 	uta_announce,
 	uta_scrape,
+	uta_error,
 };
 
 #ifdef _MSC_VER
@@ -91,6 +92,16 @@ struct t_udp_tracker_input_announce: t_udp_tracker_input
 		return string(m_info_hash, 20);
 	}
 
+	int ipa() const
+	{
+		return m_ipa;
+	}
+
+	void ipa(int v)
+	{
+		m_ipa = v;
+	}
+
 	int num_want() const
 	{
 		return ntohl(m_num_want);
@@ -137,11 +148,12 @@ struct t_udp_tracker_input_announce: t_udp_tracker_input
 	}
 private:
 	__int64 m_downloaded;
-	int m_event;
-	int m_num_want;
 	__int64 m_left;
-	short m_port;
 	__int64 m_uploaded;
+	int m_event;
+	int m_ipa;
+	int m_num_want;
+	short m_port;
 };
 
 struct t_udp_tracker_input_scrape: t_udp_tracker_input
@@ -156,14 +168,14 @@ struct t_udp_tracker_input_scrape: t_udp_tracker_input
 
 struct t_udp_tracker_output
 {
-	int return_value() const
+	int action() const
 	{
-		return ntohl(m_return_value);
+		return ntohl(m_action);
 	}
 
-	void return_value(int v)
+	void action(int v)
 	{
-		m_return_value = htonl(v);
+		m_action = htonl(v);
 	}
 
 	int transaction_id() const
@@ -176,13 +188,13 @@ struct t_udp_tracker_output
 		m_transaction_id = v;
 	}
 private:
-	int m_return_value;
+	int m_action;
 	int m_transaction_id;
 };
 
 struct t_udp_tracker_output_connect: t_udp_tracker_output
 {
-	char m_connection_id[8];
+	__int64 m_connection_id;
 };
 
 struct t_udp_tracker_output_announce: t_udp_tracker_output
@@ -204,6 +216,10 @@ struct t_udp_tracker_output_scrape: t_udp_tracker_output
 {
 };
 
+struct t_udp_tracker_output_error: t_udp_tracker_output
+{
+};
+
 struct t_udp_tracker_output_file
 {
 	string info_hash() const
@@ -211,7 +227,7 @@ struct t_udp_tracker_output_file
 		return string(m_info_hash, 20);
 	}
 
-	void info_hash(string v)
+	void info_hash(const string& v)
 	{
 		assert(v.length() == 20);
 		memcpy(m_info_hash, v.c_str(), 20);
