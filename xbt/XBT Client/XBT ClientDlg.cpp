@@ -594,7 +594,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case dr_rejected_pieces:
 			if (m_file->c_rejected_pieces)
-				m_buffer[m_buffer_w] = n(m_file->c_rejected_pieces) + " x " + b2a(m_file->cb_piece, "b") + " = " + b2a(m_file->c_rejected_pieces * m_file->cb_chunk, "b");
+				m_buffer[m_buffer_w] = n(m_file->c_rejected_pieces) + " x " + b2a(m_file->cb_piece, "b") + " = " + b2a(m_file->c_rejected_pieces * m_file->cb_piece, "b");
 			break;
 		case dr_seeders:
 			m_buffer[m_buffer_w] = n(m_file->c_seeders);
