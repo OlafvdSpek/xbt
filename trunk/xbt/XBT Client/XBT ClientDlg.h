@@ -140,6 +140,10 @@ protected:
 	afx_msg void OnUpdatePopupTorrentPriorityNormal(CCmdUI* pCmdUI);
 	afx_msg void OnPopupViewPieces();
 	afx_msg void OnUpdatePopupViewPieces(CCmdUI* pCmdUI);
+	afx_msg void OnPopupTorrentPause();
+	afx_msg void OnPopupTorrentUnpause();
+	afx_msg void OnUpdatePopupTorrentUnpause(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupTorrentPause(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
