@@ -168,7 +168,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	insert_columns();
 	m_files_sort_column = fc_name;
 	m_files_sort_reverse = false;
-	m_peers_sort_column = pc_peer_id;
+	m_peers_sort_column = pc_client;
 	m_peers_sort_reverse = false;
 	m_file = NULL;
 	auto_size();
