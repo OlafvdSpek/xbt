@@ -13,10 +13,12 @@ class Cbt_logger
 {
 public:
 	void choke(const string& file, const string& peer, bool remote, bool v);
-	void piece(const string& file, const string& peer, bool remote, __int64 offset, int size);
-	void request(const string& file, const string& peer, bool remote, __int64 offset, int size);
+	void invalid(const string& file, bool remote, int piece);
+	void piece(const string& file, const string& peer, bool remote, int piece, int offset, int size);
+	void request(const string& file, const string& peer, bool remote, int piece, int offset, int size);
 	void open(const string&);
 	int string_id(const string&);
+	void valid(const string& file, bool remote, int piece);
 	Cbt_logger();
 	~Cbt_logger();
 private:

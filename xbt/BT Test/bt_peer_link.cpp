@@ -55,75 +55,8 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		FD_SET(m_s, fd_except_set);
 	case 3:
 	case 4:
-		if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
-		{
-			const t_remote_request& request = m_remote_requests.front();
-			Cvirtual_binary d;
-			if (!m_f->read_data(request.offset, d.write_start(request.size), request.size))
-			{
-				if (m_f->m_merkle)
-					write_merkle_piece(request.offset, request.size, d, m_f->get_hashes(request.offset, request.c_hashes));
-				else
-					write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size, d);
-			}
-			m_remote_requests.pop_front();
-		}
-		if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 120)
-			clear_local_requests();
-		while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < 8)
-		{
-			if (m_local_requests.empty())
-			{
-				int a = m_f->next_invalid_piece(*this);
-				if (a >= 0)
-				{
-					Cbt_piece* piece = &m_f->m_pieces[a];
-					if (m_pieces.empty())
-						m_piece_rtime = time(NULL);
-					m_pieces.insert(piece);
-					piece->m_peers.insert(this);
-					vector<int> sub_pieces;
-					for (int b = 0; b < piece->c_sub_pieces(); b++)
-					{
-						if (piece->m_sub_pieces.empty() || !piece->m_sub_pieces[b])
-							sub_pieces.push_back(b);
-					}
-					if (piece->m_peers.size() > 1)
-						random_shuffle(sub_pieces.begin(), sub_pieces.end());
-					for (vector<int>::const_iterator i = sub_pieces.begin(); i != sub_pieces.end(); i++)
-						m_local_requests.push_back(t_local_request(m_f->mcb_piece * a + piece->mcb_sub_piece * *i, piece->cb_sub_piece(*i)));
-				}
-				else
-					interested(false);
-			}
-			if (m_local_requests.empty())
-				break;
-			const t_local_request& request = m_local_requests.front();
-			logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset, request.size);
-			if (m_f->m_merkle)
-				write_merkle_request(request.offset, 127);
-			else
-				write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
-			m_local_requests.pop_front();
-		}
 		if (!m_read_b.size() || m_read_b.cb_w())
 			FD_SET(m_s, fd_read_set);
-		if (m_write_b.empty())
-		{
-			if (!m_local_interested && time(NULL) - m_stime > 30 && m_f->next_invalid_piece(*this) != -1)
-			{
-				write_haves();
-				interested(true);
-			}
-			else if (time(NULL) - m_stime > 120)
-			{
-				write_haves();
-				if (m_write_b.empty())
-					write_keepalive();
-			}
-		}
-		else
-			write_haves();
 		if (m_send_quota && !m_write_b.empty())
 			FD_SET(m_s, fd_write_set);
 		return m_s;
@@ -214,6 +147,76 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 		}
 		if (!m_write_b.empty() && FD_ISSET(m_s, fd_write_set) && send())
 			return 1;
+		if (m_state == 3)
+		{
+			if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
+			{
+				const t_remote_request& request = m_remote_requests.front();
+				Cvirtual_binary d;
+				if (!m_f->read_data(request.offset, d.write_start(request.size), request.size))
+				{
+					if (m_f->m_merkle)
+						write_merkle_piece(request.offset, request.size, d, m_f->get_hashes(request.offset, request.c_hashes));
+					else
+						write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size, d);
+				}
+				m_remote_requests.pop_front();
+			}
+			if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 120)
+				clear_local_requests();
+			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < 8)
+			{
+				if (m_local_requests.empty())
+				{
+					int a = m_f->next_invalid_piece(*this);
+					if (a >= 0)
+					{
+						Cbt_piece* piece = &m_f->m_pieces[a];
+						if (m_pieces.empty())
+							m_piece_rtime = time(NULL);
+						m_pieces.insert(piece);
+						piece->m_peers.insert(this);
+						vector<int> sub_pieces;
+						for (int b = 0; b < piece->c_sub_pieces(); b++)
+						{
+							if (piece->m_sub_pieces.empty() || !piece->m_sub_pieces[b])
+								sub_pieces.push_back(b);
+						}
+						if (piece->m_peers.size() > 1)
+							random_shuffle(sub_pieces.begin(), sub_pieces.end());
+						for (vector<int>::const_iterator i = sub_pieces.begin(); i != sub_pieces.end(); i++)
+							m_local_requests.push_back(t_local_request(m_f->mcb_piece * a + piece->mcb_sub_piece * *i, piece->cb_sub_piece(*i)));
+					}
+					else
+						interested(false);
+				}
+				if (m_local_requests.empty())
+					break;
+				const t_local_request& request = m_local_requests.front();
+				logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
+				if (m_f->m_merkle)
+					write_merkle_request(request.offset, 127);
+				else
+					write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
+				m_local_requests.pop_front();
+			}
+			if (m_write_b.empty())
+			{
+				if (!m_local_interested && time(NULL) - m_stime > 30 && m_f->next_invalid_piece(*this) != -1)
+				{
+					write_haves();
+					interested(true);
+				}
+				else if (time(NULL) - m_stime > 120)
+				{
+					write_haves();
+					if (m_write_b.empty())
+						write_keepalive();
+				}
+			}
+			else
+				write_haves();
+		}
 		break;
 	}
 	if (!m_left && !m_f->m_left)
@@ -625,7 +628,7 @@ void Cbt_peer_link::write_peers()
 
 void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
-	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, m_f->mcb_piece * piece + offset, size);
+	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
 	m_f->write_data(m_f->mcb_piece * piece + offset, s, size);
 	m_downloaded += size;
 	m_down_counter.add(size);

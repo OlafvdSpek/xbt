@@ -39,18 +39,28 @@ void Cbt_logger::choke(const string& file, const string& peer, bool remote, bool
 	m_os << time(NULL) - m_start_time << '\t' << string_id(file) << '\t' << string_id(peer) << '\t' << (remote ? 'r' : 'l') << (v ? "\tc\t" : "\tuc\t") << endl;
 }
 
-void Cbt_logger::piece(const string& file, const string& peer, bool remote, __int64 offset, int size)
+void Cbt_logger::invalid(const string& file, bool remote, int piece)
 {
-	if (offset & 0x7fff)
-		m_os << "unaligned offset: " << n(offset) << endl;
-	offset >>= 15;
-	m_os << time(NULL) - m_start_time << '\t' << string_id(file) << '\t' << string_id(peer) << '\t' << (remote ? 'r' : 'l') << "\tp\t" << n(offset) << '\t' << n(size) << endl;
+	m_os << time(NULL) - m_start_time << '\t' << string_id(file) << "\t-\t" << (remote ? 'r' : 'l') << "\tiv\t" << piece << endl;
 }
 
-void Cbt_logger::request(const string& file, const string& peer, bool remote, __int64 offset, int size)
+void Cbt_logger::piece(const string& file, const string& peer, bool remote, int piece, int offset, int size)
 {
 	if (offset & 0x7fff)
-		m_os << "unaligned offset: " << n(offset) << endl;
+		m_os << "unaligned offset: " << offset << endl;
 	offset >>= 15;
-	m_os << time(NULL) - m_start_time << '\t' << string_id(file) << '\t' << string_id(peer) << '\t' << (remote ? 'r' : 'l') << "\tr\t" << n(offset) << '\t' << n(size) << endl;
+	m_os << time(NULL) - m_start_time << '\t' << string_id(file) << '\t' << string_id(peer) << '\t' << (remote ? 'r' : 'l') << "\tp\t" << piece << '\t' << offset << '\t' << size << endl;
+}
+
+void Cbt_logger::request(const string& file, const string& peer, bool remote, int piece, int offset, int size)
+{
+	if (offset & 0x7fff)
+		m_os << "unaligned offset: " << offset << endl;
+	offset >>= 15;
+	m_os << time(NULL) - m_start_time << '\t' << string_id(file) << '\t' << string_id(peer) << '\t' << (remote ? 'r' : 'l') << "\tr\t" << piece << '\t' << offset << '\t' << size << endl;
+}
+
+void Cbt_logger::valid(const string& file, bool remote, int piece)
+{
+	m_os << time(NULL) - m_start_time << '\t' << string_id(file) << "\t-\t" << (remote ? 'r' : 'l') << "\tv\t" << piece << endl;
 }

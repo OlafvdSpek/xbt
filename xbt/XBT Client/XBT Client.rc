@@ -404,6 +404,8 @@ BEGIN
     "5",            ID_POPUP_VIEW_TRACKERS, VIRTKEY, NOINVERT
     "M",            ID_POPUP_MAKE_TORRENT,  VIRTKEY, CONTROL, NOINVERT
     "O",            ID_POPUP_OPTIONS,       VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_POPUP_OPTIONS,       VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
     VK_DELETE,      ID_POPUP_CLOSE,         VIRTKEY, NOINVERT
     VK_INSERT,      ID_POPUP_OPEN,          VIRTKEY, NOINVERT
 END
