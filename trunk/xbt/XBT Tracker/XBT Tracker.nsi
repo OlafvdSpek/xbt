@@ -13,7 +13,10 @@ Section "Install"
 	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
 	File release\*.exe
+	File xbt.css
+	File xbt_files.php
 	File xbt_tracker.conf.default
+	File xbt_tracker.sql
 	SetOverwrite off
 	File /oname=xbt_tracker.conf xbt_tracker.conf.default
 	WriteUninstaller "$INSTDIR\Uninstall.exe"

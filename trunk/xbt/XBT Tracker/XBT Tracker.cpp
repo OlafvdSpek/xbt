@@ -85,7 +85,8 @@ int main(int argc, char* argv[])
 	};
 	if (StartServiceCtrlDispatcher(st))
 		return 0;
-	if (GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)
+	if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED
+		&& GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)		
 		return 1;
 #endif
 	return main1();
