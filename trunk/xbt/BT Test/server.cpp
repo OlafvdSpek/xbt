@@ -55,7 +55,7 @@ Cserver::Cserver()
 	m_admin_port = m_new_admin_port = 6879;
 	m_bind_before_connect = false;
 	m_completes_dir = "Completes";
-	m_end_mode = true;
+	m_end_mode = false;
 	m_incompletes_dir = "Incompletes";
 	m_local_app_data_dir = ".";
 	m_log_peer_connect_failures = false;
@@ -900,9 +900,9 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		if (s.d_has(bts_seeding_ratio))
 			seeding_ratio(s.d(bts_seeding_ratio).i());
 		if (s.d_has(bts_peer_limit))
-			peer_limit(d.d(bts_peer_limit).i());
+			peer_limit(s.d(bts_peer_limit).i());
 		if (s.d_has(bts_torrent_limit))
-			torrent_limit(d.d(bts_torrent_limit).i());
+			torrent_limit(s.d(bts_torrent_limit).i());
 	}
 	else if (action == bts_set_priority)
 		file_priority(s.d(bts_hash).s(), s.d(bts_priority).i());
