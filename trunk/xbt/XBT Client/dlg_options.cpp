@@ -40,6 +40,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_torrents_dir = _T("");
 	m_torrent_limit = 0;
 	m_show_confirm_exit_dialog = FALSE;
+	m_hide_on_deactivate = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -71,6 +72,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_TORRENTS_DIRECTORY, m_torrents_dir);
 	DDX_Text(pDX, IDC_TORRENT_LIMIT, m_torrent_limit);
 	DDX_Check(pDX, IDC_SHOW_CONFIRM_EXIT_DIALOG, m_show_confirm_exit_dialog);
+	DDX_Check(pDX, IDC_HIDE_ON_DEACTIVATE, m_hide_on_deactivate);
 	//}}AFX_DATA_MAP
 }
 
@@ -94,6 +96,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.bind_before_connect = m_bind_before_connect;
 	v.completes_dir = m_completes_dir;
 	v.end_mode = m_end_mode;
+	v.hide_on_deactivate = m_hide_on_deactivate;
 	v.incompletes_dir = m_incompletes_dir;
 	v.lower_process_priority = m_lower_process_priority;
 	v.peer_limit = m_peer_limit;
@@ -119,6 +122,7 @@ void Cdlg_options::set(const t_data& v)
 	m_bind_before_connect = v.bind_before_connect;
 	m_completes_dir = backward_slashes(v.completes_dir).c_str();
 	m_end_mode = v.end_mode;
+	m_hide_on_deactivate = v.hide_on_deactivate;
 	m_incompletes_dir = backward_slashes(v.incompletes_dir).c_str();
 	m_lower_process_priority = v.lower_process_priority;
 	m_peer_limit = v.peer_limit;

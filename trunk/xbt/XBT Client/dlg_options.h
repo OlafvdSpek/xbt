@@ -23,6 +23,7 @@ public:
 		bool ask_for_location;
 		bool bind_before_connect;
 		bool end_mode;
+		bool hide_on_deactivate;
 		string completes_dir;
 		string incompletes_dir;
 		string torrents_dir;
@@ -68,6 +69,7 @@ public:
 	CString	m_torrents_dir;
 	int		m_torrent_limit;
 	BOOL	m_show_confirm_exit_dialog;
+	BOOL	m_hide_on_deactivate;
 	//}}AFX_DATA
 
 
