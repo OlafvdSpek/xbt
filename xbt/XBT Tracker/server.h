@@ -189,6 +189,11 @@ public:
 	{
 		return m_secret;
 	}
+
+	int time() const
+	{
+		return m_time;
+	}
 private:
 	typedef list<Cconnection> t_connections;
 	typedef set<int> t_listen_ipas;
@@ -203,6 +208,7 @@ private:
 	int m_read_db_files_time;
 	int m_read_db_ipas_time;
 	int m_read_db_users_time;
+	int m_time;
 	int m_write_db_files_time;
 	int m_write_db_users_time;
 	int m_announce_interval;

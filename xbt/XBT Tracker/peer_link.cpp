@@ -22,7 +22,7 @@ Cpeer_link::Cpeer_link(int h, int p, Cserver* server, const string& file_id, int
 		cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 	else if (m_s.connect(h, p) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
 		cerr << "connect failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-	m_ctime = time(NULL);
+	m_ctime = server->time();
 	m_server = server;
 	m_file_id = file_id;
 	m_peer_id = peer_id;
@@ -42,5 +42,5 @@ int Cpeer_link::post_select(fd_set* fd_write_set, fd_set* fd_except_set)
 		m_server->update_peer(m_file_id, m_peer_id, true);
 		return 1;
 	}
-	return FD_ISSET(m_s, fd_except_set) || time(NULL) - m_ctime > 30;
+	return FD_ISSET(m_s, fd_except_set) || m_server->time() - m_ctime > 30;
 }
