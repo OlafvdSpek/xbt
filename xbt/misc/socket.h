@@ -95,6 +95,8 @@ public:
 	int blocking(bool v);
 	void close();
 	int connect(int h, int p);
+	int getsockopt(int level, int name, void* v, int& cb_v);
+	int getsockopt(int level, int name, int& v);
 	int listen();
 	const Csocket& open(int t, bool blocking = false);
 	int recv(void*, int) const;
