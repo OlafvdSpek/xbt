@@ -204,7 +204,7 @@ string peer_id2a(const string& v)
 	{
 	case '-':
 		if (v[1] == 'G' && v[2] == '3')
-			return peer_id2a("G3 ", v, 3);
+			return "G3";
 		break;
 	case 'S':
 		if (v[1] == 5 && v[2] == 7 && v[3] >= 0 && v[3] < 10)
