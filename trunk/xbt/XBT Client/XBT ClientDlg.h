@@ -126,6 +126,7 @@ private:
 
 	struct t_file
 	{
+		string display_name;
 		string info_hash;
 		string name;
 		t_trackers trackers;
