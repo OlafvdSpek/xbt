@@ -743,12 +743,41 @@ void Cserver::write_db_files()
 		if (!buffer.empty())
 		{
 			buffer.erase(buffer.size() - 1);
-			m_database.query("insert into xbt_files_updates (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " + buffer);
-			m_database.query("update xbt_files f inner join xbt_files_updates fu using (fid)"
-				" set f.leechers = fu.leechers, f.seeders = fu.seeders, f.completed = fu.completed, f.started = fu.started, f.stopped = fu.stopped,"
-				"  f.announced_http = fu.announced_http, f.announced_http_compact = fu.announced_http_compact, f.announced_http_no_peer_id = fu.announced_http_no_peer_id,"
-				"  f.announced_udp = fu.announced_udp, f.scraped_http = fu.scraped_http, f.scraped_udp = fu.scraped_udp");
-			m_database.query("delete from xbt_files_updates");
+			if (m_config.m_update_files_method == 1)
+			{
+				m_database.query("insert into xbt_files_updates (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " + buffer);
+				m_database.query("update xbt_files f inner join xbt_files_updates fu using (fid)"
+					" set" 
+					"  f.leechers = fu.leechers,"
+					"  f.seeders = fu.seeders,"
+					"  f.completed = fu.completed,"
+					"  f.started = fu.started,"
+					"  f.stopped = fu.stopped,"
+					"  f.announced_http = fu.announced_http,"
+					"  f.announced_http_compact = fu.announced_http_compact,"
+					"  f.announced_http_no_peer_id = fu.announced_http_no_peer_id,"
+					"  f.announced_udp = fu.announced_udp,"
+					"  f.scraped_http = fu.scraped_http,"
+					"  f.scraped_udp = fu.scraped_udp");
+				m_database.query("delete from xbt_files_updates");
+			}
+			else
+			{
+				m_database.query("insert into xbt_files_updates (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " 
+					+ buffer
+					+ " on duplicate key update"
+					+ "  leechers = values(leechers),"
+					+ "  seeders = values(seeders),"
+					+ "  completed = values(completed),"
+					+ "  started = values(started),"
+					+ "  stopped = values(stopped)," 
+					+ "  announced_http = values(announced_http),"
+					+ "  announced_http_compact = values(announced_http_compact)," 
+					+ "  announced_http_no_peer_id = values(announced_http_no_peer_id),"
+					+ "  announced_udp = values(announced_udp),"
+					+ "  scraped_http = values(scraped_http),"
+					+ "  scraped_udp = values(scraped_udp)");
+			}
 		}
 	}
 	catch (Cxcc_error)
@@ -792,7 +821,11 @@ void Cserver::write_db_users()
 		{
 			m_database.query("insert into xbt_files_users (announced, completed, downloaded, uploaded, info_hash, uid) values "
 				+ m_files_users_updates_buffer
-				+ " on duplicate key update announced = announced + values(announced), completed = completed + values(completed), downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
+				+ " on duplicate key update"
+				+ "  announced = announced + values(announced),"
+				+ "  completed = completed + values(completed),"
+				+ "  downloaded = downloaded + values(downloaded),"
+				+ "  uploaded = uploaded + values(uploaded)");
 		}
 		catch (Cxcc_error)
 		{
@@ -806,7 +839,9 @@ void Cserver::write_db_users()
 		{
 			m_database.query("insert into xbt_users (downloaded, uploaded, uid) values "
 				+ m_users_updates_buffer
-				+ " on duplicate key update downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
+				+ " on duplicate key update"
+				+ "  downloaded = downloaded + values(downloaded),"
+				+ "  uploaded = uploaded + values(uploaded)");
 		}
 		catch (Cxcc_error)
 		{
