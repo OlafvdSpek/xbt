@@ -84,7 +84,7 @@ int Cbt_file::info(const Cbvalue& info)
 	if (m_merkle)
 	{
 		int c_pieces = 0;
-		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		{
 			if (i->merkle_hash().length() != 20)
 				return 1;
