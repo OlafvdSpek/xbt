@@ -29,6 +29,17 @@ CXBTClientApp theApp;
 
 BOOL CXBTClientApp::InitInstance()
 {
+	m_server_thread = NULL;
+	CCommandLineInfo cmdInfo;
+	ParseCommandLine(cmdInfo);
+	CreateMutex(NULL, true, "9a6bfda6-7733-4b7d-92b0-3046c9191830");
+	if (GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		HWND hWnd = FindWindow(NULL, "XBT Client");
+		ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+		SetForegroundWindow(hWnd);
+		return false;
+	}
 	if (!AfxSocketInit())
 	{
 		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
@@ -54,9 +65,6 @@ BOOL CXBTClientApp::InitInstance()
 	m_server_thread = AfxBeginThread(backend_thread, this);
 	m_server_thread->m_bAutoDelete = false;
 
-	CCommandLineInfo cmdInfo;
-	ParseCommandLine(cmdInfo);
-
 	CXBTClientDlg dlg;
 	m_pMainWnd = &dlg;
 	dlg.server(m_server);
@@ -78,7 +86,8 @@ unsigned int CXBTClientApp::backend_thread(void* p)
 int CXBTClientApp::ExitInstance() 
 {
 	m_server.stop();
-	WaitForSingleObject(m_server_thread->m_hThread, INFINITE);	
+	if (m_server_thread)
+		WaitForSingleObject(m_server_thread->m_hThread, INFINITE);	
 	delete m_server_thread;
 	return CWinApp::ExitInstance();
 }
