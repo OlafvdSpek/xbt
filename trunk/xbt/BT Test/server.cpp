@@ -493,7 +493,6 @@ int Cserver::open_url(const string& v)
 	b = v.find('/', a);
 	if (b == string::npos)
 		return 4;
-	string info_hashes_hash = hex_decode(v.substr(a, b++ - a));
 	string peers = hex_decode(v.substr(b));
 	while (!m_run)
 		Sleep(100);
@@ -506,7 +505,7 @@ int Cserver::open_url(const string& v)
 			i->insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
 		return 0;
 	}
-	if (info_hash.empty() || info_hashes_hash.empty())
+	if (info_hash.empty())
 		return 5;
 	Cbt_file f;
 	f.m_server = this;
@@ -517,7 +516,6 @@ int Cserver::open_url(const string& v)
 	for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
 		f.insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
 	f.m_info_hash = info_hash;
-	f.m_info_hashes_hash = info_hashes_hash;
 	f.m_peer_id = new_peer_id();
 	m_files.push_front(f);
 	save_state(true).save(state_fname());
