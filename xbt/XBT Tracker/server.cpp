@@ -671,13 +671,14 @@ string Cserver::debug(const Ctracker_input& ti) const
 	page += "</table><hr><table><tr><td>leechers<td>" + n(leechers)
 		+ "<tr><td>seeders<td>" + n(seeders)
 		+ "<tr><td>torrents<td>" + n(torrents)
-		+ "<tr>"
+		+ "<tr><td>"
 		+ "<tr><td>listen check<td>" + n(m_listen_check) 
 		+ "<tr><td>read config time<td>" + n(t - m_read_config_time) 
 		+ "<tr><td>clean up time<td>" + n(t - m_clean_up_time) 
 		+ "<tr><td>read db files time<td>" + n(t - m_read_db_files_time) 
 		+ "<tr><td>read db users time<td>" + n(t - m_read_db_users_time) 
-		+ "<tr><td>write db time<td>" + n(t - m_write_db_time);
+		+ "<tr><td>write db time<td>" + n(t - m_write_db_time)
+		+ "</table>";
 	return page;
 }
 
