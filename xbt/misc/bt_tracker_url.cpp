@@ -64,7 +64,7 @@ void Cbt_tracker_url::write(const string& v)
 		protocol = tp_udp;
 		port = 2710;
 	}
-	else 
+	else
 		return;
 	a += 3;
 	int b = v.find_first_of("/:", a);
@@ -87,8 +87,6 @@ void Cbt_tracker_url::write(const string& v)
 				port = atoi(v.substr(b, a - b).c_str());
 				m_path = v.substr(a);
 			}
-			if (port == 2710)
-				protocol = tp_udp;
 		}
 	}
 	m_protocol = protocol;
