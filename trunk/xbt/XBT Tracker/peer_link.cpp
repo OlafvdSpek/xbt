@@ -17,8 +17,10 @@ Cpeer_link::Cpeer_link()
 
 Cpeer_link::Cpeer_link(int h, int p, Cserver* server, const string& file_id, const string& peer_id)
 {
-	m_s.open(SOCK_STREAM);
-	m_s.connect(htonl(h), htons(p));
+	if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
+		cerr << "socket failed: " << WSAGetLastError() << endl;
+	else if (m_s.connect(htonl(h), htons(p)) && WSAGetLastError() != WSAEWOULDBLOCK)
+		cerr << "connect failed: " << WSAGetLastError() << endl;
 	m_server = server;
 	m_file_id = file_id;
 	m_peer_id = peer_id;
