@@ -289,9 +289,9 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 			}
 			for (const byte* r = d; r + 4 <= d.data_end(); r++)
 			{
-				if (!memcmp(r, "\r\n\r\n", 4))
+				if (!memcmp(r, "\n\n", 2) || !memcmp(r, "\r\n\r\n", 4))
 				{
-					r += 4;
+					r += *r == '\n' ? 2 : 4;
 					Cbvalue v;
 					if (r[0] == 0x1f && r[1] == 0x8b && r[2] == 8)
 					{
@@ -332,6 +332,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 					return 1;
 				}
 			}
+			break;
 		}
 	}
 	f.alert(Calert(Calert::error, "Tracker: Invalid HTTP output"));
