@@ -143,6 +143,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
 	set_dir(static_cast<string>(AfxGetApp()->GetProfileString(m_reg_key, "files_location")));
 	m_server.dir(static_cast<string>(m_dir));
+	lower_process_priority(AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true));
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port()));
 	string public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
 	if (!public_ipa.empty())
@@ -788,6 +789,7 @@ void CXBTClientDlg::OnPopupOptions()
 	m_ask_for_location = data.ask_for_location;
 	m_server.end_mode(data.end_mode);
 	set_dir(data.files_location);
+	lower_process_priority(data.lower_process_priority);
 	m_server.peer_port(data.peer_port);
 	if (!data.public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(data.public_ipa));
@@ -1212,3 +1214,7 @@ void CXBTClientDlg::set_dir(const string& v)
 	CreateDirectory(m_dir, NULL);
 }
 
+void CXBTClientDlg::lower_process_priority(bool v)
+{
+	SetPriorityClass(GetCurrentProcess(), v ? BELOW_NORMAL_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS);
+}
