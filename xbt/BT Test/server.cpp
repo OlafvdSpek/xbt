@@ -180,6 +180,12 @@ int Cserver::run()
 			FD_ZERO(&fd_read_set);
 			FD_ZERO(&fd_write_set);
 			FD_ZERO(&fd_except_set);
+			bool hash = true;
+			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+			{
+				if (hash && i->hash())
+					hash = false;
+			}
 			int n = pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
 			if (below_peer_limit())
 			{
@@ -192,7 +198,7 @@ int Cserver::run()
 			n = max(n, lt);
 			unlock();
 			TIMEVAL tv;
-			tv.tv_sec = 1;
+			tv.tv_sec = hash ? 1 : 0;
 			tv.tv_usec = 0;
 			if (select(n, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
 			{
@@ -268,8 +274,11 @@ int Cserver::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_ex
 		}
 	}
 	{
+		bool hash = true;
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
+			if (hash && i->hash())
+				hash = false;
 			int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
 			n = max(n, z);
 		}

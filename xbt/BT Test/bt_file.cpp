@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <io.h>
+#include "bt_hasher.h"
 #include "bt_strings.h"
 #include "server.h"
 
@@ -154,53 +155,36 @@ int Cbt_file::open(const string& name)
 		m_left = 0;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->left(0);
-		offset = 0;
-		t_sub_files::iterator sub_file = m_sub_files.begin(); 
-		for (int i = 0; i < m_pieces.size(); i++)
-		{
-			Cbt_piece& piece = m_pieces[i];
-			if (validate)
-			{
-				piece.m_valid = !read_data(mcb_piece * i, d.write_start(piece.mcb_d), piece.mcb_d)
-					&& !memcmp(compute_sha1(d).c_str(), piece.m_hash, 20);
-			}
-			if (!piece.m_valid)
-				m_left += piece.mcb_d;
-			int cb0 = piece.mcb_d;
-			while (cb0)
-			{
-				int cb1 = min(cb0, sub_file->size() - offset);
-				if (!piece.m_valid)
-					sub_file->left(sub_file->left() + cb1);
-				cb0 -= cb1;
-				offset += cb1;
-				if (offset == sub_file->size())
-				{
-					if (!sub_file->left())
-					{
-						sub_file->close();
-						sub_file->open(m_name, _O_RDONLY);
-					}
-					offset = 0;
-					sub_file++;
-				}
-			}
-			
-		}
-		alert(Calert(Calert::debug, "Torrent: " + n(c_valid_pieces()) + '/' + n(m_pieces.size())));
-		alert(Calert(Calert::debug, "Torrent: " + n(mcb_piece >> 10) + " kb/piece"));
+		m_hasher = new Cbt_hasher(validate);
 	}
 	return 0;
 }
 
+bool Cbt_file::hash()
+{
+	if (!m_hasher)
+		return false;
+	if (m_hasher->run(*this))
+		return true;
+	delete m_hasher;
+	m_hasher = NULL;
+	alert(Calert(Calert::debug, "Torrent: " + n(c_valid_pieces()) + '/' + n(m_pieces.size())));
+	alert(Calert(Calert::debug, "Torrent: " + n(mcb_piece >> 10) + " kb/piece"));
+	return false;
+}
+
 void Cbt_file::close()
 {
+	delete m_hasher;
+	m_hasher = NULL;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		i->close();
 }
 
 int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
+	if (m_hasher)
+		return 0;
 	if (m_run && !m_left && m_server->seeding_ratio() && m_total_uploaded / m_server->seeding_ratio() > mcb_f)
 		m_run = false;
 	else if (m_run)
@@ -231,6 +215,8 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 
 void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
+	if (m_hasher)
+		return;
 	m_tracker.post_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); )
 	{
