@@ -11,10 +11,14 @@ int main1()
 	Cdatabase database;
 	Cxcc_error error;
 	Cstatic_config static_config;
+#ifdef WIN32
 	char b[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH, b);
-	strcat(b, "/xbt_tracker.conf");
+	GetModuleFileName(NULL, b, MAX_PATH);
+	strcpy(strrchr(b, '\\') + 1, "xbt_tracker.conf");
 	if (error = static_config.read(b))
+#else
+	if (error = static_config.read(xbt_tracker.conf))
+#endif
 		cerr << error.message() << endl;
 	if (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true))
 		cerr << error.message() << endl;
