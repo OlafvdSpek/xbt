@@ -801,6 +801,8 @@ void Cserver::update_chokes()
 				links0.insert(t_links0::value_type(j->m_down_counter.rate(), &*j));
 			else if (j->m_remote_interested)
 				(j->m_local_interested ? links1 : links2).push_back(&*j);
+			else
+				j->choked(true);
 		}
 	}
 	int slots_left = max(4, m_config.m_upload_slots);
@@ -813,7 +815,7 @@ void Cserver::update_chokes()
 			i->second->choked(false);
 		}
 		else
-			links1.push_back(&*i->second);
+			i->second->choked(true);
 	}
 	while (slots_left && !links1.empty())
 	{

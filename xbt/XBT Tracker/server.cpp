@@ -677,15 +677,19 @@ void Cserver::read_db_users()
 	{
 		Csql_query q(m_database, "select uid, name, pass, torrent_pass, fid_end from xbt_users");
 		Csql_result result = q.execute();
-		m_passes.clear();
 		m_users.clear();
+		m_users_names.clear();
+		m_users_torrent_passes.clear();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			t_user& user = m_users[row.f(row.size(1) ? 1 : 0)];
+			t_user& user = m_users[row.f_int(0)];
 			user.uid = row.f_int(0);
 			user.fid_end = row.f_int(4);
 			user.pass.assign(row.f(2));
-			m_passes[row.f(3)] = &user;
+			if (row.size(1))
+				m_users_names[row.f(1)] = &user;
+			if (row.size(3))
+				m_users_torrent_passes[row.f(3)] = &user;
 		}
 	}
 	catch (Cxcc_error)
@@ -995,8 +999,8 @@ string Cserver::statistics() const
 
 const Cserver::t_user* Cserver::find_user_by_name(const string& v) const
 {
-	t_users::const_iterator i = m_users.find(v);
-	return i == m_users.end() ? NULL : &i->second;
+	t_users_names::const_iterator i = m_users_names.find(v);
+	return i == m_users_names.end() ? NULL : i->second;
 }
 
 const Cserver::t_user* Cserver::find_user_by_ipa(int v) const
@@ -1007,18 +1011,14 @@ const Cserver::t_user* Cserver::find_user_by_ipa(int v) const
 
 const Cserver::t_user* Cserver::find_user_by_torrent_pass(const string& v) const
 {
-	t_passes::const_iterator i = m_passes.find(v);
-	return i == m_passes.end() ? NULL : i->second;
+	t_users_torrent_passes::const_iterator i = m_users_torrent_passes.find(v);
+	return i == m_users_torrent_passes.end() ? NULL : i->second;
 }
 
 const Cserver::t_user* Cserver::find_user_by_uid(int v) const
 {
-	for (t_users::const_iterator i = m_users.begin(); i != m_users.end(); i++)
-	{
-		if (i->second.uid == v)
-			return &i->second;
-	}
-	return NULL;
+	t_users::const_iterator i = m_users.find(v);
+	return i == m_users.end() ? NULL : &i->second;
 }
 
 void Cserver::sig_handler(int v)
