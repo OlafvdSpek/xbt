@@ -181,6 +181,7 @@ public:
 	int m_completed_at;
 	int mc_leechers_total;
 	int mc_seeders_total;
+	int m_priority;
 
 	__int64 mcb_piece;
 	__int64 mcb_f;

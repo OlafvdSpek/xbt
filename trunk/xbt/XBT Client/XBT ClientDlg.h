@@ -16,6 +16,8 @@ public:
 	void set_bottom_view(int v);
 	int get_priority();
 	void set_priority(int v);
+	int get_torrent_priority();
+	void set_torrent_priority(int v);
 	void set_clipboard(const string&);
 	void lower_process_priority(bool);
 	void set_dir(const string&);
@@ -131,6 +133,12 @@ protected:
 	afx_msg void OnUpdatePopupPriorityHigh(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupPriorityLow(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupPriorityNormal(CCmdUI* pCmdUI);
+	afx_msg void OnPopupTorrentPriorityHigh();
+	afx_msg void OnUpdatePopupTorrentPriorityHigh(CCmdUI* pCmdUI);
+	afx_msg void OnPopupTorrentPriorityLow();
+	afx_msg void OnUpdatePopupTorrentPriorityLow(CCmdUI* pCmdUI);
+	afx_msg void OnPopupTorrentPriorityNormal();
+	afx_msg void OnUpdatePopupTorrentPriorityNormal(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
@@ -159,8 +167,10 @@ private:
 		bool local_link;
 		bool local_choked;
 		bool local_interested;
+		int c_local_requests;
 		bool remote_choked;
 		bool remote_interested;
+		int c_remote_requests;
 		bool removed;
 	};
 
@@ -216,6 +226,7 @@ private:
 		int cb_piece;
 		int started_at;
 		int completed_at;
+		int priority;
 		bool hashing;
 		bool running;
 		bool removed;
