@@ -70,16 +70,6 @@ CREATE TABLE xbt_files_users
   KEY (uid)
 );
 
-CREATE TABLE xbt_files_users_updates
-(
-  info_hash blob NOT NULL,
-  uid int NOT NULL,
-  announced int NOT NULL,
-  completed int NOT NULL,
-  downloaded bigint(20) NOT NULL,
-  uploaded bigint(20) NOT NULL
-);
-
 CREATE TABLE xbt_ipas
 (
   ipa int NOT NULL,
@@ -108,11 +98,4 @@ CREATE TABLE xbt_users
   downloaded bigint NOT NULL,
   uploaded bigint NOT NULL,
   PRIMARY KEY (uid)
-);
-
-CREATE TABLE xbt_users_updates
-(
-  uid int NOT NULL,
-  downloaded bigint NOT NULL,
-  uploaded bigint NOT NULL
 );
