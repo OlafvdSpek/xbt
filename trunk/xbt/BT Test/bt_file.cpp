@@ -115,7 +115,7 @@ void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 
 bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 {
-	m_f = ::open((parent_name + m_name).c_str(), oflag | _O_BINARY, _S_IREAD | _S_IWRITE);
+	m_f = ::open((parent_name + m_name).c_str(), oflag | O_BINARY, S_IREAD | S_IWRITE);
 	return *this;
 }
 
@@ -144,8 +144,8 @@ int Cbt_file::open(const string& name)
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
-		if (!i->open(m_name, _O_RDWR)
-			&& !i->open(m_name, _O_RDONLY))
+		if (!i->open(m_name, O_RDWR)
+			&& !i->open(m_name, O_RDONLY))
 		{
 			int b = (offset + i->size() - 1) / mcb_piece;
 			for (int a = offset / mcb_piece; a <= b; a++)
@@ -342,7 +342,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 #endif
 						i = a + 1;
 					}
-					if (i->open(m_name, _O_CREAT | _O_RDWR))
+					if (i->open(m_name, O_CREAT | O_RDWR))
 					{
 						char b = 0;
 						i->write(i->size() - 1, &b, 1);
@@ -387,7 +387,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 					if (!i->left(i->left() - cb_write))
 					{
 						i->close();
-						i->open(m_name, _O_RDONLY);
+						i->open(m_name, O_RDONLY);
 					}
 					size -= cb_write;
 					if (!size)

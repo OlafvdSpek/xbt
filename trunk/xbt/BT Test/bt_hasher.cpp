@@ -52,7 +52,7 @@ bool Cbt_hasher::run(Cbt_file& f)
 			if (!m_sub_file->left())
 			{
 				m_sub_file->close();
-				m_sub_file->open(f.m_name, _O_RDONLY);
+				m_sub_file->open(f.m_name, O_RDONLY);
 			}
 			m_offset = 0;
 			m_sub_file++;
