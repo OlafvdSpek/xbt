@@ -1299,7 +1299,7 @@ void CXBTClientDlg::set_clipboard(const string& v)
 	if (v.empty())
 		return;
 	void* h = GlobalAlloc(GMEM_MOVEABLE, v.size() + 1);
-	void* p = GlobalLock(NULL);
+	void* p = GlobalLock(h);
 	if (p)
 	{
 		memcpy(p, v.c_str(), v.size() + 1);
