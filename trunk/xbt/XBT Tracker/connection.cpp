@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "connection.h"
 
+#include "bt_misc.h"
 #include "server.h"
 #include "xcc_z.h"
 

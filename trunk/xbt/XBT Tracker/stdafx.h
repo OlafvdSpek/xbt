@@ -52,7 +52,6 @@ typedef int __int32;
 typedef long long __int64;
 #endif
 #include "bvalue.h"
-#include "bt_misc.h"
 #include "socket.h"
 #include "virtual_binary.h"
 
