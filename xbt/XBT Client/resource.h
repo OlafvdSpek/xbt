@@ -20,6 +20,7 @@
 #define IDD_PROFILES                    140
 #define IDD_PROFILE                     141
 #define IDD_SCHEDULER_ENTRY             142
+#define IDR_TRAY                        144
 #define IDC_FILES                       1000
 #define IDC_PEERS                       1002
 #define IDC_ADMIN_PORT                  1002
@@ -97,20 +98,14 @@
 #define IDC_MAX_UPLOAD_SLOTS_OVERRIDE   1065
 #define IDC_UPLOAD_SLOTS_MAX_OVERRIDE   1065
 #define IDC_TAB                         1066
-#define ID_POPUP_OPEN                   32771
-#define ID_POPUP_CLOSE                  32772
-#define ID_POPUP_OPTIONS                32773
-#define ID_POPUP_EXIT                   32774
 #define ID_POPUP_EXPLORE                32775
 #define ID_POPUP_START                  32776
 #define ID_POPUP_STOP                   32777
 #define ID_POPUP_COPY                   32778
 #define ID_POPUP_PASTE                  32779
 #define ID_POPUP_FILES                  32780
-#define ID_POPUP_TRACKERS               32781
 #define ID_POPUP_ANNOUNCE               32782
 #define ID_POPUP_EXPLORE_TRACKER        32783
-#define ID_POPUP_ABOUT                  32784
 #define ID_POPUP_TORRENT_OPTIONS        32787
 #define ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH 32790
 #define ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL 32791
@@ -137,8 +132,6 @@
 #define ID_POPUP_STATE_STARTED          32815
 #define ID_POPUP_STATE_PAUSED           32816
 #define ID_POPUP_STATE_STOPPED          32817
-#define ID_POPUP_SCHEDULER              32818
-#define ID_POPUP_PROFILES               32821
 #define ID_HELP_ABOUT                   32822
 #define ID_FILE_EXIT                    32823
 #define ID_EDIT_COPY_ANNOUNCE_URL       32824
@@ -153,11 +146,11 @@
 #define ID_HELP_HOME_PAGE               32836
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        144
-#define _APS_NEXT_COMMAND_VALUE         32837
+#define _APS_NEXT_RESOURCE_VALUE        145
+#define _APS_NEXT_COMMAND_VALUE         32838
 #define _APS_NEXT_CONTROL_VALUE         1067
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
