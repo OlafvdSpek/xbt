@@ -73,7 +73,8 @@ void Cserver::run()
 		cerr << "listen failed" << endl;
 	else
 	{
-		load_state(Cvirtual_binary(m_dir + "/state.bin"));
+		load_state(Cvirtual_binary(state_fname()));
+		save_state(true).save(state_fname());
 #ifndef WIN32
 		if (daemon(true, false))
 			cerr << "daemon failed" << endl;
@@ -179,7 +180,7 @@ void Cserver::run()
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 			i->close();
 	}
-	save_state().save(m_dir + "/state.bin");
+	save_state(false).save(state_fname());
 }
 
 void Cserver::stop()
@@ -264,6 +265,7 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	f.m_local_port = peer_port();
 	f.m_peer_id = new_peer_id();
 	m_files.push_front(f);
+	save_state(true).save(state_fname());
 	return 0;
 }
 
@@ -290,7 +292,7 @@ void Cserver::load_state(const Cvirtual_binary& d)
 	{
 		Cbt_file f;
 		f.load_state(r);
-		if (f.open(f.m_name, false))
+		if (f.open(f.m_name, !f.c_valid_pieces()))
 			continue;
 		f.m_local_port = peer_port();
 		f.m_peer_id = new_peer_id();
@@ -299,18 +301,23 @@ void Cserver::load_state(const Cvirtual_binary& d)
 	assert(r.r() == d.data_end());
 }
 
-Cvirtual_binary Cserver::save_state()
+Cvirtual_binary Cserver::save_state(bool intermediate)
 {
 	Cvirtual_binary d;
 	int cb_d = 4;
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-			cb_d = i->pre_save_state();
+			cb_d = i->pre_save_state(intermediate);
 	}
 	Cstream_writer w(d.write_start(cb_d));
 	w.write_int32(m_files.size());
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->save_state(w);
+		i->save_state(w, intermediate);
 	assert(w.w() == d.data_end());
 	return d;
+}
+
+string Cserver::state_fname() const
+{
+	return m_dir + "/state.bin";
 }
