@@ -90,6 +90,16 @@ public:
 		m_dir = v;
 	}	
 
+	bool end_mode() const
+	{
+		return m_end_mode;
+	}
+
+	void end_mode(bool v)
+	{
+		m_end_mode = v;
+	}
+	
 	int peer_port() const
 	{
 		return m_peer_port;
@@ -134,6 +144,7 @@ private:
 
 	int m_admin_port;
 	string m_dir;
+	bool m_end_mode;
 	int m_new_admin_port;
 	int m_new_peer_port;
 	int m_new_tracker_port;
