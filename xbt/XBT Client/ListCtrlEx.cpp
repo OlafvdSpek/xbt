@@ -22,7 +22,7 @@ void CListCtrlEx::auto_size()
 		SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
 }
 
-void CListCtrlEx::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult) 
+void CListCtrlEx::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NMLVCUSTOMDRAW* pCustomDraw = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
 	switch (pCustomDraw->nmcd.dwDrawStage)
@@ -36,14 +36,28 @@ void CListCtrlEx::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 	}
 }
 
-void CListCtrlEx::OnSize(UINT nType, int cx, int cy) 
+void CListCtrlEx::OnSize(UINT nType, int cx, int cy)
 {
 	CListCtrl::OnSize(nType, cx, cy);
 	auto_size();
 }
 
-void CListCtrlEx::PreSubclassWindow() 
+void CListCtrlEx::PreSubclassWindow()
 {
 	CListCtrl::PreSubclassWindow();
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT);
+}
+
+BOOL CListCtrlEx::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		switch (pMsg->wParam)
+		{
+		case VK_ADD:
+			auto_size();
+			return true;
+		}
+	}
+	return CListCtrl::PreTranslateMessage(pMsg);
 }
