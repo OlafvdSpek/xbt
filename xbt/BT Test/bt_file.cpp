@@ -70,11 +70,11 @@ int Cbt_file::info(const Cbvalue& info)
 			if (name.empty() || size < 1)
 				return 1;
 			mcb_f += size;
-			m_sub_files.push_back(t_sub_file(name, size));
+			m_sub_files.push_back(t_sub_file(name, 0, size));
 		}
 	}
 	if (m_sub_files.empty())
-		m_sub_files.push_back(t_sub_file("", mcb_f = info.d(bts_length).i()));
+		m_sub_files.push_back(t_sub_file("", 0, mcb_f = info.d(bts_length).i()));
 	if (m_trackers.empty()
 		|| m_trackers.front().empty()
 		|| mcb_f < 1 
@@ -276,14 +276,14 @@ void Cbt_file::write_data(__int64 o, const char* s, int cb_s)
 		const byte* r = piece.m_d;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		{
-			if (offset < i->m_size)
+			if (offset < i->size())
 			{
-				if (!*i && i->m_size && i->open(m_name, _O_CREAT))
+				if (!*i && i->size() && i->open(m_name, _O_CREAT))
 				{
 					char b = 0;
-					i->write(i->m_size - 1, &b, 1);
+					i->write(i->size() - 1, &b, 1);
 				}
-				int cb_write = min(size, i->m_size - offset);
+				int cb_write = min(size, i->size() - offset);
 				if (i->write(offset, r, cb_write))
 					alert(Calert(Calert::error, "Piece " + n(a) + ": write failed"));
 				size -= cb_write;
@@ -293,7 +293,7 @@ void Cbt_file::write_data(__int64 o, const char* s, int cb_s)
 				r += cb_write;
 			}
 			else
-				offset -= i->m_size;
+				offset -= i->size();
 		}
 		m_left -= piece.mcb_d;
 		if (!m_left)
@@ -321,9 +321,9 @@ int Cbt_file::read_piece(int a, byte* d)
 	byte* w = d;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
-		if (offset < i->m_size)
+		if (offset < i->size())
 		{
-			int cb_read = min(size, i->m_size - offset);
+			int cb_read = min(size, i->size() - offset);
 			if (i->read(offset, w, cb_read))
 				return 1;
 			size -= cb_read;
@@ -333,7 +333,7 @@ int Cbt_file::read_piece(int a, byte* d)
 			w += cb_read;
 		}
 		else
-			offset -= i->m_size;
+			offset -= i->size();
 	}
 	return 0;
 }
@@ -494,9 +494,8 @@ __int64 Cbt_file::size() const
 {
 	__int64 c = 0;
 	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		c += i->m_size;
+		c += i->size();
 	return c;
-
 }
 
 void Cbt_file::load_state(Cstream_reader& r)

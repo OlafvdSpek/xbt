@@ -52,14 +52,31 @@ public:
 
 	struct t_sub_file
 	{
-		string m_name;
-		__int64 m_size;
-
 		void close();
 		bool open(const string& parent_name, int oflag);
 		int read(__int64  offset, void* s, int cb_s);
 		int write(__int64  offset, const void* s, int cb_s);
 		
+		const string& name() const
+		{
+			return m_name;
+		}
+
+		int priority() const
+		{
+			return m_priority;
+		}
+
+		void priority(int v)
+		{
+			m_priority = v;
+		}
+
+		__int64 size() const
+		{
+			return m_size;
+		}
+
 		operator bool() const
 		{
 			return m_f != -1;
@@ -69,14 +86,18 @@ public:
 		{
 		}
 
-		t_sub_file(const string& name, __int64 size)
+		t_sub_file(const string& name, int priority, __int64 size)
 		{
 			m_f = -1;
 			m_name = name;
+			m_priority = priority;
 			m_size = size;
 		}
 	private:
 		int m_f;
+		string m_name;
+		int m_priority;
+		__int64 m_size;
 	};
 
 	typedef map<int, int> t_new_peers;
