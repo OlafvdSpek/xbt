@@ -43,6 +43,9 @@ enum
 
 enum
 {
+	dc_name,
+	dc_value,
+
 	pc_peer_id,
 	pc_done,
 	pc_left,
@@ -58,7 +61,24 @@ enum
 	pc_host,
 	pc_port,
 	pc_client,
-	pc_end
+	pc_end,
+
+	sfc_name,
+	sfc_done,
+	sfc_left,
+	sfc_size,
+	sfc_priority,
+	sfc_hash,
+
+	tv_url,
+};
+
+enum
+{
+	v_details,
+	v_files,
+	v_peers,
+	v_trackers,
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -128,6 +148,10 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnPopupTorrentClipboardCopyAnnounceUrl)
 	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH, OnPopupTorrentClipboardCopyHash)
 	ON_COMMAND(ID_POPUP_TORRENT_ALERTS, OnPopupTorrentAlerts)
+	ON_COMMAND(ID_POPUP_VIEW_DETAILS, OnPopupViewDetails)
+	ON_COMMAND(ID_POPUP_VIEW_FILES, OnPopupViewFiles)
+	ON_COMMAND(ID_POPUP_VIEW_PEERS, OnPopupViewPeers)
+	ON_COMMAND(ID_POPUP_VIEW_TRACKERS, OnPopupViewTrackers)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -145,6 +169,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 		;
 	ETSLayoutDialog::OnInitDialog();
 
+	m_bottom_view = v_peers;
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
 	m_ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
 	m_server.bind_before_connect(AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false));
@@ -449,8 +474,19 @@ void CXBTClientDlg::OnSize(UINT nType, int cx, int cy)
 void CXBTClientDlg::fill_peers()
 {
 	m_peers.DeleteAllItems();
-	for (t_peers::const_iterator i = m_file->peers.begin(); i != m_file->peers.end(); i++)
-		m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
+	switch (m_bottom_view)
+	{
+	case v_details:
+		break;
+	case v_files:
+		break;
+	case v_peers:
+		for (t_peers::const_iterator i = m_file->peers.begin(); i != m_file->peers.end(); i++)
+			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
+		break;
+	case v_trackers:
+		break;
+	}
 	sort_peers();
 	auto_size_peers();
 }
@@ -1253,10 +1289,9 @@ void CXBTClientDlg::sort_peers()
 	m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
 }
 
-void CXBTClientDlg::insert_columns()
+void CXBTClientDlg::insert_top_columns()
 {
 	m_torrents_columns.clear();
-	m_peers_columns.clear();
 	m_torrents_columns.push_back(fc_name);
 	m_torrents_columns.push_back(fc_done);
 	m_torrents_columns.push_back(fc_left);
@@ -1268,24 +1303,9 @@ void CXBTClientDlg::insert_columns()
 	m_torrents_columns.push_back(fc_leechers);
 	m_torrents_columns.push_back(fc_seeders);
 	m_torrents_columns.push_back(fc_state);
-	m_peers_columns.push_back(pc_client);
-	m_peers_columns.push_back(pc_done);
-	m_peers_columns.push_back(pc_left);
-	m_peers_columns.push_back(pc_downloaded);
-	m_peers_columns.push_back(pc_uploaded);
-	m_peers_columns.push_back(pc_down_rate);
-	m_peers_columns.push_back(pc_up_rate);
-	m_peers_columns.push_back(pc_link_direction);
-	m_peers_columns.push_back(pc_local_choked);
-	m_peers_columns.push_back(pc_local_interested);
-	m_peers_columns.push_back(pc_remote_choked);
-	m_peers_columns.push_back(pc_remote_interested);
 	if (m_show_advanced_columns)
 	{
 		m_torrents_columns.push_back(fc_hash);
-		m_peers_columns.push_back(pc_host);
-		m_peers_columns.push_back(pc_port);
-		m_peers_columns.push_back(pc_peer_id);
 	}
 	const char* torrents_columns_names[] =
 	{
@@ -1320,8 +1340,54 @@ void CXBTClientDlg::insert_columns()
 		m_files.DeleteColumn(0);
 	for (t_columns::const_iterator i = m_torrents_columns.begin(); i != m_torrents_columns.end(); i++)
 		m_files.InsertColumn(99, torrents_columns_names[*i], torrents_columns_formats[*i]);
+}
+
+void CXBTClientDlg::insert_bottom_columns()
+{
+	m_peers_columns.clear();
+	switch (m_bottom_view)
+	{
+	case v_details:
+		m_peers_columns.push_back(dc_name);
+		m_peers_columns.push_back(dc_value);
+		break;
+	case v_files:
+		m_peers_columns.push_back(sfc_name);
+		m_peers_columns.push_back(sfc_done);
+		m_peers_columns.push_back(sfc_left);
+		m_peers_columns.push_back(sfc_size);
+		m_peers_columns.push_back(sfc_priority);
+		m_peers_columns.push_back(sfc_hash);
+		break;
+	case v_peers:
+		m_peers_columns.push_back(pc_client);
+		m_peers_columns.push_back(pc_done);
+		m_peers_columns.push_back(pc_left);
+		m_peers_columns.push_back(pc_downloaded);
+		m_peers_columns.push_back(pc_uploaded);
+		m_peers_columns.push_back(pc_down_rate);
+		m_peers_columns.push_back(pc_up_rate);
+		m_peers_columns.push_back(pc_link_direction);
+		m_peers_columns.push_back(pc_local_choked);
+		m_peers_columns.push_back(pc_local_interested);
+		m_peers_columns.push_back(pc_remote_choked);
+		m_peers_columns.push_back(pc_remote_interested);
+		if (m_show_advanced_columns)
+		{
+			m_peers_columns.push_back(pc_host);
+			m_peers_columns.push_back(pc_port);
+			m_peers_columns.push_back(pc_peer_id);
+		}
+		break;
+	case v_trackers:
+		m_peers_columns.push_back(tv_url);
+		break;
+	}
 	const char* peers_columns_names[] =
 	{
+		"Name",
+		"Value",
+
 		"Peer ID",
 		"%",
 		"Left",
@@ -1337,11 +1403,22 @@ void CXBTClientDlg::insert_columns()
 		"Host",
 		"Port",
 		"Client",
-		""
+		"",
+		"Name",
+		"%",
+		"Left",
+		"Size",
+		"Priority",
+		"Hash",
+
+		"URL",
 	};
 	const int peers_columns_formats[] =
 	{
 		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+
+		LVCFMT_LEFT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
@@ -1356,12 +1433,27 @@ void CXBTClientDlg::insert_columns()
 		LVCFMT_LEFT,
 		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+
+		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+
 		LVCFMT_LEFT,
 	};
 	while (m_peers.GetHeaderCtrl()->GetItemCount())
 		m_peers.DeleteColumn(0);
 	for (t_columns::const_iterator i = m_peers_columns.begin(); i != m_peers_columns.end(); i++)
 		m_peers.InsertColumn(99, peers_columns_names[*i], peers_columns_formats[*i]);
+}
+
+void CXBTClientDlg::insert_columns()
+{
+	insert_top_columns();
+	insert_bottom_columns();
 }
 
 void CXBTClientDlg::set_dir(const string& v)
@@ -1413,3 +1505,31 @@ void CXBTClientDlg::set_clipboard(const string& v)
 	GlobalFree(h);
 }
 
+
+void CXBTClientDlg::OnPopupViewDetails() 
+{
+	m_bottom_view = v_details;
+	insert_bottom_columns();
+	auto_size_peers();
+}	
+
+void CXBTClientDlg::OnPopupViewFiles() 
+{
+	m_bottom_view = v_files;
+	insert_bottom_columns();
+	auto_size_peers();
+}
+
+void CXBTClientDlg::OnPopupViewPeers() 
+{
+	m_bottom_view = v_peers;
+	insert_bottom_columns();
+	auto_size_peers();
+}
+
+void CXBTClientDlg::OnPopupViewTrackers() 
+{
+	m_bottom_view = v_trackers;
+	insert_bottom_columns();
+	auto_size_peers();
+}

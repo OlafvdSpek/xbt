@@ -76,13 +76,17 @@
 #define ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH 32790
 #define ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL 32791
 #define ID_POPUP_TORRENT_ALERTS         32792
+#define ID_POPUP_VIEW_FILES             32794
+#define ID_POPUP_VIEW_PEERS             32795
+#define ID_POPUP_VIEW_TRACKERS          32796
+#define ID_POPUP_VIEW_DETAILS           32797
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32793
+#define _APS_NEXT_COMMAND_VALUE         32798
 #define _APS_NEXT_CONTROL_VALUE         1042
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
