@@ -6,6 +6,7 @@
 #include "bvalue.h"
 
 #include "bt_misc.h"
+#include "xcc_z.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -112,7 +113,9 @@ int Cbvalue::write(const void* s, int cb_s)
 
 int Cbvalue::write(const char* s, int cb_s)
 {
-	return write(s, s + cb_s);
+	return cb_s >= 10 && s[0] == 0x1f && s[1] == -0x75 && s[2] == 8
+		? write(xcc_z::gunzip(s, cb_s))
+		: write(s, s + cb_s);
 }
 
 int Cbvalue::write(const char*& s, const char* s_end)
