@@ -29,7 +29,7 @@ Cbt_file::~Cbt_file()
 int Cbt_file::info(const Cvirtual_binary& v)
 {
 	Cbvalue a;
-	return a.write(v) ? 1 : info(a);
+	return a.write(v) || info(a);
 }
 
 int Cbt_file::info(const Cbvalue& v)
@@ -76,7 +76,6 @@ int Cbt_file::info(const Cbvalue& v)
 	}
 
 	m_downloaded = 0;
-	m_left = 0;
 	m_uploaded = 0;
 
 	return 0;
@@ -128,18 +127,7 @@ void Cbt_file::close()
 
 int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
-	if (m_peers.empty())
-	{
-		switch (m_tracker.write(this))
-		{
-		case -1:
-			cerr << "Tracker: Error" << endl;
-			break;
-		case 1:
-			break;
-		}
-	}
-	int n = m_tracker.pre_select(fd_read_set, fd_write_set, fd_except_set);
+	int n = m_tracker.pre_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
 		int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
@@ -151,7 +139,7 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 
 void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
-	m_tracker.post_select(fd_read_set, fd_write_set, fd_except_set);
+	m_tracker.post_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); )
 	{
 		i->post_select(fd_read_set, fd_write_set, fd_except_set);
@@ -307,7 +295,7 @@ void Cbt_file::dump(ostream& os)
 	os << "<table>"
 		<< "<tr><td align=right>invalid pieces:<td align=right>" << c_invalid_pieces()
 		<< "<tr><td align=right>valid pieces:<td align=right>" << c_valid_pieces()
-		<< "<tr><td align=right>downloaded:<td align=right>" << (m_downloaded >> 20) << " mb<td align=right>" << (m_down_counter.rate() >> 10) << " kb/s<td align=right>";
+		<< "<tr><td align=right>downloaded:<td align=right>" << static_cast<int>(m_downloaded >> 20) << " mb<td align=right>" << (m_down_counter.rate() >> 10) << " kb/s<td align=right>";
 	int t = time_remaining();
 	if (t != -1)
 	{
@@ -315,7 +303,7 @@ void Cbt_file::dump(ostream& os)
 			os << t / 3600 << " h ";
 		os << (t % 3600) / 60 << " m " << t % 60 << " s";
 	}
-	os << "<tr><td align=right>uploaded:<td align=right>" << (m_uploaded >> 20) << " mb<td align=right>" << (m_up_counter.rate() >> 10) << " kb/s"
+	os << "<tr><td align=right>uploaded:<td align=right>" << static_cast<int>(m_uploaded >> 20) << " mb<td align=right>" << (m_up_counter.rate() >> 10) << " kb/s"
 		<< "</table>"
 		<< "<hr>"
 		<< "<table>";
@@ -344,4 +332,9 @@ int Cbt_file::time_remaining()
 {
 	int rate = m_down_counter.rate();
 	return rate ? mcb_piece * c_invalid_pieces() / rate : -1;
+}
+
+__int64 Cbt_file::left() const
+{
+	return mcb_piece * c_invalid_pieces();
 }

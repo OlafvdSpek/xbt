@@ -18,6 +18,7 @@
 class Cbt_file  
 {
 public:
+	__int64 left() const;
 	int time_remaining();
 	void dump(ostream& os);
 	void write_have(int);
@@ -73,9 +74,8 @@ public:
 	int mcb_piece;
 	int mcb_f;
 
-	int m_downloaded;
-	int m_left;
-	int m_uploaded;
+	__int64 m_downloaded;
+	__int64 m_uploaded;
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
 
