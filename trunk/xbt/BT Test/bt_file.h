@@ -72,9 +72,9 @@ public:
 			return m_left;
 		}
 
-		void left(__int64 v)
+		__int64 left(__int64 v)
 		{
-			m_left = v;
+			return m_left = v;
 		}
 
 		const string& name() const
