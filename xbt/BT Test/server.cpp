@@ -486,7 +486,7 @@ int Cserver::pause_file(const string& id)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->m_run = true;
+		i->m_run = false;
 		return 0;
 	}
 	return 1;
@@ -499,7 +499,7 @@ int Cserver::unpause_file(const string& id)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->m_run = false;
+		i->m_run = true;
 		return 0;
 	}
 	return 1;
@@ -920,6 +920,8 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		if (s.d_has(bts_seeding_ratio))
 			seeding_ratio(s.d(bts_seeding_ratio).i());
 	}
+	else if (action == bts_set_priority)
+		file_priority(s.d(bts_hash).s(), s.d(bts_priority).i());
 	else if (action == bts_start_torrent)
 		start_file(s.d(bts_hash).s());
 	else if (action == bts_stop_torrent)
