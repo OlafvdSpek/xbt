@@ -37,7 +37,7 @@ void Cconnection::post_select(fd_set* fd_read_set)
 {
 	if (FD_ISSET(m_s, fd_read_set))
 		recv();
-	if (m_ctime + 15 < time(NULL))
+	if (time(NULL) - m_ctime > 15)
 		close();
 }
 
