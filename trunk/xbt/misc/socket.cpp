@@ -23,13 +23,14 @@ Csocket_source::Csocket_source(SOCKET s)
 
 Csocket_source* Csocket_source::attach()
 {
-	mc_references++;
+	if (this)
+		mc_references++;
 	return this;
 }
 
 void Csocket_source::detach()
 {
-	if (!--mc_references)
+	if (this && !--mc_references)
 	{
 		closesocket(m_s);
 		delete this;
@@ -43,22 +44,20 @@ Csocket::Csocket(SOCKET s)
 
 Csocket::Csocket(const Csocket& v)
 {
-	m_source = v.m_source ? v.m_source->attach() : NULL;
+	m_source = v.m_source->attach();
 }
 
 Csocket::~Csocket()
 {
-	if (m_source)
-		m_source->detach();
+	m_source->detach();
 }
 
 const Csocket& Csocket::operator=(const Csocket& v)
 {
 	if (this != &v)
 	{
-		if (m_source)
-			m_source->detach();
-		m_source = v.m_source ? v.m_source->attach() : NULL;
+		m_source->detach();
+		m_source = v.m_source->attach();
 	}
 	return *this;
 }
@@ -70,6 +69,12 @@ int Csocket::bind(int h, int p)
 	a.sin_addr.s_addr = h;
 	a.sin_port = p;
 	return ::bind(*this, reinterpret_cast<sockaddr*>(&a), sizeof(sockaddr_in));
+}
+
+int Csocket::blocking(bool v)
+{
+	unsigned long p = !v;
+	return ioctlsocket(*this, FIONBIO, &p);
 }
 
 void Csocket::close()
@@ -86,9 +91,12 @@ int Csocket::connect(int h, int p)
 	return ::connect(*this, reinterpret_cast<sockaddr*>(&a), sizeof(sockaddr_in));
 }
 
-const Csocket& Csocket::open(int t)
+const Csocket& Csocket::open(int t, bool _blocking)
 {
-	return *this = socket(AF_INET, t, 0);
+	*this = socket(AF_INET, t, 0);
+	if (!_blocking && blocking(false))
+		close();
+	return *this;
 }
 
 int Csocket::recv(void* d, int cb_d)

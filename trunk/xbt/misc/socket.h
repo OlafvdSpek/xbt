@@ -42,9 +42,10 @@ class Csocket
 public:
 	static int get_host(const string& name);
 	int bind(int h, int p);
+	int blocking(bool v);
 	void close();
 	int connect(int h, int p);
-	const Csocket& open(int t);
+	const Csocket& open(int t, bool blocking = false);
 	int recv(void*, int);
 	int send(const void*, int);
 	Csocket(SOCKET = INVALID_SOCKET);
