@@ -37,8 +37,13 @@ public:
 	void file_priority(const string& file_id, int priority);
 	void sub_file_priority(const string& file_id, const string& sub_file_id, int priority);
 	string completes_dir() const;
+	void completes_dir(const string&);
 	string incompletes_dir() const;
+	void incompletes_dir(const string&);
+	string local_app_data_dir() const;
+	void local_app_data_dir(const string&);
 	string torrents_dir() const;
+	void torrents_dir(const string&);
 	void update_chokes();
 	void update_send_quotas();
 	void alert(const Calert&);
@@ -95,16 +100,6 @@ public:
 	{
 		m_bind_before_connect = v;
 	}
-
-	string dir() const
-	{
-		return m_dir;
-	}
-
-	void dir(const string& v)
-	{
-		m_dir = v;
-	}	
 
 	bool end_mode() const
 	{
@@ -198,8 +193,10 @@ private:
 
 	int m_admin_port;
 	bool m_bind_before_connect;
-	string m_dir;
+	string m_completes_dir;
 	bool m_end_mode;
+	string m_incompletes_dir;
+	string m_local_app_data_dir;
 	bool m_log_peer_connect_failures;
 	bool m_log_peer_connection_closures;
 	bool m_log_peer_recv_failures;
@@ -214,6 +211,7 @@ private:
 	bool m_run;
 	int m_save_state_time;
 	int m_seeding_ratio;
+	string m_torrents_dir;
 	int m_tracker_port;
 	int m_update_chokes_time;
 	int m_update_send_quotas_time;

@@ -54,8 +54,10 @@ Cserver::Cserver()
 {
 	m_admin_port = m_new_admin_port = 6879;
 	m_bind_before_connect = false;
-	m_dir = ".";
+	m_completes_dir = "Completes";
 	m_end_mode = true;
+	m_incompletes_dir = "Incompletes";
+	m_local_app_data_dir = ".";
 	m_log_peer_connect_failures = false;
 	m_log_peer_connection_closures = false;
 	m_log_peer_recv_failures = false;
@@ -65,6 +67,7 @@ Cserver::Cserver()
 	m_public_ipa = 0;
 	m_run = false;
 	m_seeding_ratio = 0;
+	m_torrents_dir = "Torrents";
 	m_tracker_port = m_new_tracker_port = 2710;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time(NULL);
@@ -665,12 +668,12 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 
 string Cserver::state_fname() const
 {
-	return m_dir + "/state.bin";
+	return local_app_data_dir() + "/state.bin";
 }
 
 string Cserver::trackers_fname() const
 {
-	return m_dir + "/trackers.bin";
+	return local_app_data_dir() + "/trackers.bin";
 }
 
 void Cserver::alert(const Calert& v)
@@ -777,29 +780,42 @@ void Cserver::update_send_quotas()
 
 string Cserver::completes_dir() const
 {
-#ifdef WIN32
-	return m_dir + "\\Completes";
-#else
-	return m_dir + "/Completes";
-#endif
+	return m_completes_dir;
+}
+
+void Cserver::completes_dir(const string& v)
+{
+	m_completes_dir = v;
 }
 
 string Cserver::incompletes_dir() const
 {
-#ifdef WIN32
-	return m_dir + "\\Incompletes";
-#else
-	return m_dir + "/Incompletes";
-#endif
+	return m_incompletes_dir;
+}
+
+void Cserver::incompletes_dir(const string& v)
+{
+	m_incompletes_dir = v;
+}
+
+string Cserver::local_app_data_dir() const
+{
+	return m_local_app_data_dir;
+}
+
+void Cserver::local_app_data_dir(const string& v)
+{
+	m_local_app_data_dir = v;
 }
 
 string Cserver::torrents_dir() const
 {
-#ifdef WIN32
-	return m_dir + "\\Torrents";
-#else
-	return m_dir + "/Torrents";
-#endif
+	return m_torrents_dir;
+}
+
+void Cserver::torrents_dir(const string& v)
+{
+	m_torrents_dir = v;
 }
 
 bool Cserver::below_peer_limit() const

@@ -255,8 +255,10 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
 	m_ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
 	m_server.bind_before_connect(AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false));
-	set_dir(static_cast<string>(AfxGetApp()->GetProfileString(m_reg_key, "files_location")));
-	m_server.dir(static_cast<string>(m_dir));
+	set_dir(string(AfxGetApp()->GetProfileString(m_reg_key, "completes_dir")),
+		string(AfxGetApp()->GetProfileString(m_reg_key, "incompletes_dir")),
+		string(AfxGetApp()->GetProfileString(m_reg_key, "local_app_data_dir")),
+		string(AfxGetApp()->GetProfileString(m_reg_key, "torrents_dir")));	
 	lower_process_priority(AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true));
 	m_server.peer_limit(AfxGetApp()->GetProfileInt(m_reg_key, "peer_limit", m_server.peer_limit()));
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port()));
@@ -330,26 +332,20 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 	Cbt_torrent torrent(d);
 	if (!torrent.valid())
 		return;
-	if (!m_dir.IsEmpty())
-	{
-		string path = m_dir + "\\Torrents";
-		CreateDirectory(path.c_str(), NULL);
-		d.save(path + "\\" + torrent.name() + ".torrent");
-	}
 	string path;
-	if (!m_dir.IsEmpty() && !ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
+	if (!m_server.incompletes_dir().empty() && !ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
 	{
-		path = m_dir + "\\Completes\\" + torrent.name().c_str();
+		path = m_server.completes_dir + '/' + torrent.name().c_str();
 		struct _stati64 b;
 		if (_stati64(path.c_str(), &b))
-			path = m_dir + "\\Incompletes\\" + torrent.name().c_str();
+			path = m_server.incompletes_dir + '/' + torrent.name().c_str();
 	}
 	else if (torrent.files().size() == 1)
 	{
 		SetForegroundWindow();
 		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
-		if (!m_dir.IsEmpty())
-			dlg.m_ofn.lpstrInitialDir = m_dir;
+		if (!m_server.incompletes_dir().empty())
+			dlg.m_ofn.lpstrInitialDir = m_server.incompletes_dir().c_str();
 		if (IDOK != dlg.DoModal())
 			return;
 		path = dlg.GetPathName();
@@ -1201,7 +1197,7 @@ void CXBTClientDlg::OnPopupExplore()
 	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
 	if (id == -1)
 	{
-		ShellExecute(m_hWnd, "open", m_dir, NULL, NULL, SW_SHOW);
+		ShellExecute(m_hWnd, "open", m_server.completes_dir().c_str(), NULL, NULL, SW_SHOW);
 		return;
 	}
 	string name = m_files_map.find(id)->second.name;
@@ -1360,8 +1356,9 @@ void CXBTClientDlg::OnPopupOptions()
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
 	data.ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
 	data.bind_before_connect = AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false);
+	data.completes_directory = m_server.completes_dir();
 	data.end_mode = m_server.end_mode();
-	data.files_location = m_dir;
+	data.incompletes_directory = m_server.incompletes_dir();
 	data.lower_process_priority = AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true);
 	data.peer_limit = AfxGetApp()->GetProfileInt(m_reg_key, "peer_limit", m_server.peer_limit());
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
@@ -1370,6 +1367,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data.show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
 	data.show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
 	data.start_minimized = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
+	data.torrents_directory = m_server.torrents_dir();
 	data.tracker_port = AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port());
 	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate());
 	data.upload_slots = AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots());
@@ -1381,8 +1379,8 @@ void CXBTClientDlg::OnPopupOptions()
 	m_ask_for_location = data.ask_for_location;
 	m_server.bind_before_connect(data.bind_before_connect);
 	m_server.end_mode(data.end_mode);
-	set_dir(data.files_location);
 	lower_process_priority(data.lower_process_priority);
+	set_dir(data.completes_directory, data.incompletes_directory, "", data.torrents_directory);
 	m_server.peer_limit(data.peer_limit);
 	m_server.peer_port(data.peer_port);
 	if (!data.public_ipa.empty())
@@ -1396,7 +1394,8 @@ void CXBTClientDlg::OnPopupOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "ask_for_location", data.ask_for_location);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "bind_before_connect", data.bind_before_connect);
-	AfxGetApp()->WriteProfileString(m_reg_key, "files_location", data.files_location.c_str());
+	AfxGetApp()->WriteProfileString(m_reg_key, "completes_directory", data.completes_directory.c_str());
+	AfxGetApp()->WriteProfileString(m_reg_key, "incompletes_directory", data.incompletes_directory.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "lower_process_priority", data.lower_process_priority);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_limit", data.peer_limit);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
@@ -1405,6 +1404,7 @@ void CXBTClientDlg::OnPopupOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", data.show_advanced_columns);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "start_minimized", data.start_minimized);
+	AfxGetApp()->WriteProfileString(m_reg_key, "torrents_directory", data.torrents_directory.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "tracker_port", data.tracker_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
@@ -2154,19 +2154,26 @@ void CXBTClientDlg::insert_columns(bool auto_size)
 	}
 }
 
-void CXBTClientDlg::set_dir(const string& v)
+void CXBTClientDlg::set_dir(const string& completes, const string& incompletes, const string local_app_data, const string& torrents)
 {
-	if (v.empty())
+	string local_app_data_default;
+	string personal_default;
+	{
+		char path[MAX_PATH];
+		if (FAILED(SHGetSpecialFolderPath(NULL, path, CSIDL_LOCAL_APPDATA, true)))
+			strcpy(path, "C:");
+		local_app_data_default = path;
+	}
 	{
 		char path[MAX_PATH];
 		if (FAILED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
 			strcpy(path, "C:");
-		strcat(path, "\\XBT");
-		m_dir = path;
+		personal_default = path;
 	}
-	else
-		m_dir = v.c_str();
-	CreateDirectory(m_dir, NULL);
+	m_server.completes_dir(completes.empty() ? personal_default + "/XBT/Completes" : completes);
+	m_server.incompletes_dir(incompletes.empty() ? personal_default + "/XBT/Incompletes" : incompletes);
+	m_server.local_app_data_dir(local_app_data.empty() ? local_app_data_default + "/XBT" : local_app_data);
+	m_server.torrents_dir(torrents.empty() ? personal_default + "/XBT/Torrents" : torrents);
 }
 
 void CXBTClientDlg::lower_process_priority(bool v)

@@ -20,7 +20,7 @@ public:
 	void set_torrent_priority(int v);
 	void set_clipboard(const string&);
 	void lower_process_priority(bool);
-	void set_dir(const string&);
+	void set_dir(const string& completes, const string& incompletes, const string local_app_data, const string& torrents);
 	void insert_columns(bool auto_size);
 	void insert_top_columns();
 	void insert_bottom_columns();
@@ -266,7 +266,6 @@ private:
 	t_columns m_peers_columns;
 	t_file* m_file;
 	t_files m_files_map;
-	CString m_dir;
 	CString m_reg_key;
 	Cserver m_server;
 	CWinThread* m_server_thread;
