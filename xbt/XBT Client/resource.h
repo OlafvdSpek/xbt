@@ -20,6 +20,7 @@
 #define IDC_ALERTS                      1004
 #define IDC_UPLOAD_RATE                 1004
 #define IDC_TRACKER_PORT                1005
+#define IDC_PEER_LIMIT                  1007
 #define IDC_PUBLIC_IPA                  1010
 #define IDC_UPLOAD_SLOTS                1012
 #define IDC_DECREASE_PRIORITY           1013
@@ -28,6 +29,7 @@
 #define IDC_LIST                        1014
 #define IDC_FILES_LOCATION              1014
 #define IDC_INSERT                      1015
+#define IDC_OPEN                        1015
 #define IDC_DELETE                      1016
 #define IDC_TRACKER                     1017
 #define IDC_EDIT                        1017
