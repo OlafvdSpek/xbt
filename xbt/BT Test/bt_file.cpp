@@ -283,6 +283,7 @@ int Cbt_file::c_invalid_pieces() const
 	int r = 0;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 		r += !i->m_valid;
+	assert((m_left + mcb_piece - 1) / mcb_piece == r);
 	return r;
 }
 
@@ -291,6 +292,7 @@ int Cbt_file::c_valid_pieces() const
 	int r = 0;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 		r += i->m_valid;
+	assert((mcb_f - m_left + mcb_piece - 1) / mcb_piece == r);
 	return r;
 }
 
