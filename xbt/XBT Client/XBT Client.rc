@@ -91,8 +91,7 @@ CAPTION "Files"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List2",IDC_FILES,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | WS_BORDER | 
-                    WS_TABSTOP,7,7,172,76
+                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,172,76
     PUSHBUTTON      "Decrease priority",IDC_DECREASE_PRIORITY,7,92,58,14
     PUSHBUTTON      "Increase priority",IDC_INCREASE_PRIORITY,125,92,54,14
 END
