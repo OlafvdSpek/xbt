@@ -188,7 +188,7 @@ int Cbt_file::open(const string& name)
 		m_left = 0;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->left(0);
-		m_hasher = new Cbt_hasher(true); // m_validate);
+		m_hasher = new Cbt_hasher(m_validate);
 		while (!m_validate && m_hasher->run(*this))
 			;
 	}
