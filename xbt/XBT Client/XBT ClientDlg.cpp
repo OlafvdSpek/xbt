@@ -1687,12 +1687,32 @@ int CXBTClientDlg::events_compare(int id_a, int id_b) const
 	switch (m_events_sort_column)
 	{
 	case ec_time:
-		return compare(b.time, a.time);
+		return compare(id_b, id_a);
 	case ec_level:
 		return compare(a.level, b.level);
 	case ec_source:
 		return compare(a.source, b.source);
 	case ec_message:
+		return compare(a.message, b.message);
+	}
+	return 0;
+}
+
+int CXBTClientDlg::global_events_compare(int id_a, int id_b) const
+{
+	if (m_global_events_sort_reverse)
+		swap(id_a, id_b);
+	const t_event& a = m_events[id_a];
+	const t_event& b = m_events[id_b];
+	switch (m_global_events_sort_column)
+	{
+	case gec_time:
+		return compare(id_b, id_a);
+	case gec_level:
+		return compare(a.level, b.level);
+	case gec_source:
+		return compare(a.source, b.source);
+	case gec_message:
 		return compare(a.message, b.message);
 	}
 	return 0;
@@ -1811,6 +1831,11 @@ static int CALLBACK events_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParam
 	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->events_compare(lParam1, lParam2);
 }
 
+static int CALLBACK global_events_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->global_events_compare(lParam1, lParam2);
+}
+
 static int CALLBACK peers_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
 	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->peers_compare(lParam1, lParam2);
@@ -1880,6 +1905,9 @@ void CXBTClientDlg::sort_peers()
 		break;
 	case v_files:
 		m_peers.SortItems(::sub_files_compare, reinterpret_cast<DWORD>(this));
+		break;
+	case v_global_events:
+		m_peers.SortItems(::global_events_compare, reinterpret_cast<DWORD>(this));
 		break;
 	case v_peers:
 		m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
