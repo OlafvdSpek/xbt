@@ -419,13 +419,13 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 		return 0;
 	Cvirtual_binary d;
 	read_data(a * mcb_piece, d.write_start(piece.size()), piece.size());
-	if (!m_merkle && memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
+	piece.valid(m_merkle || !memcmp(compute_sha1(d).c_str(), piece.m_hash, 20));
+	if (!piece.valid())
 	{
 		alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
 		logger().invalid(m_info_hash, false, a);
 		return 0;
 	}
-	piece.valid(true);
 	m_left -= piece.size();
 	if (!m_left)
 	{
