@@ -144,6 +144,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	set_dir(static_cast<string>(AfxGetApp()->GetProfileString(m_reg_key, "files_location")));
 	m_server.dir(static_cast<string>(m_dir));
 	lower_process_priority(AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true));
+	m_server.peer_limit(AfxGetApp()->GetProfileInt(m_reg_key, "peer_limit", m_server.peer_limit()));
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port()));
 	string public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
 	if (!public_ipa.empty())
@@ -772,6 +773,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data.end_mode = m_server.end_mode();
 	data.files_location = m_dir;
 	data.lower_process_priority = AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true);
+	data.peer_limit = AfxGetApp()->GetProfileInt(m_reg_key, "peer_limit", m_server.peer_limit());
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
 	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
 	data.seeding_ratio = AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio());
@@ -790,6 +792,7 @@ void CXBTClientDlg::OnPopupOptions()
 	m_server.end_mode(data.end_mode);
 	set_dir(data.files_location);
 	lower_process_priority(data.lower_process_priority);
+	m_server.peer_limit(data.peer_limit);
 	m_server.peer_port(data.peer_port);
 	if (!data.public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(data.public_ipa));
@@ -803,6 +806,7 @@ void CXBTClientDlg::OnPopupOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "ask_for_location", data.ask_for_location);
 	AfxGetApp()->WriteProfileString(m_reg_key, "files_location", data.files_location.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "lower_process_priority", data.lower_process_priority);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_limit", data.peer_limit);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
 	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);

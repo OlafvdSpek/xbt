@@ -42,8 +42,10 @@ BEGIN_MESSAGE_MAP(Cdlg_files, ETSLayoutDialog)
 	ON_BN_CLICKED(IDC_DECREASE_PRIORITY, OnDecreasePriority)
 	ON_BN_CLICKED(IDC_INCREASE_PRIORITY, OnIncreasePriority)
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_FILES, OnGetdispinfoFiles)
-	ON_WM_CHAR()
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
+	ON_BN_CLICKED(IDC_OPEN, OnOpen)
+	ON_WM_CHAR()
+	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -57,6 +59,7 @@ BOOL Cdlg_files::OnInitDialog()
 		<< item (IDC_FILES, GREEDY)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
 			<< itemGrowing(HORIZONTAL)
+			<< item (IDC_OPEN, NORESIZE)
 			<< item (IDC_DECREASE_PRIORITY, NORESIZE)
 			<< item (IDC_INCREASE_PRIORITY, NORESIZE)
 			)
@@ -85,7 +88,7 @@ void Cdlg_files::load_data()
 		return;
 	string info_hash = sr.read_string();
 	info_hash = info_hash;
-	string name = sr.read_string();
+	m_name = sr.read_string();
 	sr.read_int32();
 	__int64 downloaded = sr.read_int64();
 	__int64 left = sr.read_int64();
@@ -241,4 +244,22 @@ static int CALLBACK compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 void Cdlg_files::sort()
 {
 	m_files.SortItems(::compare, reinterpret_cast<DWORD>(this));	
+}
+
+void Cdlg_files::OnOpen() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index == -1)
+		return;
+	const t_map_entry& e = m_map.find(m_files.GetItemData(index))->second;
+	string name = m_name + e.name;
+	for (int i = 0; (i = name.find('/', i)) != string::npos; i++)
+		name[i] = '\\';
+	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
+}
+
+void Cdlg_files::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	OnOpen();	
+	*pResult = 0;
 }

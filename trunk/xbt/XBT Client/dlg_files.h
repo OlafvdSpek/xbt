@@ -46,6 +46,8 @@ protected:
 	afx_msg void OnIncreasePriority();
 	afx_msg void OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnOpen();
+	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -64,6 +66,7 @@ private:
 	int m_buffer_w;
 	string m_info_hash;
 	t_map m_map;
+	string m_name;
 	Cserver& m_server;
 	int m_sort_column;
 	int m_sort_reverse;
