@@ -190,6 +190,8 @@ private:
 	typedef list<Cpeer_link> t_peer_links;
 	typedef vector<Csocket> t_sockets;
 
+	static void sig_handler(int v);
+
 	int m_clean_up_time;
 	int m_read_config_time;
 	int m_read_db_files_time;
