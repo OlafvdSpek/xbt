@@ -473,7 +473,7 @@ int Cserver::announce(const string& id)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->m_tracker.m_announce_time = 0;
+		i->announce();
 		return 0;
 	}
 	return 1;
@@ -486,7 +486,7 @@ int Cserver::pause_file(const string& id)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->m_run = false;
+		i->pause();
 		return 0;
 	}
 	return 1;
@@ -499,7 +499,7 @@ int Cserver::unpause_file(const string& id)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->m_run = true;
+		i->unpause();
 		return 0;
 	}
 	return 1;
@@ -512,7 +512,7 @@ int Cserver::start_file(const string& id)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->m_run = true;
+		i->open(i->m_name);
 		return 0;
 	}
 	return 1;
@@ -525,7 +525,7 @@ int Cserver::stop_file(const string& id)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->m_run = false;
+		i->close();
 		return 0;
 	}
 	return 1;
@@ -723,7 +723,7 @@ void Cserver::update_chokes()
 		{
 			if (j->m_state != 3)
 				continue;
-			if (!i->m_run || !j->m_left)
+			if (i->state() != Cbt_file::s_running || !j->m_left)
 				j->choked(true);
 			else if (!m_upload_slots)
 				j->choked(false);
@@ -893,7 +893,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 			file.d(bts_left, i->m_left);
 			file.d(bts_priority, i->m_priority);
 			file.d(bts_size, i->mcb_f);
-			file.d(bts_state, i->m_run);
+			file.d(bts_state, i->state());
 			file.d(bts_total_downloaded, i->m_total_downloaded);
 			file.d(bts_total_uploaded, i->m_total_uploaded);
 			file.d(bts_down_rate, i->m_down_counter.rate());

@@ -34,7 +34,7 @@ Cbt_file::Cbt_file()
 	m_completed_at = 0;
 	m_priority = 0;
 	m_end_mode = false;
-	m_run = true;
+	m_state = s_queued;
 	m_validate = true;
 }
 
@@ -177,6 +177,8 @@ int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 
 int Cbt_file::open(const string& name)
 {
+	if (state() != s_queued && state() != s_stopped)
+		return 1;
 	m_name = name;
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
@@ -199,6 +201,8 @@ int Cbt_file::open(const string& name)
 		while (!m_validate && m_hasher->run(*this))
 			;
 	}
+	announce();
+	m_state = s_hashing;
 	return 0;
 }
 
@@ -214,16 +218,23 @@ bool Cbt_file::hash()
 	delete m_hasher;
 	m_hasher = NULL;
 	m_validate = false;
+	m_state = s_running;
 	return false;
 }
 
 void Cbt_file::close()
 {
+	if (state() != s_hashing && state() != s_running)
+		return;
 	m_validate = m_hasher;
 	delete m_hasher;
 	m_hasher = NULL;
+	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+		i->close();
+	m_peers.clear();
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		i->close();
+	m_state = s_stopped;
 }
 
 void Cbt_file::erase()
@@ -250,12 +261,12 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 {
 	if (m_hasher)
 		return 0;
-	if (m_run && !m_left && m_server->seeding_ratio() && 100 * m_total_uploaded / m_server->seeding_ratio() > mcb_f)
+	if (state() == s_running && !m_left && m_server->seeding_ratio() && 100 * m_total_uploaded / m_server->seeding_ratio() > mcb_f)
 	{
 		alert(Calert(Calert::notice, "Seeding ratio reached"));
-		m_run = false;
+		close();
 	}
-	else if (m_run)
+	else if (state() == s_running)
 	{
 		for (t_new_peers::const_iterator i = m_new_peers.begin(); i != m_new_peers.end() && m_server->below_peer_limit(); )
 		{
@@ -390,7 +401,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 		if (i->write(offset - i->offset(), r, cb_write))
 		{
 			alert(Calert(Calert::error, "Piece " + n(a) + ": write failed"));
-			m_run = false;
+			m_state = s_paused;
 		}
 		size -= cb_write;
 		if (!size)
@@ -587,7 +598,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, c_valid_pieces());
 	w.write_int(4, 32 << 10);
 	w.write_int(4, mcb_piece);
-	w.write_int(4, m_hasher ? 2 : m_run);
+	w.write_int(4, state());
 	w.write_int(4, m_started_at);
 	w.write_int(4, m_session_started_at);
 	w.write_int(4, m_left ? 0 : m_completed_at);
@@ -667,7 +678,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 	m_completed_at = r.read_int(4);
 	m_started_at = r.read_int(4);
 	m_priority = static_cast<char>(r.read_int(1));
-	m_run = r.read_int(4);
+	m_state = static_cast<t_state>(r.read_int(4));
 	int c_pieces = r.read_int(4);
 	for (int i = 0; i < c_pieces; i++)
 		m_pieces[i].load_state(r);
@@ -706,7 +717,7 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	w.write_int(4, m_completed_at);
 	w.write_int(4, m_started_at);
 	w.write_int(1, m_priority);
-	w.write_int(4, m_run);
+	w.write_int(4, state());
 	w.write_int(4, m_pieces.size());
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 		i->save_state(w);
@@ -832,4 +843,21 @@ bool Cbt_file::end_mode() const
 int Cbt_file::c_max_requests_pending() const
 {
 	return end_mode() ? 1 : 8;
+}
+
+void Cbt_file::pause()
+{
+	if (state() == s_running)
+		m_state = s_paused;
+}
+
+void Cbt_file::unpause()
+{
+	if (state() == s_paused)
+		m_state = s_running;
+}
+
+void Cbt_file::announce()
+{
+	m_tracker.m_announce_time = 0;
 }
