@@ -59,6 +59,7 @@ public:
 // Implementation
 protected:
 	afx_msg void OnContextMenu(CWnd*, CPoint point);
+	afx_msg long OnHotKey(WPARAM, LPARAM);
 	HICON m_hIcon;
 
 	// Generated message map functions
