@@ -141,7 +141,7 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 	ti.m_peer_id.assign(r + utia_peer_id, 20);
 	ti.m_port = htons(read_int(2, r + utia_port, r_end));
 	ti.m_uploaded = read_int(8, r + utia_uploaded, r_end);
-	m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user ? user->uid : 0);
+	m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user);
 	const Cserver::t_file* file = m_server.file(ti.m_info_hash);
 	if (!file)
 	{

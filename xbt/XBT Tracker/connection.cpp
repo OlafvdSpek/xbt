@@ -184,7 +184,7 @@ void Cconnection::read(const string& v)
 				s = Cbvalue().d(bts_failure_reason, bts_unregistered_ipa).read();
 			else
 			{
-				m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user->uid);
+				m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
 				s = m_server->select_peers(ti).read();
 			}
 		}

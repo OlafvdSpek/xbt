@@ -334,7 +334,7 @@ void Cserver::accept(const Csocket& l)
 	}
 }
 
-void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, int uid)
+void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, const t_user* user)
 {
 	if (m_use_sql && m_config.m_log_announce)
 	{
@@ -347,13 +347,13 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		q.p(v.m_downloaded);
 		q.p(v.m_left);
 		q.p(v.m_uploaded);
-		q.p(uid);
+		q.p(user ? user->uid : 0);
 		q.p(time());
 		m_announce_log_buffer += q.read();
 	}
 	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
 		return;
-	if (m_use_sql && uid)
+	if (m_use_sql && user)
 	{
 		Csql_query q(m_database, "(1,?,?,?,?,?),");
 		switch (v.m_event)
@@ -374,7 +374,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 			q.p(0);
 		}
 		q.pe(v.m_info_hash);
-		q.p(uid);
+		q.p(user->uid);
 		m_files_users_updates_buffer += q.read();
 	}
 	t_file& file = m_files[v.m_info_hash];
@@ -384,12 +384,12 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	if (v.m_event == Ctracker_input::e_stopped)
 	{
 		file.peers.erase(v.m_ipa);
-		if (m_use_sql && uid && (v.m_downloaded || v.m_uploaded))
+		if (m_use_sql && user && (v.m_downloaded || v.m_uploaded))
 		{
 			Csql_query q(m_database, "(?,?,?),");
 			q.p(v.m_downloaded);
 			q.p(v.m_uploaded);
-			q.p(uid);
+			q.p(user->uid);
 			m_users_updates_buffer += q.read();
 		}
 	}
