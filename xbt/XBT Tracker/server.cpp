@@ -265,7 +265,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 {
 	if (m_log_announce)
 	{
-		Csql_query q(m_database, "(%d,%d,%d,%s,%s,%d,%d,%d,%d,%d),");
+		Csql_query q(m_database, "(?,?,?,?,?,?,?,?,?,?),");
 		q.p(ntohl(v.m_ipa));
 		q.p(ntohs(v.m_port));
 		q.p(v.m_event);
@@ -289,7 +289,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		file.peers.erase(v.m_ipa);
 		if (uid && (v.m_downloaded || v.m_uploaded))
 		{
-			Csql_query q(m_database, "(%d,%d,%d),");
+			Csql_query q(m_database, "(?,?,?),");
 			q.p(v.m_downloaded);
 			q.p(v.m_uploaded);
 			q.p(uid);
@@ -434,7 +434,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 {
 	if (m_log_scrape)
 	{
-		Csql_query q(m_database, "(%d,%s,%d),");
+		Csql_query q(m_database, "(?,?,?),");
 		q.p(ntohl(ti.m_ipa));
 		if (ti.m_info_hash.empty())
 			q.p("NULL");
@@ -482,7 +482,7 @@ void Cserver::read_db_files()
 				if (row.size(0) != 20)
 					continue;
 				m_files.erase(string(row.f(0), 20));
-				q = "delete from xbt_files where fid = %s";
+				q = "delete from xbt_files where fid = ?";
 				q.p(row.f_int(1));
 				q.execute();
 			}
@@ -493,7 +493,7 @@ void Cserver::read_db_files()
 		else if (m_auto_register)
 			return;			
 		q = "select info_hash, completed, fid, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp"
-			" from xbt_files where fid >= %s";
+			" from xbt_files where fid >= ?";
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
@@ -573,18 +573,18 @@ void Cserver::write_db_files()
 			Csql_query q(m_database);
 			if (!file.fid)
 			{
-				q = "insert into xbt_files (info_hash, ctime) values (%s, NULL)";
+				q = "insert into xbt_files (info_hash, ctime) values (?, NULL)";
 				q.pe(i->first);
 				q.execute();
 				file.fid = m_database.insert_id();
 			}
 			if (m_update_files_method)
-				q = "(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d),";
+				q = "(?,?,?,?,?,?,?,?,?,?,?,?),";
 			else
 			{
 				q = "update xbt_files"
-					" set leechers = %s, seeders = %s, completed = %s, started = %s, stopped = %s, announced_http = %s, announced_http_compact = %s, announced_http_no_peer_id = %s, announced_udp = %s, scraped_http = %s, scraped_udp = %s"
-					" where fid = %s";
+					" set leechers = ?, seeders = ?, completed = ?, started = ?, stopped = ?, announced_http = ?, announced_http_compact = ?, announced_http_no_peer_id = ?, announced_udp = ?, scraped_http = ?, scraped_udp = ?"
+					" where fid = ?";
 			}
 			q.p(file.leechers);
 			q.p(file.seeders);
