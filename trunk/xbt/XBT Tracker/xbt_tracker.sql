@@ -58,6 +58,14 @@ CREATE TABLE xbt_files_updates
   scraped_udp int NOT NULL
 );
 
+CREATE TABLE xbt_ipas
+(
+  ipa int NOT NULL,
+  uid int NOT NULL,
+  mtime timestamp NOT NULL,
+  PRIMARY KEY (ipa)
+);
+
 CREATE TABLE xbt_scrape_log
 (
   id int NOT NULL auto_increment,
@@ -73,5 +81,14 @@ CREATE TABLE xbt_users
   uid int NOT NULL auto_increment,
   name char(8) NOT NULL,
   pass blob NOT NULL,
+  downloaded bigint NOT NULL,
+  uploaded bigint NOT NULL,
   PRIMARY KEY (uid)
+);
+
+CREATE TABLE xbt_users_updates
+(
+  uid int NOT NULL,
+  downloaded bigint NOT NULL,
+  uploaded bigint NOT NULL
 );
