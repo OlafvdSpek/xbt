@@ -226,7 +226,7 @@ int Cserver::run()
 			timeval tv;
 			tv.tv_sec = hash ? 1 : 0;
 			tv.tv_usec = 0;
-			if (select(n, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
+			if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
 			{
 				alert(Calert(Calert::error, "Server", "select failed: " + Csocket::error2a(WSAGetLastError())));
 				break;
