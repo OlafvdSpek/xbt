@@ -264,7 +264,7 @@ void Cbt_file::write_data(__int64 o, const char* s, int cb_s)
 		piece.write(o % mcb_piece, s, cb_s);
 		if (!piece.m_valid)
 			return;
-		int offset = a * mcb_piece;
+		__int64 offset = a * mcb_piece;
 		int size = piece.m_d.size();
 		const byte* r = piece.m_d;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
@@ -309,7 +309,7 @@ int Cbt_file::read_piece(int a, byte* d)
 		piece.m_d.read(d);
 		return 0;
 	}
-	int offset = a * mcb_piece;
+	__int64 offset = a * mcb_piece;
 	int size = piece.mcb_d;
 	byte* w = d;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)

@@ -30,7 +30,7 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 	if (!--mc_sub_pieces_left)
 	{
 		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
-			(*i)->m_piece = NULL;
+			(*i)->m_pieces.erase(this);
 		m_peers.clear();
 		m_sub_pieces.clear();
 		if (memcmp(compute_sha1(m_d).c_str(), m_hash, 20))
