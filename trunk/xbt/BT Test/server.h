@@ -38,6 +38,7 @@ public:
 	void peer_port(int);
 	void public_ipa(int);
 	void seeding_ratio(int);
+	void tracker_port(int);
 	void upload_rate(int);
 	void upload_slots(int);
 	string state_fname() const;
@@ -108,6 +109,11 @@ public:
 		return m_tracker_accounts;
 	}
 
+	int tracker_port() const
+	{
+		return m_tracker_port;
+	}
+
 	int upload_rate() const
 	{
 		return m_upload_rate;
@@ -128,11 +134,13 @@ private:
 	string m_dir;
 	int m_new_admin_port;
 	int m_new_peer_port;
+	int m_new_tracker_port;
 	int m_peer_port;
 	int m_public_ipa;
 	int m_send_quota;
 	bool m_run;
 	int m_seeding_ratio;
+	int m_tracker_port;
 	int m_update_chokes_time;
 	int m_update_send_quotas_time;
 	int m_upload_rate;

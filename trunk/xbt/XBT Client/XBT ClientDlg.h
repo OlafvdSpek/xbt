@@ -142,6 +142,7 @@ private:
 	void read_file_dump(Cstream_reader& sr);
 	void read_server_dump(Cstream_reader& sr);
 
+	bool m_ask_for_location;
 	bool m_initial_hide;
 	string m_buffer[4];
 	int m_buffer_w;

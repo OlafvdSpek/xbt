@@ -133,6 +133,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	ETSLayoutDialog::OnInitDialog();
 
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
+	m_ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
 	set_dir(static_cast<string>(AfxGetApp()->GetProfileString(m_reg_key, "files_location")));
 	m_server.dir(static_cast<string>(m_dir));
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port()));
@@ -142,6 +143,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.seeding_ratio(AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio()));
 	m_show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
 	m_show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
+	m_server.tracker_port(AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port()));
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));	
 	start_server();
@@ -724,6 +726,7 @@ void CXBTClientDlg::OnPopupOptions()
 	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
+	data.ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
 	data.files_location = m_dir;
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
 	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
@@ -731,6 +734,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data.show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
 	data.show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
 	data.start_minimized = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
+	data.tracker_port = AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port());
 	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate());
 	data.upload_slots = AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots());
 	dlg.set(data);
@@ -738,6 +742,7 @@ void CXBTClientDlg::OnPopupOptions()
 		return;
 	data = dlg.get();
 	m_server.admin_port(data.admin_port);
+	m_ask_for_location = data.ask_for_location;
 	set_dir(data.files_location);
 	m_server.peer_port(data.peer_port);
 	if (!data.public_ipa.empty())
@@ -745,9 +750,11 @@ void CXBTClientDlg::OnPopupOptions()
 	m_server.seeding_ratio(data.seeding_ratio);
 	m_show_advanced_columns = data.show_advanced_columns;
 	m_show_tray_icon = data.show_tray_icon;
+	m_server.tracker_port(data.tracker_port);
 	m_server.upload_rate(data.upload_rate);
 	m_server.upload_slots(data.upload_slots);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "ask_for_location", data.ask_for_location);
 	AfxGetApp()->WriteProfileString(m_reg_key, "files_location", data.files_location.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
 	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
@@ -755,6 +762,7 @@ void CXBTClientDlg::OnPopupOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", data.show_advanced_columns);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "start_minimized", data.start_minimized);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "tracker_port", data.tracker_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
 	insert_columns();

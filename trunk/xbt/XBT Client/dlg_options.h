@@ -17,6 +17,7 @@ public:
 	struct t_data
 	{
 		int admin_port;
+		bool ask_for_location;
 		string files_location;
 		int peer_port;
 		string public_ipa;
@@ -24,6 +25,7 @@ public:
 		bool show_advanced_columns;
 		bool show_tray_icon;
 		bool start_minimized;
+		int tracker_port;
 		int upload_rate;
 		int upload_slots;
 	};
@@ -45,6 +47,8 @@ public:
 	BOOL	m_show_advanced_columns;
 	CString	m_files_location;
 	BOOL	m_start_minimized;
+	BOOL	m_ask_for_location;
+	int		m_tracker_port;
 	//}}AFX_DATA
 
 
