@@ -23,21 +23,26 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_a = a;
 	m_ctime = time(NULL);
 	
+	m_state = 0;
 	m_read_b.resize(4 << 10);
 	m_w = 0;
 }
 
-int Cconnection::pre_select(fd_set* fd_read_set)
+int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
 	FD_SET(m_s, fd_read_set);
+	if (!m_write_b.empty())
+		FD_SET(m_s, fd_write_set);
 	return m_s;
 }
 
-void Cconnection::post_select(fd_set* fd_read_set)
+void Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
 	if (FD_ISSET(m_s, fd_read_set))
 		recv();
-	if (time(NULL) - m_ctime > 15)
+	if (FD_ISSET(m_s, fd_write_set))
+		send();
+	if (time(NULL) - m_ctime > 15 || m_state == 5 && m_write_b.empty())
 		close();
 }
 
@@ -61,17 +66,74 @@ void Cconnection::recv()
 			}
 			return;
 		}
+		if (m_state == 5)
+			return;
 		char* a = &m_read_b.front() + m_w;
 		m_w += r;
-		while (a < &m_read_b.front() + m_w && *a != '\n' && *a != '\r')
-			a++;
-		if (a < &m_read_b.front() + m_w)
+		int state;
+		do
 		{
-			read(string(&m_read_b.front(), a));
+			state = m_state;
+			while (a < &m_read_b.front() + m_w && *a != '\n' && *a != '\r')
+			{
+				a++;
+				if (m_state)
+					m_state = 1;
+
+			}
+			if (a < &m_read_b.front() + m_w)
+			{
+				switch (m_state)
+				{
+				case 0:
+					read(string(&m_read_b.front(), a));
+					m_state = 1;
+				case 1:
+				case 3:
+					m_state += *a == '\n' ? 2 : 1;
+					break;
+				case 2:
+				case 4:
+					m_state++;
+					break;
+				}
+				a++;
+			}
+		}
+		while (state != m_state);
+		if (m_state == 5)
+			return;
+	}
+	m_state = 5;
+}
+
+void Cconnection::send()
+{
+	for (int r; r = m_s.send(&m_write_b.front() + m_r, m_write_b.size() - m_r); )
+	{
+		if (r == SOCKET_ERROR)
+		{
+			int e = WSAGetLastError();
+			switch (e)
+			{
+			case WSAECONNABORTED:
+			case WSAECONNRESET:
+				close();
+			case WSAEWOULDBLOCK:
+				break;
+			default:
+				cerr << "send failed: " << e << endl;
+				close();
+			}
+			return;
+		}
+		m_r += r;
+		if (m_r == m_write_b.size())
+		{
+			m_write_b.clear();
 			break;
 		}
 	}
-	close();
 }
 
 void Cconnection::close()
@@ -133,13 +195,25 @@ void Cconnection::read(const string& v)
 	if (!s)
 		gzip = false;
 	else if (gzip)
+	{
+		static ofstream f("xbt_tracker_gzip.log");
+		f << time(NULL) << '\t' << v[5] << '\t' << s.size() << '\t';
 		s = xcc_z::gzip(s);
+		f << s.size() << '\t' << ti.m_compact << '\t' << ti.m_no_peer_id << endl;
+	}
 	const char* h = gzip
 		? "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n"
 		: "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\n";
 	Cvirtual_binary d;
 	memcpy(d.write_start(strlen(h) + s.size()), h, strlen(h));
 	s.read(d.data_edit() + strlen(h));
-	if (m_s.send(d, d.size()) != d.size())
-		cerr << "send failed" << endl;
+	int r = m_s.send(d, d.size());
+	if (r == SOCKET_ERROR)
+		cerr << "send failed: " << WSAGetLastError() << endl;
+	else if (r != d.size())
+	{
+		m_write_b.resize(d.size() - r);
+		memcpy(m_write_b.begin(), d + r, d.size() - r);
+		m_r = 0;
+	}
 }

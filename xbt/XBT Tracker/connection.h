@@ -17,8 +17,9 @@ public:
 	void read(const string&);
 	void close();
 	void recv();
-	int pre_select(fd_set* fd_read_set);
-	void post_select(fd_set* fd_read_set);
+	void send();
+	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
+	void post_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	Cconnection();
 	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a);
 
@@ -28,12 +29,15 @@ public:
 	}
 private:
 	typedef vector<char> t_read_b;
+	typedef vector<char> t_write_b;
 
 	sockaddr_in m_a;
 	Csocket m_s;
 	int m_ctime;
 	Cserver* m_server;
+	int m_state;
 	t_read_b m_read_b;
+	t_read_b m_write_b;
 	int m_r;
 	int m_w;
 };
