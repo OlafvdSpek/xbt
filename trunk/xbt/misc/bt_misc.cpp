@@ -184,6 +184,8 @@ string peer_id2a(const string& v)
 		case '-':
 			if (v[1] == 'A' && v[2] == 'Z')
 				return peer_id2a("Azureus ", v, 3);
+			if (v[1] == 'T' && v[2] == 'S')
+				return peer_id2a("TorrentStorm ", v, 3);
 			break;
 		case 'A':
 			return peer_id2a("ABC ", v, 1);
