@@ -615,14 +615,15 @@ void Cbt_peer_link::write_peers()
 
 void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
+	mc_local_requests_pending--;
 	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
-	m_f->write_data(m_f->mcb_piece * piece + offset, s, size, this);
-	m_downloaded += size;
-	m_down_counter.add(size);
 	m_f->m_downloaded += size;
 	m_f->m_down_counter.add(size);
 	m_f->m_total_downloaded += size;
-	mc_local_requests_pending--;
+	if (m_f->write_data(m_f->mcb_piece * piece + offset, s, size, this))
+		return;
+	m_downloaded += size;
+	m_down_counter.add(size);
 }
 
 void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes)

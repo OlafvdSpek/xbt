@@ -48,7 +48,7 @@ public:
 	void dump(Cstream_writer&, int flags) const;
 	int next_invalid_piece(const Cbt_peer_link&);
 	int read_data(__int64 o, byte* d, int cb_d);
-	void write_data(__int64 o, const char* s, int cb_s, Cbt_peer_link*);
+	int write_data(__int64 o, const char* s, int cb_s, Cbt_peer_link*);
 	void close();
 	void erase();
 	int open(const string& name);
