@@ -16,7 +16,7 @@ END_MESSAGE_MAP()
 
 void CListCtrlEx::auto_size()
 {
-	if (!GetSafeHwnd())
+	if (!GetSafeHwnd() || !GetHeaderCtrl())
 		return;
 	for (int i = 0; i < GetHeaderCtrl()->GetItemCount(); i++)
 		SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
@@ -57,11 +57,20 @@ BOOL CListCtrlEx::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN)
 	{
-		switch (pMsg->wParam)
+		if (GetKeyState(VK_CONTROL) < 0)
 		{
-		case VK_ADD:
-			auto_size();
-			return true;
+			switch (pMsg->wParam)
+			{
+			case 'A':
+				{
+					for (int i = 0; i < GetItemCount(); i++)
+						SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
+				}
+				return true;
+			case VK_ADD:
+				auto_size();
+				return true;
+			}
 		}
 	}
 	return CListCtrl::PreTranslateMessage(pMsg);
