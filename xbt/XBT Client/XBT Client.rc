@@ -41,7 +41,7 @@ BEGIN
     CONTROL         "Tab1",IDC_TAB,"SysTabControl32",TCS_BOTTOM,35,44,50,30
 END
 
-IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 312
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 318
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 8, "MS Sans Serif"
@@ -64,24 +64,26 @@ BEGIN
                     ES_NUMBER
     EDITTEXT        IDC_TORRENT_LIMIT,7,205,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
+    CONTROL         "HotKey1",IDC_HOT_KEY,"msctls_hotkey32",WS_BORDER | 
+                    WS_TABSTOP,7,223,277,14
     CONTROL         "Ask for location",IDC_ASK_FOR_LOCATION,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,223,65,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,241,65,10
     CONTROL         "Bind before connect",IDC_BIND_BEFORE_CONNECT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,235,80,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,253,80,10
     CONTROL         "Lower process priority",IDC_LOWER_PROCESS_PRIORITY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,259,84,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,265,84,10
     CONTROL         "Show tray icon",IDC_SHOW_TRAY_ICON,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,271,63,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,277,63,10
     CONTROL         "Show advanced columns",IDC_SHOW_ADVANCED_COLUMNS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,283,96,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,289,96,10
     CONTROL         "Start minimzed",IDC_START_MINIMIZED,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,295,61,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,301,61,10
     CONTROL         "Show confirm exit dialog",IDC_SHOW_CONFIRM_EXIT_DIALOG,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,223,92,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,241,92,10
     CONTROL         "Hide on deactivate",IDC_HIDE_ON_DEACTIVATE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,235,76,10
-    DEFPUSHBUTTON   "OK",IDOK,250,291,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,306,291,50,14
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,253,76,10
+    DEFPUSHBUTTON   "OK",IDOK,250,297,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,306,297,50,14
     EDITTEXT        IDC_ADMIN_PORT,7,7,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
     EDITTEXT        IDC_PEER_PORT,7,25,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
@@ -99,6 +101,7 @@ BEGIN
     LTEXT           "Tracker port (UDP)",IDC_STATIC,288,169,61,8
     LTEXT           "Peer limit",IDC_STATIC,288,187,29,8
     LTEXT           "Torrent limit",IDC_STATIC,288,205,37,8
+    LTEXT           "Hot key",IDC_STATIC,288,223,26,8
 END
 
 IDD_TRACKERS DIALOG DISCARDABLE  0, 0, 282, 95
@@ -293,7 +296,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 356
         TOPMARGIN, 7
-        BOTTOMMARGIN, 305
+        BOTTOMMARGIN, 311
     END
 
     IDD_TRACKERS, DIALOG

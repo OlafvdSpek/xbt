@@ -48,6 +48,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(Cdlg_options)
+	DDX_Control(pDX, IDC_HOT_KEY, m_hot_key);
 	DDX_Text(pDX, IDC_PEER_PORT, m_peer_port);
 	DDV_MinMaxInt(pDX, m_peer_port, 0, 65535);
 	DDX_Text(pDX, IDC_ADMIN_PORT, m_admin_port);
@@ -72,6 +73,10 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_SHOW_CONFIRM_EXIT_DIALOG, m_show_confirm_exit_dialog);
 	DDX_Check(pDX, IDC_HIDE_ON_DEACTIVATE, m_hide_on_deactivate);
 	//}}AFX_DATA_MAP
+	if (pDX->m_bSaveAndValidate)
+		m_hot_key_value = m_hot_key.GetHotKey();
+	else
+		m_hot_key.SetHotKey(m_hot_key_value & 0xff, m_hot_key_value >> 8);
 }
 
 
@@ -94,6 +99,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.bind_before_connect = m_bind_before_connect;
 	v.completes_dir = m_completes_dir;
 	v.hide_on_deactivate = m_hide_on_deactivate;
+	v.hot_key = m_hot_key_value;
 	v.incompletes_dir = m_incompletes_dir;
 	v.lower_process_priority = m_lower_process_priority;
 	v.peer_limit = m_peer_limit;
@@ -119,6 +125,7 @@ void Cdlg_options::set(const t_data& v)
 	m_bind_before_connect = v.bind_before_connect;
 	m_completes_dir = backward_slashes(v.completes_dir).c_str();
 	m_hide_on_deactivate = v.hide_on_deactivate;
+	m_hot_key_value = v.hot_key;
 	m_incompletes_dir = backward_slashes(v.incompletes_dir).c_str();
 	m_lower_process_priority = v.lower_process_priority;
 	m_peer_limit = v.peer_limit;

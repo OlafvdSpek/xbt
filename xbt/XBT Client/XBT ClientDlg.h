@@ -13,6 +13,8 @@
 class CXBTClientDlg: public ETSLayoutDialog
 {
 public:
+	void register_hot_key(DWORD v);
+	void unregister_hot_key();
 	void update_global_details();
 	void set_torrent_state(Cbt_file::t_state);
 	Cbt_file::t_state get_torrent_state();

@@ -366,8 +366,8 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_torrents_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "torrents_sort_column", fc_name);
 	m_torrents_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "torrents_sort_reverse", false);
 	m_file = NULL;
+	register_hot_key(AfxGetApp()->GetProfileInt(m_reg_key, "hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q'));
 	register_tray();
-	RegisterHotKey(GetSafeHwnd(), 0, MOD_CONTROL | MOD_SHIFT, 'Q');
 	SetTimer(0, 1000, NULL);
 	SetTimer(1, 60000, NULL);
 	CCommandLineInfo cmdInfo;
@@ -2855,6 +2855,7 @@ void CXBTClientDlg::OnEditSelectAll()
 
 void CXBTClientDlg::OnToolsOptions() 
 {
+	unregister_hot_key();
 	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
@@ -2862,6 +2863,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.bind_before_connect = AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false);
 	data.completes_dir = m_server.completes_dir();
 	data.hide_on_deactivate = AfxGetApp()->GetProfileInt(m_reg_key, "hide_on_deactivate", false);
+	data.hot_key = AfxGetApp()->GetProfileInt(m_reg_key, "hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q');
 	data.incompletes_dir = m_server.incompletes_dir();
 	data.lower_process_priority = AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true);
 	data.peer_limit = m_server.peer_limit();
@@ -2903,6 +2905,7 @@ void CXBTClientDlg::OnToolsOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "bind_before_connect", data.bind_before_connect);
 	AfxGetApp()->WriteProfileString(m_reg_key, "completes_dir", data.completes_dir.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "hide_on_deactivate", data.hide_on_deactivate);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "hot_key", data.hot_key);
 	AfxGetApp()->WriteProfileString(m_reg_key, "incompletes_dir", data.incompletes_dir.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "lower_process_priority", data.lower_process_priority);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_limit", data.peer_limit);
@@ -2919,6 +2922,7 @@ void CXBTClientDlg::OnToolsOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
 	insert_columns(true);
+	register_hot_key(data.hot_key);
 	if (m_show_tray_icon)
 		register_tray();
 	else
@@ -3074,4 +3078,21 @@ void CXBTClientDlg::update_global_details()
 		m_global_details.mc_seeders += i->second.mc_seeders;
 		(i->second.m_left ? m_global_details.mc_torrents_incomplete : m_global_details.mc_torrents_complete)++;
 	}
+}
+
+void CXBTClientDlg::register_hot_key(DWORD v)
+{
+	int a = 0;
+	if (v & HOTKEYF_ALT << 8)
+		a |= MOD_ALT;
+	if (v & HOTKEYF_SHIFT << 8)
+		a |= MOD_SHIFT;
+	if (v & HOTKEYF_CONTROL << 8)
+		a |= MOD_CONTROL;
+	RegisterHotKey(GetSafeHwnd(), 0, a, v & 0xff);
+}
+
+void CXBTClientDlg::unregister_hot_key()
+{
+	UnregisterHotKey(GetSafeHwnd(), 0);
 }
