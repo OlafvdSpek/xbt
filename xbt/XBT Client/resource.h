@@ -19,6 +19,7 @@
 #define IDD_SCHEDULER                   139
 #define IDD_PROFILES                    140
 #define IDD_PROFILE                     141
+#define IDD_SCHEDULER_ENTRY             142
 #define IDC_FILES                       1000
 #define IDC_PEERS                       1002
 #define IDC_ADMIN_PORT                  1002
@@ -77,6 +78,10 @@
 #define IDC_UPLOAD_SLOTS_ENABLE         1051
 #define IDC_PEER_LIMIT_ENABLE           1052
 #define IDC_TORRENT_LIMIT_ENABLE        1053
+#define IDC_TIME                        1057
+#define IDC_TIME_STATIC                 1058
+#define IDC_PROFILE_STATIC              1059
+#define IDC_PROFILE                     1060
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -127,9 +132,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        142
+#define _APS_NEXT_RESOURCE_VALUE        143
 #define _APS_NEXT_COMMAND_VALUE         32822
-#define _APS_NEXT_CONTROL_VALUE         1054
+#define _APS_NEXT_CONTROL_VALUE         1061
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif
