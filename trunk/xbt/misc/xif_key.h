@@ -170,7 +170,7 @@ public:
 		return get_value(id).get_float();
 	}
 
-	float get_value_float(float id, float v) const
+	float get_value_float(int id, float v) const
 	{
 		return get_value(id).get_float(v);
 	}
