@@ -10,6 +10,8 @@
 
 #define for if (0) {} else for
 
+const static int g_state_version = 0;
+
 class Clock
 {
 public:
@@ -40,15 +42,17 @@ private:
 
 Cserver::Cserver()
 {
-	m_new_admin_port = 6879;
-	m_new_peer_port = 6889;
-	m_new_public_ipa = 0;
+	m_admin_port = m_new_admin_port = 6879;
+	m_peer_port = m_new_peer_port = 6881;
+	m_public_ipa = 0;
 	m_run = false;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time(NULL);
 	m_upload_rate = 0;
+	m_upload_slots = 8;
 
 	InitializeCriticalSection(&m_cs);
+	srand(time(NULL));
 }
 
 Cserver::~Cserver()
@@ -78,12 +82,17 @@ void Cserver::peer_port(int v)
 
 void Cserver::public_ipa(int v)
 {
-	m_new_public_ipa = v == INADDR_NONE ? 0 : v;
+	m_public_ipa = v == INADDR_NONE ? 0 : v;
 }
 
 void Cserver::upload_rate(int v)
 {
 	m_upload_rate = v;
+}
+
+void Cserver::upload_slots(int v)
+{
+	m_upload_slots = v;
 }
 
 int Cserver::run()
@@ -104,6 +113,7 @@ int Cserver::run()
 	else
 	{
 		load_state(Cvirtual_binary(state_fname()));
+		m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
 		save_state(true).save(state_fname());
 #ifndef WIN32
 		if (daemon(true, false))
@@ -136,15 +146,7 @@ int Cserver::run()
 				{
 					l = s;
 					m_peer_port = m_new_peer_port;
-					for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-						i->m_local_port = peer_port();
 				}
-			}
-			if (m_new_public_ipa != m_public_ipa)
-			{
-				m_public_ipa = m_new_public_ipa;
-				for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-					i->m_local_ipa = public_ipa();
 			}
 			update_send_quotas();
 			FD_ZERO(&fd_read_set);
@@ -180,7 +182,7 @@ int Cserver::run()
 			tv.tv_usec = 0;
 			if (select(n, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
 			{
-				alert(Calert(Calert::error, "Server", "select failed" + ::n(WSAGetLastError())));
+				alert(Calert(Calert::error, "Server", "select failed: " + ::n(WSAGetLastError())));
 				break;
 			}
 			lock();
@@ -190,11 +192,11 @@ int Cserver::run()
 				socklen_t cb_a = sizeof(sockaddr_in);
 				Csocket s = accept(l, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
-					alert(Calert(Calert::error, "Server", "accept failed" + ::n(WSAGetLastError())));
+					alert(Calert(Calert::error, "Server", "accept failed: " + ::n(WSAGetLastError())));
 				else
 				{
 					if (s.blocking(false))
-						alert(Calert(Calert::error, "Server", "ioctlsocket failed" + ::n(WSAGetLastError())));
+						alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + ::n(WSAGetLastError())));
 					m_links.push_back(Cbt_link(this, a, s));
 				}
 			}
@@ -204,11 +206,11 @@ int Cserver::run()
 				socklen_t cb_a = sizeof(sockaddr_in);
 				Csocket s = accept(la, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
-					alert(Calert(Calert::error, "Server", "accept failed" + ::n(WSAGetLastError())));
+					alert(Calert(Calert::error, "Server", "accept failed: " + ::n(WSAGetLastError())));
 				else
 				{
 					if (s.blocking(false))
-						alert(Calert(Calert::error, "Server", "ioctlsocket failed" + ::n(WSAGetLastError())));
+						alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + ::n(WSAGetLastError())));
 					m_admins.push_back(Cbt_admin_link(this, a, s));
 				}
 			}
@@ -269,41 +271,41 @@ ostream& operator<<(ostream& os, const Cserver& v)
 	return v.dump(os);
 }
 
-int Cserver::pre_file_dump(const string& id) const
+int Cserver::pre_file_dump(const string& id, int flags) const
 {
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
 		if (i->m_info_hash == id)
-			return i->pre_dump(true);
+			return i->pre_dump(flags);
 	};
 	return 0;
 }
 
-void Cserver::file_dump(Cstream_writer& w, const string& id) const
+void Cserver::file_dump(Cstream_writer& w, const string& id, int flags) const
 {
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
 		if (i->m_info_hash == id)
 		{
-			i->dump(w, true);
+			i->dump(w, flags);
 			return;
 		}
 	}
 }
 
-int Cserver::pre_dump() const
+int Cserver::pre_dump(int flags) const
 {
 	int size = 4;
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-		size += i->pre_dump();
+		size += i->pre_dump(flags);
 	return size;
 }
 
-void Cserver::dump(Cstream_writer& w) const
+void Cserver::dump(Cstream_writer& w, int flags) const
 {
 	w.write_int32(m_files.size());
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->dump(w);
+		i->dump(w, flags);
 }
 
 void Cserver::insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a, const Csocket& s)
@@ -325,24 +327,37 @@ void Cserver::unlock()
 	LeaveCriticalSection(&m_cs);
 }
 
-Cvirtual_binary Cserver::get_file_status(const string& id)
+Cvirtual_binary Cserver::get_file_status(const string& id, int flags)
 {
 	Clock l(m_cs);
 	Cvirtual_binary d;
-	Cstream_writer w(d.write_start(pre_file_dump(id)));
-	file_dump(w, id);
+	Cstream_writer w(d.write_start(pre_file_dump(id, flags)));
+	file_dump(w, id, flags);
 	assert(w.w() == d.data_end());
 	return d;
 }
 
-Cvirtual_binary Cserver::get_status()
+Cvirtual_binary Cserver::get_status(int flags)
 {
 	Clock l(m_cs);
 	Cvirtual_binary d;
-	Cstream_writer w(d.write_start(pre_dump()));
-	dump(w);
+	Cstream_writer w(d.write_start(pre_dump(flags)));
+	dump(w, flags);
 	assert(w.w() == d.data_end());
 	return d;
+}
+
+Cvirtual_binary Cserver::get_trackers()
+{
+	Clock l(m_cs);
+	return m_tracker_accounts.dump();
+}
+
+void Cserver::set_trackers(const Cvirtual_binary& d)
+{
+	Clock l(m_cs);
+	m_tracker_accounts.load(d);
+	d.save(trackers_fname());
 }
 
 int Cserver::start_file(const string& id)
@@ -371,6 +386,18 @@ int Cserver::stop_file(const string& id)
 	return 1;
 }
 
+void Cserver::sub_file_priority(const string& file_id, const string& sub_file_id, int priority)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != file_id)
+			continue;
+		i->sub_file_priority(sub_file_id, priority);
+		return;
+	}
+}
+
 string Cserver::get_url(const string& id)
 {
 	Clock l(m_cs);
@@ -388,6 +415,7 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 		Sleep(100);
 	Clock l(m_cs);
 	Cbt_file f;
+	f.m_server = this;
 	if (f.torrent(info))
 		return 1;
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -397,8 +425,6 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	}
 	if (f.open(name, true))
 		return 3;
-	f.m_local_ipa = public_ipa();
-	f.m_local_port = peer_port();
 	f.m_peer_id = new_peer_id();
 	m_files.push_front(f);
 	save_state(true).save(state_fname());
@@ -414,7 +440,7 @@ int Cserver::open_url(const string& v)
 	int b = v.find('/', a);
 	if (b == string::npos)
 		return 2;
-	string tracker = v.substr(a, b++ - a);
+	string trackers = v.substr(a, b++ - a);
 	a = v.find('/', b);
 	if (a == string::npos)
 		return 3;
@@ -435,7 +461,22 @@ int Cserver::open_url(const string& v)
 			i->insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
 		return 0;
 	}
-	return 5;
+	if (info_hash.empty() || info_hashes_hash.empty())
+		return 5;
+	Cbt_file f;
+	f.m_server = this;
+	for (a = 0; (b = trackers.find(',', a)) != string::npos; a = b + 1)
+	{
+		f.m_trackers.push_back(uri_decode(trackers.substr(a, b - a)));
+	}
+	for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
+		f.insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
+	f.m_info_hash = info_hash;
+	f.m_info_hashes_hash = info_hashes_hash;
+	f.m_peer_id = new_peer_id();
+	m_files.push_front(f);
+	save_state(true).save(state_fname());
+	return 0;
 }
 
 int Cserver::close(const string& id)
@@ -456,17 +497,16 @@ int Cserver::close(const string& id)
 void Cserver::load_state(const Cvirtual_binary& d)
 {
 	Clock l(m_cs);
-	if (d.size() < 4)
-		return;
 	Cstream_reader r(d);
+	if (d.size() < 8 || r.read_int32() != g_state_version)
+		return;
 	for (int c_files = r.read_int32(); c_files--; )
 	{
 		Cbt_file f;
+		f.m_server = this;
 		f.load_state(r);
 		if (f.open(f.m_name, !f.c_valid_pieces()))
 			continue;
-		f.m_local_ipa = public_ipa();
-		f.m_local_port = peer_port();
 		f.m_peer_id = new_peer_id();
 		m_files.push_front(f);
 	}
@@ -477,12 +517,13 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 {
 	Clock l(m_cs);
 	Cvirtual_binary d;
-	int cb_d = 4;
+	int cb_d = 8;
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 			cb_d += i->pre_save_state(intermediate);
 	}
 	Cstream_writer w(d.write_start(cb_d));
+	w.write_int32(g_state_version);
 	w.write_int32(m_files.size());
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->save_state(w, intermediate);
@@ -495,6 +536,11 @@ string Cserver::state_fname() const
 	return m_dir + "/state.bin";
 }
 
+string Cserver::trackers_fname() const
+{
+	return m_dir + "/trackers.bin";
+}
+
 void Cserver::alert(const Calert& v)
 {
 	m_alerts.push_back(v);
@@ -502,6 +548,40 @@ void Cserver::alert(const Calert& v)
 
 void Cserver::update_chokes()
 {
+	typedef multimap<int, Cbt_peer_link*, less<int> > t_links0;
+	typedef vector<Cbt_peer_link*> t_links1;
+	t_links0 links0;
+	t_links1 links1;
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
+		{
+			if (j->m_remote_interested && j->m_down_counter.rate())
+				links0.insert(t_links0::value_type(j->m_down_counter.rate(), &*j));
+			else
+				links1.push_back(&*j);
+		}
+	}
+	int slots_left = m_upload_slots;
+	for (t_links0::iterator i = links0.begin(); i != links0.end(); i++)
+	{
+		if (slots_left)
+		{
+			slots_left--;
+			i->second->choked(false);
+		}
+		else
+			links1.push_back(&*i->second);
+	}
+	while (slots_left-- && !links1.empty())
+	{
+		int i = rand() % links1.size();
+		links1[i]->choked(false);
+		links1[i] = links1.back();
+		links1.resize(links1.size() - 1);
+	}
+	for (t_links1::const_iterator i = links1.begin(); i != links1.end(); i++)
+		(*i)->choked(true);
 	m_update_chokes_time = time(NULL);
 }
 
@@ -545,3 +625,19 @@ void Cserver::update_send_quotas()
 		}
 	}
 }
+
+string Cserver::completes_dir()
+{
+	return m_dir + "\\Completes";
+}
+
+string Cserver::incompletes_dir()
+{
+	return m_dir + "\\Incompletes";
+}
+
+string Cserver::torrents_dir()
+{
+	return m_dir + "\\Torrents";
+}
+

@@ -150,10 +150,10 @@ void Cbt_admin_link::read_message(const char* r, const char* r_end)
 	case bti_get_status:
 		{
 			Cvirtual_binary d;
-			Cstream_writer w(d.write_start(5 + m_server->pre_dump()));
+			Cstream_writer w(d.write_start(5 + m_server->pre_dump(0)));
 			w.write_int32(d.size());
 			w.write_int8(bti_status);
-			m_server->dump(w);
+			m_server->dump(w, 0);
 			assert(w.w() == d.data_end());
 		}
 		break;
