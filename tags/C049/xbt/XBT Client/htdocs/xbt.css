@@ -1,0 +1,6 @@
+form {display: inline;}
+img {border-style: none;}
+table {border-collapse: collapse;}
+td, th {border: 1px solid #000000; padding-left: 2px; padding-right: 2px;}
+td {background-color: #cccccc;}
+th {background-color: #ccccff;}
