@@ -58,6 +58,15 @@ string n(int v)
 	return b;
 }
 
+string hex_encode(const string& v)
+{
+	string r;
+	r.reserve(v.length() << 1);
+	for (int i = 0; i < v.length(); i++)
+		r += hex_encode(2, v[i]);
+	return r;
+}
+
 string uri_decode(const string& v)
 {
 	string r;

@@ -12,6 +12,7 @@
 string escape_string(const string& v);
 string n(int v);
 string hex_encode(int l, int v);
+string hex_encode(const string& v);
 string uri_decode(const string& v);
 string uri_encode(const string& v);
 
