@@ -21,6 +21,8 @@ enum
 	bti_piece,
 	bti_cancel,
 
+	bti_get_info,
+	bti_info,
 	bti_get_peers,
 	bti_peers,
 
