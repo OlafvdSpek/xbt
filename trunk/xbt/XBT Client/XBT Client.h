@@ -24,7 +24,6 @@ class CXBTClientApp : public CWinApp
 {
 public:
 	static unsigned int backend_thread(void* p);
-	CXBTClientApp();
 
 // Overrides
 	// ClassWizard generated virtual function overrides
