@@ -564,6 +564,7 @@ void Cserver::read_config()
 	m_log_scrape = false;
 	m_read_config_interval = 300;
 	m_read_db_interval = 60;
+	m_redirect_url.erase();
 	m_write_db_interval = 60;
 	try
 	{
@@ -600,6 +601,8 @@ void Cserver::read_config()
 				m_read_config_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_db_interval"))
 				m_read_db_interval = row.f_int(1);
+			else if (!strcmp(row.f(0), "redirect_url"))
+				m_redirect_url = row.f(1);
 			else if (!strcmp(row.f(0), "write_db_interval"))
 				m_write_db_interval = row.f_int(1);
 		}
