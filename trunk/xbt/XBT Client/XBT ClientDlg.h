@@ -17,10 +17,14 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	int files_compare(int id_a, int id_b) const;
+	int peers_compare(int id_a, int id_b) const;
+	static unsigned int server_thread(void* p);
+	void start_server();
+	void stop_server();
 	void register_tray();
 	void unregister_tray();
 	void update_tray();
-	void server(Cserver& server);
 	void auto_size_files();
 	void auto_size_peers();
 	void auto_size();
@@ -67,6 +71,12 @@ protected:
 	afx_msg void OnPopupExit();
 	afx_msg void OnPopupExplore();
 	afx_msg void OnDestroy();
+	afx_msg void OnPopupStart();
+	afx_msg void OnPopupStop();
+	afx_msg void OnWindowPosChanging(WINDOWPOS FAR* lpwndpos);
+	afx_msg void OnEndSession(BOOL bEnding);
+	afx_msg void OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -105,6 +115,7 @@ private:
 		int up_rate;
 		int c_leechers;
 		int c_seeders;
+		bool run;
 		bool removed;
 	};
 
@@ -114,14 +125,20 @@ private:
 	void read_file_dump(Cstream_reader& sr);
 	void read_server_dump(Cstream_reader& sr);
 
+	bool m_initial_hide;
 	string m_buffer[4];
 	int m_buffer_w;
 	t_file* m_file;
 	t_files m_files_map;
-	Cserver* m_server;
+	CString m_dir;
 	CString m_completes_dir;
 	CString m_incompletes_dir;
 	CString m_torrents_dir;
+	CString m_reg_key;
+	Cserver m_server;
+	CWinThread* m_server_thread;
+	int m_files_sort_column;
+	int m_peers_sort_column;
 };
 
 //{{AFX_INSERT_LOCATION}}

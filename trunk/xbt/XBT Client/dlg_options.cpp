@@ -19,7 +19,8 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	: CDialog(Cdlg_options::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(Cdlg_options)
-		// NOTE: the ClassWizard will add member initialization here
+	m_peer_port = 0;
+	m_admin_port = 0;
 	//}}AFX_DATA_INIT
 }
 
@@ -28,7 +29,10 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(Cdlg_options)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
+	DDX_Text(pDX, IDC_PEER_PORT, m_peer_port);
+	DDV_MinMaxInt(pDX, m_peer_port, 0, 65535);
+	DDX_Text(pDX, IDC_ADMIN_PORT, m_admin_port);
+	DDV_MinMaxInt(pDX, m_admin_port, 0, 65535);
 	//}}AFX_DATA_MAP
 }
 
@@ -41,3 +45,17 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_options message handlers
+
+Cdlg_options::t_data Cdlg_options::get() const
+{
+	t_data v;
+	v.admin_port = m_admin_port;
+	v.peer_port = m_peer_port;
+	return v;
+}
+
+void Cdlg_options::set(const t_data& v)
+{
+	m_admin_port = v.admin_port;
+	m_peer_port = v.peer_port;
+}

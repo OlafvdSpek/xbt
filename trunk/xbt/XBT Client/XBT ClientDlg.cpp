@@ -29,10 +29,14 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
+	m_reg_key = "Options";
+	m_initial_hide = false;
+	m_server_thread = NULL;
 	char path[MAX_PATH];
 	if (SUCCEEDED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
 	{
 		strcat(path, "\\XBT");
+		m_dir = path;
 		m_completes_dir = path;
 		m_completes_dir += "\\Completes";
 		m_incompletes_dir = path;
@@ -73,6 +77,12 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_EXIT, OnPopupExit)
 	ON_COMMAND(ID_POPUP_EXPLORE, OnPopupExplore)
 	ON_WM_DESTROY()
+	ON_COMMAND(ID_POPUP_START, OnPopupStart)
+	ON_COMMAND(ID_POPUP_STOP, OnPopupStop)
+	ON_WM_WINDOWPOSCHANGING()
+	ON_WM_ENDSESSION()
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_PEERS, OnColumnclickPeers)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -90,6 +100,10 @@ BOOL CXBTClientDlg::OnInitDialog()
 		;
 	ETSLayoutDialog::OnInitDialog();
 
+	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", 6879));
+	m_server.dir(static_cast<string>(m_dir));
+	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881));
+	start_server();
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_files.InsertColumn(0, "Hash");
 	m_files.InsertColumn(1, "%", LVCFMT_RIGHT);
@@ -116,6 +130,8 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_peers.InsertColumn(11, "R");
 	m_peers.InsertColumn(12, "R");
 	m_peers.InsertColumn(13, "Peer ID");
+	m_files_sort_column = -1;
+	m_peers_sort_column = -1;
 	m_file = NULL;
 	auto_size();
 	register_tray();
@@ -159,6 +175,7 @@ HCURSOR CXBTClientDlg::OnQueryDragIcon()
 
 void CXBTClientDlg::open(const string& name)
 {
+	m_initial_hide = false;
 	Cvirtual_binary d(name);
 	Cbt_torrent torrent(d);
 	if (!torrent.valid())
@@ -190,7 +207,7 @@ void CXBTClientDlg::open(const string& name)
 	if (!torrent.files().front().name().empty())
 		CreateDirectory(path, NULL);
 	CWaitCursor wc;
-	m_server->open(d, path);
+	m_server.open(d, path);
 }
 
 void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -425,6 +442,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.up_rate = sr.read_int32();
 	f.c_leechers = sr.read_int32();
 	f.c_seeders = sr.read_int32();
+	f.run = sr.read_int32();
 	f.removed = false;
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); i++)
@@ -541,14 +559,9 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 
 void CXBTClientDlg::OnTimer(UINT nIDEvent) 
 {
-	read_server_dump(Cstream_reader(m_server->get_status()));
+	read_server_dump(Cstream_reader(m_server.get_status()));
 	update_tray();
 	ETSLayoutDialog::OnTimer(nIDEvent);
-}
-
-void CXBTClientDlg::server(Cserver& server)
-{
-	m_server = &server;
 }
 
 void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
@@ -581,6 +594,20 @@ void CXBTClientDlg::OnPopupExplore()
 	ShellExecute(m_hWnd, "open", m_incompletes_dir, NULL, NULL, SW_SHOW);
 }
 
+void CXBTClientDlg::OnPopupStart() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index != -1)
+		m_server.start_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+}
+
+void CXBTClientDlg::OnPopupStop() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index != -1)
+		m_server.stop_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+}
+
 void CXBTClientDlg::OnPopupOpen() 
 {
 	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
@@ -592,7 +619,7 @@ void CXBTClientDlg::OnPopupClose()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index != -1)
-		m_server->close(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
 void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI) 
@@ -603,8 +630,17 @@ void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
 void CXBTClientDlg::OnPopupOptions() 
 {
 	Cdlg_options dlg;
+	Cdlg_options::t_data data;
+	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", 6879);
+	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881);
+	dlg.set(data);
 	if (IDOK != dlg.DoModal())
-		return;	
+		return;
+	data = dlg.get();
+	m_server.admin_port(data.admin_port);
+	m_server.peer_port(data.peer_port);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
 }
 
 void CXBTClientDlg::OnPopupExit() 
@@ -643,6 +679,7 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 
 void CXBTClientDlg::OnDestroy() 
 {
+	stop_server();
 	unregister_tray();
 	ETSLayoutDialog::OnDestroy();
 }
@@ -687,6 +724,7 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		switch (lParam)
 		{
 		case WM_LBUTTONDBLCLK:
+			m_initial_hide = false;
 			ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
 			if (IsWindowVisible())
 				SetForegroundWindow();
@@ -694,4 +732,142 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	return ETSLayoutDialog::WindowProc(message, wParam, lParam);
+}
+
+void CXBTClientDlg::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
+{
+	if (m_initial_hide)
+		lpwndpos->flags &= ~SWP_SHOWWINDOW;
+	ETSLayoutDialog::OnWindowPosChanging(lpwndpos);
+}
+
+void CXBTClientDlg::OnEndSession(BOOL bEnding) 
+{
+	stop_server();
+	ETSLayoutDialog::OnEndSession(bEnding);
+}
+
+unsigned int CXBTClientDlg::server_thread(void* p)
+{
+	reinterpret_cast<CXBTClientDlg*>(p)->m_server.run();
+	return 0;
+}
+
+void CXBTClientDlg::start_server()
+{
+	if (m_server_thread)
+		return;
+	m_server_thread = AfxBeginThread(server_thread, this);
+	m_server_thread->m_bAutoDelete = false;
+}
+
+void CXBTClientDlg::stop_server()
+{
+	m_server.stop();
+	if (m_server_thread)
+		WaitForSingleObject(m_server_thread->m_hThread, INFINITE);	
+	delete m_server_thread;
+	m_server_thread = NULL;
+}
+
+template <class T>
+static int compare(const T& a, const T& b)
+{
+	return a < b ? -1 : a != b;
+}
+
+int CXBTClientDlg::files_compare(int id_a, int id_b) const
+{
+	const t_file& a = m_files_map.find(id_a)->second;
+	const t_file& b = m_files_map.find(id_b)->second;
+	switch (m_files_sort_column)
+	{
+	case 0:
+		return compare(a.info_hash, b.info_hash);
+	case 1:
+		return compare(b.left, a.left);
+	case 2:
+		return compare(a.left, b.left);
+	case 3:
+		return compare(a.total_downloaded, b.total_downloaded);
+	case 4:
+		return compare(a.total_uploaded, b.total_uploaded);
+	case 5:
+		return compare(a.down_rate, b.down_rate);
+	case 6:
+		return compare(a.up_rate, b.up_rate);
+	case 7:
+		return compare(a.c_leechers, b.c_leechers);
+	case 8:
+		return compare(a.c_seeders, b.c_seeders);
+	case 9:
+		return compare(a.name, b.name);
+	}
+	return 0;
+}
+
+static int CALLBACK files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->files_compare(lParam1, lParam2);
+}
+
+void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	m_files_sort_column = pNMListView->iSubItem;
+	m_files.SortItems(::files_compare, reinterpret_cast<DWORD>(this));	
+	*pResult = 0;
+}
+
+int CXBTClientDlg::peers_compare(int id_a, int id_b) const
+{
+	if (!m_file)
+		return 0;
+	const t_peer& a = m_file->peers.find(id_a)->second;
+	const t_peer& b = m_file->peers.find(id_b)->second;
+	switch (m_peers_sort_column)
+	{
+	case 0:
+		return compare(ntohl(a.host.s_addr), ntohl(b.host.s_addr));
+	case 1:
+		return compare(a.port, b.port);
+	case 2:
+		return compare(b.left, a.left);
+	case 3:
+		return compare(a.left, b.left);
+	case 4:
+		return compare(a.downloaded, b.downloaded);
+	case 5:
+		return compare(a.uploaded, b.uploaded);
+	case 6:
+		return compare(a.down_rate, b.down_rate);
+	case 7:
+		return compare(a.up_rate, b.up_rate);
+	case 8:
+		return compare(a.local_link, b.local_link);
+	case 9:
+		return compare(a.local_choked, b.local_choked);
+	case 10:
+		return compare(a.local_interested, b.local_interested);
+	case 11:
+		return compare(a.remote_choked, b.remote_choked);
+	case 12:
+		return compare(a.remote_interested, b.remote_interested);
+	case 13:
+		return compare(a.peer_id, b.peer_id);
+	}
+	return 0;
+}
+
+static int CALLBACK peers_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->peers_compare(lParam1, lParam2);
+}
+
+void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	m_peers_sort_column = pNMListView->iSubItem;
+	m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));		
+	*pResult = 0;
 }
