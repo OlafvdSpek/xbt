@@ -53,6 +53,7 @@ protected:
 	afx_msg void OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnOpen();
 	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnExplore();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

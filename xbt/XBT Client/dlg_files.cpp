@@ -45,8 +45,8 @@ BEGIN_MESSAGE_MAP(Cdlg_files, ETSLayoutDialog)
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_FILES, OnGetdispinfoFiles)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
 	ON_BN_CLICKED(IDC_OPEN, OnOpen)
-	ON_WM_CHAR()
 	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
+	ON_BN_CLICKED(IDC_EXPLORE, OnExplore)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -60,6 +60,7 @@ BOOL Cdlg_files::OnInitDialog()
 		<< item (IDC_FILES, GREEDY)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
 			<< itemGrowing(HORIZONTAL)
+			<< item (IDC_EXPLORE, NORESIZE)
 			<< item (IDC_OPEN, NORESIZE)
 			<< item (IDC_DECREASE_PRIORITY, NORESIZE)
 			<< item (IDC_INCREASE_PRIORITY, NORESIZE)
@@ -246,6 +247,21 @@ static int CALLBACK compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 void Cdlg_files::sort()
 {
 	m_files.SortItems(::compare, reinterpret_cast<DWORD>(this));	
+}
+
+void Cdlg_files::OnExplore() 
+{
+	string name = m_name;
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index != -1)
+	{
+		const t_map_entry& e = m_map.find(m_files.GetItemData(index))->second;
+		name += e.name;
+	}
+	for (int i = 0; (i = name.find('/', i)) != string::npos; i++)
+		name[i] = '\\';
+	name.erase(name.rfind('\\'));
+	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
 }
 
 void Cdlg_files::OnOpen() 
