@@ -34,10 +34,16 @@
 	{
 		switch ($v)
 		{
-		case '0':
-			return '';
+		case 0:
+			return 'Q';
 		case 1:
+			return 'H';
+		case 2:
 			return 'R';
+		case 3:
+			return 'P';
+		case 4:
+			return 'S';
 		}
 		return $v;
 	}

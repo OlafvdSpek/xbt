@@ -10,7 +10,7 @@
 		header('www-authenticate: basic realm="XBT Client"');
 		return;
 	}
-	set_time_limit(5);
+	set_time_limit(15);
 	$s = fsockopen($config['client_host'], $config['client_port']);
 	if ($s === false)
 		die('fsockopen failed');
@@ -24,9 +24,9 @@
 	(
 		'close' => 'close torrent',
 		'pause' => 'pause torrent',
-		'priority_high' => 'set priority',
-		'priority_normal' => 'set priority',
-		'priority_low' => 'set priority',
+		'set_priority_high' => 'set priority',
+		'set_priority_normal' => 'set priority',
+		'set_priority_low' => 'set priority',
 		'set_options' => 'set options',
 		'start' => 'start torrent',
 		'stop' => 'stop torrent',
@@ -49,13 +49,13 @@
 					continue;
 				switch ($_REQUEST['a'])
 				{
-				case 'priority_high':
+				case 'set_priority_high':
 					send_string($s, sprintf('d6:action%d:%s4:hash20:%s8:priorityi1ee', strlen($action), $action, $name));
 					break;
-				case 'priority_normal':
+				case 'set_priority_normal':
 					send_string($s, sprintf('d6:action%d:%s4:hash20:%s8:priorityi0ee', strlen($action), $action, $name));
 					break;
-				case 'priority_low':
+				case 'set_priority_low':
 					send_string($s, sprintf('d6:action%d:%s4:hash20:%s8:priorityi-1ee', strlen($action), $action, $name));
 					break;
 				default:
