@@ -53,6 +53,7 @@ public:
 Cserver::Cserver()
 {
 	m_admin_port = m_new_admin_port = 6879;
+	m_dir = ".";
 	m_end_mode = false;
 	m_peer_limit = 0;
 	m_peer_port = m_new_peer_port = 6881;
