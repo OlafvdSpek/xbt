@@ -24,6 +24,7 @@ public:
 		df_alerts = 1,
 		df_files = 2,
 		df_peers = 4,
+		df_trackers = 8,
 	};
 
 	void sub_file_priority(const string& file_id, const string& sub_file_id, int priority);
