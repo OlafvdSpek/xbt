@@ -30,6 +30,7 @@ enum
 	fc_name,
 	fc_done,
 	fc_left,
+	fc_size,
 	fc_total_downloaded,
 	fc_total_uploaded,
 	fc_down_rate,
@@ -292,6 +293,10 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	case fc_left:
 		if (e.left)
 			m_buffer[m_buffer_w] = b2a(e.left);
+		break;
+	case fc_size:
+		if (e.size)
+			m_buffer[m_buffer_w] = b2a(e.size);
 		break;
 	case fc_total_downloaded:
 		if (e.total_downloaded)
@@ -1136,6 +1141,8 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 		return compare(b.left * 1000 / b.size, a.left * 1000 / a.size);
 	case fc_left:
 		return compare(a.left, b.left);
+	case fc_size:
+		return compare(a.size, b.size);
 	case fc_total_downloaded:
 		return compare(b.total_downloaded, a.total_downloaded);
 	case fc_total_uploaded:
@@ -1243,6 +1250,7 @@ void CXBTClientDlg::insert_columns()
 	m_files.InsertColumn(fc_name, "Name");
 	m_files.InsertColumn(fc_done, "%", LVCFMT_RIGHT);
 	m_files.InsertColumn(fc_left, "Left", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_size, "Size", LVCFMT_RIGHT);
 	m_files.InsertColumn(fc_total_downloaded, "Downloaded", LVCFMT_RIGHT);
 	m_files.InsertColumn(fc_total_uploaded, "Uploaded", LVCFMT_RIGHT);
 	m_files.InsertColumn(fc_down_rate, "Down rate", LVCFMT_RIGHT);
