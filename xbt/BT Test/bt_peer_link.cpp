@@ -816,7 +816,7 @@ void Cbt_peer_link::check_pieces()
 {
 	for (t_pieces::iterator i = m_pieces.begin(); i != m_pieces.end(); )
 	{
-		if ((*i)->check_peer(this, m_f->end_mode() && m_f->m_server->end_mode() ? 15 : m_f->m_server->time() - m_rtime > 30 ? 60 : 600))
+		if ((*i)->check_peer(this, m_f->end_mode() ? 15 : m_f->m_server->time() - m_rtime > 30 ? 60 : 600))
 			i++;
 		else
 			m_pieces.erase(i++);
