@@ -91,26 +91,29 @@ void Cserver::run()
 {
 	read_config();
 	t_sockets lt, lu;
-	for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
+	for (t_listen_ipas::const_iterator j = m_listen_ipas.begin(); j != m_listen_ipas.end(); j++)
 	{
-		Csocket l0, l1;
-		int v = true;
-		if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
-			cerr << "socket failed: " << WSAGetLastError() << endl;
-		else if (setsockopt(l0, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
-			l0.bind(m_listen_ipa, htons(*i)))			
-			cerr << "bind failed: " << WSAGetLastError() << endl;
-		else if (l0.listen())
-			cerr << "listen failed: " << WSAGetLastError() << endl;
-		else
-			lt.push_back(l0);
-		if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
-			cerr << "socket failed: " << WSAGetLastError() << endl;
-		else if (setsockopt(l1, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
-			l1.bind(m_listen_ipa, htons(*i)))
-			cerr << "bind failed: " << WSAGetLastError() << endl;
-		else
-			lu.push_back(l1);
+		for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
+		{
+			Csocket l0, l1;
+			int v = true;
+			if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
+				cerr << "socket failed: " << WSAGetLastError() << endl;
+			else if (setsockopt(l0, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
+				l0.bind(*j, htons(*i)))			
+				cerr << "bind failed: " << WSAGetLastError() << endl;
+			else if (l0.listen())
+				cerr << "listen failed: " << WSAGetLastError() << endl;
+			else
+				lt.push_back(l0);
+			if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
+				cerr << "socket failed: " << WSAGetLastError() << endl;
+			else if (setsockopt(l1, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
+				l1.bind(*j, htons(*i)))
+				cerr << "bind failed: " << WSAGetLastError() << endl;
+			else
+				lu.push_back(l1);
+		}
 	}
 	if (lt.empty() || lu.empty())
 		return;
@@ -560,7 +563,7 @@ void Cserver::read_config()
 	m_gzip_debug = true;
 	m_gzip_scrape = true;
 	m_listen_check = true;
-	m_listen_ipa = htonl(INADDR_ANY);
+	m_listen_ipas.clear();
 	m_listen_ports.clear();
 	m_log_announce = false;
 	m_log_scrape = false;
@@ -594,7 +597,7 @@ void Cserver::read_config()
 			else if (!strcmp(row.f(0), "listen_check"))
 				m_listen_check = row.f_int(1);
 			else if (!strcmp(row.f(0), "listen_ipa"))
-				m_listen_ipa = inet_addr(row.f(1));
+				m_listen_ipas.insert(inet_addr(row.f(1)));
 			else if (!strcmp(row.f(0), "listen_port"))
 				m_listen_ports.insert(row.f_int(1));
 			else if (!strcmp(row.f(0), "log_announce"))
@@ -614,6 +617,9 @@ void Cserver::read_config()
 	catch (Cxcc_error error)
 	{
 	}
+	if (m_listen_ipas.empty())
+		m_listen_ipas.insert(htonl(INADDR_ANY));
+
 	if (m_listen_ports.empty())
 		m_listen_ports.insert(2710);
 	m_read_config_time = time(NULL);
