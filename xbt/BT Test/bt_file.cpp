@@ -119,6 +119,7 @@ void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 	w.write_string(name());
 	w.write_int32(priority());
 	w.write_int64(size());
+	w.write_string(merkle_hash());
 }
 
 bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
@@ -676,7 +677,7 @@ string Cbt_file::get_url() const
 	string v = "xbtp://";
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		v += uri_encode(*i) + ',';
-	v += '/' + hex_encode(m_info_hash) + '/' + hex_encode(m_info_hashes_hash) + '/';
+	v += '/' + hex_encode(m_info_hash) + '/';
 	if (local_ipa())
 	{
 		v += hex_encode(8, ntohl(local_ipa()))
