@@ -175,11 +175,10 @@ int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 		|| ::write(m_f, s, cb_s) != cb_s;
 }
 
-int Cbt_file::open(const string& name)
+int Cbt_file::open()
 {
-	if (state() != s_queued && state() != s_stopped)
+	if (is_open())
 		return 1;
-	m_name = name;
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
@@ -224,7 +223,7 @@ bool Cbt_file::hash()
 
 void Cbt_file::close()
 {
-	if (state() != s_hashing && state() != s_paused && state() != s_running)
+	if (!is_open())
 		return;
 	m_validate = m_hasher;
 	delete m_hasher;

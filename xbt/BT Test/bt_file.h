@@ -64,7 +64,7 @@ public:
 	int write_data(__int64 o, const char* s, int cb_s, Cbt_peer_link*);
 	void close();
 	void erase();
-	int open(const string& name);
+	int open();
 	int c_invalid_pieces() const;
 	int c_pieces() const;
 	int c_valid_pieces() const;
@@ -77,6 +77,18 @@ public:
 	int info(const Cbvalue&);
 	Cbt_file();
 	~Cbt_file();
+
+	bool is_open() const
+	{
+		switch (state())
+		{
+		case s_hashing:
+		case s_paused:
+		case s_running:
+			return true;
+		}
+		return false;
+	}
 
 	t_state state() const
 	{
