@@ -92,25 +92,25 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,306,297,50,14
     EDITTEXT        IDC_SEEDING_RATIO,7,97,37,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
-    LTEXT           "Admin port (TCP):",IDC_ADMIN_PORT_STATIC,288,7,56,14
-    LTEXT           "Peer port (TCP):",IDC_PEER_PORT_STATIC,288,25,52,14
-    LTEXT           "Public IP address:",IDC_PUBLIC_IPA_STATIC,288,43,58,14
-    LTEXT           "Upload rate (kbyte/s):",IDC_UPLOAD_RATE_STATIC,286,61,
-                    70,14
-    LTEXT           "Upload slots:",IDC_UPLOAD_SLOTS_STATIC,288,79,42,14
-    LTEXT           "Seeding ratio (%):",IDC_SEEDING_RATIO_STATIC,288,97,56,
+    LTEXT           "Admin Port (TCP):",IDC_ADMIN_PORT_STATIC,288,7,56,14
+    LTEXT           "Peer Port (TCP):",IDC_PEER_PORT_STATIC,288,25,52,14
+    LTEXT           "Public IP Address:",IDC_PUBLIC_IPA_STATIC,288,43,58,14
+    LTEXT           "Upload Rate (kbyte/s):",IDC_UPLOAD_RATE_STATIC,283,61,
+                    73,14
+    LTEXT           "Upload Slots:",IDC_UPLOAD_SLOTS_STATIC,288,79,42,14
+    LTEXT           "Seeding Ratio (%):",IDC_SEEDING_RATIO_STATIC,288,97,59,
                     14
-    LTEXT           "Completes directory:",IDC_COMPLETES_DIRECTORY_STATIC,
-                    288,115,64,14
-    LTEXT           "Incompletes directory:",
+    LTEXT           "Completes Directory:",IDC_COMPLETES_DIRECTORY_STATIC,
+                    288,115,66,14
+    LTEXT           "Incompletes Directory:",
                     IDC_INCOMPLETES_DIRECTORY_STATIC,286,133,70,14
-    LTEXT           "Torrents directory:",IDC_TORRENTS_DIRECTORY_STATIC,288,
+    LTEXT           "Torrents Directory:",IDC_TORRENTS_DIRECTORY_STATIC,288,
                     151,58,14
-    LTEXT           "Tracker port (UDP):",IDC_TRACKER_PORT_STATIC,288,169,63,
+    LTEXT           "Tracker Port (UDP):",IDC_TRACKER_PORT_STATIC,288,169,63,
                     14
-    LTEXT           "Peer limit:",IDC_PEER_LIMIT_STATIC,288,187,31,14
-    LTEXT           "Torrent limit:",IDC_TORRENT_LIMIT_STATIC,288,205,39,14
-    LTEXT           "Hot key:",IDC_HOT_KEY_STATIC,288,223,28,14
+    LTEXT           "Peer Limit:",IDC_PEER_LIMIT_STATIC,288,187,34,14
+    LTEXT           "Torrent Limit:",IDC_TORRENT_LIMIT_STATIC,288,205,42,14
+    LTEXT           "Hot Key:",IDC_HOT_KEY_STATIC,288,223,28,14
 END
 
 IDD_TRACKERS DIALOG DISCARDABLE  0, 0, 282, 95
