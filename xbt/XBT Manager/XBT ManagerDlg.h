@@ -15,6 +15,7 @@ class CXBTManagerDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void sort(int column);
 	int compare(LPARAM lParam1, LPARAM lParam2);
 	void load(const char* name);
 	void save(const char* name);

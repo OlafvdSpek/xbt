@@ -8,6 +8,7 @@
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "bvalue.h"
+#include "sha1.h"
 #include "virtual_binary.h"
 
 #ifdef _DEBUG
@@ -71,6 +72,7 @@ BOOL CXBTManagerDlg::OnInitDialog()
 	UpdateLayout();
 
 	load("c:/temp/xbt manager list.txt");
+	sort(0);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -140,7 +142,10 @@ void CXBTManagerDlg::insert(const string& name)
 		if (i != string::npos)
 			e.name.erase(i);
 	}
-	e.info_hash = "";
+	Cvirtual_binary d = v.d("info").read();
+	char h[20];
+	compute_sha1(d, d.size(), h);
+	e.info_hash.assign(h, 20);
 	e.tracker = v.d(bts_announce).s();
 	e.leechers = -1;
 	e.seeders = -1;
@@ -220,8 +225,7 @@ static int CALLBACK compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 void CXBTManagerDlg::OnColumnclickList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	m_sort_column = pNMListView->iSubItem;
-	m_list.SortItems(::compare, reinterpret_cast<DWORD>(this));
+	sort(pNMListView->iSubItem);
 	*pResult = 0;
 }
 
@@ -247,4 +251,10 @@ int CXBTManagerDlg::compare(LPARAM lParam1, LPARAM lParam2)
 		return ::compare(a.tracker, b.tracker);
 	}
 	return 0;
+}
+
+void CXBTManagerDlg::sort(int column)
+{
+	m_sort_column = column;
+	m_list.SortItems(::compare, reinterpret_cast<DWORD>(this));
 }
