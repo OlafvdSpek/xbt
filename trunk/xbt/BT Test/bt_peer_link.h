@@ -10,8 +10,10 @@
 #endif // _MSC_VER > 1000
 
 #include "bt_pl_write_data.h"
+#include "data_counter.h"
 #include "ring_buffer.h"
 #include "socket.h"
+#include "stream_writer.h"
 
 class Cbt_file;
 class Cbt_piece;
@@ -19,6 +21,9 @@ class Cbt_piece;
 class Cbt_peer_link  
 {
 public:
+	int pre_dump() const;
+	void dump(Cstream_writer&) const;
+	ostream& dump(ostream&) const;
 	void write_piece(int, int, int, const void*);
 	void write_have(int);
 	void read_message(const char* s, const char* s_end);
@@ -79,6 +84,7 @@ public:
 	int m_rtime;
 	int m_stime;
 
+	bool m_local_link;
 	bool m_local_choked;
 	bool m_local_interested;
 	bool m_remote_choked;
@@ -87,8 +93,13 @@ public:
 	t_remote_pieces m_remote_pieces;
 	t_remote_requests m_remote_requests;
 	__int64 m_downloaded;
+	__int64 m_left;
 	__int64 m_uploaded;
+	Cdata_counter m_down_counter;
+	Cdata_counter m_up_counter;
 	int m_piece_rtime;
 };
+
+ostream& operator<<(ostream&, const Cbt_peer_link&);
 
 #endif // !defined(AFX_BT_PEER_LINK_H__50DC0701_DE7E_4A9D_B266_8C3188C24072__INCLUDED_)

@@ -43,6 +43,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 	case 2:
 		FD_SET(m_s, fd_except_set);
 	case 3:
+	case 4:
 		if (!m_local_choked && !m_remote_requests.empty() && m_write_b.empty())
 		{
 			const t_remote_request& request = m_remote_requests.front();
@@ -78,15 +79,6 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 	return 0;
 }
 
-struct t_bt_handshake
-{
-	unsigned char cb_name;
-	char name[19];
-	char reserved[8];
-	char info_hash[20];
-	char peer_id[20];
-};
-
 void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
 	switch (m_state)
@@ -98,6 +90,7 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 			return;
 		}
 	case 3:
+	case 4:
 		if (FD_ISSET(m_s, fd_read_set))
 		{
 			recv();
@@ -110,20 +103,19 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 					const t_bt_handshake& m = *reinterpret_cast<const t_bt_handshake*>(m_read_b.r());
 					if (m.cb_name != 19
 						|| memcmp(m.name, "BitTorrent protocol", 19)
-						|| memcmp(m.info_hash, m_f->m_info_hash.c_str(), 20))
+						|| m.info_hash() != m_f->m_info_hash)
 					{
 						close();
 						return;
 					}
-					m_remote_peer_id = string(m.peer_id, 20);
+					m_remote_peer_id = m.peer_id();
 					m_read_b.cb_r(sizeof(t_bt_handshake));
-					m_remote_pieces.resize(m_f->m_pieces.size());
-					if (m_f->c_valid_pieces())
-						write_bitfield();
-					choked(false);
-					interested(m_f->c_invalid_pieces());
-					m_state = 3;
 				}
+			case 4:
+				m_remote_pieces.resize(m_f->m_pieces.size());
+				write_bitfield();
+				interested(m_f->c_invalid_pieces());
+				m_state = 3;
 			case 3:
 				while (1)
 				{
@@ -152,6 +144,8 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 			send();
 		break;
 	}
+	if (!m_left && !m_f->m_left)
+		close();
 }
 
 void Cbt_peer_link::close()
@@ -161,6 +155,8 @@ void Cbt_peer_link::close()
 		m_piece->m_peer = NULL;
 	m_read_b.size(0);
 	m_state = -1;
+	for (int i = 0; i < m_remote_pieces.size(); i++)
+		m_f->m_pieces[i].mc_peers -= m_remote_pieces[i];
 }
 
 void Cbt_peer_link::write(const Cvirtual_binary& s)
@@ -232,8 +228,12 @@ void Cbt_peer_link::send()
 
 void Cbt_peer_link::remote_has(int v)
 {
-	if (v >= 0 && v < m_f->m_pieces.size())
+	if (v >= 0 && v < m_f->m_pieces.size() && !m_remote_pieces[v])
+	{
+		m_f->m_pieces[v].mc_peers++;
+		m_left -= m_f->m_pieces[v].mcb_d;
 		m_remote_pieces[v] = true;
+	}
 }
 
 void Cbt_peer_link::remote_requests(int piece, int offset, int size)
@@ -272,7 +272,8 @@ void Cbt_peer_link::write_handshake()
 	m_remote_choked = true;
 	m_remote_interested = false;
 	m_downloaded = m_uploaded = 0;
-	m_read_b.size(1 << 20);
+	m_left = m_f->size();
+	m_read_b.size(64 << 10);
 	m_piece_rtime = m_rtime = m_stime = time(NULL);
 }
 
@@ -296,6 +297,8 @@ void Cbt_peer_link::write_have(int a)
 
 void Cbt_peer_link::write_bitfield()
 {
+	if (!m_f->c_valid_pieces())
+		return;
 	Cvirtual_binary d;
 	byte* w = d.write_start(5 + (m_f->m_pieces.size() + 7 >> 3));
 	w = write(w, d.size() - 4);
@@ -327,6 +330,7 @@ void Cbt_peer_link::write_piece(int piece, int offset, int size, const void* s)
 	memcpy(w, s, size);
 	write(d);
 	m_uploaded += size;
+	m_up_counter.add(size);
 	m_f->m_uploaded += size;
 	m_f->m_up_counter.add(size);
 }
@@ -383,6 +387,7 @@ void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
 	m_f->write_data(m_f->mcb_piece * piece + offset, s, size);
 	m_downloaded += size;
+	m_down_counter.add(size);
 	m_f->m_downloaded += size;
 	m_f->m_down_counter.add(size);
 	m_piece_rtime = time(NULL);
@@ -446,4 +451,53 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		}
 		break;
 	}
+}
+
+ostream& Cbt_peer_link::dump(ostream& os) const
+{
+	os << "<tr><td>" << inet_ntoa(m_a.sin_addr) 
+		<< "<td>" << ntohs(m_a.sin_port) 
+		<< "<td align=right>" << static_cast<int>(m_downloaded >> 10) 
+		<< "<td align=right>" << static_cast<int>(m_uploaded >> 10)
+		<< "<td>" << (m_local_link ? 'L' : 'R') 
+		<< "<td>" << (m_local_choked ? 'C' : ' ') 
+		<< "<td>" << (m_local_interested ? 'I' : ' ')
+		<< "<td>" << (m_remote_choked ? 'C' : ' ') 
+		<< "<td>" << (m_remote_interested ? 'I' : ' ')
+		<< "<td align=right>" << m_read_b.cb_read()
+		<< "<td align=right>" << m_write_b.size()
+		<< "<td align=right>" << m_remote_requests.size()
+		<< "<td align=right>" << time(NULL) - m_piece_rtime
+		<< "<td align=right>" << m_piece
+		<< "<td align=right>" << (m_piece && !m_piece->m_sub_pieces.empty() ? m_piece->mc_sub_pieces_left : 0)
+		<< "<td>" << peer_id2a(m_remote_peer_id);
+	return os;
+}
+
+ostream& operator<<(ostream& os, const Cbt_peer_link& v)
+{
+	return v.dump(os);
+}
+
+int Cbt_peer_link::pre_dump() const
+{
+	int size = m_remote_peer_id.length() + 49;
+	return size;
+}
+
+void Cbt_peer_link::dump(Cstream_writer& w) const
+{
+	w.write_int32(ntohl(m_a.sin_addr.s_addr));
+	w.write_int32(ntohs(m_a.sin_port));
+	w.write_string(m_remote_peer_id);
+	w.write_int64(m_downloaded);
+	w.write_int64(m_left);
+	w.write_int64(m_uploaded);
+	w.write_int32(m_down_counter.rate());
+	w.write_int32(m_up_counter.rate());
+	w.write_int8(m_local_link);
+	w.write_int8(m_local_choked);
+	w.write_int8(m_local_interested);
+	w.write_int8(m_remote_choked);
+	w.write_int8(m_remote_interested);
 }
