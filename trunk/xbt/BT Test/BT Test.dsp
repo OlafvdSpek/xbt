@@ -175,6 +175,10 @@ SOURCE=.\http_link.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\http_response_handler.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\merkle_tree.cpp
 # End Source File
 # Begin Source File
@@ -213,6 +217,10 @@ SOURCE=.\StdAfx.cpp
 # Begin Source File
 
 SOURCE=.\udp_tracker.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\version_check_handler.cpp
 # End Source File
 # Begin Source File
 
@@ -312,6 +320,10 @@ SOURCE=.\http_link.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\http_response_handler.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\merkle_tree.h
 # End Source File
 # Begin Source File
@@ -341,6 +353,10 @@ SOURCE=..\misc\stream_writer.h
 # Begin Source File
 
 SOURCE=.\udp_tracker.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\version_check_handler.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
