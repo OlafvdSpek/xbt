@@ -55,12 +55,13 @@ typedef int socklen_t;
 #define WSAEWOULDBLOCK EWOULDBLOCK
 
 typedef int SOCKET;
+typedef long long __int64;
 
 const int INVALID_SOCKET = -1;
 const int SOCKET_ERROR = -1;
 #endif
-#include "../misc/bvalue.h"
-#include "../misc/bt_misc.h"
+#include "bvalue.h"
+#include "bt_misc.h"
 #include "socket.h"
 #include "virtual_binary.h"
 
