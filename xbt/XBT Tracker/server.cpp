@@ -107,18 +107,18 @@ int Cserver::run()
 	{
 		for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
 		{
-			Csocket l0;
-			if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
+			Csocket l;
+			if (l.open(SOCK_STREAM) == INVALID_SOCKET)			
 				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else if (l0.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-				l0.bind(*j, htons(*i)))			
+			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
+				l.bind(*j, htons(*i)))			
 				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else if (l0.listen())
+			else if (l.listen())
 				cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 			{
-				lt.push_back(Ctcp_listen_socket(this, l0));
-				if (m_epoll.ctl(EPOLL_CTL_ADD, l0, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
+				lt.push_back(Ctcp_listen_socket(this, l));
+				if (m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
 					return 1;
 				continue;
 			}
@@ -126,16 +126,16 @@ int Cserver::run()
 		}
 		for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
 		{
-			Csocket l1;
-			if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
+			Csocket l;
+			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
 				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else if (l1.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-				l1.bind(*j, htons(*i)))
+			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
+				l.bind(*j, htons(*i)))
 				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 			{
-				lu.push_back(Cudp_listen_socket(this, l1));
-				if (m_epoll.ctl(EPOLL_CTL_ADD, l1, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lu.back()))
+				lu.push_back(Cudp_listen_socket(this, l));
+				if (m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lu.back()))
 					return 1;
 				continue;
 			}
