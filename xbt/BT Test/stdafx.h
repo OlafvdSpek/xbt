@@ -37,12 +37,12 @@ using namespace std;
 
 #pragma comment(lib, "ws2_32.lib")
 #else
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <cstdio>
 #include <errno.h>
 #include <signal.h>
