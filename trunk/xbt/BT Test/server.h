@@ -18,7 +18,8 @@
 class Cserver  
 {
 public:
-	Cvirtual_binary save_state();
+	string state_fname() const;
+	Cvirtual_binary save_state(bool intermediate);
 	void load_state(const Cvirtual_binary&);
 	int close(const string& id);
 	int open(const Cvirtual_binary& info, const string& name);
