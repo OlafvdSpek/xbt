@@ -115,7 +115,7 @@ void Cserver::run()
 					{
 						if (s.blocking(false))
 							cerr << "ioctlsocket failed" << endl;
-						m_admins.push_back(Cbt_admin_link(a, s));
+						m_admins.push_back(Cbt_admin_link(this, a, s));
 					}
 				}
 				{
