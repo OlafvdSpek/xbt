@@ -284,7 +284,8 @@ BEGIN
             MENUITEM "&Events\t2",                  ID_POPUP_VIEW_EVENTS
             MENUITEM "&Files\t3",                   ID_POPUP_VIEW_FILES
             MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
-            MENUITEM "&Trackers\t5",                ID_POPUP_VIEW_TRACKERS
+            MENUITEM "Pieces\t5",                   ID_POPUP_VIEW_PIECES
+            MENUITEM "&Trackers\t6",                ID_POPUP_VIEW_TRACKERS
             MENUITEM SEPARATOR
             MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
@@ -316,7 +317,8 @@ BEGIN
             MENUITEM "&Events\t2",                  ID_POPUP_VIEW_EVENTS
             MENUITEM "&Files\t3",                   ID_POPUP_VIEW_FILES
             MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
-            MENUITEM "&Trackers\t5",                ID_POPUP_VIEW_TRACKERS
+            MENUITEM "Pieces\t5",                   ID_POPUP_VIEW_PIECES
+            MENUITEM "&Trackers\t6",                ID_POPUP_VIEW_TRACKERS
             MENUITEM SEPARATOR
             MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
@@ -340,7 +342,8 @@ BEGIN
             MENUITEM "&Events\t2",                  ID_POPUP_VIEW_EVENTS
             MENUITEM "&Files\t3",                   ID_POPUP_VIEW_FILES
             MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
-            MENUITEM "&Trackers\t5",                ID_POPUP_VIEW_TRACKERS
+            MENUITEM "Pieces\t5",                   ID_POPUP_VIEW_PIECES
+            MENUITEM "&Trackers\t6",                ID_POPUP_VIEW_TRACKERS
             MENUITEM SEPARATOR
             MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
@@ -366,7 +369,8 @@ BEGIN
     "2",            ID_POPUP_VIEW_EVENTS,   VIRTKEY, NOINVERT
     "3",            ID_POPUP_VIEW_FILES,    VIRTKEY, NOINVERT
     "4",            ID_POPUP_VIEW_PEERS,    VIRTKEY, NOINVERT
-    "5",            ID_POPUP_VIEW_TRACKERS, VIRTKEY, NOINVERT
+    "5",            ID_POPUP_VIEW_PIECES,   VIRTKEY, NOINVERT
+    "6",            ID_POPUP_VIEW_TRACKERS, VIRTKEY, NOINVERT
     "M",            ID_POPUP_MAKE_TORRENT,  VIRTKEY, CONTROL, NOINVERT
     "O",            ID_POPUP_OPTIONS,       VIRTKEY, CONTROL, NOINVERT
     "O",            ID_POPUP_OPTIONS,       VIRTKEY, SHIFT, CONTROL, 

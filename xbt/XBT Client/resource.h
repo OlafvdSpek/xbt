@@ -94,13 +94,14 @@
 #define ID_POPUP_TORRENT_PRIORITY_HIGH  32807
 #define ID_POPUP_TORRENT_PRIORITY_NORMAL 32808
 #define ID_POPUP_TORRENT_PRIORITY_LOW   32809
+#define ID_POPUP_VIEW_PIECES            32810
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
-#define _APS_NEXT_COMMAND_VALUE         32810
+#define _APS_NEXT_COMMAND_VALUE         32811
 #define _APS_NEXT_CONTROL_VALUE         1043
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
