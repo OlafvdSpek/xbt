@@ -59,25 +59,39 @@
 		echo("<tr>");
 		printf("<td align=right>%d", $result[fid]);
 		printf("<td>%s", bin2hex($result[info_hash]));
-		printf("<td align=right>%d", $result[leechers]);
+		echo("<td align=right>");
+		if ($result[leechers])
+			printf("%d", $result[leechers]);
 		echo("<td align=right>");
 		if ($result[seeders])
 			printf("%d", $result[seeders]);
-		printf("<td align=right>%d", $result[announced_http]);
-		printf("<td align=right>%d", $result[announced_http_compact]);
-		printf("<td align=right>%d", $result[announced_http_no_peer_id]);
+		echo("<td align=right>");
+		if ($result[announced_http])
+			printf("%d", $result[announced_http]);
+		echo("<td align=right>");
+		if ($result[announced_http_compact])
+			printf("%d", $result[announced_http_compact]);
+		echo("<td align=right>");
+		if ($result[announced_http_no_peer_id])
+			printf("%d", $result[announced_http_no_peer_id]);
 		echo("<td align=right>");
 		if ($result[announced_udp])
 			printf("%d", $result[announced_udp]);
-		printf("<td align=right>%d", $result[scraped_http]);
+		echo("<td align=right>");
+		if ($result[scraped_http])
+			printf("%d", $result[scraped_http]);
 		echo("<td align=right>");
 		if ($result[scraped_udp])
 			printf("%d", $result[scraped_udp]);
 		echo("<td align=right>");
 		if ($result[completed])
 			printf("%d", $result[completed]);
-		printf("<td align=right>%d", $result[started]);
-		printf("<td align=right>%d", $result[stopped]);
+		echo("<td align=right>");
+		if ($result[started])
+			printf("%d", $result[started]);
+		echo("<td align=right>");
+		if ($result[stopped])
+			printf("%d", $result[stopped]);
 		printf("<td>%s", gmdate("Y-m-d H:i:s", $result[mtime]));
 		printf("<td>%s", gmdate("Y-m-d H:i:s", $result[ctime]));
 	}
