@@ -89,8 +89,6 @@ static string new_peer_id()
 #ifndef NDEBUG
 	v[6] = 'd';
 #endif
-	v[17] ^= ~(v[16] ^ v[17]) & 0x18;
-	v[19] ^= (v[18] ^ v[19]) & 0x18;
 	return v;
 }
 
