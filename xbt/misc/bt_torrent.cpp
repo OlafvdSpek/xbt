@@ -50,7 +50,7 @@ int Cbt_torrent::write_info(const Cbvalue& v)
 			const Cbvalue::t_list& path = i->d(bts_path).l();
 			for (Cbvalue::t_list::const_iterator i = path.begin(); i != path.end(); i++)
 			{
-				if (i->s().empty() || i->s()[0] == '.' || i->s().find_first_of("/\\") != string::npos)
+				if (i->s().empty() || i->s()[0] == '.' || i->s().find_first_of("\"*/:<>?\\|") != string::npos)
 					return 1;
 				name += '/' + i->s();
 			}
@@ -85,7 +85,7 @@ bool Cbt_torrent::valid() const
 		&& !files().empty()
 		&& !name().empty()
 		&& name()[0] != '.'
-		&& name().find_first_of("/\\") == string::npos
+		&& name().find_first_of("\"*/:<>?\\|") == string::npos
 		&& piece_size() >= 16 << 10
 		&& piece_size() <= 4 << 20;
 }

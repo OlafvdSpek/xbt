@@ -14,12 +14,21 @@ class Cdlg_options : public CDialog
 {
 // Construction
 public:
+	struct t_data
+	{
+		int admin_port;
+		int peer_port;
+	};
+
+	t_data get() const;
+	void set(const t_data&);
 	Cdlg_options(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(Cdlg_options)
 	enum { IDD = IDD_OPTIONS };
-		// NOTE: the ClassWizard will add data members here
+	int		m_peer_port;
+	int		m_admin_port;
 	//}}AFX_DATA
 
 

@@ -181,6 +181,30 @@ string peer_id2a(const string& v)
 			return "Shadow " + v.substr(1, i - 1) + " - " + hex_encode(v.substr(i));
 		}
 		break;
+	case 'T':
+		if (v[7] == '-')
+		{
+			int i;
+			for (i = 1; i < 7; i++)
+			{
+				if (!isalnum(v[i]))
+					break;
+			}
+			return "BitTornado " + v.substr(1, i - 1) + " - " + hex_encode(v.substr(i));
+		}
+		break;
+	case 'X':
+		if (v[1] == 'B' && v[2] == 'T')
+		{
+			int i;
+			for (i = 3; i < 6; i++)
+			{
+				if (!isalnum(v[i]))
+					break;
+			}
+			return "XBT Client " + v.substr(3, i - 3) + " - " + hex_encode(v.substr(i));
+		}
+		break;
 	}
 	return hex_encode(v);
 }
