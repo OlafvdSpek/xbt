@@ -104,7 +104,7 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 	m_sort_reverse = false;
 
 	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
-		m_list.InsertItemData(m_list.GetItemCount(), i->first);
+		m_list.InsertItemData(i->first);
 	post_insert();
 
 	return true;
@@ -168,7 +168,7 @@ void Cdlg_make_torrent::insert(const string& name)
 	e.name = name;
 	e.size = b.st_size;
 	if (GetSafeHwnd())
-		m_list.InsertItemData(m_list.GetItemCount(), id);
+		m_list.InsertItemData(id);
 }
 
 void Cdlg_make_torrent::post_insert()
