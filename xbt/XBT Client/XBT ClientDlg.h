@@ -182,15 +182,13 @@ private:
 		bool m_removed;
 	};
 
-	struct t_piece
+	struct t_piece: public Cbt_piece_data
 	{
 		int c_chunks_invalid;
 		int c_chunks_valid;
 		int c_peers;
 		int index;
-		int priority;
 		int rank;
-		bool valid;
 	};
 
 	struct t_sub_file

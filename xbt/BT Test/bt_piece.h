@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "bt_peer_link.h"
+#include "bt_piece_data.h"
 #include "stream_reader.h"
 
 class Cbt_sub_piece
@@ -39,7 +40,7 @@ private:
 	bool m_valid;
 };
 
-class Cbt_piece
+class Cbt_piece: public Cbt_piece_data
 {
 public:
 	typedef vector<Cbt_sub_piece> t_sub_pieces;
@@ -105,10 +106,8 @@ public:
 private:
 	int mc_sub_pieces_left;
 	int mc_unrequested_sub_pieces;
-	char m_priority;
 	int m_size;
 	t_sub_pieces m_sub_pieces;
-	bool m_valid;
 };
 
 #endif // !defined(AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_)

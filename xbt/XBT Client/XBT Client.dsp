@@ -140,6 +140,10 @@ SOURCE="..\BT Test\bt_piece.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\bt_piece_data.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_pl_write_data.cpp"
 # End Source File
 # Begin Source File
@@ -342,6 +346,10 @@ SOURCE="..\BT Test\bt_peer_link.h"
 # Begin Source File
 
 SOURCE="..\BT Test\bt_piece.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_piece_data.h"
 # End Source File
 # Begin Source File
 
