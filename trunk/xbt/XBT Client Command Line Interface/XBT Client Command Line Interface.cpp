@@ -21,7 +21,7 @@ int send(Csocket& s, const Cbvalue& v)
 
 string strip_name(const string& v)
 {
-	int i = v.find_last_of('/\\');
+	int i = v.find_last_of("/\\");
 	return i == string::npos ? v : v.substr(i + 1);
 }
 
