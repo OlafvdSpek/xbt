@@ -33,6 +33,11 @@ DWORD CListCtrlEx::GetItemData(int nItem) const
 	return nItem == -1 ? -1 : CListCtrl::GetItemData(nItem);
 }
 
+void CListCtrlEx::InsertItemData(int nItem, DWORD dwData)
+{
+	SetItemData(InsertItem(nItem, LPSTR_TEXTCALLBACK), dwData);
+}
+
 void CListCtrlEx::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if ((GetStyle() & LVS_TYPEMASK) != LVS_REPORT)
