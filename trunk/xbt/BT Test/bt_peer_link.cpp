@@ -146,7 +146,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			return 1;
 		if (m_state == 3)
 		{
-			if (time(NULL) - m_check_pieces_time > 60)
+			if (time(NULL) - m_check_pieces_time > (m_f->end_mode() ? 5 : 30))
 				check_pieces();
 			if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
 			{
@@ -792,7 +792,7 @@ void Cbt_peer_link::check_pieces()
 {
 	for (t_pieces::iterator i = m_pieces.begin(); i != m_pieces.end(); )
 	{
-		if ((*i)->check_peer(this, m_f->end_mode() ? 15 : 600))
+		if ((*i)->check_peer(this, m_f->end_mode() ? 15 : time(NULL) - m_rtime > 30 ? 60 : 600))
 			i++;
 		else
 			m_pieces.erase(i++);
