@@ -68,6 +68,7 @@ BOOL CXBTManagerDlg::OnInitDialog()
 	m_list.InsertColumn(1, "Leechers", LVCFMT_RIGHT);
 	m_list.InsertColumn(2, "Seeders", LVCFMT_RIGHT);
 	m_list.InsertColumn(3, "Tracker");
+	m_list.InsertColumn(4, "Error");
 	
 	CreateRoot(VERTICAL)
 		<< item(IDC_LIST, GREEDY)
@@ -152,6 +153,10 @@ void CXBTManagerDlg::insert(const string& name)
 	e.tracker = v.d(bts_announce).s();
 	e.leechers = -1;
 	e.seeders = -1;
+	e.s = new Ctracker_socket;
+	e.s->dlg(this);
+	e.s->hash(e.info_hash);
+	e.s->connect(e.tracker);
 	m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), m_map.rbegin()->first);
 	auto_resize();
 	save(list_fname);	
@@ -174,6 +179,9 @@ void CXBTManagerDlg::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case 3:
 		m_buffer[m_buffer_w] = e.tracker;
+		break;
+	case 4:
+		m_buffer[m_buffer_w] = e.error;
 		break;
 	default:
 		m_buffer[m_buffer_w].erase();
@@ -252,6 +260,8 @@ int CXBTManagerDlg::compare(LPARAM lParam1, LPARAM lParam2)
 		return ::compare(a.seeders, b.seeders);
 	case 3:
 		return ::compare(a.tracker, b.tracker);
+	case 4:
+		return ::compare(a.error, b.error);
 	}
 	return 0;
 }
@@ -279,4 +289,29 @@ void CXBTManagerDlg::OnKeydownList(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	}
 	*pResult = 0;
+}
+
+void CXBTManagerDlg::tracker_output(const string& hash, const Cbvalue& v)
+{
+	for (t_map::iterator i = m_map.begin(); i != m_map.end(); i++)
+	{
+		if (i->second.info_hash != hash)
+			continue;
+		if (v.d(bts_failure_reason).s().empty())
+		{
+			const Cbvalue& file = v.d(bts_files).d(hash);
+			i->second.leechers = file.d(bts_incomplete).i();
+			i->second.seeders = file.d(bts_complete).i();
+		}
+		else
+			i->second.error = v.d(bts_failure_reason).s();
+		LVFINDINFO lvf;
+		lvf.flags = LVFI_PARAM;
+		lvf.lParam = i->first;
+		m_list.Update(m_list.FindItem(&lvf, -1));
+		delete i->second.s;
+		i->second.s = NULL;
+		auto_resize();
+		return;
+	}
 }

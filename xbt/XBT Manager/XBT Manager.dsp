@@ -111,6 +111,10 @@ SOURCE=.\StdAfx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tracker_socket.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\virtual_binary.cpp
 # End Source File
 # Begin Source File
@@ -136,6 +140,10 @@ SOURCE=.\Resource.h
 # Begin Source File
 
 SOURCE=.\StdAfx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\tracker_socket.h
 # End Source File
 # Begin Source File
 

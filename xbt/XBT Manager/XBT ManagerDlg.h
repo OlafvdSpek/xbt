@@ -8,6 +8,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "bvalue.h"
+#include "tracker_socket.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CXBTManagerDlg dialog
 
@@ -15,6 +18,7 @@ class CXBTManagerDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void tracker_output(const string& hash, const Cbvalue& v);
 	void sort(int column);
 	int compare(LPARAM lParam1, LPARAM lParam2);
 	void load(const char* name);
@@ -60,8 +64,11 @@ private:
 		string info_hash;
 		string name;
 		string tracker;
+		string error;
 		int leechers;
 		int seeders;
+
+		Ctracker_socket* s;
 	};
 
 	typedef map<int, t_map_entry> t_map;
