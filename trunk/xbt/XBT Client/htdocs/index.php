@@ -52,11 +52,10 @@
 	{
 		$rows .= template_torrent(array_merge($file['value'], array('info_hash' => array('value' => $info_hash))));
 	}
+	$torrents = template_torrents(array('rows' => $rows));
 	send_string($s, 'd6:action11:get optionse');
 	$v = recv_string($s);
 	$v = bdec($v);
-	echo(template_top());
-	echo(template_torrents(array('rows' => $rows)));
-	echo(template_options($v['value']));
-	echo(template_bottom());
+	$options = template_options($v['value']);
+	echo(template_page(array('options' => $options, 'torrents' => $torrents)));
 ?>

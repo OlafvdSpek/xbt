@@ -1,10 +1,17 @@
 <?php
 	function b2a($v)
 	{
+		if (!$v)
+			return '';
 		for ($l = 0; $v < -9999 || $v > 9999; $l++)
 			$v /= 1024;
 		$a = array('', ' k', ' m', ' g', ' t', ' p');
 		return sprintf('%d%s', $v, $a[$l]);
+	}
+
+	function nz($v)
+	{
+		return $v ? $v : '';
 	}
 
 	function priority2a($v)
@@ -45,19 +52,16 @@
 
 	}
 
-	function template_top()
+	function template_page($v)
 	{
 		$d = '';
 		$d .= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">';
 		$d .= '<link rel=stylesheet href="xbt.css">';
 		$d .= '<meta http-equiv=refresh content=60>';
 		$d .= '<title>XBT Client</title>';
-		return $d;
-	}
-
-	function template_bottom()
-	{
-		$d = '';
+		$d .= $v['torrents'];
+		$d .= '<hr>';
+		$d .= $v['options'];
 		$d .= '<hr>';
 		$d .= '<center>';
 		$d .= '<a href="http://sourceforge.net/projects/xbtt/"><img src="http://sourceforge.net/sflogo.php?group_id=94951;type=1" alt="XBT project at SF"></a>';
@@ -78,8 +82,8 @@
 		$d .= sprintf('<td align=right>%s', b2a($v['total uploaded']['value']));
 		$d .= sprintf('<td align=right>%s', b2a($v['down rate']['value']));
 		$d .= sprintf('<td align=right>%s', b2a($v['up rate']['value']));
-		$d .= sprintf('<td align=right>%d', $v['incomplete']['value']);
-		$d .= sprintf('<td align=right>%d', $v['complete']['value']);
+		$d .= sprintf('<td align=right>%s', nz($v['incomplete']['value']));
+		$d .= sprintf('<td align=right>%s', nz($v['complete']['value']));
 		$d .= sprintf('<td align=right>%s', priority2a($v['priority']['value']));
 		$d .= sprintf('<td align=left>%s', state2a($v['state']['value']));
 		return $d;
@@ -137,7 +141,6 @@
 	function template_options($v)
 	{
 		$d = '';
-		$d .= '<hr>';
 		$d .= '<center>';
 		$d .= '<form action="?" method=post>';
 		$d .= '<table>';
