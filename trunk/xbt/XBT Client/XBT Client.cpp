@@ -50,6 +50,7 @@ BOOL CXBTClientApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+	SetRegistryKey("XBT");
 	AfxBeginThread(backend_thread, this);
 
 	CCommandLineInfo cmdInfo;

@@ -50,6 +50,7 @@ BOOL CXBTManagerApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+	SetRegistryKey("XBT");
 
 	CXBTManagerDlg dlg;
 	m_pMainWnd = &dlg;

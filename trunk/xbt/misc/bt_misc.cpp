@@ -132,3 +132,54 @@ bool is_private_ipa(int a)
 		|| (ntohl(a) & 0xfff00000) == 0xac100000
 		|| (ntohl(a) & 0xffff0000) == 0xc0a80000;
 }
+
+string b2a(__int64 v)
+{
+	for (int l = 0; v > 9999; l++)
+		v >>= 10;
+	const char* a[] = {"", " k", " m", " g", " t", " p"};
+	return n(v) + a[l];
+}
+
+string peer_id2a(const string& v)
+{
+	if (v.length() != 20)
+		return hex_encode(v);
+	switch (v[0])
+	{
+	case 0:
+		{
+			int i = v.find_first_not_of('\0');
+			if (i != string::npos)
+				return i < 20 ? "0 - " + hex_encode(v.substr(i)) : "0";
+		}
+		break;
+	case '-':
+		if (v[1] == 'A' && v[2] == 'Z' && v[7] == '-')
+		{
+			int i;
+			for (i = 3; i < 7; i++)
+			{
+				if (!isdigit(v[i]))
+					break;
+			}
+			return "Azureus " + v.substr(3, i - 3) + " - " + hex_encode(v.substr(i));
+		}
+		break;
+	case 'S':
+		if (v[1] == 5 && v[2] == 7 && v[3] >= 0 && v[3] < 10)
+			return "Shadow 57" + n(v[3]) + " - " + hex_encode(v.substr(4));
+		else if (v[1] == '5' && v[7] == '-')
+		{
+			int i;
+			for (i = 1; i < 7; i++)
+			{
+				if (!isalnum(v[i]))
+					break;
+			}
+			return "Shadow " + v.substr(1, i - 1) + " - " + hex_encode(v.substr(i));
+		}
+		break;
+	}
+	return hex_encode(v);
+}
