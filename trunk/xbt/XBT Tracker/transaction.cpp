@@ -13,6 +13,30 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+class Cannounce_output_udp: public Cserver::Cannounce_output
+{
+public:
+	void peer(int h, const Cserver::t_peer& peer)
+	{
+		memcpy(m_w, &h, 4);
+		m_w += 4;
+		memcpy(m_w, &peer.port, 2);
+		m_w += 2;
+	}
+
+	char* w() const
+	{
+		return m_w;
+	}
+
+	void w(char* v)
+	{
+		m_w = v;
+	}
+private:
+	char* m_w;
+};
+
 Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 	m_server(server)
 {
@@ -127,19 +151,10 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 	uto.interval(m_server.announce_interval());
 	uto.leechers(i->second.leechers);
 	uto.seeders(i->second.seeders);
-	t_udp_tracker_output_peer* peer = reinterpret_cast<t_udp_tracker_output_peer*>(b + sizeof(t_udp_tracker_output_announce));
-	int c = ti.m_num_want < 0 ? 100 : min(ti.m_num_want, 100);
-	for (Cserver::t_peers::const_iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
-	{
-		if (!ti.m_left && !j->second.left || !j->second.listening)
-			continue;
-		if (!c--)
-			break;
-		peer->host(j->first);
-		peer->port(j->second.port);
-		peer++;
-	}
-	send(b, reinterpret_cast<char*>(peer) - b);
+	Cannounce_output_udp o;
+	o.w(b + sizeof(t_udp_tracker_output_announce));
+	i->second.select_peers(ti, o);
+	send(b, o.w() - b);
 }
 
 void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti, const char* r, const char* r_end)
