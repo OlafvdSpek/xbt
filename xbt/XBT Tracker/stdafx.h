@@ -10,7 +10,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// #define FD_SETSIZE 1024
+#define FD_SETSIZE 1024
 
 #pragma warning(disable: 4503 4786 4800)
 
@@ -31,10 +31,7 @@ using namespace std;
 
 #pragma comment(lib, "libmysql.lib")
 #pragma comment(lib, "ws2_32.lib")
-
-typedef int socklen_t;
 #else
-#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
@@ -44,21 +41,10 @@ typedef int socklen_t;
 #include <signal.h>
 #include <unistd.h>
 
-#define closesocket close
-#define ioctlsocket ioctl
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
-#define WSAGetLastError() errno
 
-#define WSAECONNABORTED ECONNABORTED
-#define WSAECONNRESET ECONNRESET
-#define WSAEWOULDBLOCK EWOULDBLOCK
-
-typedef int SOCKET;
 typedef long long __int64;
-
-const int INVALID_SOCKET = -1;
-const int SOCKET_ERROR = -1;
 #endif
 #include "bvalue.h"
 #include "bt_misc.h"

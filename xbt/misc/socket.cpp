@@ -8,7 +8,10 @@
 #ifdef WIN32
 #pragma comment(lib, "ws2_32.lib")
 #else
+#include <sys/ioctl.h>
+#include <sys/socket.h>
 #include <netdb.h>
+#include <unistd.h>
 #endif
 
 #ifndef MSG_NOSIGNAL
