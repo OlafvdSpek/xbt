@@ -26,6 +26,3 @@ Cbt_pl_write_data::Cbt_pl_write_data(const char* s, int cb_s)
 	m_s_end = s + cb_s;
 }
 
-Cbt_pl_write_data::~Cbt_pl_write_data()
-{
-}

@@ -88,11 +88,12 @@ void Cbt_admin_link::recv()
 			{
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
+				alert(Calert(Calert::debug, m_a, "Admin: connection aborted/reset"));
 				close();
 			case WSAEWOULDBLOCK:
 				break;
 			default:
-				cerr << "recv failed: " << e << endl;
+				alert(Calert(Calert::debug, m_a, "Admin: recv failed:" + n(e)));
 				close();
 			}
 			return;
@@ -114,11 +115,12 @@ void Cbt_admin_link::send()
 			{
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
+				alert(Calert(Calert::debug, m_a, "Admin: connection aborted/reset"));
 				close();
 			case WSAEWOULDBLOCK:
 				break;
 			default:
-				cerr << "send failed: " << e << endl;
+				alert(Calert(Calert::debug, m_a, "Admin: send failed"));
 				close();
 			}
 			return;
@@ -156,4 +158,8 @@ void Cbt_admin_link::read_message(const char* r, const char* r_end)
 		}
 		break;
 	}
+}
+
+void Cbt_admin_link::alert(const Calert& v)
+{
 }

@@ -51,11 +51,12 @@ void Cbt_link::recv()
 			{
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
+				alert(Calert(Calert::debug, m_a, "Link: connection aborted/reset"));
 				close();
 			case WSAEWOULDBLOCK:
 				break;
 			default:
-				cerr << "recv failed: " << e << endl;
+				alert(Calert(Calert::debug, m_a, "Link: recv failed:" + n(e)));
 				close();
 			}
 			return;
@@ -77,4 +78,8 @@ void Cbt_link::recv()
 void Cbt_link::close()
 {
 	m_s.close();
+}
+
+void Cbt_link::alert(const Calert& v)
+{
 }

@@ -8,6 +8,7 @@
 #include "bt_misc.h"
 #include "bt_torrent.h"
 #include "dlg_options.h"
+#include "dlg_torrent.h"
 #include "resource.h"
 
 #ifdef _DEBUG
@@ -17,6 +18,39 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 const static UINT g_tray_message_id = RegisterWindowMessage("XBT Client Tray Message");
+
+enum
+{
+	fc_hash,
+	fc_done,
+	fc_left,
+	fc_total_downloaded,
+	fc_total_uploaded,
+	fc_down_rate,
+	fc_up_rate,
+	fc_leechers,
+	fc_seeders,
+	fc_state,
+	fc_name,
+};
+
+enum
+{
+	pc_host,
+	pc_port,
+	pc_done,
+	pc_left,
+	pc_downloaded,
+	pc_uploaded,
+	pc_down_rate,
+	pc_up_rate,
+	pc_link_direction,
+	pc_local_choked,
+	pc_local_interested,
+	pc_remote_choked,
+	pc_remote_interested,
+	pc_peer_id,
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // CXBTClientDlg dialog
@@ -83,6 +117,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_WM_ENDSESSION()
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_PEERS, OnColumnclickPeers)
+	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -103,33 +138,35 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", 6879));
 	m_server.dir(static_cast<string>(m_dir));
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881));
+	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
 	start_server();
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	m_files.InsertColumn(0, "Hash");
-	m_files.InsertColumn(1, "%", LVCFMT_RIGHT);
-	m_files.InsertColumn(2, "Left", LVCFMT_RIGHT);
-	m_files.InsertColumn(3, "Downloaded", LVCFMT_RIGHT);
-	m_files.InsertColumn(4, "Uploaded", LVCFMT_RIGHT);
-	m_files.InsertColumn(5, "Down rate", LVCFMT_RIGHT);
-	m_files.InsertColumn(6, "Up rate", LVCFMT_RIGHT);
-	m_files.InsertColumn(7, "Leechers", LVCFMT_RIGHT);
-	m_files.InsertColumn(8, "Seeders", LVCFMT_RIGHT);
-	m_files.InsertColumn(9, "Name");
+	m_files.InsertColumn(fc_hash, "Hash");
+	m_files.InsertColumn(fc_done, "%", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_left, "Left", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_total_downloaded, "Downloaded", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_total_uploaded, "Uploaded", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_down_rate, "Down rate", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_up_rate, "Up rate", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_leechers, "Leechers", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_seeders, "Seeders", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_state, "State");
+	m_files.InsertColumn(fc_name, "Name");
 	m_peers.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	m_peers.InsertColumn(0, "Host");
-	m_peers.InsertColumn(1, "Port", LVCFMT_RIGHT);
-	m_peers.InsertColumn(2, "%", LVCFMT_RIGHT);
-	m_peers.InsertColumn(3, "Left", LVCFMT_RIGHT);
-	m_peers.InsertColumn(4, "Downloaded", LVCFMT_RIGHT);
-	m_peers.InsertColumn(5, "Uploaded", LVCFMT_RIGHT);
-	m_peers.InsertColumn(6, "Down rate", LVCFMT_RIGHT);
-	m_peers.InsertColumn(7, "Up rate", LVCFMT_RIGHT);
-	m_peers.InsertColumn(8, "D");
-	m_peers.InsertColumn(9, "L");
-	m_peers.InsertColumn(10, "L");
-	m_peers.InsertColumn(11, "R");
-	m_peers.InsertColumn(12, "R");
-	m_peers.InsertColumn(13, "Peer ID");
+	m_peers.InsertColumn(pc_host, "Host");
+	m_peers.InsertColumn(pc_port, "Port", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_done, "%", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_left, "Left", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_downloaded, "Downloaded", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_uploaded, "Uploaded", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_down_rate, "Down rate", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_up_rate, "Up rate", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_link_direction, "D");
+	m_peers.InsertColumn(pc_local_choked, "L");
+	m_peers.InsertColumn(pc_local_interested, "L");
+	m_peers.InsertColumn(pc_remote_choked, "R");
+	m_peers.InsertColumn(pc_remote_interested, "R");
+	m_peers.InsertColumn(pc_peer_id, "Peer ID");
 	m_files_sort_column = -1;
 	m_peers_sort_column = -1;
 	m_file = NULL;
@@ -217,41 +254,45 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	const t_file& e = m_files_map.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{
-	case 0:
+	case fc_hash:
 		m_buffer[m_buffer_w] = hex_encode(e.info_hash);
 		break;
-	case 1:
+	case fc_done:
 		m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
 		break;
-	case 2:
+	case fc_left:
 		if (e.left)
 			m_buffer[m_buffer_w] = b2a(e.left);
 		break;
-	case 3:
-		if (e.downloaded)
+	case fc_total_downloaded:
+		if (e.total_downloaded)
 			m_buffer[m_buffer_w] = b2a(e.total_downloaded);
 		break;
-	case 4:
-		if (e.uploaded)
+	case fc_total_uploaded:
+		if (e.total_uploaded)
 			m_buffer[m_buffer_w] = b2a(e.total_uploaded);
 		break;
-	case 5:
+	case fc_down_rate:
 		if (e.down_rate)
 			m_buffer[m_buffer_w] = b2a(e.down_rate);
 		break;
-	case 6:
+	case fc_up_rate:
 		if (e.up_rate)
 			m_buffer[m_buffer_w] = b2a(e.up_rate);
 		break;
-	case 7:
+	case fc_leechers:
 		if (e.c_leechers)
 			m_buffer[m_buffer_w] = n(e.c_leechers);
 		break;
-	case 8:
+	case fc_seeders:
 		if (e.c_seeders)
 			m_buffer[m_buffer_w] = n(e.c_seeders);
 		break;
-	case 9:
+	case fc_state:
+		if (e.run)
+			m_buffer[m_buffer_w] = 'R';
+		break;
+	case fc_name:
 		m_buffer[m_buffer_w] = e.name;
 		break;
 	}
@@ -268,55 +309,55 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	const t_peer& e = m_file->peers.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{
-	case 0:
+	case pc_host:
 		m_buffer[m_buffer_w] = inet_ntoa(e.host);
 		break;
-	case 1:
+	case pc_port:
 		m_buffer[m_buffer_w] = n(e.port);
 		break;
-	case 2:
+	case pc_done:
 		m_buffer[m_buffer_w] = n((m_file->size - e.left) * 100 / m_file->size);
 		break;
-	case 3:
+	case pc_left:
 		if (e.left)
 			m_buffer[m_buffer_w] = b2a(e.left);
 		break;
-	case 4:
+	case pc_downloaded:
 		if (e.downloaded)
 			m_buffer[m_buffer_w] = b2a(e.downloaded);
 		break;
-	case 5:
+	case pc_uploaded:
 		if (e.uploaded)
 			m_buffer[m_buffer_w] = b2a(e.uploaded);
 		break;
-	case 6:
+	case pc_down_rate:
 		if (e.down_rate)
 			m_buffer[m_buffer_w] = b2a(e.down_rate);
 		break;
-	case 7:
+	case pc_up_rate:
 		if (e.up_rate)
 			m_buffer[m_buffer_w] = b2a(e.up_rate);
 		break;
-	case 8:
+	case pc_link_direction:
 		m_buffer[m_buffer_w] = e.local_link ? 'L' : 'R';
 		break;
-	case 9:
+	case pc_local_choked:
 		if (e.local_choked)
 			m_buffer[m_buffer_w] = 'C';
 		break;
-	case 10:
+	case pc_local_interested:
 		if (e.local_interested)
 			m_buffer[m_buffer_w] = 'I';
 		break;
-	case 11:
+	case pc_remote_choked:
 		if (e.remote_choked)
 			m_buffer[m_buffer_w] = 'C';
 		break;
-	case 12:
+	case pc_remote_interested:
 		if (e.remote_interested)
 			m_buffer[m_buffer_w] = 'I';
 		break;
-	case 13:
+	case pc_peer_id:
 		m_buffer[m_buffer_w] = peer_id2a(e.peer_id);
 		break;
 	}
@@ -445,6 +486,11 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.run = sr.read_int32();
 	f.removed = false;
 	{
+		int i = f.name.rfind('\\');
+		if (i != string::npos)
+			f.name.erase(0, i + 1);
+	}
+	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); i++)
 			i->second.removed = true;
 	}
@@ -470,6 +516,9 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 			else
 				i++;
 		}
+	}
+	{
+		int c_alerts = sr.read_int32();
 	}
 	if (inserted)
 		auto_size_files();
@@ -629,23 +678,36 @@ void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnPopupOptions() 
 {
-	Cdlg_options dlg;
+	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", 6879);
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881);
+	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0);
 	dlg.set(data);
 	if (IDOK != dlg.DoModal())
 		return;
 	data = dlg.get();
 	m_server.admin_port(data.admin_port);
 	m_server.peer_port(data.peer_port);
+	m_server.upload_rate(data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 }
 
 void CXBTClientDlg::OnPopupExit() 
 {
 	EndDialog(IDCANCEL);
+}
+
+void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index == -1)
+		return;
+	Cdlg_torrent dlg(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+	dlg.DoModal();
+	*pResult = 0;
 }
 
 void CXBTClientDlg::OnDropFiles(HDROP hDropInfo) 
@@ -708,27 +770,56 @@ void CXBTClientDlg::unregister_tray()
 
 void CXBTClientDlg::update_tray()
 {
+	__int64 left = 0;
+	__int64 size = 0;
+	int leechers = 0;
+	int leeching = 0;
+	int seeders = 0;
+	int seeding = 0;
+	for (t_files::const_iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
+	{
+		left += i->second.left;
+		size += i->second.size;
+		leechers += i->second.c_leechers;
+		seeders += i->second.c_seeders;
+		(i->second.left ? leeching : seeding)++;
+	}
 	NOTIFYICONDATA nid;
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = GetSafeHwnd();
 	nid.uID = 0;
 	nid.uFlags = NIF_TIP;
-	strcpy(nid.szTip, "XBT Client");
+	sprintf(nid.szTip, "XBT Client - %d %%, %s left, %d leechers, %d seeders, leeching %d, seeding %d", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders, leeching, seeding);
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
 LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
-	if (message == g_tray_message_id)
-	{	
-		switch (lParam)
+	switch (message)
+	{
+	case WM_COPYDATA:
 		{
-		case WM_LBUTTONDBLCLK:
-			m_initial_hide = false;
-			ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
-			if (IsWindowVisible())
-				SetForegroundWindow();
-			return 0;
+			const COPYDATASTRUCT& cds = *reinterpret_cast<COPYDATASTRUCT*>(lParam);
+			switch (cds.dwData)
+			{
+			case 0:
+				open(string(reinterpret_cast<const char*>(cds.lpData), cds.cbData));
+				return true;
+			}				
+		}
+		break;
+	default:
+		if (message == g_tray_message_id)
+		{	
+			switch (lParam)
+			{
+			case WM_LBUTTONDBLCLK:
+				m_initial_hide = false;
+				ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
+				if (IsWindowVisible())
+					SetForegroundWindow();
+				return 0;
+			}
 		}
 	}
 	return ETSLayoutDialog::WindowProc(message, wParam, lParam);
@@ -782,25 +873,27 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	const t_file& b = m_files_map.find(id_b)->second;
 	switch (m_files_sort_column)
 	{
-	case 0:
+	case fc_hash:
 		return compare(a.info_hash, b.info_hash);
-	case 1:
-		return compare(b.left, a.left);
-	case 2:
+	case fc_done:
+		return compare(b.left * 1000 / b.size, a.left * 1000 / a.size);
+	case fc_left:
 		return compare(a.left, b.left);
-	case 3:
+	case fc_total_downloaded:
 		return compare(a.total_downloaded, b.total_downloaded);
-	case 4:
+	case fc_total_uploaded:
 		return compare(a.total_uploaded, b.total_uploaded);
-	case 5:
+	case fc_down_rate:
 		return compare(a.down_rate, b.down_rate);
-	case 6:
+	case fc_up_rate:
 		return compare(a.up_rate, b.up_rate);
-	case 7:
+	case fc_leechers:
 		return compare(a.c_leechers, b.c_leechers);
-	case 8:
+	case fc_seeders:
 		return compare(a.c_seeders, b.c_seeders);
-	case 9:
+	case fc_state:
+		return compare(a.run, b.run);
+	case fc_name:
 		return compare(a.name, b.name);
 	}
 	return 0;
@@ -827,33 +920,33 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	const t_peer& b = m_file->peers.find(id_b)->second;
 	switch (m_peers_sort_column)
 	{
-	case 0:
+	case pc_host:
 		return compare(ntohl(a.host.s_addr), ntohl(b.host.s_addr));
-	case 1:
+	case pc_port:
 		return compare(a.port, b.port);
-	case 2:
+	case pc_done:
 		return compare(b.left, a.left);
-	case 3:
+	case pc_left:
 		return compare(a.left, b.left);
-	case 4:
+	case pc_downloaded:
 		return compare(a.downloaded, b.downloaded);
-	case 5:
+	case pc_uploaded:
 		return compare(a.uploaded, b.uploaded);
-	case 6:
+	case pc_down_rate:
 		return compare(a.down_rate, b.down_rate);
-	case 7:
+	case pc_up_rate:
 		return compare(a.up_rate, b.up_rate);
-	case 8:
+	case pc_link_direction:
 		return compare(a.local_link, b.local_link);
-	case 9:
+	case pc_local_choked:
 		return compare(a.local_choked, b.local_choked);
-	case 10:
+	case pc_local_interested:
 		return compare(a.local_interested, b.local_interested);
-	case 11:
+	case pc_remote_choked:
 		return compare(a.remote_choked, b.remote_choked);
-	case 12:
+	case pc_remote_interested:
 		return compare(a.remote_interested, b.remote_interested);
-	case 13:
+	case pc_peer_id:
 		return compare(a.peer_id, b.peer_id);
 	}
 	return 0;

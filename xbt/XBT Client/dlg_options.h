@@ -18,6 +18,7 @@ public:
 	{
 		int admin_port;
 		int peer_port;
+		int upload_rate;
 	};
 
 	t_data get() const;
@@ -29,6 +30,7 @@ public:
 	enum { IDD = IDD_OPTIONS };
 	int		m_peer_port;
 	int		m_admin_port;
+	int		m_upload_rate;
 	//}}AFX_DATA
 
 

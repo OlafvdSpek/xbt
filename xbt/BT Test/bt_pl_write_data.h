@@ -15,7 +15,6 @@ public:
 	Cbt_pl_write_data();
 	Cbt_pl_write_data(const Cvirtual_binary&);
 	Cbt_pl_write_data(const char* s, int cb_s);
-	~Cbt_pl_write_data();
 
 	const char* m_s;
 	const char* m_s_end;

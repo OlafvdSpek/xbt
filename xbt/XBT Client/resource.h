@@ -13,6 +13,7 @@
 #define IDC_ADMIN_PORT                  1002
 #define IDC_PEER_PORT                   1003
 #define IDC_ALERTS                      1004
+#define IDC_UPLOAD_RATE                 1004
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -27,7 +28,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32778
-#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

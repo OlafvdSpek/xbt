@@ -27,75 +27,44 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 IDD_XBTCLIENT_DIALOG DIALOGEX 0, 0, 128, 122
-STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP |
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
     WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
 CAPTION "XBT Client"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT |
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER |
+    CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | 
                     WS_TABSTOP,7,7,114,50
-    CONTROL         "List1",IDC_PEERS,"SysListView32",LVS_REPORT |
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER |
+    CONTROL         "List1",IDC_PEERS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | 
                     WS_TABSTOP,7,65,114,50
 END
 
-IDD_OPTIONS DIALOGEX 0, 0, 128, 122
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 147, 86
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,71,84,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,71,102,50,14
+    DEFPUSHBUTTON   "OK",IDOK,35,65,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,90,65,50,14
     EDITTEXT        IDC_ADMIN_PORT,7,7,40,14,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "Admin port",IDC_STATIC,54,7,34,8
     EDITTEXT        IDC_PEER_PORT,7,25,40,14,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "Peer port",IDC_STATIC,54,26,30,8
+    EDITTEXT        IDC_UPLOAD_RATE,7,44,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Upload rate (kbyte/s)",IDC_STATIC,54,44,68,8
 END
 
-
-#ifndef _MAC
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x1L
- FILESUBTYPE 0x0L
+IDD_TORRENT DIALOG DISCARDABLE  0, 0, 186, 46
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Alerts"
+FONT 8, "MS Sans Serif"
 BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904B0"
-        BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "XBT Client MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "XBT Client\0"
-            VALUE "LegalCopyright", "Copyright (C) 2004\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "XBT Client.EXE\0"
-            VALUE "ProductName", "XBT Client Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1200
-    END
+    CONTROL         "List2",IDC_ALERTS,"SysListView32",LVS_REPORT | 
+                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,8,172,31
 END
-
-#endif    // !_MAC
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -104,7 +73,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE
+GUIDELINES DESIGNINFO DISCARDABLE 
 BEGIN
     IDD_XBTCLIENT_DIALOG, DIALOG
     BEGIN
@@ -117,12 +86,21 @@ BEGIN
     IDD_OPTIONS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 121
+        RIGHTMARGIN, 140
         VERTGUIDE, 47
         VERTGUIDE, 54
         TOPMARGIN, 7
-        BOTTOMMARGIN, 115
+        BOTTOMMARGIN, 79
         HORZGUIDE, 26
+        HORZGUIDE, 44
+    END
+
+    IDD_TORRENT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 39
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -133,7 +111,7 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE
+STRINGTABLE DISCARDABLE 
 BEGIN
     IDP_SOCKETS_INIT_FAILED "Windows sockets initialization failed."
 END
@@ -151,59 +129,24 @@ LANGUAGE LANG_DUTCH, SUBLANG_DUTCH
 #pragma code_page(1252)
 #endif //_WIN32
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_TORRENT DIALOG DISCARDABLE  0, 0, 186, 95
-STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP |
-    WS_CAPTION | WS_SYSMENU
-CAPTION "Torrent"
-FONT 8, "MS Sans Serif"
-BEGIN
-    CONTROL         "List2",IDC_ALERTS,"SysListView32",LVS_REPORT |
-                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,57,172,31
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE
-BEGIN
-    IDD_TORRENT, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 179
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 88
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE
+1 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE
+2 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE
+3 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -238,7 +181,7 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\XBT Client.ico"
 // Menu
 //
 
-CG_IDR_POPUP_XBTCLIENT_DLG MENU DISCARDABLE
+CG_IDR_POPUP_XBTCLIENT_DLG MENU DISCARDABLE 
 BEGIN
     POPUP "_POPUP_"
     BEGIN

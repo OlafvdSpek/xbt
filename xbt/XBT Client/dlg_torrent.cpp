@@ -55,27 +55,11 @@ BOOL Cdlg_torrent::OnInitDialog()
 	m_alerts.SetExtendedStyle(m_alerts.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_alerts.InsertColumn(0, "Time");
 	m_alerts.InsertColumn(1, "Level");
-	m_alerts.InsertColumn(2, "Message");	
+	m_alerts.InsertColumn(2, "Source");
+	m_alerts.InsertColumn(3, "Message");
 	load_data();	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
-}
-
-static void read_peer_dump(Cstream_reader& sr)
-{
-	sr.read_int32();
-	sr.read_int32();
-	sr.read_string();
-	sr.read_int64();
-	sr.read_int64();
-	sr.read_int64();
-	sr.read_int32();
-	sr.read_int32();
-	sr.read_int8();
-	sr.read_int8();
-	sr.read_int8();
-	sr.read_int8();
-	sr.read_int8();
 }
 
 void Cdlg_torrent::load_data()
@@ -100,7 +84,11 @@ void Cdlg_torrent::load_data()
 	{
 		int c_peers = sr.read_int32();
 		for (int i = 0; i < c_peers; i++)
-			read_peer_dump(sr);
+		{
+			sr.skip(8);
+			sr.read_string();
+			sr.skip(37);
+		}
 	}
 	{
 		int c_alerts = sr.read_int32();
@@ -110,11 +98,13 @@ void Cdlg_torrent::load_data()
 			tm* time = localtime(&timer);
 			int level = sr.read_int32();
 			string message = sr.read_string();
+			string source = sr.read_string();
 			char time_string[16];
 			sprintf(time_string, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
 			int index = m_alerts.InsertItem(0, time_string);
 			m_alerts.SetItemText(index, 1, n(level).c_str());
-			m_alerts.SetItemText(index, 2, message.c_str());
+			m_alerts.SetItemText(index, 2, source.c_str());
+			m_alerts.SetItemText(index, 3, message.c_str());
 		}
 	}
 	auto_size();

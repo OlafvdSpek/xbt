@@ -49,6 +49,7 @@ public:
 	int m_transaction_id;
 private:
 	int m_announce_send;
+	int mc_attempts;
 	int m_connect_send;
 	int m_event;
 };

@@ -18,8 +18,11 @@
 class Cserver  
 {
 public:
+	void update_chokes();
+	void alert(const Calert&);
 	void admin_port(int);
 	void peer_port(int);
+	void upload_rate(int);
 	string state_fname() const;
 	Cvirtual_binary save_state(bool intermediate);
 	void load_state(const Cvirtual_binary&);
@@ -68,6 +71,7 @@ public:
 	}
 private:
 	t_admins m_admins;
+	Calerts m_alerts;
 	t_files m_files;
 	t_links m_links;
 
@@ -75,6 +79,8 @@ private:
 	string m_dir;
 	int m_peer_port;
 	bool m_run;
+	int m_update_chokes_time;
+	int m_upload_rate;
 
 	CRITICAL_SECTION m_cs;
 };
