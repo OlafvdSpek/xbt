@@ -173,7 +173,9 @@ void Cconnection::read(const string& v)
 	{
 	case 'a':
 		gzip = m_server->gzip_announce() && !ti.m_compact;
-		if (ti.valid())
+		if (!ti.m_compact && !ti.m_no_peer_id && ti.m_num_want)
+			s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
+		else if (ti.valid())
 		{
 			int uid = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->get_user_id(v.substr(7, 32)) : 0;
 			if (!uid)

@@ -525,7 +525,10 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		switch (pDispInfo->item.iItem)
 		{
 		case dr_chunks:
-			m_buffer[m_buffer_w] = n(m_file->c_valid_chunks) + " / " + n(m_file->c_invalid_chunks + m_file->c_valid_chunks) + " x " + b2a(m_file->cb_chunk, "b");
+			if (!m_file->c_valid_chunks)
+				break;
+			m_buffer[m_buffer_w] = n(m_file->c_valid_chunks) + " / " + n(m_file->c_invalid_chunks + m_file->c_valid_chunks) + " x " + b2a(m_file->cb_chunk, "b") 
+				+ " = " + b2a(m_file->c_valid_chunks * m_file->cb_chunk, "b") + " / " + b2a((m_file->c_invalid_chunks + m_file->c_valid_chunks) * m_file->cb_chunk, "b");
 			break;
 		case dr_completed_at:
 			if (m_file->completed_at)
