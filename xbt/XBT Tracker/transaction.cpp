@@ -196,6 +196,7 @@ void Ctransaction::send_scrape(const char* r, const char* r_end)
 			w = write_int(4, w, 0);
 		}
 	}
+	m_server.stats().scraped_udp++;
 	send(d, w - d);
 }
 
