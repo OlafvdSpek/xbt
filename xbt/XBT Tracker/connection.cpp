@@ -169,7 +169,7 @@ void Cconnection::read(const string& v)
 	string h = "HTTP/1.0 200 OK\r\n";
 	Cvirtual_binary s;
 	bool gzip = true;
-	switch (v.length() >= 6 ? v[5] : 0) 
+	switch (v.size() >= 41  && v[6] == '/' && v[39] == '/' ? v[40] : v.size() >= 6 ? v[5] : 0) 
 	{
 	case 'a':
 		gzip = m_server->gzip_announce() && !ti.m_compact;
