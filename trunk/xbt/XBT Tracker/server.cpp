@@ -28,9 +28,11 @@ void Cserver::run()
 	for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
 	{
 		Csocket l0, l1;
+		int v = true;
 		if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
 			cerr << "socket failed: " << WSAGetLastError() << endl;
-		else if (l0.bind(htonl(INADDR_ANY), htons(*i)))			
+		else if (setsockopt(l0, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
+			l0.bind(htonl(INADDR_ANY), htons(*i)))			
 			cerr << "bind failed: " << WSAGetLastError() << endl;
 		else if (l0.listen())
 			cerr << "listen failed: " << WSAGetLastError() << endl;
@@ -38,7 +40,8 @@ void Cserver::run()
 			lt.push_back(l0);
 		if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
 			cerr << "socket failed: " << WSAGetLastError() << endl;
-		else if (l1.bind(htonl(INADDR_ANY), htons(*i)))
+		else if (setsockopt(l1, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
+			l1.bind(htonl(INADDR_ANY), htons(*i)))
 			cerr << "bind failed: " << WSAGetLastError() << endl;
 		else
 			lu.push_back(l1);
