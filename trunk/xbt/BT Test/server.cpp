@@ -1128,7 +1128,7 @@ void Cserver::term()
 
 int Cserver::version()
 {
-	return 48;
+	return 49;
 }
 
 Chttp_link* Cserver::http_request(int h, int p, const string& request, Chttp_response_handler* response_handler)
