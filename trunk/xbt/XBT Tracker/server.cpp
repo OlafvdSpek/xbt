@@ -421,6 +421,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 
 void Cserver::read_db_files()
 {
+	m_read_db_files_time = time(NULL);
 	try
 	{
 		Csql_query q(m_database);
@@ -439,20 +440,22 @@ void Cserver::read_db_files()
 			}
 
 		}
-		q.write("update xbt_files set leechers = 0, seeders = 0 where fid >= %s");
-		q.p(m_fid_end);
-		q.execute();
+		if (m_files.empty())
+			m_database.query("update xbt_files set leechers = 0, seeders = 0");
+		else if (m_auto_register)
+			return;			
 		q.write("select info_hash, completed, fid, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp"
 			" from xbt_files where fid >= %s");
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			if (row.size(0) != 20)
+			m_fid_end = max(m_fid_end, row.f_int(2, 0) + 1);
+			if (row.size(0) != 20 || m_files.find(string(row.f(0), 20)) != m_files.end())
 				continue;
 			t_file& file = m_files[string(row.f(0), 20)];
 			file.completed = row.f_int(1, 0);
-			file.dirty = file.leechers || file.seeders;
+			file.dirty = false;
 			file.fid = row.f_int(2, 0);
 			file.started = row.f_int(3, 0);
 			file.stopped = row.f_int(4, 0);
@@ -462,13 +465,11 @@ void Cserver::read_db_files()
 			file.announced_udp = row.f_int(8, 0);
 			file.scraped_http = row.f_int(9, 0);
 			file.scraped_udp = row.f_int(10, 0);
-			m_fid_end = max(m_fid_end, file.fid + 1);
 		}
 	}
 	catch (Cxcc_error error)
 	{
 	}
-	m_read_db_files_time = time(NULL);
 }
 
 void Cserver::read_db_users()
