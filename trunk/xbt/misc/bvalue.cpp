@@ -17,6 +17,26 @@ Cbvalue::Cbvalue(int v)
 	m_int = v;
 }
 
+Cbvalue::Cbvalue(t_value_type t)
+{
+	switch (m_value_type = t)
+	{
+	case vt_int:
+		break;
+	case vt_string:
+		m_string = new string;
+		break;
+	case vt_list:
+		m_list = new t_list;
+		break;
+	case vt_dictionary:
+		m_map = new t_map;
+		break;
+	default:
+		assert(false);
+	}
+}
+
 Cbvalue::Cbvalue(const string& v)
 {
 	m_value_type = vt_string;
@@ -25,8 +45,7 @@ Cbvalue::Cbvalue(const string& v)
 
 Cbvalue::Cbvalue(const Cbvalue& v)
 {
-	m_value_type = v.m_value_type;
-	switch (v.m_value_type)
+	switch (m_value_type = v.m_value_type)
 	{
 	case vt_int:
 		m_int = v.m_int;
