@@ -2862,7 +2862,6 @@ void CXBTClientDlg::OnEditSelectAll()
 
 void CXBTClientDlg::OnToolsOptions() 
 {
-	unregister_hot_key();
 	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
 	data.admin_port = GetProfileInt("admin_port", m_server.admin_port());
@@ -2887,8 +2886,12 @@ void CXBTClientDlg::OnToolsOptions()
 	data.upload_rate = m_server.upload_rate();
 	data.upload_slots = m_server.upload_slots();
 	dlg.set(data);
+	unregister_hot_key();
 	if (IDOK != dlg.DoModal())
+	{
+		register_hot_key(data.hot_key);
 		return;
+	}
 	data = dlg.get();
 	m_server.admin_port(data.admin_port);
 	m_ask_for_location = data.ask_for_location;
