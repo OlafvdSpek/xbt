@@ -173,7 +173,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_PEERS, OnGetdispinfoPeers)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_FILES, OnItemchangedFiles)
 	ON_WM_TIMER()
-	ON_COMMAND(ID_POPUP_OPTIONS, OnPopupOptions)
 	ON_WM_DROPFILES()
 	ON_COMMAND(ID_POPUP_EXPLORE, OnPopupExplore)
 	ON_WM_DESTROY()
@@ -182,7 +181,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_PEERS, OnColumnclickPeers)
 	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
-	ON_COMMAND(ID_POPUP_TRACKERS, OnPopupTrackers)
 	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
 	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
 	ON_COMMAND(ID_POPUP_TORRENT_DELETE, OnPopupTorrentDelete)
@@ -233,8 +231,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_STOPPED, OnUpdatePopupStateStopped)
 	ON_COMMAND(ID_POPUP_TORRENT_OPTIONS, OnPopupTorrentOptions)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_OPTIONS, OnUpdatePopupTorrentOptions)
-	ON_COMMAND(ID_POPUP_SCHEDULER, OnPopupScheduler)
-	ON_COMMAND(ID_POPUP_PROFILES, OnPopupProfiles)
 	ON_WM_ACTIVATEAPP()
 	ON_COMMAND(ID_POPUP_EXIT, OnFileExit)
 	ON_COMMAND(ID_POPUP_ABOUT, OnHelpAbout)
@@ -249,11 +245,15 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY_URL, OnUpdateEditCopyUrl)
 	ON_COMMAND(ID_EDIT_PASTE_URL, OnEditPasteUrl)
 	ON_COMMAND(ID_FILE_NEW, OnFileNew)
+	ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
 	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
 	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
-	ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
+	ON_COMMAND(ID_TOOLS_OPTIONS, OnToolsOptions)
+	ON_COMMAND(ID_TOOLS_PROFILES, OnToolsProfiles)
+	ON_COMMAND(ID_TOOLS_SCHEDULER, OnToolsScheduler)
+	ON_COMMAND(ID_TOOLS_TRACKERS, OnToolsTrackers)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1319,132 +1319,6 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 void CXBTClientDlg::OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
-}
-
-void CXBTClientDlg::OnPopupOptions()
-{
-	Cdlg_options dlg(this);
-	Cdlg_options::t_data data;
-	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
-	data.ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
-	data.bind_before_connect = AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false);
-	data.completes_dir = m_server.completes_dir();
-	data.end_mode = m_server.end_mode();
-	data.hide_on_deactivate = AfxGetApp()->GetProfileInt(m_reg_key, "hide_on_deactivate", false);
-	data.incompletes_dir = m_server.incompletes_dir();
-	data.lower_process_priority = AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true);
-	data.peer_limit = m_server.peer_limit();
-	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
-	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
-	data.seeding_ratio = m_server.seeding_ratio();
-	data.show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
-	data.show_confirm_exit_dialog = AfxGetApp()->GetProfileInt(m_reg_key, "show_confirm_exit_dialog", false);
-	data.show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
-	data.start_minimized = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
-	data.torrent_limit = m_server.torrent_limit();
-	data.torrents_dir = m_server.torrents_dir();
-	data.tracker_port = AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port());
-	data.upload_rate = m_server.upload_rate();
-	data.upload_slots = m_server.upload_slots();
-	dlg.set(data);
-	if (IDOK != dlg.DoModal())
-		return;
-	data = dlg.get();
-	m_server.admin_port(data.admin_port);
-	m_ask_for_location = data.ask_for_location;
-	m_server.bind_before_connect(data.bind_before_connect);
-	m_server.end_mode(data.end_mode);
-	m_hide_on_deactivate = data.hide_on_deactivate;
-	lower_process_priority(data.lower_process_priority);
-	set_dir(data.completes_dir, data.incompletes_dir, "", data.torrents_dir);
-	m_server.peer_limit(data.peer_limit);
-	m_server.peer_port(data.peer_port);
-	if (!data.public_ipa.empty())
-		m_server.public_ipa(Csocket::get_host(data.public_ipa));
-	m_server.seeding_ratio(data.seeding_ratio);
-	m_show_advanced_columns = data.show_advanced_columns;
-	m_show_tray_icon = data.show_tray_icon;
-	m_server.torrent_limit(data.torrent_limit);
-	m_server.tracker_port(data.tracker_port);
-	m_server.upload_rate(data.upload_rate);
-	m_server.upload_slots(data.upload_slots);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "ask_for_location", data.ask_for_location);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "bind_before_connect", data.bind_before_connect);
-	AfxGetApp()->WriteProfileString(m_reg_key, "completes_dir", data.completes_dir.c_str());
-	AfxGetApp()->WriteProfileInt(m_reg_key, "hide_on_deactivate", data.hide_on_deactivate);
-	AfxGetApp()->WriteProfileString(m_reg_key, "incompletes_dir", data.incompletes_dir.c_str());
-	AfxGetApp()->WriteProfileInt(m_reg_key, "lower_process_priority", data.lower_process_priority);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_limit", data.peer_limit);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
-	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
-	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", data.show_advanced_columns);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "show_confirm_exit_dialog", data.show_confirm_exit_dialog);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "start_minimized", data.start_minimized);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "torrent_limit", data.torrent_limit);
-	AfxGetApp()->WriteProfileString(m_reg_key, "torrents_dir", data.torrents_dir.c_str());
-	AfxGetApp()->WriteProfileInt(m_reg_key, "tracker_port", data.tracker_port);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
-	insert_columns(true);
-	if (m_show_tray_icon)
-		register_tray();
-	else
-		unregister_tray();
-}
-
-void CXBTClientDlg::OnPopupProfiles() 
-{
-	Cdlg_profiles dlg;
-	dlg.entries(Cprofiles().load(m_server.get_profiles()));
-	switch (dlg.DoModal())
-	{
-	case IDC_ACTIVATE:
-		m_server.load_profile(dlg.selected_profile().save());
-	case IDOK:
-		m_server.set_profiles(dlg.entries().save());
-		break;
-	}
-}
-
-void CXBTClientDlg::OnPopupScheduler()
-{
-	Cdlg_scheduler dlg;
-	dlg.entries(Cscheduler().load(m_server.get_scheduler()));
-	dlg.profiles(Cprofiles().load(m_server.get_profiles()));
-	if (IDOK == dlg.DoModal())
-		m_server.set_scheduler(dlg.entries().save());
-}
-
-void CXBTClientDlg::OnPopupTrackers()
-{
-	Cdlg_trackers dlg(this);
-	Cstream_reader r(m_server.get_trackers());
-	for (int count = r.read_int(4); count--; )
-	{
-		Cdlg_trackers::t_tracker e;
-		e.m_tracker = r.read_string();
-		e.m_user = r.read_string();
-		e.m_pass = r.read_string();
-		dlg.insert(e);
-	}
-	if (IDOK != dlg.DoModal())
-		return;
-	int cb_d = 4;
-	for (Cdlg_trackers::t_trackers::const_iterator i = dlg.trackers().begin(); i != dlg.trackers().end(); i++)
-		cb_d += i->second.m_tracker.size() + i->second.m_user.size() + i->second.m_pass.size() + 12;
-	Cvirtual_binary d;
-	Cstream_writer w(d.write_start(cb_d));
-	w.write_int(4, dlg.trackers().size());
-	for (Cdlg_trackers::t_trackers::const_iterator i = dlg.trackers().begin(); i != dlg.trackers().end(); i++)
-	{
-		w.write_string(i->second.m_tracker);
-		w.write_string(i->second.m_user);
-		w.write_string(i->second.m_pass);
-	}
-	m_server.set_trackers(d);
 }
 
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
@@ -2682,6 +2556,132 @@ void CXBTClientDlg::OnEditPasteUrl()
 void CXBTClientDlg::OnEditSelectAll() 
 {
 	m_files.select_all();
+}
+
+void CXBTClientDlg::OnToolsOptions() 
+{
+	Cdlg_options dlg(this);
+	Cdlg_options::t_data data;
+	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
+	data.ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
+	data.bind_before_connect = AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false);
+	data.completes_dir = m_server.completes_dir();
+	data.end_mode = m_server.end_mode();
+	data.hide_on_deactivate = AfxGetApp()->GetProfileInt(m_reg_key, "hide_on_deactivate", false);
+	data.incompletes_dir = m_server.incompletes_dir();
+	data.lower_process_priority = AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true);
+	data.peer_limit = m_server.peer_limit();
+	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
+	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
+	data.seeding_ratio = m_server.seeding_ratio();
+	data.show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
+	data.show_confirm_exit_dialog = AfxGetApp()->GetProfileInt(m_reg_key, "show_confirm_exit_dialog", false);
+	data.show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
+	data.start_minimized = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
+	data.torrent_limit = m_server.torrent_limit();
+	data.torrents_dir = m_server.torrents_dir();
+	data.tracker_port = AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port());
+	data.upload_rate = m_server.upload_rate();
+	data.upload_slots = m_server.upload_slots();
+	dlg.set(data);
+	if (IDOK != dlg.DoModal())
+		return;
+	data = dlg.get();
+	m_server.admin_port(data.admin_port);
+	m_ask_for_location = data.ask_for_location;
+	m_server.bind_before_connect(data.bind_before_connect);
+	m_server.end_mode(data.end_mode);
+	m_hide_on_deactivate = data.hide_on_deactivate;
+	lower_process_priority(data.lower_process_priority);
+	set_dir(data.completes_dir, data.incompletes_dir, "", data.torrents_dir);
+	m_server.peer_limit(data.peer_limit);
+	m_server.peer_port(data.peer_port);
+	if (!data.public_ipa.empty())
+		m_server.public_ipa(Csocket::get_host(data.public_ipa));
+	m_server.seeding_ratio(data.seeding_ratio);
+	m_show_advanced_columns = data.show_advanced_columns;
+	m_show_tray_icon = data.show_tray_icon;
+	m_server.torrent_limit(data.torrent_limit);
+	m_server.tracker_port(data.tracker_port);
+	m_server.upload_rate(data.upload_rate);
+	m_server.upload_slots(data.upload_slots);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "ask_for_location", data.ask_for_location);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "bind_before_connect", data.bind_before_connect);
+	AfxGetApp()->WriteProfileString(m_reg_key, "completes_dir", data.completes_dir.c_str());
+	AfxGetApp()->WriteProfileInt(m_reg_key, "hide_on_deactivate", data.hide_on_deactivate);
+	AfxGetApp()->WriteProfileString(m_reg_key, "incompletes_dir", data.incompletes_dir.c_str());
+	AfxGetApp()->WriteProfileInt(m_reg_key, "lower_process_priority", data.lower_process_priority);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_limit", data.peer_limit);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
+	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
+	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", data.show_advanced_columns);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "show_confirm_exit_dialog", data.show_confirm_exit_dialog);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "start_minimized", data.start_minimized);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "torrent_limit", data.torrent_limit);
+	AfxGetApp()->WriteProfileString(m_reg_key, "torrents_dir", data.torrents_dir.c_str());
+	AfxGetApp()->WriteProfileInt(m_reg_key, "tracker_port", data.tracker_port);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
+	insert_columns(true);
+	if (m_show_tray_icon)
+		register_tray();
+	else
+		unregister_tray();
+}
+
+void CXBTClientDlg::OnToolsProfiles() 
+{
+	Cdlg_profiles dlg;
+	dlg.entries(Cprofiles().load(m_server.get_profiles()));
+	switch (dlg.DoModal())
+	{
+	case IDC_ACTIVATE:
+		m_server.load_profile(dlg.selected_profile().save());
+	case IDOK:
+		m_server.set_profiles(dlg.entries().save());
+		break;
+	}
+}
+
+void CXBTClientDlg::OnToolsScheduler() 
+{
+	Cdlg_scheduler dlg;
+	dlg.entries(Cscheduler().load(m_server.get_scheduler()));
+	dlg.profiles(Cprofiles().load(m_server.get_profiles()));
+	if (IDOK == dlg.DoModal())
+		m_server.set_scheduler(dlg.entries().save());
+}
+
+void CXBTClientDlg::OnToolsTrackers() 
+{
+	Cdlg_trackers dlg(this);
+	Cstream_reader r(m_server.get_trackers());
+	for (int count = r.read_int(4); count--; )
+	{
+		Cdlg_trackers::t_tracker e;
+		e.m_tracker = r.read_string();
+		e.m_user = r.read_string();
+		e.m_pass = r.read_string();
+		dlg.insert(e);
+	}
+	if (IDOK != dlg.DoModal())
+		return;
+	int cb_d = 4;
+	for (Cdlg_trackers::t_trackers::const_iterator i = dlg.trackers().begin(); i != dlg.trackers().end(); i++)
+		cb_d += i->second.m_tracker.size() + i->second.m_user.size() + i->second.m_pass.size() + 12;
+	Cvirtual_binary d;
+	Cstream_writer w(d.write_start(cb_d));
+	w.write_int(4, dlg.trackers().size());
+	for (Cdlg_trackers::t_trackers::const_iterator i = dlg.trackers().begin(); i != dlg.trackers().end(); i++)
+	{
+		w.write_string(i->second.m_tracker);
+		w.write_string(i->second.m_user);
+		w.write_string(i->second.m_pass);
+	}
+	m_server.set_trackers(d);
 }
 
 void CXBTClientDlg::OnHelpAbout() 
