@@ -67,6 +67,7 @@ private:
 		string error;
 		int leechers;
 		int seeders;
+		int mtime;
 
 		Ctracker_socket* s;
 	};

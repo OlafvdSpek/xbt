@@ -36,7 +36,7 @@ static string error_string(int v)
 	const int cb_b = 1 << 10;
 	char b[cb_b];
 	return FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, v, 0, b, cb_b, NULL)
-		? b
+		? static_cast<string>(b) + " (" + n(v) + ')'
 		: error_string(v);
 
 }
