@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
 	Cxcc_error error;
 	Cstatic_config static_config;
 	Csocket l0, l1;
-	unsigned long p = true;
 	if (error = static_config.read("xbt_tracker.conf"))
 		cerr << error.message() << endl;
 	if (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true))
