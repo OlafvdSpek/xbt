@@ -844,7 +844,7 @@ bool Cbt_file::end_mode() const
 
 int Cbt_file::c_max_requests_pending() const
 {
-	return end_mode() ? 1 : 8;
+	return begin_mode() || end_mode() ? 1 : 8;
 }
 
 void Cbt_file::pause()
