@@ -20,6 +20,7 @@ public:
 		int peer_port;
 		string public_ipa;
 		int seeding_ratio;
+		bool show_advanced_columns;
 		bool show_tray_icon;
 		int upload_rate;
 		int upload_slots;
@@ -39,6 +40,7 @@ public:
 	int		m_upload_slots;
 	int		m_seeding_ratio;
 	BOOL	m_show_tray_icon;
+	BOOL	m_show_advanced_columns;
 	//}}AFX_DATA
 
 
