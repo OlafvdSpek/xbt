@@ -570,10 +570,12 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = n(m_file->c_valid_pieces) + " / " + n(m_file->c_invalid_pieces + m_file->c_valid_pieces) + " x " + b2a(m_file->cb_piece, "b");
 			break;
 		case dr_rejected_chunks:
-			m_buffer[m_buffer_w] = n(m_file->c_rejected_chunks);
+			if (m_file->c_rejected_chunks)
+				m_buffer[m_buffer_w] = n(m_file->c_rejected_chunks) + " x " + b2a(m_file->cb_chunk, "b") + " = " + b2a(m_file->c_rejected_chunks * m_file->cb_chunk, "b");
 			break;
 		case dr_rejected_pieces:
-			m_buffer[m_buffer_w] = n(m_file->c_rejected_pieces);
+			if (m_file->c_rejected_pieces)
+				m_buffer[m_buffer_w] = n(m_file->c_rejected_pieces) + " x " + b2a(m_file->cb_piece, "b") + " = " + b2a(m_file->c_rejected_pieces * m_file->cb_chunk, "b");
 			break;
 		case dr_seeders:
 			m_buffer[m_buffer_w] = n(m_file->c_seeders);
