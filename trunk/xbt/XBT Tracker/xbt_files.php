@@ -1,6 +1,9 @@
+<?php
+	ob_start(ob_gzhandler);
+?>
 <link rel=stylesheet href="xbt.css">
 <title>XBT Files</title>
-<?
+<?php
 	mysql_connect("localhost", "xbt", "pass");
 	mysql_select_db("xbt");
 	$results = mysql_query("select sum(announced) announced, sum(scraped) scraped, sum(completed) completed, sum(started) started, sum(stopped) stopped, sum(leechers) leechers, sum(seeders) seeders, sum(leechers or seeders) torrents from xbt_files");
