@@ -64,7 +64,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		}
 		if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 120)
 			clear_local_requests();
-		while (m_local_interested && !m_remote_choked && mc_local_requests_pending < 8)
+		while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < 8)
 		{
 			if (m_local_requests.empty())
 			{
