@@ -19,7 +19,8 @@ string uri_encode(const string& v);
 inline __int64 htonll(__int64 v)
 {
 	const unsigned char* a = reinterpret_cast<const unsigned char*>(&v);
-	return a[0] << 56 | a[1] << 48 | a[2] << 40 | a[3] << 32 | a[4] << 24 | a[5] << 16 | a[6] << 8 | a[7];
+	__int64 b = a[0] << 56 | a[1] << 48 | a[2] << 40 | a[3] << 32;
+	return b | a[4] << 24 | a[5] << 16 | a[6] << 8 | a[7];
 }
 
 inline __int64 ntohll(__int64 v)
