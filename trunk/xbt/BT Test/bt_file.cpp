@@ -632,12 +632,6 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 		w.write_int(4, 0);
 }
 
-int Cbt_file::time_remaining() const
-{
-	int rate = m_down_counter.rate();
-	return rate ? mcb_piece * c_invalid_pieces() / rate : -1;
-}
-
 int Cbt_file::c_leechers() const
 {
 	int c = 0;
