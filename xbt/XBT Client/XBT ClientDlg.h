@@ -57,7 +57,6 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 protected:
@@ -161,6 +160,7 @@ protected:
 	afx_msg void OnUpdateFileDelete(CCmdUI* pCmdUI);
 	afx_msg void OnHelpHomePage();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);

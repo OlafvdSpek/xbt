@@ -263,9 +263,10 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_FILE_DELETE, OnFileDelete)
 	ON_UPDATE_COMMAND_UI(ID_FILE_DELETE, OnUpdateFileDelete)
 	ON_COMMAND(ID_HELP_HOME_PAGE, OnHelpHomePage)
+	ON_WM_SYSCOMMAND()
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
-	ON_WM_SYSCOMMAND()
+	ON_WM_COPYDATA()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1496,25 +1497,6 @@ void CXBTClientDlg::update_tray(const char* info_title, const char* info)
 		*nid.szInfo = 0;
 	nid.uTimeout = 10;
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
-}
-
-LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-	case WM_COPYDATA:
-		{
-			const COPYDATASTRUCT& cds = *reinterpret_cast<COPYDATASTRUCT*>(lParam);
-			switch (cds.dwData)
-			{
-			case 0:
-				open(string(reinterpret_cast<const char*>(cds.lpData), cds.cbData), m_ask_for_location);
-				return true;
-			}
-		}
-		break;
-	}
-	return ETSLayoutDialog::WindowProc(message, wParam, lParam);
 }
 
 void CXBTClientDlg::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
@@ -2784,4 +2766,15 @@ void CXBTClientDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		return;
 	}
 	ETSLayoutDialog::OnSysCommand(nID, lParam);
+}
+
+BOOL CXBTClientDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct) 
+{
+	switch (pCopyDataStruct->dwData)
+	{
+	case 0:
+		open(string(reinterpret_cast<const char*>(pCopyDataStruct->lpData), pCopyDataStruct->cbData), m_ask_for_location);
+		return true;
+	}
+	return ETSLayoutDialog::OnCopyData(pWnd, pCopyDataStruct);
 }
