@@ -200,6 +200,10 @@ SOURCE=.\StdAfx.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\stream_int.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\tracker_input.h
 # End Source File
 # Begin Source File

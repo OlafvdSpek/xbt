@@ -8,26 +8,18 @@
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "sha1.h"
+#include "stream_int.h"
 
 template <class T>
 static T read(const char* r, const char* r_end)
 {
-	T v = 0;
-	for (int i = 0; i < sizeof(T); i++)
-		v = v << 8 | *reinterpret_cast<const unsigned char*>(r++);
-	return v;
+	return read_int(sizeof(T), r);
 }
 
 template <class T>
 static char* write(char* w, T v)
 {
-	w += sizeof(T);
-	for (int i = 0; i < sizeof(T); i++)
-	{
-		*--w = v & 0xff;
-		v >>= 8;
-	}
-	return w + sizeof(T);
+	return write_int(sizeof(T), w, v);
 }
 
 //////////////////////////////////////////////////////////////////////

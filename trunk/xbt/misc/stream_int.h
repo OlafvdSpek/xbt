@@ -5,7 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-__int64 read_int(int cb, const void* r0)
+template <class T>
+__int64 read_int(int cb, const T r0)
 {
 	const unsigned char* r = reinterpret_cast<const unsigned char*>(r0);
 	__int64 v = 0;
@@ -24,10 +25,11 @@ T write_int(int cb, T w0, __int64 v)
 		*--w = v & 0xff;
 		v >>= 8;
 	}
-	return w + cb;
+	return reinterpret_cast<T>(w + cb);
 }
 
-__int64 read_int_le(int cb, const void* r0)
+template <class T>
+__int64 read_int_le(int cb, const T r0)
 {
 	const unsigned char* r = reinterpret_cast<const unsigned char*>(r0);
 	r += cb;
@@ -46,7 +48,7 @@ T write_int_le(int cb, T w0, __int64 v)
 		*w++ = v & 0xff;
 		v >>= 8;
 	}
-	return w;
+	return reinterpret_cast<T>(w + cb);
 }
 
 #endif // !defined(AFX_STREAM_INT_H__57F9BAC0_D02F_4067_9891_5C484F35B67F__INCLUDED_)
