@@ -74,10 +74,12 @@ return <<<EOF
       <div class="tableborder">
         <div class='maintitle'><{CAT_IMG}>&nbsp;{$data['name']}</div>
 		<table width='100%' border='0' cellspacing='1' cellpadding='4'>
-		  <tr> 
+		  <tr>
 			<td align='center' class='titlemedium'><img src='{$ibforums->vars['img_url']}/spacer.gif' alt='' width='20' height='1' /></td>
 			<td align='center' class='titlemedium'><img src='{$ibforums->vars['img_url']}/spacer.gif' alt='' width='20' height='1' /></td>
 			<th width='45%' align='left' nowrap="nowrap" class='titlemedium'>{$ibforums->lang['h_topic_title']}</th>
+			<th class='titlemedium'>L
+			<th class='titlemedium'>S
 			<th width='14%' align='center' nowrap="nowrap" class='titlemedium'>{$ibforums->lang['h_topic_starter']}</th>
 			<th width='7%' align='center' nowrap="nowrap" class='titlemedium'>{$ibforums->lang['h_replies']}</th>
 			<th width='7%' align='center' nowrap="nowrap" class='titlemedium'>{$ibforums->lang['h_hits']}</th>
@@ -91,9 +93,9 @@ function TableEnd($data) {
 global $ibforums;
 return <<<EOF
       </table>
-    
+
       <!--IBF.FORUM_ACTIVE-->
-      
+
       <div align='center' class='darkrow2' style='padding:4px'>{$ibforums->lang['showing_text']}{$ibforums->lang['sort_text']}&nbsp;<input type='submit' value='{$ibforums->lang['sort_submit']}' class='forminput' /></div>
 	</div>
 </form>
@@ -180,7 +182,7 @@ EOF;
 function show_no_matches() {
 global $ibforums;
 return <<<EOF
-				<tr> 
+				<tr>
 					<td class='row4' colspan='7' align='center'>
 						<br />
                          <b>{$ibforums->lang['no_topics']}</b>
@@ -202,12 +204,14 @@ function RenderRow($data) {
 global $ibforums;
 return <<<EOF
     <!-- Begin Topic Entry {$data['tid']} -->
-    <tr> 
+    <tr>
 	  <td align='center' class='row4'>{$data['folder_img']}</td>
       <td align='center' class='row2'>{$data['topic_icon']}</td>
       <td class='row4'>
         {$data['go_new_post']}{$data['prefix']} <a href="{$ibforums->base_url}showtopic={$data['tid']}" title="{$ibforums->lang['topic_started_on']} {$data['start_date']}">{$data['title']}</a>  {$data[PAGES]}
         <br /><span class='desc'>{$data['description']}</span></td>
+      <td class='row4' align=right>{$data['leechers']}
+      <td class='row4' align=right>{$data['seeders']}
       <td align='center' class='row2'>{$data['starter']}</td>
       <td align='center' class='row4'>{$data['posts']}</td>
       <td align='center' class='row2'>{$data['views']}</td>
@@ -246,12 +250,14 @@ function render_pinned_row($data) {
 global $ibforums;
 return <<<EOF
     <!-- Begin Pinned Topic Entry {$data['tid']} -->
-    <tr> 
+    <tr>
 	  <td align='center' class='row4'>{$data['folder_img']}</td>
       <td align='center' class='row2'>{$data['topic_icon']}</td>
       <td class='row4'>
        {$data['go_new_post']}<b>{$data['prefix']} <a href='{$ibforums->base_url}showtopic={$data['tid']}' class='linkthru' title='{$ibforums->lang['topic_started_on']} {$data['start_date']}'>{$data['title']}</a></b>  {$data[PAGES]}
         <br /><span class='desc'>{$data['description']}</span></td>
+      <td class='row4'>
+      <td class='row4'>
       <td align='center' class='row4'>{$data['starter']}</td>
       <td align='center' class='row4'>{$data['posts']}</td>
       <td align='center' class='row4'>{$data['views']}</td>
