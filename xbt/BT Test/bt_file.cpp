@@ -360,12 +360,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 	if (a >= m_pieces.size())
 		return 1;
 	Cbt_piece& piece = m_pieces[a];
-	if (piece.valid())
-	{
-		peer->alert(Calert::debug, "Piece " + n(a) + ": already valid");
-		return 1;
-	}
-	if (piece.write(offset % mcb_piece, s, cb_s))
+	if (piece.valid() || piece.write(offset % mcb_piece, s, cb_s))
 	{
 		if (offset % piece.cb_sub_piece())
 			peer->alert(Calert::debug, "Piece " + n(a) + ", offset " + n(offset % mcb_piece) + ", size " + b2a(cb_s) + ": rejected");
