@@ -18,7 +18,7 @@ using namespace std;
 string b2a(__int64 v, const char* postfix = NULL);
 string escape_string(const string& v);
 bool is_private_ipa(int a);
-string n(int v);
+string n(__int64 v);
 string hex_encode(int l, int v);
 string hex_encode(const string& v);
 string peer_id2a(const string& v);
