@@ -335,7 +335,7 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = 'R';
 		break;
 	case fc_name:
-		m_buffer[m_buffer_w] = e.name;
+		m_buffer[m_buffer_w] = e.display_name;
 		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
@@ -510,8 +510,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	else
 		id = i->first;
 	t_file& f = m_files_map.find(id)->second;
+	f.display_name = f.name = sr.read_string();
 	f.info_hash = info_hash;
-	f.name = sr.read_string();
 	f.trackers.clear();
 	for (int c_trackers = sr.read_int(4); c_trackers--; )
 		f.trackers.push_back(sr.read_string());
@@ -540,9 +540,9 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	}
 	f.removed = false;
 	{
-		int i = f.name.rfind('\\');
+		int i = f.display_name.rfind('\\');
 		if (i != string::npos)
-			f.name.erase(0, i + 1);
+			f.display_name.erase(0, i + 1);
 	}
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); i++)
@@ -681,7 +681,23 @@ void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
 
 void CXBTClientDlg::OnPopupExplore() 
 {
-	ShellExecute(m_hWnd, "open", m_dir, NULL, NULL, SW_SHOW);
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index == -1)
+	{
+		ShellExecute(m_hWnd, "open", m_dir, NULL, NULL, SW_SHOW);
+		return;
+	}
+	string name = m_files_map.find(m_files.GetItemData(index))->second.name;
+	for (int i = 0; (i = name.find('/', i)) != string::npos; i++)
+		name[i] = '\\';
+	struct _stati64 b;
+	if (_stati64(name.c_str(), &b) || ~b.st_mode & S_IFDIR)
+	{
+		int i = name.rfind('\\');
+		if (i != string::npos)
+			name.erase(i);
+	}
+	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnPopupExploreTracker() 
@@ -938,8 +954,7 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 		{
 		case VK_CANCEL:
 		case VK_ESCAPE:
-			if (m_show_tray_icon)
-				ShowWindow(SW_HIDE);
+			ShowWindow(SW_HIDE);
 		case VK_RETURN:
 			return true;
 		}
@@ -1128,7 +1143,7 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	case fc_state:
 		return compare(a.running, b.running);
 	case fc_name:
-		return compare(a.name, b.name);
+		return compare(a.display_name, b.display_name);
 	}
 	return 0;
 }
