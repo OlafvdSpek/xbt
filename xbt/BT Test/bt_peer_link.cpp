@@ -661,7 +661,7 @@ int Cbt_peer_link::write_data(__int64 o, const char* s, int cb_s, int latency)
 	else if (cb_s != piece.cb_sub_piece(b))
 		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(b) + ", size: " + b2a(cb_s) + ": invalid size (" + peer_id2a(m_remote_peer_id) + ")");
 	else
-		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(b) + ", size: " + b2a(cb_s) + ", latency: " + n(latency) + " s: rejected (" + peer_id2a(m_remote_peer_id) + ")");
+		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(b) + ", latency: " + n(latency) + " s: rejected (" + peer_id2a(m_remote_peer_id) + ")");
 	return 1;
 }
 
