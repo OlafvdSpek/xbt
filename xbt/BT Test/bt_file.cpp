@@ -479,7 +479,8 @@ int Cbt_file::read_data(__int64 offset, byte* d, int cb_d)
 
 int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 {
-	if (!m_left)
+	assert(peer.m_remote_pieces.size() == m_pieces.size());
+	if (!m_left || peer.m_remote_pieces.size() != m_pieces.size())
 		return -1;
 
 	vector<int> invalid_pieces;
