@@ -92,8 +92,9 @@ int Cbt_file::open(const string& name)
 			char b = 0;
 			if ((i->m_f = fopen((i->m_name.empty() ? name : name + '/' + i->m_name).c_str(), "w+b"))
 				&& i->m_size
-				&& !fseek(i->m_f, i->m_size - 1, SEEK_SET))
-				fwrite(&b, 1, 1, i->m_f);
+				&& !fseek(i->m_f, i->m_size - 1, SEEK_SET)
+				&& fwrite(&b, 1, 1, i->m_f) == 1)
+				fflush(i->m_f);
 		}
 		if (!i->m_f)
 		{
@@ -231,21 +232,18 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 					cerr << "fseek failed" << endl;
 				else if (fwrite(r, cb_write, 1, i->m_f) != 1)
 					cerr << "fwrite failed" << endl;
-				else
-				{
-					fflush(i->m_f);
-					piece.m_d.clear();
-					write_have(a);
-				}
 				size -= cb_write;
 				if (!size)
 					break;
-				offset += cb_write;
+				offset = 0;
 				r += cb_write;
 			}
 			else
 				offset -= i->m_size;
 		}
+		fflush(i->m_f);
+		piece.m_d.clear();
+		write_have(a);
 	}
 }
 
@@ -268,12 +266,12 @@ int Cbt_file::read_piece(int a, byte* d)
 			int cb_read = min(size, i->m_size - offset);
 			if (fseek(i->m_f, offset, SEEK_SET))
 				return 1;
-			if (fread(w, piece.mcb_d, 1, i->m_f) != 1)
+			if (fread(w, cb_read, 1, i->m_f) != 1)
 				return 1;
 			size -= cb_read;
 			if (!size)
 				break;
-			offset += cb_read;
+			offset = 0;
 			w += cb_read;
 		}
 		else
