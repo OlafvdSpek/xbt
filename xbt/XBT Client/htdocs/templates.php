@@ -64,7 +64,7 @@
 		$d .= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">';
 		$d .= '<link rel=stylesheet href="xbt.css">';
 		$d .= '<meta http-equiv=refresh content=60>';
-		$d .= '<title>XBT Client</title>';
+		$d .= sprintf('<title>XBT Client %s</title>', $v['version']);
 		$d .= '<center>';
 		$d .= '<table>';
 		$d .= '<caption>Links</caption>';

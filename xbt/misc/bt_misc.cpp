@@ -293,3 +293,8 @@ int hms2i(int h, int m, int s)
 {
 	return 60 * (h + 60 * m) + s;
 }
+
+string xbt_version2a(int v)
+{
+	return n(v / 100) + "." + n(v / 10 % 10) + "." + n(v % 10);
+}

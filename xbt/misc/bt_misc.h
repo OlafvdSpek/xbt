@@ -33,6 +33,7 @@ string peer_id2a(const string& v);
 string time2a(time_t v);
 string uri_decode(const string& v);
 string uri_encode(const string& v);
+string xbt_version2a(int v);
 
 inline void compute_sha1(const Cvirtual_binary& s, void* d)
 {
