@@ -78,7 +78,7 @@ BOOL Cdlg_profiles::OnInitDialog()
 	m_list.InsertColumn(5, "Torrent Limit", LVCFMT_RIGHT);
 	m_list.InsertColumn(6, "");
 	for (t_entries::const_iterator i = m_entries.begin(); i != m_entries.end(); i++)
-		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
+		m_list.InsertItemData(m_list.GetItemCount(), i->first);
 	m_list.auto_size();
 	return true;
 }
@@ -154,7 +154,7 @@ void Cdlg_profiles::insert(const t_entry& e)
 	int id = m_entries.empty() ? 0 : m_entries.rbegin()->first + 1;
 	m_entries[id] = e;
 	if (m_list.GetSafeHwnd())
-		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), id);
+		m_list.InsertItemData(m_list.GetItemCount(), id);
 }
 
 void Cdlg_profiles::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 

@@ -71,7 +71,7 @@ BOOL Cdlg_trackers::OnInitDialog()
 	m_list.InsertColumn(0, "Tracker");
 	m_list.InsertColumn(1, "User");
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
-		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
+		m_list.InsertItemData(m_list.GetItemCount(), i->first);
 	m_list.auto_size();
 	return true;
 }
@@ -123,7 +123,7 @@ void Cdlg_trackers::insert(const t_tracker& e)
 	int id = m_trackers.empty() ? 0 : m_trackers.rbegin()->first + 1;
 	m_trackers[id] = e;
 	if (m_list.GetSafeHwnd())
-		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), id);
+		m_list.InsertItemData(m_list.GetItemCount(), id);
 }
 
 void Cdlg_trackers::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
