@@ -33,7 +33,7 @@ public:
 	ostream& dump(ostream&) const;
 	int next_invalid_piece(const Cbt_peer_link&);
 	int read_piece(int a, byte* d);
-	void write_data(int o, const char* s, int cb_s);
+	void write_data(__int64 o, const char* s, int cb_s);
 	void close();
 	int open(const string& name, bool validate);
 	int c_invalid_pieces() const;
