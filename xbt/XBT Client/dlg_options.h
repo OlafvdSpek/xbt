@@ -23,9 +23,9 @@ public:
 		bool ask_for_location;
 		bool bind_before_connect;
 		bool end_mode;
-		string completes_directory;
-		string incompletes_directory;
-		string torrents_directory;
+		string completes_dir;
+		string incompletes_dir;
+		string torrents_dir;
 		bool lower_process_priority;
 		int peer_limit;
 		int peer_port;
@@ -61,9 +61,9 @@ public:
 	BOOL	m_lower_process_priority;
 	int		m_peer_limit;
 	BOOL	m_bind_before_connect;
-	CString	m_completes_directory;
-	CString	m_incompletes_directory;
-	CString	m_torrents_directory;
+	CString	m_completes_dir;
+	CString	m_incompletes_dir;
+	CString	m_torrents_dir;
 	//}}AFX_DATA
 
 

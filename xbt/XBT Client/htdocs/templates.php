@@ -154,7 +154,7 @@
 		$d .= sprintf('<tr><td align=left>Tracker Port<td align=right>%d', $v['tracker port']['value']);
 		$d .= sprintf('<tr><td align=left>Upload Rate<td align=right>%s', b2a($v['upload rate']['value']));
 		$d .= sprintf('<tr><td align=left>Upload Slots<td align=right>%d', $v['upload slots']['value']);
-		$d .= sprintf('<tr><td align=left>Seeding Ratio<td align=right>%d', $v['seeding ratio']['value']);
+		$d .= sprintf('<tr><td align=left>Seeding Ratio<td align=right>%d %%', $v['seeding ratio']['value']);
 		$d .= '</table>';
 		$d .= '</form>';
 		$d .= '</center>';

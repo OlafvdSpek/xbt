@@ -120,7 +120,7 @@ void Cserver::public_ipa(int v)
 
 void Cserver::seeding_ratio(int v)
 {
-	m_seeding_ratio = max(0, v);
+	m_seeding_ratio = v ? max(100, v) : 0;
 }
 
 void Cserver::tracker_port(int v)

@@ -83,7 +83,7 @@ BEGIN
     LTEXT           "Public IP address",IDC_STATIC,288,43,56,8
     LTEXT           "Upload rate (kbyte/s)",IDC_STATIC,288,61,68,8
     LTEXT           "Upload slots",IDC_STATIC,288,79,40,8
-    LTEXT           "Seeding ratio",IDC_STATIC,288,97,42,8
+    LTEXT           "Seeding ratio (%)",IDC_STATIC,288,97,54,8
     LTEXT           "Completes directory",IDC_STATIC,288,115,62,8
     LTEXT           "Incompletes directory",IDC_STATIC,288,133,68,8
     LTEXT           "Torrents directory",IDC_STATIC,288,151,56,8
