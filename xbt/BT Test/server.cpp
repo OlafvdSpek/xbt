@@ -588,7 +588,7 @@ int Cserver::open_url(const string& v)
 	return 0;
 }
 
-int Cserver::close(const string& id)
+int Cserver::close(const string& id, bool erase)
 {
 	Clock l(m_cs);
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -596,6 +596,8 @@ int Cserver::close(const string& id)
 		if (i->m_info_hash != id)
 			continue;
 		i->close();
+		if (erase)
+			i->erase();
 		m_files.erase(i);
 		save_state(true).save(state_fname());
 		return 0;
