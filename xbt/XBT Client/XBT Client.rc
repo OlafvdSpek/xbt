@@ -78,6 +78,10 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,283,96,10
     CONTROL         "Start minimzed",IDC_START_MINIMIZED,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,295,61,10
+    CONTROL         "Show confirm exit dialog",IDC_SHOW_CONFIRM_EXIT_DIALOG,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,223,92,10
+    CONTROL         "Hide on deactivate",IDC_HIDE_ON_DEACTIVATE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,131,235,76,10
     DEFPUSHBUTTON   "OK",IDOK,250,291,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,306,291,50,14
     EDITTEXT        IDC_ADMIN_PORT,7,7,277,14,ES_RIGHT | ES_AUTOHSCROLL |
@@ -97,10 +101,6 @@ BEGIN
     LTEXT           "Tracker port (UDP)",IDC_STATIC,288,169,61,8
     LTEXT           "Peer limit",IDC_STATIC,288,187,29,8
     LTEXT           "Torrent limit",IDC_STATIC,288,205,37,8
-    CONTROL         "Show confirm exit dialog",IDC_SHOW_CONFIRM_EXIT_DIALOG,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,223,92,10
-    CONTROL         "Hide on deactivate",IDC_HIDE_ON_DEACTIVATE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,131,235,76,10
 END
 
 IDD_TRACKERS DIALOG DISCARDABLE  0, 0, 282, 95
