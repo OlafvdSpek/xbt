@@ -38,6 +38,8 @@ Cbt_file::Cbt_file()
 	m_end_mode = false;
 	m_state = s_queued;
 	m_validate = true;
+	m_seeding_ratio = 0;
+	m_seeding_ratio_override = false;
 }
 
 Cbt_file::~Cbt_file()
@@ -261,7 +263,7 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 {
 	if (m_hasher)
 		return 0;
-	if (state() == s_running && !m_left && m_server->seeding_ratio() && 100 * m_total_uploaded / m_server->seeding_ratio() > mcb_f)
+	if (state() == s_running && !m_left && seeding_ratio() && 100 * m_total_uploaded / seeding_ratio() > mcb_f)
 	{
 		alert(Calert(Calert::notice, "Seeding ratio reached"));
 		close();
@@ -532,7 +534,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 176;
+	int size = m_info_hash.length() + m_name.length() + 184;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -617,6 +619,8 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, c_distributed_copies);
 	w.write_int(4, c_distributed_copies_remainder);
 	w.write_int(4, m_priority);
+	w.write_int(4, m_seeding_ratio);
+	w.write_int(4, m_seeding_ratio_override);
 	if (flags & Cserver::df_peers)
 	{
 		w.write_int(4, m_peers.size());
@@ -896,4 +900,9 @@ void Cbt_file::state(t_state v)
 		m_state = v;
 		break;
 	}
+}
+
+int Cbt_file::seeding_ratio() const
+{
+	return m_seeding_ratio_override ? m_seeding_ratio : m_server->seeding_ratio();
 }

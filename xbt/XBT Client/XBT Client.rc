@@ -163,6 +163,20 @@ BEGIN
     LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,23,31,8
 END
 
+IDD_TORRENT_OPTIONS DIALOG DISCARDABLE  0, 0, 217, 45
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Torrent Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Seeding ratio:",IDC_SEEDING_RATIO_OVERRIDE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,7,59,10
+    EDITTEXT        IDC_SEEDING_RATIO,67,7,130,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    DEFPUSHBUTTON   "OK",IDOK,105,24,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,160,24,50,14
+    LTEXT           "%",IDC_STATIC,202,7,8,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -222,6 +236,14 @@ BEGIN
         VERTGUIDE, 42
         TOPMARGIN, 7
         BOTTOMMARGIN, 168
+    END
+
+    IDD_TORRENT_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 210
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 38
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -15,6 +15,7 @@
 #define IDD_TRACKER                     135
 #define IDD_ABOUT                       136
 #define IDD_MAKE_TORRENT                137
+#define IDD_TORRENT_OPTIONS             138
 #define IDC_FILES                       1000
 #define IDC_PEERS                       1002
 #define IDC_ADMIN_PORT                  1002
@@ -66,6 +67,7 @@
 #define IDC_COMPLETES_DIRECTORY_BROWSE  1043
 #define IDC_INCOMPLETES_DIRECTORY_BROWSE 1044
 #define IDC_TORRENTS_DIRECTORY_BROWSE   1045
+#define IDC_SEEDING_RATIO_OVERRIDE      1047
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -114,9 +116,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        138
+#define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         32818
-#define _APS_NEXT_CONTROL_VALUE         1047
+#define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif
