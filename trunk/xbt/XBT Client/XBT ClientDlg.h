@@ -99,6 +99,8 @@ private:
 		__int64 left;
 		__int64 size;
 		__int64 uploaded;
+		__int64 total_downloaded;
+		__int64 total_uploaded;
 		int down_rate;
 		int up_rate;
 		int c_leechers;

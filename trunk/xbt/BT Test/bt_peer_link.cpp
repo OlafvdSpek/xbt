@@ -347,6 +347,7 @@ void Cbt_peer_link::write_piece(int piece, int offset, int size, const void* s)
 	m_up_counter.add(size);
 	m_f->m_uploaded += size;
 	m_f->m_up_counter.add(size);
+	m_f->m_total_uploaded += size;
 }
 
 void Cbt_peer_link::choked(bool v)
@@ -404,6 +405,7 @@ void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	m_down_counter.add(size);
 	m_f->m_downloaded += size;
 	m_f->m_down_counter.add(size);
+	m_f->m_total_downloaded += size;
 	m_piece_rtime = time(NULL);
 }
 
@@ -463,6 +465,14 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 			const __int32* a = reinterpret_cast<const __int32*>(r);
 			remote_cancels(ntohl(a[0]), ntohl(a[1]), ntohl(a[2]));
 		}
+		break;
+	case bti_get_info:
+		break;
+	case bti_info:
+		break;
+	case bti_get_peers:
+		break;
+	case bti_peers:
 		break;
 	}
 }
