@@ -76,14 +76,9 @@ public:
 		return f(i) ? f(i) : d;
 	}
 
-	__int64 f_int(int i) const
+	int f_int(int i, int d = 0) const
 	{
-		return atoll(f(i));
-	}
-
-	__int64 f_int(int i, __int64 d) const
-	{
-		return f(i) ? atoll(f(i)) : d;
+		return f(i) ? atoi(f(i)) : d;
 	}
 
 	Cvirtual_binary f_vdata(int i) const
@@ -101,6 +96,7 @@ class Csql_result
 public:
 	int c_fields() const;
 	int c_rows() const;
+	void data_seek(int i);
 	Csql_row fetch_row() const;
 	const Csql_result& operator=(const Csql_result& v);
 	Csql_result(MYSQL_RES* h);
