@@ -22,8 +22,8 @@ int main(int argc, char* argv[])
 	if (l0.open(SOCK_STREAM) == INVALID_SOCKET
 		|| l1.open(SOCK_DGRAM) == INVALID_SOCKET)
 		cerr << "socket failed: " << WSAGetLastError() << endl;
-	else if (l0.bind(INADDR_ANY, htons(2710))
-		|| l1.bind(INADDR_ANY, htons(2710)))
+	else if (l0.bind(htonl(INADDR_ANY), htons(2710))
+		|| l1.bind(htonl(INADDR_ANY), htons(2710)))
 		cerr << "bind failed: " << WSAGetLastError() << endl;
 	else if (listen(l0, SOMAXCONN))
 		cerr << "listen failed: " << WSAGetLastError() << endl;
