@@ -508,8 +508,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		case dr_completed_at:
 			if (m_file->completed_at)
 				m_buffer[m_buffer_w] = time2a(m_file->completed_at);
-			else if (m_file->downloaded && m_file->left && time(NULL) - m_file->started_at > 300)
-				m_buffer[m_buffer_w] = time2a(m_file->left * (time(NULL) - m_file->started_at) / m_file->downloaded + time(NULL)) + " (estimated)";
+			else if (m_file->downloaded && m_file->left && time(NULL) - m_file->session_started_at > 300)
+				m_buffer[m_buffer_w] = time2a(m_file->left * (time(NULL) - m_file->session_started_at) / m_file->downloaded + time(NULL)) + " (estimated)";
 			break;
 		case dr_distributed_copies:
 			if (m_file->c_distributed_copies || m_file->c_distributed_copies_remainder)
@@ -912,6 +912,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		break;
 	}
 	f.started_at = sr.read_int(4);
+	f.session_started_at = sr.read_int(4);
 	f.completed_at = sr.read_int(4);
 	f.c_distributed_copies = sr.read_int(4);
 	f.c_distributed_copies_remainder = sr.read_int(4);
