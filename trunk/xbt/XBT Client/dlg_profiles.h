@@ -19,7 +19,6 @@ class Cdlg_profiles: public ETSLayoutDialog
 {
 // Construction
 public:
-	void update_controls();
 	typedef Cprofile t_entry;
 	typedef Cprofiles t_entries;
 
@@ -60,6 +59,7 @@ public:
 
 // Implementation
 protected:
+	void update_controls();
 
 	// Generated message map functions
 	//{{AFX_MSG(Cdlg_profiles)

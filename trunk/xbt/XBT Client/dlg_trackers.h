@@ -38,6 +38,8 @@ public:
 // Dialog Data
 	//{{AFX_DATA(Cdlg_trackers)
 	enum { IDD = IDD_TRACKERS };
+	CButton	m_delete;
+	CButton	m_edit;
 	CListCtrlEx	m_list;
 	//}}AFX_DATA
 
@@ -51,6 +53,7 @@ public:
 
 // Implementation
 protected:
+	void update_controls();
 
 	// Generated message map functions
 	//{{AFX_MSG(Cdlg_trackers)
@@ -60,6 +63,7 @@ protected:
 	afx_msg void OnEdit();
 	afx_msg void OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
