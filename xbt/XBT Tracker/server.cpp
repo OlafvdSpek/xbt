@@ -675,7 +675,7 @@ void Cserver::read_db_users()
 		return;
 	try
 	{
-		Csql_query q(m_database, "select uid, name, pass, torrent_pass from xbt_users");
+		Csql_query q(m_database, "select uid, name, pass, torrent_pass, fid_end from xbt_users");
 		Csql_result result = q.execute();
 		m_passes.clear();
 		m_users.clear();
@@ -683,6 +683,7 @@ void Cserver::read_db_users()
 		{
 			t_user& user = m_users[row.f(1)];
 			user.uid = row.f_int(0);
+			user.fid_end = row.f_int(4);
 			user.pass.assign(row.f(2), row.size(2));
 			m_passes[row.f(3)] = &user;
 		}
