@@ -40,8 +40,9 @@ Cvirtual_binary xcc_z::gunzip(const Cvirtual_binary& s)
 	return gunzip(s, s.size());
 }
 
-Cvirtual_binary xcc_z::gzip(const byte* s, int cb_s)
+Cvirtual_binary xcc_z::gzip(const void* s0, int cb_s)
 {
+	const byte* s = reinterpret_cast<const byte*>(s0);
 	Cvirtual_binary d;
 	unsigned long cb_d = cb_s + (cb_s + 999) / 1000 + 12;
 	byte* w = d.write_start(10 + cb_d + 8);
