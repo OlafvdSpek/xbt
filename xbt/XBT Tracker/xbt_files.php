@@ -1,6 +1,7 @@
 <?php
 	ob_start(ob_gzhandler);
 ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <link rel=stylesheet href="xbt.css">
 <title>XBT Files</title>
 <?php
