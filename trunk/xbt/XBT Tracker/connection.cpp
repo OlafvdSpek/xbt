@@ -23,7 +23,7 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_server = server;
 	m_s = s;
 	m_a = a;
-	m_ctime = time(NULL);
+	m_ctime = server->time();
 	
 	m_state = 0;
 	m_w = 0;
@@ -42,7 +42,7 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
 	return FD_ISSET(m_s, fd_read_set) && recv()
 		|| FD_ISSET(m_s, fd_write_set) && send()
-		|| time(NULL) - m_ctime > 15
+		|| m_server->time() - m_ctime > 15
 		|| m_state == 5 && m_write_b.empty();
 }
 
@@ -144,7 +144,7 @@ void Cconnection::read(const string& v)
 	if (m_log_access)
 	{
 		static ofstream f("xbt_tracker_raw.log");
-		f << time(NULL) << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << endl;
+		f << m_server->time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << endl;
 	}
 	Ctracker_input ti;
 	int a = v.find('?');
@@ -223,7 +223,7 @@ void Cconnection::read(const string& v)
 		Cvirtual_binary s2 = xcc_z::gzip(s);
 #ifndef NDEBUG
 		static ofstream f("xbt_tracker_gzip.log");
-		f << time(NULL) << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << endl;
+		f << m_server->time() << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << endl;
 #endif
 		if (s2.size() + 24 < s.size())
 		{

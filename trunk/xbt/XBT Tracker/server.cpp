@@ -94,6 +94,7 @@ Cserver::Cserver(Cdatabase& database):
 
 int Cserver::run()
 {
+	m_time = ::time(NULL);
 	read_config();
 	t_sockets lt, lu;
 	for (t_listen_ipas::const_iterator j = m_listen_ipas.begin(); j != m_listen_ipas.end(); j++)
@@ -192,6 +193,7 @@ int Cserver::run()
 			cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 		else 
 		{
+			m_time = ::time(NULL);
 			for (t_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 			{
 				if (!FD_ISSET(*i, &fd_read_set))
@@ -245,19 +247,19 @@ int Cserver::run()
 				}
 			}
 		}
-		if (time(NULL) - m_read_config_time > m_read_config_interval)
+		if (time() - m_read_config_time > m_read_config_interval)
 			read_config();
-		else if (time(NULL) - m_clean_up_time > m_clean_up_interval)
+		else if (time() - m_clean_up_time > m_clean_up_interval)
 			clean_up();
-		else if (time(NULL) - m_read_db_files_time > m_read_db_interval)
+		else if (time() - m_read_db_files_time > m_read_db_interval)
 			read_db_files();
-		else if (time(NULL) - m_read_db_ipas_time > m_read_db_interval)
+		else if (time() - m_read_db_ipas_time > m_read_db_interval)
 			read_db_ipas();
-		else if (time(NULL) - m_read_db_users_time > m_read_db_interval)
+		else if (time() - m_read_db_users_time > m_read_db_interval)
 			read_db_users();
-		else if (m_write_db_interval && time(NULL) - m_write_db_files_time > m_write_db_interval)
+		else if (m_write_db_interval && time() - m_write_db_files_time > m_write_db_interval)
 			write_db_files();
-		else if (m_write_db_interval && time(NULL) - m_write_db_users_time > m_write_db_interval)
+		else if (m_write_db_interval && time() - m_write_db_users_time > m_write_db_interval)
 			write_db_users();
 	}
 	write_db_files();
@@ -280,7 +282,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		q.p(v.m_left);
 		q.p(v.m_uploaded);
 		q.p(uid);
-		q.p(time(NULL));
+		q.p(time());
 		m_announce_log_buffer += q.read();
 	}
 	if (!m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
@@ -313,13 +315,13 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 
 		if (!m_listen_check || !listen_check)
 			peer.listening = true;
-		else if (!peer.listening && time(NULL) - peer.mtime > 900)
+		else if (!peer.listening && time() - peer.mtime > 900)
 		{
 			Cpeer_link peer_link(v.m_ipa, v.m_port, this, v.m_info_hash, v.m_ipa);
 			if (peer_link)
 				m_peer_links.push_front(peer_link);
 		}
-		peer.mtime = time(NULL);
+		peer.mtime = time();
 	}
 	switch (v.m_event)
 	{
@@ -422,8 +424,8 @@ void Cserver::t_file::clean_up(int t)
 void Cserver::clean_up()
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->second.clean_up(time(NULL) - static_cast<int>(1.5 * m_announce_interval));
-	m_clean_up_time = time(NULL);
+		i->second.clean_up(time() - static_cast<int>(1.5 * m_announce_interval));
+	m_clean_up_time = time();
 }
 
 Cbvalue Cserver::t_file::scrape() const
@@ -445,7 +447,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 			q.p("NULL");
 		else
 			q.pe(ti.m_info_hash);
-		q.p(time(NULL));
+		q.p(time());
 		m_scrape_log_buffer += q.read();
 	}
 	Cbvalue v;
@@ -474,7 +476,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 
 void Cserver::read_db_files()
 {
-	m_read_db_files_time = time(NULL);
+	m_read_db_files_time = time();
 	try
 	{
 		Csql_query q(m_database);
@@ -540,7 +542,7 @@ void Cserver::read_db_ipas()
 	catch (Cxcc_error error)
 	{
 	}
-	m_read_db_ipas_time = time(NULL);
+	m_read_db_ipas_time = time();
 }
 
 void Cserver::read_db_users()
@@ -562,7 +564,7 @@ void Cserver::read_db_users()
 	catch (Cxcc_error error)
 	{
 	}
-	m_read_db_users_time = time(NULL);
+	m_read_db_users_time = time();
 }
 
 void Cserver::write_db_files()
@@ -648,7 +650,7 @@ void Cserver::write_db_files()
 		}
 		m_scrape_log_buffer.erase();
 	}
-	m_write_db_files_time = time(NULL);
+	m_write_db_files_time = time();
 }
 
 void Cserver::write_db_users()
@@ -670,7 +672,7 @@ void Cserver::write_db_users()
 		}
 		m_users_updates_buffer.erase();
 	}
-	m_write_db_users_time = time(NULL);
+	m_write_db_users_time = time();
 }
 
 void Cserver::read_config()
@@ -751,7 +753,7 @@ void Cserver::read_config()
 
 	if (m_listen_ports.empty())
 		m_listen_ports.insert(2710);
-	m_read_config_time = time(NULL);
+	m_read_config_time = time();
 }
 
 string Cserver::t_file::debug() const
@@ -765,7 +767,7 @@ string Cserver::t_file::debug() const
 			+ "<td align=right>" + n(ntohs(i->second.port))
 			+ "<td>" + (i->second.listening ? '*' : ' ')
 			+ "<td align=right>" + n(i->second.left)
-			+ "<td align=right>" + n(time(NULL) - i->second.mtime)
+			+ "<td align=right>" + n(::time(NULL) - i->second.mtime)
 			+ "<td>" + hex_encode(i->second.peer_id);
 	}
 	return page;
@@ -829,7 +831,7 @@ string Cserver::statistics() const
 		seeders += i->second.seeders;
 		torrents++;
 	}
-	int t = time(NULL);
+	int t = time();
 	page += "<table><tr><td>leechers<td align=right>" + n(leechers)
 		+ "<tr><td>seeders<td align=right>" + n(seeders)
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
