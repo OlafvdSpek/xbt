@@ -784,19 +784,19 @@ int Cbt_peer_link::pre_dump() const
 
 void Cbt_peer_link::dump(Cstream_writer& w) const
 {
-	w.write_int32(ntohl(m_a.sin_addr.s_addr));
-	w.write_int32(ntohs(m_a.sin_port));
+	w.write_int(4, ntohl(m_a.sin_addr.s_addr));
+	w.write_int(4, ntohs(m_a.sin_port));
 	w.write_string(m_remote_peer_id);
-	w.write_int64(m_downloaded);
-	w.write_int64(m_left);
-	w.write_int64(m_uploaded);
-	w.write_int32(m_down_counter.rate());
-	w.write_int32(m_up_counter.rate());
-	w.write_int8(m_local_link);
-	w.write_int8(m_local_choked);
-	w.write_int8(m_local_interested);
-	w.write_int8(m_remote_choked);
-	w.write_int8(m_remote_interested);
+	w.write_int(8, m_downloaded);
+	w.write_int(8, m_left);
+	w.write_int(8, m_uploaded);
+	w.write_int(4, m_down_counter.rate());
+	w.write_int(4, m_up_counter.rate());
+	w.write_int(1, m_local_link);
+	w.write_int(1, m_local_choked);
+	w.write_int(1, m_local_interested);
+	w.write_int(1, m_remote_choked);
+	w.write_int(1, m_remote_interested);
 }
 
 void Cbt_peer_link::alert(const Calert& v)

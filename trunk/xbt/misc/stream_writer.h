@@ -27,35 +27,20 @@ public:
 		return v;
 	}
 
-	void write_int8(int v)
+	void write_int(int cb, __int64 v)
 	{
-		m_w = write_int(1, m_w, v);
-	}
-
-	void write_int16(int v)
-	{
-		m_w = write_int(2, m_w, v);
-	}
-
-	void write_int32(int v)
-	{
-		m_w = write_int(4, m_w, v);
-	}
-
-	void write_int64(__int64 v)
-	{
-		m_w = write_int(8, m_w, v);
+		m_w = ::write_int(cb, m_w, v);
 	}
 
 	void write_data(const Cvirtual_binary& v)
 	{
-		write_int32(v.size());
+		write_int(4, v.size());
 		v.read(write(v.size()));
 	}
 
 	void write_string(const string& v)
 	{
-		write_int32(v.length());
+		write_int(4, v.length());
 		memcpy(write(v.length()), v.c_str(), v.length());
 	}
 

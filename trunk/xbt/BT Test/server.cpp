@@ -412,7 +412,7 @@ int Cserver::pre_dump(int flags) const
 
 void Cserver::dump(Cstream_writer& w, int flags) const
 {
-	w.write_int32(m_files.size());
+	w.write_int(4, m_files.size());
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->dump(w, flags);
 }
@@ -653,8 +653,8 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 			cb_d += i->pre_save_state(intermediate);
 	}
 	Cstream_writer w(d.write_start(cb_d));
-	w.write_int32(g_state_version);
-	w.write_int32(m_files.size());
+	w.write_int(4, g_state_version);
+	w.write_int(4, m_files.size());
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->save_state(w, intermediate);
 	assert(w.w() == d.data_end());
