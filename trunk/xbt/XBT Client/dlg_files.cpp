@@ -134,21 +134,21 @@ void Cdlg_files::OnTimer(UINT nIDEvent)
 
 void Cdlg_files::OnDecreasePriority() 
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
-		return;
-	const t_map_entry& e = m_map.find(m_files.GetItemData(index))->second;
-	m_server.sub_file_priority(m_info_hash, e.name, e.priority - 1);
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_map_entry& e = m_map.find(m_files.GetItemData(index))->second;
+		m_server.sub_file_priority(m_info_hash, e.name, e.priority - 1);
+	}
 	load_data();
 }
 
 void Cdlg_files::OnIncreasePriority() 
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
-		return;
-	const t_map_entry& e = m_map.find(m_files.GetItemData(index))->second;
-	m_server.sub_file_priority(m_info_hash, e.name, e.priority + 1);
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_map_entry& e = m_map.find(m_files.GetItemData(index))->second;
+		m_server.sub_file_priority(m_info_hash, e.name, e.priority + 1);
+	}
 	load_data();
 }
 
