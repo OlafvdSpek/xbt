@@ -17,6 +17,7 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void insert_columns();
 	void sort_peers();
 	void sort_files();
 	int files_compare(int id_a, int id_b) const;
