@@ -468,6 +468,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		case dr_completed_at:
 			if (m_file->completed_at)
 				m_buffer[m_buffer_w] = time2a(m_file->completed_at);
+			else if (m_file->downloaded && m_file->left && time(NULL) - m_file->started_at > 300)
+				m_buffer[m_buffer_w] = time2a(m_file->left * (time(NULL) - m_file->started_at) / m_file->downloaded + time(NULL)) + " (estimated)";
 			break;
 		case dr_downloaded:
 			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b");
