@@ -17,7 +17,7 @@ public:
 	int pre_select(fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(fd_set* fd_write_set, fd_set* fd_except_set);
 	Cpeer_link();
-	Cpeer_link(int h, int p, Cserver* server, const string& file_id, const string& peer_id);
+	Cpeer_link(int h, int p, Cserver* server, const string& file_id, int peer_id);
 
 	operator bool() const
 	{
@@ -28,7 +28,7 @@ private:
 	int m_ctime;
 	Cserver* m_server;
 	string m_file_id;
-	string m_peer_id;
+	int m_peer_id;
 };
 
 #endif // !defined(AFX_PEER_LINK_H__55B9FC9B_26A7_42D7_A950_691FBA0B4910__INCLUDED_)

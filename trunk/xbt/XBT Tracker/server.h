@@ -35,7 +35,7 @@ public:
 		int mtime;
 	};
 
-	typedef map<string, t_peer> t_peers;
+	typedef map<int, t_peer> t_peers;
 
 	struct t_file
 	{
@@ -66,7 +66,7 @@ public:
 	void read_db();
 	void clean_up();
 	void insert_peer(const Ctracker_input&);
-	void update_peer(const string& file_id, const string& peer_id, bool listening);
+	void update_peer(const string& file_id, int peer_id, bool listening);
 	Cbvalue select_peers(const Ctracker_input&);
 	Cbvalue scrape(const Ctracker_input&);
 	void run(Csocket& lt, Csocket& lu);

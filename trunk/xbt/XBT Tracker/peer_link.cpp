@@ -15,7 +15,7 @@ Cpeer_link::Cpeer_link()
 {
 }
 
-Cpeer_link::Cpeer_link(int h, int p, Cserver* server, const string& file_id, const string& peer_id)
+Cpeer_link::Cpeer_link(int h, int p, Cserver* server, const string& file_id, int peer_id)
 {
 	if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
 		cerr << "socket failed: " << WSAGetLastError() << endl;

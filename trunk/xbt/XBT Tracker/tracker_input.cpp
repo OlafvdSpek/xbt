@@ -47,7 +47,7 @@ void Ctracker_input::set(const string& name, const string& value)
 		if (name == "info_hash" && value.length() == 20)
 			m_info_hash = value;
 		else if (name == "ip")
-			m_ipa = value;
+			m_ipa = inet_addr(value.c_str());
 		break;
 	case 'l':
 		if (name == "left")

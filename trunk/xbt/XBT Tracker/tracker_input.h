@@ -26,7 +26,7 @@ public:
 
 	t_event m_event;
 	string m_info_hash;
-	string m_ipa;
+	int m_ipa;
 	string m_peer_id;
 	int m_downloaded;
 	int m_left;
