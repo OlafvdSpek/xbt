@@ -178,6 +178,10 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_VIEW_PEERS, OnPopupViewPeers)
 	ON_COMMAND(ID_POPUP_VIEW_TRACKERS, OnPopupViewTrackers)
 	ON_COMMAND(ID_POPUP_VIEW_EVENTS, OnPopupViewEvents)
+	ON_COMMAND(ID_POPUP_PRIORITY_EXCLUDE, OnPopupPriorityExclude)
+	ON_COMMAND(ID_POPUP_PRIORITY_HIGH, OnPopupPriorityHigh)
+	ON_COMMAND(ID_POPUP_PRIORITY_LOW, OnPopupPriorityLow)
+	ON_COMMAND(ID_POPUP_PRIORITY_NORMAL, OnPopupPriorityNormal)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -331,7 +335,7 @@ void CXBTClientDlg::open_url(const string& v)
 
 void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_file& e = m_files_map.find(pDispInfo->item.lParam)->second;
 	switch (m_torrents_columns[pDispInfo->item.iSubItem])
@@ -411,7 +415,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (!m_file)
 		return;
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
 	const char* row_names[] =
 	{
@@ -490,7 +494,7 @@ void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (!m_file)
 		return;
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_event& e = m_file->events[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
@@ -538,7 +542,7 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	}
 	if (!m_file)
 		return;
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_peer& e = m_file->peers.find(pDispInfo->item.lParam)->second;
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
@@ -607,7 +611,7 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (!m_file)
 		return;
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_sub_file& e = m_file->sub_files[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
@@ -648,7 +652,7 @@ void CXBTClientDlg::OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (!m_file)
 		return;
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_tracker& e = m_file->trackers[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
@@ -862,16 +866,18 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		case v_events:
 			while (m_peers.GetItemCount() < f.events.size())
 			{
-				m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
+				int id = m_peers.GetItemCount();
+				m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), id);
 				inserted = true;
 			}
 			while (m_peers.GetItemCount() > f.events.size())
-				m_peers.DeleteItem(m_peers.GetItemCount() - 1);
+				m_peers.DeleteItem(0);
 			break;
 		case v_files:
 			while (m_peers.GetItemCount() < f.sub_files.size())
 			{
-				m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
+				int id = m_peers.GetItemCount();
+				m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), id);
 				inserted = true;
 			}
 			break;
@@ -1242,10 +1248,7 @@ void CXBTClientDlg::OnPopupTorrentAlerts()
 
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
-		return;
-	Cdlg_torrent(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash).DoModal();
+	OnPopupExplore();
 	*pResult = 0;
 }
 
@@ -1806,6 +1809,7 @@ void CXBTClientDlg::set_clipboard(const string& v)
 void CXBTClientDlg::OnPopupViewDetails() 
 {
 	m_bottom_view = v_details;
+	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
 	auto_size_peers();
@@ -1814,6 +1818,7 @@ void CXBTClientDlg::OnPopupViewDetails()
 void CXBTClientDlg::OnPopupViewEvents() 
 {
 	m_bottom_view = v_events;
+	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
 	auto_size_peers();
@@ -1822,6 +1827,7 @@ void CXBTClientDlg::OnPopupViewEvents()
 void CXBTClientDlg::OnPopupViewFiles() 
 {
 	m_bottom_view = v_files;
+	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
 	auto_size_peers();
@@ -1830,6 +1836,7 @@ void CXBTClientDlg::OnPopupViewFiles()
 void CXBTClientDlg::OnPopupViewPeers() 
 {
 	m_bottom_view = v_peers;
+	m_peers_sort_column = pc_client;
 	insert_bottom_columns();
 	fill_peers();
 	auto_size_peers();
@@ -1838,6 +1845,7 @@ void CXBTClientDlg::OnPopupViewPeers()
 void CXBTClientDlg::OnPopupViewTrackers() 
 {
 	m_bottom_view = v_trackers;
+	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
 	auto_size_peers();
@@ -1845,8 +1853,46 @@ void CXBTClientDlg::OnPopupViewTrackers()
 
 void CXBTClientDlg::OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
+	NMLVCUSTOMDRAW* pCustomDraw = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
+	switch (pCustomDraw->nmcd.dwDrawStage)
+	{
+	case CDDS_PREPAINT:
+		*pResult = CDRF_NOTIFYITEMDRAW;
+		break;
+	case CDDS_ITEMPREPAINT:
+		pCustomDraw->clrTextBk = pCustomDraw->nmcd.dwItemSpec & 1 ? RGB(0xf8, 0xf8, 0xf8) : RGB(0xff, 0xff, 0xff);
+		*pResult = CDRF_DODEFAULT;
+		break;
+	}
 }
 
 void CXBTClientDlg::OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	NMLVCUSTOMDRAW* pCustomDraw = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
+	switch (pCustomDraw->nmcd.dwDrawStage)
+	{
+	case CDDS_PREPAINT:
+		*pResult = CDRF_NOTIFYITEMDRAW;
+		break;
+	case CDDS_ITEMPREPAINT:
+		pCustomDraw->clrTextBk = pCustomDraw->nmcd.dwItemSpec & 1 ? RGB(0xf8, 0xf8, 0xf8) : RGB(0xff, 0xff, 0xff);
+		*pResult = CDRF_DODEFAULT;
+		break;
+	}
+}
+
+void CXBTClientDlg::OnPopupPriorityHigh() 
+{
+}
+
+void CXBTClientDlg::OnPopupPriorityNormal() 
+{
+}
+
+void CXBTClientDlg::OnPopupPriorityLow() 
+{
+}
+
+void CXBTClientDlg::OnPopupPriorityExclude() 
 {
 }

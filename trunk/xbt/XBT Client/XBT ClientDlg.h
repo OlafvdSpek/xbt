@@ -114,6 +114,10 @@ protected:
 	afx_msg void OnPopupViewPeers();
 	afx_msg void OnPopupViewTrackers();
 	afx_msg void OnPopupViewEvents();
+	afx_msg void OnPopupPriorityExclude();
+	afx_msg void OnPopupPriorityHigh();
+	afx_msg void OnPopupPriorityLow();
+	afx_msg void OnPopupPriorityNormal();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

@@ -348,6 +348,14 @@ CG_IDR_POPUP_XBTCLIENT_DLG MENU DISCARDABLE
 BEGIN
     POPUP "_POPUP_"
     BEGIN
+        POPUP "&Priority"
+        BEGIN
+            MENUITEM "High",                        ID_POPUP_PRIORITY_HIGH
+            MENUITEM "Normal",                      ID_POPUP_PRIORITY_NORMAL
+            MENUITEM "Low",                         ID_POPUP_PRIORITY_LOW
+            MENUITEM "Exclude",                     ID_POPUP_PRIORITY_EXCLUDE
+
+        END
         POPUP "&Torrent"
         BEGIN
             MENUITEM "Alerts",                      ID_POPUP_TORRENT_ALERTS
