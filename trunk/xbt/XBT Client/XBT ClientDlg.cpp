@@ -296,10 +296,11 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_WM_COPYDATA()
 	ON_COMMAND(ID_POPUP_VIEW_GLOBAL_EVENTS, OnPopupViewGlobalEvents)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_GLOBAL_EVENTS, OnUpdatePopupViewGlobalEvents)
-	ON_WM_SIZE()
-	ON_WM_INITMENU()
 	ON_COMMAND(ID_POPUP_VIEW_GLOBAL_DETAILS, OnPopupViewGlobalDetails)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_GLOBAL_DETAILS, OnUpdatePopupViewGlobalDetails)
+	ON_WM_SIZE()
+	ON_WM_INITMENU()
+	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE, OnUpdatePopupExplore)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1497,6 +1498,11 @@ void CXBTClientDlg::OnPopupExplore()
 			name.erase(i);
 	}
 	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
+}
+
+void CXBTClientDlg::OnUpdatePopupExplore(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetSelectedCount() == 1);
 }
 
 void CXBTClientDlg::OnPopupExploreTracker()

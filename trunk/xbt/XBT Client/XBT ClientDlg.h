@@ -173,6 +173,7 @@ protected:
 	afx_msg void OnUpdatePopupViewGlobalEvents(CCmdUI* pCmdUI);
 	afx_msg void OnPopupViewGlobalDetails();
 	afx_msg void OnUpdatePopupViewGlobalDetails(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupExplore(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
