@@ -85,6 +85,7 @@ protected:
 	afx_msg void OnPopupPaste();
 	afx_msg void OnPopupFiles();
 	afx_msg void OnPopupTrackers();
+	afx_msg void OnPopupAnnounce();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
