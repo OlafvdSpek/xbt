@@ -73,13 +73,11 @@ int main(int argc, char* argv[])
 	if (argc == 3)
 	{
 		string hash = hex_decode(argv[2]);
+		Cbvalue v;
 		if (!strcmp(argv[1], "close"))
 		{
-			Cbvalue v;
 			v.d(bts_action, bts_close_torrent);
 			v.d(bts_hash, hash);
-			if (send(s, v))
-				return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 		}
 		else if (!strcmp(argv[1], "open"))
 		{
@@ -89,28 +87,26 @@ int main(int argc, char* argv[])
 			Cbvalue b;
 			if (b.write(a))
 				return cerr << "Unable to parse .torrent" << endl, 1;
-			Cbvalue v;
 			v.d(bts_action, bts_open_torrent);
 			v.d(bts_torrent, b);
-			if (send(s, v))
-				return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 		}
 		else if (!strcmp(argv[1], "pause"))
 		{
-			Cbvalue v;
 			v.d(bts_action, bts_pause_torrent);
 			v.d(bts_hash, hash);
-			if (send(s, v))
-				return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 		}
 		else if (!strcmp(argv[1], "unpause"))
 		{
-			Cbvalue v;
 			v.d(bts_action, bts_unpause_torrent);
 			v.d(bts_hash, hash);
-			if (send(s, v))
-				return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 		}
+		else if (!strcmp(argv[1], "upload_rate"))
+		{
+			v.d(bts_action, bts_set_options);
+			v.d(bts_upload_rate, atoi(argv[2]) << 10);
+		}
+		if (!v.d().empty() && send(s, v))
+			return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 	}
 	if (argc == 2 && !strcmp(argv[1], "options"))
 	{
@@ -141,6 +137,8 @@ int main(int argc, char* argv[])
 			if (v.write(d + 5, ntohl(*reinterpret_cast<__int32*>(d)) - 1))
 				break;
 			v.read().save("/temp/bvalue.txt");
+			if (v.d().empty())
+				break;
 			if (v.d_has(bts_files))
 				show_status(cout, v);
 			else
