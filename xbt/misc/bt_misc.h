@@ -22,6 +22,8 @@ enum
 	uta_scrape,
 };
 
+#pragma pack(push, 1)
+
 struct t_udp_tracker_input
 {
 	char m_connection_id[8];
@@ -129,12 +131,12 @@ struct t_udp_tracker_input_announce: t_udp_tracker_input
 		m_uploaded = htonl(v);
 	}
 private:
-	int m_downloaded;
+	__int64 m_downloaded;
 	int m_event;
 	int m_num_want;
-	int m_left;
+	__int64 m_left;
 	int m_port;
-	int m_uploaded;
+	__int64 m_uploaded;
 };
 
 struct t_udp_tracker_input_scrape: t_udp_tracker_input
@@ -271,5 +273,7 @@ private:
 	int m_host;
 	short m_port;
 };
+
+#pragma pack(pop, 1)
 
 #endif // !defined(AFX_BT_MISC_H__C8A447CF_4F41_429E_9437_55453B6A85D8__INCLUDED_)
