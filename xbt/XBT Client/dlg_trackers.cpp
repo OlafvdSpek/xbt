@@ -123,7 +123,7 @@ void Cdlg_trackers::insert(const t_tracker& e)
 
 void Cdlg_trackers::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_tracker& e = m_trackers.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
