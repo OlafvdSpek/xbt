@@ -33,8 +33,6 @@ using namespace std;
 #pragma comment(lib, "ws2_32.lib")
 
 typedef int socklen_t;
-
-const int MSG_NOSIGNAL = 0;
 #else
 #include <arpa/inet.h>
 #include <netinet/in.h>

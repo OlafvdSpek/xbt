@@ -176,7 +176,10 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	if (ti.m_info_hash.empty())
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-			files.d(i->first, i->second.scrape());
+		{
+			if (i->second.leechers || i->second.seeders)
+				files.d(i->first, i->second.scrape());
+		}
 	}
 	else
 	{
