@@ -51,10 +51,10 @@ string hex_encode(int l, int v)
 	return r;
 };
 
-string n(int v)
+string n(__int64 v)
 {
-	char b[12];
-	sprintf(b, "%d", v);
+	char b[21];
+	sprintf(b, "%I64d", v);
 	return b;
 }
 
