@@ -210,7 +210,7 @@ int Cbvalue::i() const
 const Cbvalue::t_list& Cbvalue::l() const
 {
 	static t_list z;
-	return m_value_type == vt_list ? *m_list :  z;
+	return m_value_type == vt_list ? *m_list : z;
 }
 
 const string& Cbvalue::s() const
@@ -295,7 +295,7 @@ int Cbvalue::read(char* d) const
 		sprintf(w, "%d:", m_string->size());
 		w += n(m_string->size()).size() + 1;
 		memcpy(w, m_string->c_str(), m_string->size());
-		w +=  + m_string->size();
+		w += m_string->size();
 		return w - d;
 	case vt_list:
 		{
