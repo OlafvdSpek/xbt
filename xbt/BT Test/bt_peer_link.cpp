@@ -146,6 +146,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			return 1;
 		if (m_state == 3)
 		{
+			write_choke(m_local_choked_goal);
+			write_interested(m_local_interested_goal);
 			if (m_f->m_server->time() - m_check_pieces_time > (m_f->end_mode() ? 5 : 30))
 			{
 				check_pieces();
@@ -380,7 +382,9 @@ void Cbt_peer_link::write_handshake()
 	write(m_f->m_info_hash.c_str(), 20);
 	write(m_f->m_peer_id.c_str(), 20);
 	m_local_choked = true;
+	m_local_choked_goal = true;
 	m_local_interested = false;
+	m_local_interested_goal = false;
 	m_remote_choked = true;
 	m_remote_interested = false;
 	m_downloaded = m_uploaded = 0;
@@ -480,6 +484,11 @@ void Cbt_peer_link::write_merkle_piece(__int64 offset, int size, const void* s, 
 
 void Cbt_peer_link::choked(bool v)
 {
+	m_local_choked_goal = v;
+}
+
+void Cbt_peer_link::write_choke(bool v)
+{
 	if (m_local_choked == v)
 		return;
 	m_local_choked = v;
@@ -493,6 +502,11 @@ void Cbt_peer_link::choked(bool v)
 }
 
 void Cbt_peer_link::interested(bool v)
+{
+	m_local_interested_goal = v;
+}
+
+void Cbt_peer_link::write_interested(bool v)
 {
 	if (m_local_interested == v)
 		return;
