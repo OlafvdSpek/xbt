@@ -63,6 +63,8 @@ public:
 // Implementation
 protected:
 	afx_msg void OnContextMenu(CWnd*, CPoint point);
+	afx_msg void OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg long OnHotKey(WPARAM, LPARAM);
 	HICON m_hIcon;
 
