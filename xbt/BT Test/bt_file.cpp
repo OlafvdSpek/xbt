@@ -231,9 +231,9 @@ void Cbt_file::insert_peer(const t_bt_handshake& h, const sockaddr_in& a, const 
 	peer.m_f = this;
 	peer.m_s = s;
 	peer.m_local_link = false;
-	peer.m_remote_peer_id = h.peer_id();
-	peer.write_handshake();
 	peer.m_state = 4;
+	peer.read_handshake(h);
+	peer.write_handshake();
 	m_peers.push_back(peer);
 }
 
@@ -511,6 +511,8 @@ void Cbt_file::load_state(Cstream_reader& r)
 		for (int i = 0; i < min(pieces.size(), m_pieces.size()); i++)
 			m_pieces[i].m_valid = pieces[i];
 	}
+	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		i->priority(r.read_int8());
 	{
 		for (int c_peers = r.read_int32(); c_peers--; )
 		{
@@ -522,7 +524,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + 8 * m_peers.size() + 36;
+	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + m_sub_files.size() + 8 * m_peers.size() + 36;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	return c;
@@ -545,8 +547,10 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	{
 		w.write_int32(m_pieces.size());
 		for (int j = 0; j < m_pieces.size(); j++)
-			*w.write(1) = m_pieces[j].m_valid;
+			w.write_int8(m_pieces[j].m_valid);
 	}
+	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		w.write_int8(i->priority());
 	{
 		w.write_int32(m_peers.size());
 		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
