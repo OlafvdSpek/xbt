@@ -6,6 +6,7 @@
 #include "server.h"
 
 #include "bt_strings.h"
+#include "transaction.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -135,6 +136,8 @@ void Cserver::run()
 			read_config();
 		if (time(NULL) - m_clean_up_time > m_clean_up_interval)
 			clean_up();
+		if (time(NULL) - m_read_db_time > m_read_db_interval)
+			read_db();
 		if (time(NULL) - m_write_db_time > m_write_db_interval)
 			write_db();
 	}
@@ -160,12 +163,7 @@ void Cserver::insert_peer(const Ctracker_input& v)
 		m_announce_log_buffer += q.read();
 	}
 	if (!m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
-	{
-		if (time(NULL) - m_read_db_time > m_read_db_interval)
-			read_db();
-		if (m_files.find(v.m_info_hash) == m_files.end())
-			return;
-	}
+		return;
 	t_file& file = m_files[v.m_info_hash];
 	t_peers::iterator i = file.peers.find(v.m_ipa);
 	if (i != file.peers.end())
@@ -364,6 +362,24 @@ void Cserver::read_db()
 	catch (Cxcc_error error)
 	{
 	}
+	try
+	{
+		Csql_query q(m_database);
+		q.write("select name, pass from xbt_users");
+		Csql_result result = q.execute();
+		m_users.clear();
+		Csql_row row;
+		while (row = result.fetch_row())
+		{
+			if (row.size(1) != 20)
+				continue;
+			t_user& user = m_users[row.f(0)];
+			user.pass.assign(row.f(1), 20);
+		}
+	}
+	catch (Cxcc_error error)
+	{
+	}
 	m_read_db_time = time(NULL);
 }
 
@@ -416,6 +432,9 @@ void Cserver::write_db()
 void Cserver::read_config()
 {
 	m_announce_interval = 1800;
+	m_anonymous_connect = true;
+	m_anonymous_announce = true;
+	m_anonymous_scrape = true;
 	m_auto_register = true;
 	m_clean_up_interval = 60;
 	m_daemon = true;
@@ -438,6 +457,12 @@ void Cserver::read_config()
 				m_announce_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "auto_register"))
 				m_auto_register = row.f_int(1);
+			else if (!strcmp(row.f(0), "anonymous_connect"))
+				m_anonymous_connect = row.f_int(1);
+			else if (!strcmp(row.f(0), "anonymous_announce"))
+				m_anonymous_announce = row.f_int(1);
+			else if (!strcmp(row.f(0), "anonymous_scrape"))
+				m_anonymous_scrape = row.f_int(1);
 			else if (!strcmp(row.f(0), "daemon"))
 				m_daemon = row.f_int(1);
 			else if (!strcmp(row.f(0), "gzip_announce"))
@@ -532,3 +557,8 @@ string Cserver::debug(const Ctracker_input& ti) const
 	return page;
 }
 
+const Cserver::t_user* Cserver::find_user(const string& v) const
+{
+	t_users::const_iterator i = m_users.find(v);
+	return i == m_users.end() ? NULL : &i->second;
+}

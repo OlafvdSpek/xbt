@@ -13,7 +13,6 @@
 #include "connection.h"
 #include "peer_link.h"
 #include "tracker_input.h"
-#include "transaction.h"
 
 class Cserver  
 {
@@ -65,6 +64,14 @@ public:
 
 	typedef map<string, t_file> t_files;
 
+	struct t_user
+	{
+		string pass;
+	};
+
+	typedef map<string, t_user> t_users;
+
+	const t_user* find_user(const string&) const;
 	void read_config();
 	void write_db();
 	void read_db();
@@ -85,6 +92,21 @@ public:
 	const t_files& files() const
 	{
 		return m_files;
+	}
+
+	bool anonymous_connect() const
+	{
+		return m_anonymous_connect;
+	}
+
+	bool anonymous_announce() const
+	{
+		return m_anonymous_announce;
+	}
+
+	bool anonymous_scrape() const
+	{
+		return m_anonymous_scrape;
 	}
 
 	bool gzip_announce() const
@@ -122,6 +144,9 @@ private:
 	int m_read_db_interval;
 	int m_write_db_interval;
 	int m_fid_end;
+	bool m_anonymous_connect;
+	bool m_anonymous_announce;
+	bool m_anonymous_scrape;
 	bool m_auto_register;
 	bool m_daemon;
 	bool m_gzip_announce;
@@ -135,6 +160,7 @@ private:
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
 	t_files m_files;
+	t_users m_users;
 	string m_announce_log_buffer;
 	string m_scrape_log_buffer;
 };
