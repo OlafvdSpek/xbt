@@ -61,7 +61,7 @@ public:
 		return m_data;
 	}
 
-	const char* f(int i) const
+	const char* f_raw(int i) const
 	{
 		return m_data[i];
 	}
@@ -71,19 +71,19 @@ public:
 		return m_sizes[i];
 	}
 
-	const char* f(int i, const char* d) const
+	string f(int i, const string& d = "") const
 	{
-		return f(i) ? f(i) : d;
+		return f_raw(i) ? string(f_raw(i), size(i)) : d;
 	}
 
 	int f_int(int i, int d = 0) const
 	{
-		return f(i) ? atoi(f(i)) : d;
+		return f_raw(i) ? atoi(f_raw(i)) : d;
 	}
 
 	Cvirtual_binary f_vdata(int i) const
 	{
-		return Cvirtual_binary(f(i), size(i));
+		return Cvirtual_binary(f_raw(i), size(i));
 	}
 private:
 	MYSQL_ROW m_data;
