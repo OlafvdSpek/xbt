@@ -224,6 +224,14 @@ SOURCE=..\misc\windows\ETSLayout.cpp
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\http_link.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\http_response_handler.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE=.\ListCtrlEx.cpp
 # End Source File
 # Begin Source File
@@ -266,6 +274,10 @@ SOURCE="..\BT Test\udp_tracker.cpp"
 # Begin Source File
 
 SOURCE=.\URLStatic.cpp
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\version_check_handler.cpp"
 # End Source File
 # Begin Source File
 
@@ -441,6 +453,14 @@ SOURCE=.\dlg_trackers.h
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\http_link.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\http_response_handler.h"
+# End Source File
+# Begin Source File
+
 SOURCE=.\ListCtrlEx.h
 # End Source File
 # Begin Source File
@@ -486,6 +506,10 @@ SOURCE="..\BT Test\udp_tracker.h"
 # Begin Source File
 
 SOURCE=.\URLStatic.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\version_check_handler.h"
 # End Source File
 # Begin Source File
 
