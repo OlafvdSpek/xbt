@@ -910,3 +910,8 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		file_state(s.d(bts_hash).s(), static_cast<Cbt_file::t_state>(s.d(bts_state).i()));
 	return d;
 }
+
+void Cserver::term()
+{
+	g_sig_term = true;
+}

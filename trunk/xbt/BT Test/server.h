@@ -84,6 +84,7 @@ public:
 	void insert_peer(const char* r, const sockaddr_in& a, const Csocket& s);
 	int run();
 	void stop();
+	static void term();
 	Cserver();
 	~Cserver();
 
