@@ -75,6 +75,16 @@ public:
 		return 32 << 10;
 	}
 
+	int priority() const
+	{
+		return m_priority;
+	}
+
+	void priority(int v)
+	{
+		m_priority = v;
+	}
+
 	const t_sub_pieces& sub_pieces() const
 	{
 		return m_sub_pieces;
@@ -97,10 +107,10 @@ public:
 
 	char m_hash[20];
 	int mc_peers;
-	char m_priority;
 private:
 	int mc_sub_pieces_left;
 	int mc_unrequested_sub_pieces;
+	char m_priority;
 	int m_size;
 	t_sub_pieces m_sub_pieces;
 	bool m_valid;
