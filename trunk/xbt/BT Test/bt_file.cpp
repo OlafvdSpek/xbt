@@ -432,7 +432,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 	invalid_pieces.reserve(c_invalid_pieces());
 	bool begin_mode = c_valid_pieces() < 4;
-	bool end_mode = c_invalid_pieces() < 16;
+	bool end_mode = m_server->end_mode() && c_invalid_pieces() < 16;
 	int rank = INT_MAX;
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
