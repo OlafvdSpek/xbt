@@ -11,6 +11,7 @@
 
 #include "alerts.h"
 #include "bvalue.h"
+#include "bt_logger.h"
 #include "bt_piece.h"
 #include "bt_peer_link.h"
 #include "bt_tracker_link.h"
@@ -24,6 +25,7 @@ class Cserver;
 class Cbt_file  
 {
 public:
+	Cbt_logger& logger();
 	string get_hashes(__int64 offset, int c) const;
 	bool test_and_set_hashes(__int64 offset, const string& v, const string& w);
 	bool hash();
@@ -194,6 +196,7 @@ public:
 	bool m_merkle;
 	bool m_run;
 	bool m_validate;
+	Cbt_logger* m_logger;
 	Cserver* m_server;
 };
 
