@@ -34,8 +34,6 @@ public:
 	int upload_slots_min() const;
 	void state(t_state);
 	void announce();
-	void pause();
-	void unpause();
 	int c_max_requests_pending() const;
 	bool end_mode() const;
 	bool begin_mode() const;

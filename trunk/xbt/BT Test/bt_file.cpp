@@ -907,18 +907,6 @@ int Cbt_file::c_max_requests_pending() const
 	return begin_mode() || end_mode() ? 1 : 8;
 }
 
-void Cbt_file::pause()
-{
-	if (state() == s_running)
-		m_state = s_paused;
-}
-
-void Cbt_file::unpause()
-{
-	if (state() == s_paused)
-		m_state = s_running;
-}
-
 void Cbt_file::announce()
 {
 	m_tracker.m_announce_time = 0;
