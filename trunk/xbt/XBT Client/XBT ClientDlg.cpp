@@ -696,11 +696,11 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				buffer = m_file->m_trackers.front().url;
 			break;
 		case dr_upload_slots_max:
-			if (m_file->m_upload_slots_max_override)
+			if (m_file->m_upload_slots_max)
 				buffer = n(m_file->m_upload_slots_max);
 			break;
 		case dr_upload_slots_min:
-			if (m_file->m_upload_slots_min_override)
+			if (m_file->m_upload_slots_min)
 				buffer = n(m_file->m_upload_slots_min);
 			break;
 		case dr_uploaded:
