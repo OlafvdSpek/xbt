@@ -99,6 +99,9 @@ enum
 
 	tc_url,
 
+	gdc_name,
+	gdc_value,
+
 	gec_time,
 	gec_level,
 	gec_source,
@@ -113,6 +116,7 @@ enum
 	v_peers,
 	v_pieces,
 	v_trackers,
+	v_global_details,
 	v_global_events,
 };
 
@@ -142,6 +146,19 @@ enum
 	dr_uploaded,
 	dr_uploaded_l5_overhead,
 	dr_count
+};
+
+enum
+{
+	gdr_downloaded,
+	gdr_files,
+	gdr_leechers,
+	gdr_left,
+	gdr_peers,
+	gdr_seeders,
+	gdr_size,
+	gdr_uploaded,
+	gdr_count
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -271,10 +288,12 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_HELP_HOME_PAGE, OnHelpHomePage)
 	ON_WM_SYSCOMMAND()
 	ON_WM_COPYDATA()
-	ON_WM_SIZE()
-	ON_WM_INITMENU()
 	ON_COMMAND(ID_POPUP_VIEW_GLOBAL_EVENTS, OnPopupViewGlobalEvents)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_GLOBAL_EVENTS, OnUpdatePopupViewGlobalEvents)
+	ON_WM_SIZE()
+	ON_WM_INITMENU()
+	ON_COMMAND(ID_POPUP_VIEW_GLOBAL_DETAILS, OnPopupViewGlobalDetails)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_GLOBAL_DETAILS, OnUpdatePopupViewGlobalDetails)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -299,6 +318,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_tab.InsertItem(v_peers, "Peers");
 	m_tab.InsertItem(v_pieces, "Pieces");
 	m_tab.InsertItem(v_trackers, "Trackers");
+	m_tab.InsertItem(v_global_details, "Global Details");
 	m_tab.InsertItem(v_global_events, "Global Events");
 	UpdateLayout();
 	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
@@ -578,7 +598,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Uploaded",
 		"Uploaded (layer 5 overhead)",
 	};
-	switch (m_torrents_columns[pDispInfo->item.iSubItem])
+	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case dc_name:
 		buffer = row_names[pDispInfo->item.iItem];
@@ -691,6 +711,77 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	if (!m_file)
+		return;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
+	string& buffer = m_peers.get_buffer();
+	const char* row_names[] =
+	{
+		"Downloaded",
+		"Files",
+		"Leechers",
+		"Left",
+		"Peers",
+		"Seeders",
+		"Size",
+		"Uploaded",
+	};
+	switch (m_peers_columns[pDispInfo->item.iSubItem])
+	{
+	case gdc_name:
+		buffer = row_names[pDispInfo->item.iItem];
+		break;
+	case gdc_value:
+		switch (pDispInfo->item.iItem)
+		{
+		case gdr_downloaded:
+			buffer = b2a(m_file->m_downloaded, "b");
+			if (m_file->m_total_downloaded != m_file->m_downloaded)
+				buffer += " / " + b2a(m_file->m_total_downloaded, "b");
+			if (m_file->m_size)
+				buffer += " (" + n(m_file->m_total_downloaded * 100 / m_file->m_size) + " %)";
+			break;
+		case gdr_files:
+			buffer = n(m_file->m_sub_files.size());
+			break;
+		case gdr_leechers:
+			buffer = n(m_file->mc_leechers);
+			if (m_file->mc_leechers_total)
+				buffer += " / " + n(m_file->mc_leechers_total);
+			break;
+		case gdr_left:
+			if (m_file->m_left)
+				buffer = b2a(m_file->m_left, "b");
+			break;
+		case gdr_peers:
+			buffer = n(m_file->mc_leechers + m_file->mc_seeders);
+			if (m_file->mc_leechers_total + m_file->mc_seeders_total)
+				buffer += " / " + n(m_file->mc_leechers_total + m_file->mc_seeders_total);
+			break;
+		case gdr_seeders:
+			buffer = n(m_file->mc_seeders);
+			if (m_file->mc_seeders_total)
+				buffer += " / " + n(m_file->mc_seeders_total);
+			break;
+		case gdr_size:
+			buffer = b2a(m_file->m_size, "b");
+			break;
+		case gdr_uploaded:
+			buffer = b2a(m_file->m_uploaded, "b");
+			if (m_file->m_total_uploaded != m_file->m_uploaded)
+				buffer += " / " + b2a(m_file->m_total_uploaded, "b");
+			if (m_file->m_size)
+				buffer += " (" + n(m_file->m_total_uploaded * 100 / m_file->m_size) + " %)";
+			break;
+		}
+		break;
+	}
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
+	*pResult = 0;
+}
+
 void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (!m_file)
@@ -773,6 +864,9 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		return;
 	case v_trackers:
 		OnGetdispinfoTrackers(pNMHDR, pResult);
+		return;
+	case v_global_details:
+		OnGetdispinfoGlobalDetails(pNMHDR, pResult);
 		return;
 	case v_global_events:
 		OnGetdispinfoGlobalEvents(pNMHDR, pResult);
@@ -995,6 +1089,10 @@ void CXBTClientDlg::fill_peers()
 	case v_trackers:
 		for (t_trackers::const_iterator i = m_file->m_trackers.begin(); i != m_file->m_trackers.end(); i++)
 			m_peers.InsertItemData(i - m_file->m_trackers.begin());
+		break;
+	case v_global_details:
+		for (int i = 0; i < gdr_count; i++)
+			m_peers.InsertItemData(i);
 		break;
 	case v_global_events:
 		for (int i = 0; i < m_events.size(); i++)
@@ -2044,6 +2142,10 @@ void CXBTClientDlg::insert_bottom_columns()
 	case v_trackers:
 		m_peers_columns.push_back(tc_url);
 		break;
+	case v_global_details:
+		m_peers_columns.push_back(gdc_name);
+		m_peers_columns.push_back(gdc_value);
+		break;
 	case v_global_events:
 		m_peers_columns.push_back(gec_time);
 		m_peers_columns.push_back(gec_level);
@@ -2100,6 +2202,9 @@ void CXBTClientDlg::insert_bottom_columns()
 
 		"URL",
 
+		"Name",
+		"Value",
+
 		"Time",
 		"Level",
 		"Source",
@@ -2153,6 +2258,9 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
 
+		LVCFMT_LEFT,
+
+		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 
 		LVCFMT_LEFT,
@@ -2272,6 +2380,11 @@ void CXBTClientDlg::OnPopupViewPieces()
 void CXBTClientDlg::OnPopupViewTrackers()
 {
 	set_bottom_view(v_trackers);
+}
+
+void CXBTClientDlg::OnPopupViewGlobalDetails() 
+{
+	set_bottom_view(v_global_details);
 }
 
 void CXBTClientDlg::OnPopupViewGlobalEvents() 
@@ -2482,6 +2595,11 @@ void CXBTClientDlg::OnUpdatePopupViewPieces(CCmdUI* pCmdUI)
 void CXBTClientDlg::OnUpdatePopupViewTrackers(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetRadio(m_bottom_view == v_trackers);
+}
+
+void CXBTClientDlg::OnUpdatePopupViewGlobalDetails(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetRadio(m_bottom_view == v_global_details);
 }
 
 void CXBTClientDlg::OnUpdatePopupViewGlobalEvents(CCmdUI* pCmdUI) 
