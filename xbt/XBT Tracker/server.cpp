@@ -240,13 +240,13 @@ int Cserver::run()
 		}
 		if (time(NULL) - m_read_config_time > m_read_config_interval)
 			read_config();
-		if (time(NULL) - m_clean_up_time > m_clean_up_interval)
+		else if (time(NULL) - m_clean_up_time > m_clean_up_interval)
 			clean_up();
-		if (time(NULL) - m_read_db_files_time > m_read_db_interval)
+		else if (time(NULL) - m_read_db_files_time > m_read_db_interval)
 			read_db_files();
-		if (time(NULL) - m_read_db_users_time > m_read_db_interval)
+		else if (time(NULL) - m_read_db_users_time > m_read_db_interval)
 			read_db_users();
-		if (time(NULL) - m_write_db_time > m_write_db_interval)
+		else if (time(NULL) - m_write_db_time > m_write_db_interval)
 			write_db();
 	}
 	write_db();
