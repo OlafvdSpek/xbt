@@ -8,6 +8,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "stream_reader.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CXBTClientDlg dialog
 
@@ -15,8 +17,10 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
-	void fill_peers();
+	void auto_size_files();
+	void auto_size_peers();
 	void auto_size();
+	void fill_peers();
 	void open(const string& name);
 	CXBTClientDlg(CWnd* pParent = NULL);	// standard constructor
 
@@ -46,17 +50,26 @@ protected:
 	afx_msg void OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnTimer(UINT nIDEvent);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
 	struct t_peer
 	{
+		in_addr host;
+		int port;
 		string peer_id;
 		__int64 downloaded;
 		__int64 left;
 		__int64 uploaded;
 		int down_rate;
 		int up_rate;
+		bool local_link;
+		bool local_choked;
+		bool local_interested;
+		bool remote_choked;
+		bool remote_interested;
+		bool removed;
 	};
 
 	typedef map<int, t_peer> t_peers;
@@ -68,12 +81,20 @@ private:
 		t_peers peers;
 		__int64 downloaded;
 		__int64 left;
+		__int64 size;
 		__int64 uploaded;
 		int down_rate;
 		int up_rate;
+		int c_leechers;
+		int c_seeders;
+		bool removed;
 	};
 
 	typedef map<int, t_file> t_files;
+
+	void read_peer_dump(t_file& f, Cstream_reader& sr);
+	void read_file_dump(Cstream_reader& sr);
+	void read_server_dump(Cstream_reader& sr);
 
 	string m_buffer[4];
 	int m_buffer_w;

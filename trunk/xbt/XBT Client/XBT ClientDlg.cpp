@@ -5,6 +5,8 @@
 #include "XBT Client.h"
 #include "XBT ClientDlg.h"
 
+#include "bt_misc.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -40,6 +42,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_PEERS, OnGetdispinfoPeers)
 	ON_WM_SIZE()
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_FILES, OnItemchangedFiles)
+	ON_WM_TIMER()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -60,23 +63,34 @@ BOOL CXBTClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	m_files.InsertColumn(0, "");
-	m_files.InsertColumn(1, "Downloaded", LVCFMT_RIGHT);
+	m_files.InsertColumn(0, "Hash");
+	m_files.InsertColumn(1, "%", LVCFMT_RIGHT);
 	m_files.InsertColumn(2, "Left", LVCFMT_RIGHT);
-	m_files.InsertColumn(3, "Uploaded", LVCFMT_RIGHT);
-	m_files.InsertColumn(4, "Down rate", LVCFMT_RIGHT);
-	m_files.InsertColumn(5, "Up rate", LVCFMT_RIGHT);
-	m_files.InsertColumn(6, "Name");
+	m_files.InsertColumn(3, "Downloaded", LVCFMT_RIGHT);
+	m_files.InsertColumn(4, "Uploaded", LVCFMT_RIGHT);
+	m_files.InsertColumn(5, "Down rate", LVCFMT_RIGHT);
+	m_files.InsertColumn(6, "Up rate", LVCFMT_RIGHT);
+	m_files.InsertColumn(7, "Leechers", LVCFMT_RIGHT);
+	m_files.InsertColumn(8, "Seeders", LVCFMT_RIGHT);
+	m_files.InsertColumn(9, "Name");
 	m_peers.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	m_peers.InsertColumn(0, "");
-	m_peers.InsertColumn(1, "Downloaded", LVCFMT_RIGHT);
-	m_peers.InsertColumn(2, "Left", LVCFMT_RIGHT);
-	m_peers.InsertColumn(3, "Uploaded", LVCFMT_RIGHT);
-	m_peers.InsertColumn(4, "Down rate", LVCFMT_RIGHT);
-	m_peers.InsertColumn(5, "Up rate", LVCFMT_RIGHT);
-	m_peers.InsertColumn(6, "");
+	m_peers.InsertColumn(0, "Host");
+	m_peers.InsertColumn(1, "Port", LVCFMT_RIGHT);
+	m_peers.InsertColumn(2, "%", LVCFMT_RIGHT);
+	m_peers.InsertColumn(3, "Left", LVCFMT_RIGHT);
+	m_peers.InsertColumn(4, "Downloaded", LVCFMT_RIGHT);
+	m_peers.InsertColumn(5, "Uploaded", LVCFMT_RIGHT);
+	m_peers.InsertColumn(6, "Down rate", LVCFMT_RIGHT);
+	m_peers.InsertColumn(7, "Up rate", LVCFMT_RIGHT);
+	m_peers.InsertColumn(8, "D");
+	m_peers.InsertColumn(9, "L");
+	m_peers.InsertColumn(10, "L");
+	m_peers.InsertColumn(11, "R");
+	m_peers.InsertColumn(12, "R");
+	m_peers.InsertColumn(13, "Peer ID");
 	m_file = NULL;
 	auto_size();
+	SetTimer(0, 250, NULL);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -127,24 +141,40 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (pDispInfo->item.iSubItem)
 	{
 	case 0:
-		m_buffer[m_buffer_w] = n(pDispInfo->item.lParam);
+		m_buffer[m_buffer_w] = hex_encode(e.info_hash);
 		break;
 	case 1:
-		m_buffer[m_buffer_w] = n(e.downloaded);
+		m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
 		break;
 	case 2:
-		m_buffer[m_buffer_w] = n(e.left);
+		if (e.left)
+			m_buffer[m_buffer_w] = b2a(e.left);
 		break;
 	case 3:
-		m_buffer[m_buffer_w] = n(e.uploaded);
+		if (e.downloaded)
+			m_buffer[m_buffer_w] = b2a(e.downloaded);
 		break;
 	case 4:
-		m_buffer[m_buffer_w] = n(e.down_rate);
+		if (e.uploaded)
+			m_buffer[m_buffer_w] = b2a(e.uploaded);
 		break;
 	case 5:
-		m_buffer[m_buffer_w] = n(e.up_rate);
+		if (e.down_rate)
+			m_buffer[m_buffer_w] = b2a(e.down_rate);
 		break;
 	case 6:
+		if (e.up_rate)
+			m_buffer[m_buffer_w] = b2a(e.up_rate);
+		break;
+	case 7:
+		if (e.c_leechers)
+			m_buffer[m_buffer_w] = n(e.c_leechers);
+		break;
+	case 8:
+		if (e.c_seeders)
+			m_buffer[m_buffer_w] = n(e.c_seeders);
+		break;
+	case 9:
 		m_buffer[m_buffer_w] = e.name;
 		break;
 	}
@@ -162,22 +192,55 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (pDispInfo->item.iSubItem)
 	{
 	case 0:
-		m_buffer[m_buffer_w] = n(pDispInfo->item.lParam);
+		m_buffer[m_buffer_w] = inet_ntoa(e.host);
 		break;
 	case 1:
-		m_buffer[m_buffer_w] = n(e.downloaded);
+		m_buffer[m_buffer_w] = n(e.port);
 		break;
 	case 2:
-		m_buffer[m_buffer_w] = n(e.left);
+		m_buffer[m_buffer_w] = n((m_file->size - e.left) * 100 / m_file->size);
 		break;
 	case 3:
-		m_buffer[m_buffer_w] = n(e.uploaded);
+		if (e.left)
+			m_buffer[m_buffer_w] = b2a(e.left);
 		break;
 	case 4:
-		m_buffer[m_buffer_w] = n(e.down_rate);
+		if (e.downloaded)
+			m_buffer[m_buffer_w] = b2a(e.downloaded);
 		break;
 	case 5:
-		m_buffer[m_buffer_w] = n(e.up_rate);
+		if (e.uploaded)
+			m_buffer[m_buffer_w] = b2a(e.uploaded);
+		break;
+	case 6:
+		if (e.down_rate)
+			m_buffer[m_buffer_w] = b2a(e.down_rate);
+		break;
+	case 7:
+		if (e.up_rate)
+			m_buffer[m_buffer_w] = b2a(e.up_rate);
+		break;
+	case 8:
+		m_buffer[m_buffer_w] = e.local_link ? 'L' : 'R';
+		break;
+	case 9:
+		if (e.local_choked)
+			m_buffer[m_buffer_w] = 'C';
+		break;
+	case 10:
+		if (e.local_interested)
+			m_buffer[m_buffer_w] = 'I';
+		break;
+	case 11:
+		if (e.remote_choked)
+			m_buffer[m_buffer_w] = 'C';
+		break;
+	case 12:
+		if (e.remote_interested)
+			m_buffer[m_buffer_w] = 'I';
+		break;
+	case 13:
+		m_buffer[m_buffer_w] = peer_id2a(e.peer_id);
 		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
@@ -186,11 +249,20 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::auto_size()
 {
-	for (int i = 1; i < 9; i++)
-	{
+	auto_size_files();
+	auto_size_peers();
+}
+
+void CXBTClientDlg::auto_size_files()
+{
+	for (int i = 0; i < m_files.GetHeaderCtrl()->GetItemCount(); i++)
 		m_files.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
+}
+
+void CXBTClientDlg::auto_size_peers()
+{
+	for (int i = 0; i < m_peers.GetHeaderCtrl()->GetItemCount(); i++)
 		m_peers.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
-	}
 }
 
 void CXBTClientDlg::OnSize(UINT nType, int cx, int cy) 
@@ -205,7 +277,7 @@ void CXBTClientDlg::fill_peers()
 	m_peers.DeleteAllItems();
 	for (t_peers::const_iterator i = m_file->peers.begin(); i != m_file->peers.end(); i++)
 		m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
-	auto_size();
+	auto_size_peers();
 }
 
 void CXBTClientDlg::OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -217,4 +289,166 @@ void CXBTClientDlg::OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		fill_peers();
 	}	
 	*pResult = 0;
+}
+
+void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
+{
+	if (sr.d() == sr.d_end())
+		return;
+	{
+		for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
+			i->second.removed = true;
+	}
+	int c_files = sr.read_int32();
+	for (int i = 0; i < c_files; i++)
+		read_file_dump(sr);
+}
+
+void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
+{
+	bool inserted = false;
+	string info_hash = sr.read_string();
+	for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
+	{
+		if (i->second.info_hash == info_hash)
+			break;
+	}
+	int id;
+	if (i == m_files_map.end())
+	{
+		m_files_map[id = m_files_map.empty() ? 0 : m_files_map.rbegin()->first + 1];
+		m_files.SetItemData(m_files.InsertItem(m_files.GetItemCount(), LPSTR_TEXTCALLBACK), id);
+		inserted = true;
+	}
+	else
+	{
+		id = i->first;
+		LV_FINDINFO fi;
+		fi.flags = LVFI_PARAM;
+		fi.lParam = id;
+		m_files.Update(m_files.FindItem(&fi, -1));
+	}
+	t_file& f = m_files_map.find(id)->second;
+	f.info_hash = info_hash;
+	f.downloaded = sr.read_int64();
+	f.left = sr.read_int64();
+	f.size = sr.read_int64();
+	f.uploaded = sr.read_int64();
+	f.down_rate = sr.read_int32();
+	f.up_rate = sr.read_int32();
+	f.c_leechers = sr.read_int32();
+	f.c_seeders = sr.read_int32();
+	f.removed = false;
+	{
+		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); i++)
+			i->second.removed = true;
+	}
+	{
+		int c_peers = sr.read_int32();
+		for (int i = 0; i < c_peers; i++)
+			read_peer_dump(f, sr);
+	}
+	{
+		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); )
+		{
+			if (i->second.removed)
+			{
+				if (m_file == &f)
+				{
+					LV_FINDINFO fi;
+					fi.flags = LVFI_PARAM;
+					fi.lParam = i->first;
+					m_peers.DeleteItem(m_peers.FindItem(&fi, -1));
+				}
+				i = f.peers.erase(i);
+			}
+			else
+				i++;
+		}
+	}
+	if (inserted)
+		auto_size_files();
+}
+
+void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
+{
+	bool inserted = false;
+	in_addr host;
+	host.s_addr = htonl(sr.read_int32());
+	t_peer p1;
+	p1.port = sr.read_int32();
+	p1.peer_id = sr.read_string();
+	p1.downloaded = sr.read_int64();
+	p1.left = sr.read_int64();
+	p1.uploaded = sr.read_int64();
+	p1.down_rate = sr.read_int32();
+	p1.up_rate = sr.read_int32();
+	p1.local_link = sr.read_int8();
+	p1.local_choked = sr.read_int8();
+	p1.local_interested = sr.read_int8();
+	p1.remote_choked = sr.read_int8();
+	p1.remote_interested = sr.read_int8();
+	if (p1.peer_id.empty())
+		return;
+	for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); i++)
+	{
+		if (i->second.host.s_addr == host.s_addr)
+			break;
+	}
+	int id;
+	if (i == f.peers.end())
+	{
+		f.peers[id = f.peers.empty() ? 0 : f.peers.rbegin()->first + 1];
+		if (m_file == &f)
+		{
+			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), id);
+			inserted = true;
+		}
+	}
+	else
+		id = i->first;
+	t_peer& p0 = f.peers.find(id)->second;
+	p0.host = host;
+	if (p0.port != p1.port
+		|| p0.peer_id != p1.peer_id
+		|| p0.downloaded != p1.downloaded
+		|| p0.left != p1.left
+		|| p0.uploaded != p1.uploaded
+		|| p0.down_rate != p1.down_rate
+		|| p0.up_rate != p1.up_rate
+		|| p0.local_link != p1.local_link
+		|| p0.local_choked != p1.local_choked
+		|| p0.local_interested != p1.local_interested
+		|| p0.remote_choked != p1.remote_choked
+		|| p0.remote_interested != p1.remote_interested)
+	{
+		p0.port = p1.port;
+		p0.peer_id = p1.peer_id;
+		p0.downloaded = p1.downloaded;
+		p0.left = p1.left;
+		p0.uploaded = p1.uploaded;
+		p0.down_rate = p1.down_rate;
+		p0.up_rate = p1.up_rate;
+		p0.local_link = p1.local_link;
+		p0.local_choked = p1.local_choked;
+		p0.local_interested = p1.local_interested;
+		p0.remote_choked = p1.remote_choked;
+		p0.remote_interested = p1.remote_interested;
+		if (m_file == &f)
+		{
+			LV_FINDINFO fi;
+			fi.flags = LVFI_PARAM;
+			fi.lParam = id;
+			m_peers.Update(m_peers.FindItem(&fi, -1));
+		}
+	}
+	p0.removed = false;
+	if (inserted)
+		auto_size_peers();
+}
+
+void CXBTClientDlg::OnTimer(UINT nIDEvent) 
+{
+	read_server_dump(Cstream_reader(Cvirtual_binary("d:/temp/xbt/dump.bin")));
+	ETSLayoutDialog::OnTimer(nIDEvent);
 }

@@ -381,7 +381,7 @@ int Cbt_file::c_leechers() const
 	int c = 0;
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
-		if (i->m_left)
+		if (i->m_left && i->m_state == 3)
 			c++;
 	}
 	return c;
@@ -392,7 +392,7 @@ int Cbt_file::c_seeders() const
 	int c = 0;
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
-		if (!i->m_left)
+		if (!i->m_left && i->m_state == 3)
 			c++;
 	}
 	return c;
