@@ -220,6 +220,10 @@ SOURCE="..\BT Test\ring_buffer.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\scheduler.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\server.cpp"
 # End Source File
 # Begin Source File
@@ -414,6 +418,10 @@ SOURCE=.\Resource.h
 # Begin Source File
 
 SOURCE="..\BT Test\ring_buffer.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\scheduler.h"
 # End Source File
 # Begin Source File
 
