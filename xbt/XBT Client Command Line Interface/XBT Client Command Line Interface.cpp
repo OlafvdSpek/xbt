@@ -57,8 +57,8 @@ int main(int argc, char* argv[])
 			if (b.write(a))
 				return cerr << "Unable to parse .torrent" << endl, 1;
 			Cbvalue v;
-			v.d(bts_action, bts_pause_torrent);
-			v.d(bts_torrent, a);
+			v.d(bts_action, bts_open_torrent);
+			v.d(bts_torrent, b);
 			if (send(s, v))
 				return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 		}
@@ -104,12 +104,13 @@ int main(int argc, char* argv[])
 			for (Cbvalue::t_map::const_iterator i = files.d().begin(); i != files.d().end(); i++)
 			{
 				cout << hex_encode(i->first) 
-					<< '\t' << static_cast<int>(i->second.d(bts_incomplete).i()) 
-					<< '\t' << static_cast<int>(i->second.d(bts_complete).i()) 
+					<< '\t' << static_cast<int>(i->second.d(bts_incomplete).i()) << " l"
+					<< '\t' << static_cast<int>(i->second.d(bts_complete).i()) << " s"
 					<< endl
 					<< '\t' << strip_name(i->second.d(bts_name).s())
 					<< endl
 					<< '\t' << b2a(i->second.d(bts_left).i()) 
+					<< '\t' << b2a(i->second.d(bts_size).i()) 
 					<< '\t' << b2a(i->second.d(bts_total_downloaded).i()) 
 					<< '\t' << b2a(i->second.d(bts_total_uploaded).i()) 
 					<< '\t' << b2a(i->second.d(bts_down_rate).i()) 
