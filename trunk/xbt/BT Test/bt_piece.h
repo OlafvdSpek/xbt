@@ -22,7 +22,6 @@ public:
 	typedef set<Cbt_peer_link*> t_peers;
 	typedef vector<bool> t_sub_pieces;
 	
-	Cvirtual_binary m_d;
 	int mcb_d;
 	char m_hash[20];
 	t_peers m_peers;
