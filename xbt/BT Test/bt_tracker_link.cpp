@@ -9,28 +9,8 @@
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "server.h"
+#include "stream_int.h"
 #include "xcc_z.h"
-
-template <class T>
-static T read(const char* r, const char* r_end)
-{
-	T v = 0;
-	for (int i = 0; i < sizeof(T); i++)
-		v = v << 8 | *reinterpret_cast<const unsigned char*>(r++);
-	return v;
-}
-
-template <class T>
-static char* write(char* w, T v)
-{
-	w += sizeof(T);
-	for (int i = 0; i < sizeof(T); i++)
-	{
-		*--w = v & 0xff;
-		v >>= 8;
-	}
-	return w + sizeof(T);
-}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -102,12 +82,12 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		{
 			char d[utic_size];
 #ifdef WIN32
-			write<__int64>(d + uti_connection_id, 0x41727101980);
+			write_int(8, d + uti_connection_id, 0x41727101980);
 #else
-			write<__int64>(d + uti_connection_id, 0x41727101980ll);
+			write_int(8, d + uti_connection_id, 0x41727101980ll);
 #endif
-			write<__int32>(d + uti_action, uta_connect);
-			write<__int32>(d + uti_transaction_id, m_transaction_id = rand());
+			write_int(4, d + uti_action, uta_connect);
+			write_int(4, d + uti_transaction_id, m_transaction_id = rand());
 			if (m_s.send(d, utic_size) != utic_size)
 			{
 				close(f);
@@ -221,25 +201,25 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			int r = m_s.recv(d, cb_d);
 			if (r != SOCKET_ERROR 
 				&& r >= utoc_size
-				&& ::read<__int32>(d + uto_transaction_id, d + r) == m_transaction_id
-				&& ::read<__int32>(d + uto_action, d + r) == uta_connect)
+				&& read_int(4, d + uto_transaction_id, d + r) == m_transaction_id
+				&& read_int(4, d + uto_action, d + r) == uta_connect)
 			{
-				m_connection_id = ::read<__int64>(d + utoc_connection_id, d + r);
+				m_connection_id = read_int(8, d + utoc_connection_id, d + r);
 				const int cb_b = 2 << 10;
 				char b[cb_b];
-				write<__int64>(b + uti_connection_id, m_connection_id);
-				write<__int32>(b + uti_action, uta_announce);
-				write<__int32>(b + uti_transaction_id, m_transaction_id = rand());
+				write_int(8, b + uti_connection_id, m_connection_id);
+				write_int(4, b + uti_action, uta_announce);
+				write_int(4, b + uti_transaction_id, m_transaction_id = rand());
 				memcpy(b + utia_info_hash, f.m_info_hash.c_str(), 20);
 				memcpy(b + utia_peer_id, f.m_peer_id.c_str(), 20);
-				write<__int64>(b + utia_downloaded, f.m_downloaded);
-				write<__int64>(b + utia_left, f.m_left);
-				write<__int64>(b + utia_uploaded, f.m_uploaded);
-				write<__int32>(b + utia_event, m_event);
+				write_int(8, b + utia_downloaded, f.m_downloaded);
+				write_int(8, b + utia_left, f.m_left);
+				write_int(8, b + utia_uploaded, f.m_uploaded);
+				write_int(4, b + utia_event, m_event);
 				m_event = e_none;
-				write<__int32>(b + utia_ipa, ntohl(f.local_ipa()));
-				write<__int32>(b + utia_num_want, -1);
-				write<__int16>(b + utia_port, f.local_port());
+				write_int(4, b + utia_ipa, ntohl(f.local_ipa()));
+				write_int(4, b + utia_num_want, -1);
+				write_int(2, b + utia_port, f.local_port());
 				char* w = b + utia_size;
 				const Cbt_tracker_account* account = f.m_server->tracker_accounts().find(m_url.m_host);
 				if (account)
@@ -272,14 +252,14 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			int r = m_s.recv(d, cb_d);
 			if (r != SOCKET_ERROR 
 				&& r >= uto_size 
-				&& ::read<__int32>(d + uto_transaction_id, d + r) == m_transaction_id)
+				&& read_int(4, d + uto_transaction_id, d + r) == m_transaction_id)
 			{
 				if (r >= utoa_size
-					&& ::read<__int32>(d + uto_action, d + r) == uta_announce)
+					&& read_int(4, d + uto_action, d + r) == uta_announce)
 				{
-					m_announce_time = time(NULL) + max(300, ::read<__int32>(d + utoa_interval, d + r));
-					f.mc_leechers_total = ::read<__int32>(d + utoa_leechers, d + r);
-					f.mc_seeders_total = ::read<__int32>(d + utoa_seeders, d + r);
+					m_announce_time = time(NULL) + max(300, read_int(4, d + utoa_interval, d + r));
+					f.mc_leechers_total = read_int(4, d + utoa_leechers, d + r);
+					f.mc_seeders_total = read_int(4, d + utoa_seeders, d + r);
 					mc_attempts = 0;
 					f.alert(Calert(Calert::info, "Tracker: " + n((r - utoa_size) / 6) + " peers (" + n(r) + " bytes)"));
 					for (int o = utoa_size; o + 6 <= r; o += 6)
@@ -287,7 +267,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					close(f);
 				}
 				else if (r >= utoe_size 
-					&& ::read<__int32>(d + uto_action, d + r) == uta_error)
+					&& read_int(4, d + uto_action, d + r) == uta_error)
 				{
 					f.alert(Calert(Calert::error, "Tracker: failure reason: " + string(d + utoe_size, r - utoe_size)));
 					close(f);
