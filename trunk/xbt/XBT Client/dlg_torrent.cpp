@@ -71,27 +71,27 @@ void Cdlg_torrent::load_data()
 		return;
 	string info_hash = sr.read_string();
 	string name = sr.read_string();
-	sr.read_int32();
-	__int64 downloaded = sr.read_int64();
-	__int64 left = sr.read_int64();
-	__int64 size = sr.read_int64();
-	__int64 uploaded = sr.read_int64();
-	__int64 total_downloaded = sr.read_int64();
-	__int64 total_uploaded = sr.read_int64();
-	int down_rate = sr.read_int32();
-	int up_rate = sr.read_int32();
-	int c_leechers = sr.read_int32();
-	int c_seeders = sr.read_int32();
-	sr.read_int32();
-	sr.read_int32();
-	bool run = sr.read_int32();
-	sr.read_int32();
+	sr.read_int(4);
+	__int64 downloaded = sr.read_int(8);
+	__int64 left = sr.read_int(8);
+	__int64 size = sr.read_int(8);
+	__int64 uploaded = sr.read_int(8);
+	__int64 total_downloaded = sr.read_int(8);
+	__int64 total_uploaded = sr.read_int(8);
+	int down_rate = sr.read_int(4);
+	int up_rate = sr.read_int(4);
+	int c_leechers = sr.read_int(4);
+	int c_seeders = sr.read_int(4);
+	sr.read_int(4);
+	sr.read_int(4);
+	bool run = sr.read_int(4);
+	sr.read_int(4);
 	m_alerts.DeleteAllItems();
-	for (int c_alerts = sr.read_int32(); c_alerts--; )
+	for (int c_alerts = sr.read_int(4); c_alerts--; )
 	{
-		time_t timer = sr.read_int32();
+		time_t timer = sr.read_int(4);
 		tm* time = localtime(&timer);
-		int level = sr.read_int32();
+		int level = sr.read_int(4);
 		string message = sr.read_string();
 		string source = sr.read_string();
 		char time_string[16];
