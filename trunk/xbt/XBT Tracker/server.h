@@ -87,6 +87,21 @@ public:
 		return m_files;
 	}
 
+	bool gzip_announce() const
+	{
+		return m_gzip_announce;
+	}
+
+	bool gzip_debug() const
+	{
+		return m_gzip_debug;
+	}
+
+	bool gzip_scrape() const
+	{
+		return m_gzip_scrape;
+	}
+
 	__int64 secret() const
 	{
 		return m_secret;
@@ -109,6 +124,9 @@ private:
 	int m_fid_end;
 	bool m_auto_register;
 	bool m_daemon;
+	bool m_gzip_announce;
+	bool m_gzip_debug;
+	bool m_gzip_scrape;
 	bool m_listen_check;
 	bool m_log;
 	__int64 m_secret;
