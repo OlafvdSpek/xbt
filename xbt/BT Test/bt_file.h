@@ -11,6 +11,7 @@
 
 #include "alerts.h"
 #include "bvalue.h"
+#include "bt_file_data.h"
 #include "bt_logger.h"
 #include "bt_piece.h"
 #include "bt_peer_link.h"
@@ -22,7 +23,7 @@
 class Cbt_hasher;
 class Cserver;
 
-class Cbt_file
+class Cbt_file: public Cbt_file_data
 {
 public:
 	enum t_state
@@ -220,27 +221,7 @@ public:
 	Cbt_tracker_link m_tracker;
 	t_trackers m_trackers;
 	Cvirtual_binary m_info;
-	int m_started_at;
-	int m_session_started_at;
-	int m_completed_at;
-	int mc_leechers_total;
-	int mc_seeders_total;
-	int mc_rejected_chunks;
-	int mc_rejected_pieces;
-	
-	int m_seeding_ratio;
-	bool m_seeding_ratio_override;
 
-	__int64 mcb_piece;
-	__int64 mcb_f;
-
-	__int64 m_downloaded;
-	__int64 m_downloaded_l5;
-	__int64 m_left;
-	__int64 m_uploaded;
-	__int64 m_uploaded_l5;
-	__int64 m_total_downloaded;
-	__int64 m_total_uploaded;
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
 

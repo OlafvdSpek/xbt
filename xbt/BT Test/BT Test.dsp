@@ -103,6 +103,10 @@ SOURCE=.\bt_file.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\bt_file_data.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\bt_hasher.cpp
 # End Source File
 # Begin Source File
@@ -225,6 +229,10 @@ SOURCE=.\bt_admin_link.h
 # Begin Source File
 
 SOURCE=.\bt_file.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\bt_file_data.h
 # End Source File
 # Begin Source File
 
