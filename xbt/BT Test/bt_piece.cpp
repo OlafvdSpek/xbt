@@ -5,6 +5,8 @@
 #include "stdafx.h"
 #include "bt_piece.h"
 
+#define for if (0) {} else for
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -62,17 +64,43 @@ int Cbt_piece::rank() const
 
 void Cbt_piece::load_state(Cstream_reader& r)
 {
-	m_valid = r.read_int(1);
+	switch (r.read_int(1))
+	{
+	case 0:
+		m_valid = false;
+		break;
+	case 1:
+		m_valid = false;
+		m_sub_pieces.resize(mc_sub_pieces_left = c_sub_pieces());
+		for (t_sub_pieces::iterator i = m_sub_pieces.begin(); i != m_sub_pieces.end(); i++)
+		{
+			*i = r.read_int(1);
+			mc_sub_pieces_left -= *i;
+		}
+		break;
+	case 2:
+		m_valid = true;
+		break;
+	}
 }
 
 int Cbt_piece::pre_save_state() const
 {
-	return 1;
+	return m_valid || m_sub_pieces.empty() ? 1 : m_sub_pieces.size() + 1;
 }
 
 void Cbt_piece::save_state(Cstream_writer& w) const
 {
-	w.write_int(1, m_valid);
+	if (m_valid)
+		w.write_int(1, 2);
+	else if (m_sub_pieces.empty())
+		w.write_int(1, 0);
+	else
+	{
+		w.write_int(1, 1);
+		for (t_sub_pieces::const_iterator i = m_sub_pieces.begin(); i != m_sub_pieces.end(); i++)
+			w.write_int(1, *i);
+	}
 }
 
 void Cbt_piece::dump(Cstream_writer& w) const
