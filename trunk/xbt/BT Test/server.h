@@ -148,6 +148,8 @@ public:
 		return m_upload_slots;
 	}
 private:
+	static void sig_handler(int v);
+
 	t_admins m_admins;
 	Calerts m_alerts;
 	t_files m_files;

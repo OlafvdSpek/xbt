@@ -5,11 +5,14 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <signal.h>
 #include "bt_strings.h"
 #include "stream_reader.h"
 
 #define for if (0) {} else for
 
+const char* g_pid_fname = "xbt_client_back_end.pid";
+static volatile bool g_sig_term = false;
 const static int g_state_version = 0;
 
 class Clock
@@ -147,12 +150,18 @@ int Cserver::run()
 #ifndef WIN32
 		if (daemon(true, false))
 			alert(Calert(Calert::error, "Server", "daemon failed" + n(errno)));
-		ofstream("xbt.pid") << getpid() << endl;
+		ofstream(g_pid_fname) << getpid() << endl;
+		struct sigaction act;
+		act.sa_handler = sig_handler;
+		sigemptyset(&act.sa_mask);
+		act.sa_flags = 0;
+		if (sigaction(SIGTERM, &act, NULL))
+			cerr << "sigaction failed" << endl;
 #endif
 		fd_set fd_read_set;
 		fd_set fd_write_set;
 		fd_set fd_except_set;
-		for (m_run = true; m_run; )
+		for (m_run = true; !g_sig_term && m_run; )
 		{
 			lock();
 			if (m_new_admin_port != m_admin_port)
@@ -273,6 +282,7 @@ int Cserver::run()
 			i->close();
 	}
 	save_state(false).save(state_fname());
+	unlink(g_pid_fname);
 	return 0;
 }
 
@@ -749,4 +759,14 @@ bool Cserver::below_peer_limit() const
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		c += i->m_peers.size();
 	return c < m_peer_limit;
+}
+
+void Cserver::sig_handler(int v)
+{
+	switch (v)
+	{
+	case SIGTERM:
+		g_sig_term = true;
+		break;
+	}
 }
