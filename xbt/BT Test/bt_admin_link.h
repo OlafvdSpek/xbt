@@ -21,10 +21,10 @@ public:
 	void alert(const Calert&);
 	void close();
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
-	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
+	int post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void read_message(const char* r, const char* r_end);
-	void recv();
-	void send();
+	int recv();
+	int send();
 	Cbt_admin_link();
 	Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csocket& s);
 
