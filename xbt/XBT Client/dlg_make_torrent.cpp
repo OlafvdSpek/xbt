@@ -91,6 +91,7 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 			<< item (IDC_SEED_AFTER_MAKING, NORESIZE)
 			<< item (IDC_USE_MERKLE, NORESIZE)
 			<< itemGrowing(HORIZONTAL)
+			<< item (IDC_LOAD_TRACKERS, NORESIZE)
 			<< item (IDC_SAVE, NORESIZE)
 			)
 		;
@@ -420,7 +421,7 @@ void Cdlg_make_torrent::OnLoadTrackers()
 	for (Cbt_torrent::t_announces::const_iterator i = announces.begin(); i != announces.end(); i++)
 	{
 		m_trackers += i->c_str();
-		m_trackers + "\r\n";
+		m_trackers += "\r\n";
 	}
 	UpdateData(false);
 }
