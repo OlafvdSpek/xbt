@@ -66,7 +66,11 @@ string hex_encode(int l, int v)
 string n(__int64 v)
 {
 	char b[21];
+#ifdef WIN32
 	sprintf(b, "%I64d", v);
+#else
+	sprintf(b, "%lld", v);
+#endif
 	return b;
 }
 

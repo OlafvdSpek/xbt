@@ -313,7 +313,11 @@ int Cbvalue::read(char* d) const
 	switch (m_value_type)
 	{
 	case vt_int:
+#ifdef WIN32
 		sprintf(d, "i%I64d", m_int);
+#else
+		sprintf(d, "i%lld", m_int);
+#endif
 		w += strlen(d);
 		*w++ = 'e';
 		return w - d;
