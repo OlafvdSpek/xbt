@@ -37,9 +37,15 @@
 #define IDC_LIST                        1014
 #define IDC_FILES_LOCATION              1014
 #define IDC_COMPLETES_DIRECTORY         1014
+#define IDC_SEEDING_RATIO2              1014
+#define IDC_MIN_UPLOAD_SLOTS            1014
+#define IDC_UPLOAD_SLOTS_MIN            1014
 #define IDC_INSERT                      1015
 #define IDC_OPEN                        1015
 #define IDC_INCOMPLETES_DIRECTORY       1015
+#define IDC_SEEDING_RATIO3              1015
+#define IDC_MAX_UPLOAD_SLOTS            1015
+#define IDC_UPLOAD_SLOTS_MAX            1015
 #define IDC_DELETE                      1016
 #define IDC_EXPLORE                     1016
 #define IDC_TORRENTS_DIRECTORY          1016
@@ -86,6 +92,10 @@
 #define IDC_SHOW_CONFIRM_EXIT_DIALOG    1062
 #define IDC_SECONDS                     1063
 #define IDC_HIDE_ON_DEACTIVATE          1063
+#define IDC_MIN_UPLOAD_SLOTS_OVERRIDE   1064
+#define IDC_UPLOAD_SLOTS_MIN_OVERRIDE   1064
+#define IDC_MAX_UPLOAD_SLOTS_OVERRIDE   1065
+#define IDC_UPLOAD_SLOTS_MAX_OVERRIDE   1065
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -138,7 +148,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        143
 #define _APS_NEXT_COMMAND_VALUE         32822
-#define _APS_NEXT_CONTROL_VALUE         1064
+#define _APS_NEXT_CONTROL_VALUE         1065
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif
