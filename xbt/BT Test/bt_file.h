@@ -15,6 +15,7 @@
 #include "bt_peer_link.h"
 #include "bt_tracker_link.h"
 #include "data_counter.h"
+#include "merkle_tree.h"
 #include "stream_reader.h"
 
 class Cbt_hasher;
@@ -76,6 +77,11 @@ public:
 			return m_merkle_hash;
 		}
 
+		Cmerkle_tree& merkle_tree()
+		{
+			return m_merkle_tree;
+		}
+
 		__int64 left() const
 		{
 			return m_left;
@@ -126,6 +132,7 @@ public:
 	private:
 		int m_f;
 		string m_merkle_hash;
+		Cmerkle_tree m_merkle_tree;
 		__int64 m_left;
 		string m_name;
 		int m_priority;

@@ -184,6 +184,10 @@ SOURCE=..\misc\windows\ETSLayout.cpp
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\merkle_tree.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\ring_buffer.cpp"
 # End Source File
 # Begin Source File
@@ -334,6 +338,10 @@ SOURCE=.\dlg_tracker.h
 # Begin Source File
 
 SOURCE=.\dlg_trackers.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\merkle_tree.h"
 # End Source File
 # Begin Source File
 

@@ -10,7 +10,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable: 4786 4800)
+#pragma warning(disable: 4554 4786 4800)
 
 #define FD_SETSIZE 1024
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
