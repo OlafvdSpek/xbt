@@ -213,6 +213,10 @@ int Cserver::run()
 					{
 						if (s.blocking(false))
 							cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+#ifdef TCP_CORK
+						if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
+							cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+#endif
 						m_connections.push_front(Cconnection(this, s, a, m_log_access));
 					}
 				}
