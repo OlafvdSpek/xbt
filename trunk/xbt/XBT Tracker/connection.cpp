@@ -129,7 +129,7 @@ void Cconnection::read(const string& v)
 	}
 	if (announce)
 		m_server->insert_peer(ti);
-	Cvirtual_binary s = xcc_z::gzip((announce ? m_server->select_peers(ti.m_info_hash, !ti.m_no_peer_id, ti.m_left) : m_server->scrape(ti)).read());
+	Cvirtual_binary s = xcc_z::gzip((announce ? m_server->select_peers(ti) : m_server->scrape(ti)).read());
 	const char* h = "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n";
 	Cvirtual_binary d;
 	s.read(strcpy(reinterpret_cast<char*>(d.write_start(strlen(h) + s.size())), h) + strlen(h));

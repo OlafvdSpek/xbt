@@ -25,6 +25,7 @@ public:
 	}
 private:
 	Csocket m_s;
+	int m_ctime;
 	Cserver* m_server;
 	string m_file_id;
 	string m_peer_id;
