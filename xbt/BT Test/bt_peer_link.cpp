@@ -153,6 +153,11 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 						int cb_m = ntohl(*reinterpret_cast<const __int32*>(m_read_b.r()));
 						if (cb_m)
 						{
+							if (cb_m < 0 || cb_m > 64 << 10)
+							{
+								close();
+								return;
+							}
 							if (m_read_b.cb_r() < 4 + cb_m)
 								break;
 							const char* s = m_read_b.r() + 4;

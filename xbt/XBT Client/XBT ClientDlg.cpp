@@ -967,13 +967,13 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	case fc_left:
 		return compare(a.left, b.left);
 	case fc_total_downloaded:
-		return compare(a.total_downloaded, b.total_downloaded);
+		return compare(b.total_downloaded, a.total_downloaded);
 	case fc_total_uploaded:
-		return compare(a.total_uploaded, b.total_uploaded);
+		return compare(b.total_uploaded, a.total_uploaded);
 	case fc_down_rate:
-		return compare(a.down_rate, b.down_rate);
+		return compare(b.down_rate, a.down_rate);
 	case fc_up_rate:
-		return compare(a.up_rate, b.up_rate);
+		return compare(b.up_rate, a.up_rate);
 	case fc_leechers:
 		return compare(a.c_leechers, b.c_leechers);
 	case fc_seeders:
@@ -994,6 +994,7 @@ static int CALLBACK files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	m_files_sort_reverse = pNMListView->iSubItem == m_files_sort_column ? !m_files_sort_reverse : false;
 	m_files_sort_column = pNMListView->iSubItem;
 	sort_files();
 	*pResult = 0;
@@ -1016,13 +1017,13 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	case pc_left:
 		return compare(a.left, b.left);
 	case pc_downloaded:
-		return compare(a.downloaded, b.downloaded);
+		return compare(b.downloaded, a.downloaded);
 	case pc_uploaded:
-		return compare(a.uploaded, b.uploaded);
+		return compare(b.uploaded, a.uploaded);
 	case pc_down_rate:
-		return compare(a.down_rate, b.down_rate);
+		return compare(b.down_rate, a.down_rate);
 	case pc_up_rate:
-		return compare(a.up_rate, b.up_rate);
+		return compare(b.up_rate, a.up_rate);
 	case pc_link_direction:
 		return compare(a.local_link, b.local_link);
 	case pc_local_choked:
@@ -1047,6 +1048,7 @@ static int CALLBACK peers_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	m_peers_sort_reverse = pNMListView->iSubItem == m_peers_sort_column ? m_peers_sort_reverse : false;
 	m_peers_sort_column = pNMListView->iSubItem;
 	sort_peers();	
 	*pResult = 0;
