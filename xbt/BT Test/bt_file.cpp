@@ -19,17 +19,26 @@ Cbt_file::~Cbt_file()
 {
 }
 
-int Cbt_file::info(const Cvirtual_binary& v, bool torrent)
+int Cbt_file::torrent(const Cvirtual_binary& v)
 {
 	Cbvalue a;
-	return a.write(v) || info(a, torrent);
+	return a.write(v) || torrent(a);
 }
 
-int Cbt_file::info(const Cbvalue& v, bool torrent)
+int Cbt_file::info(const Cvirtual_binary& v)
 {
-	if (torrent)
-		m_trackers.push_back(v.d(bts_announce).s());
-	const Cbvalue& info = torrent ? v.d(bts_info) : v;
+	Cbvalue a;
+	return a.write(v) || info(a);
+}
+
+int Cbt_file::torrent(const Cbvalue& v)
+{
+	m_trackers.push_back(v.d(bts_announce).s());
+	return info(v.d(bts_info));
+}
+
+int Cbt_file::info(const Cbvalue& info)
+{
 	m_name = info.d(bts_name).s();
 	m_info = info.read();
 	m_info_hash = compute_sha1(m_info);
@@ -444,7 +453,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 {
 	for (int c_trackers = r.read_int32(); c_trackers--; )
 		m_trackers.push_back(r.read_string());
-	info(r.read_data(), false);
+	info(r.read_data());
 	m_name = r.read_string();
 	{
 		Cvirtual_binary pieces = r.read_data();
