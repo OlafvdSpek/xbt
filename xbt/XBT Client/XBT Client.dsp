@@ -156,6 +156,10 @@ SOURCE=..\misc\bvalue.cpp
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\config.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\data_counter.cpp"
 # End Source File
 # Begin Source File
@@ -318,6 +322,10 @@ SOURCE="..\BT Test\bt_tracker_link.h"
 # Begin Source File
 
 SOURCE=..\misc\bt_tracker_url.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\config.h"
 # End Source File
 # Begin Source File
 
