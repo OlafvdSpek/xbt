@@ -23,6 +23,8 @@ public:
 	void lower_process_priority(bool);
 	void set_dir(const string&);
 	void insert_columns();
+	void insert_top_columns();
+	void insert_bottom_columns();
 	void sort_peers();
 	void sort_files();
 	int files_compare(int id_a, int id_b) const;
@@ -101,6 +103,10 @@ protected:
 	afx_msg void OnPopupTorrentClipboardCopyAnnounceUrl();
 	afx_msg void OnPopupTorrentClipboardCopyHash();
 	afx_msg void OnPopupTorrentAlerts();
+	afx_msg void OnPopupViewDetails();
+	afx_msg void OnPopupViewFiles();
+	afx_msg void OnPopupViewPeers();
+	afx_msg void OnPopupViewTrackers();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -168,6 +174,7 @@ private:
 	CString m_reg_key;
 	Cserver m_server;
 	CWinThread* m_server_thread;
+	int m_bottom_view;
 	int m_files_sort_column;
 	int m_peers_sort_column;
 	bool m_files_sort_reverse;
