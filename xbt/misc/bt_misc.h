@@ -20,6 +20,7 @@ string backward_slashes(string v);
 string escape_string(const string& v);
 string forward_slashes(string v);
 string get_env(const string& v);
+int hms2i(int h, int m, int s);
 bool is_private_ipa(int a);
 int merkle_tree_size(int v);
 int mkpath(const string& v);
