@@ -20,20 +20,15 @@ Cxcc_error Cdatabase::open(const string& host, const string& user, const string&
 	return open(host.c_str(), user.c_str(), password.c_str(), database.c_str(), echo_errors);
 }
 
-Csql_result Cdatabase::query(const char* q)
+Csql_result Cdatabase::query(const string& q)
 {
-	if (mysql_query(&m_handle, q))
+	if (mysql_real_query(&m_handle, q.c_str(), q.size()))
 	{
 		if (m_echo_errors)
 			cerr << mysql_error(&m_handle) << endl;
 		throw Cxcc_error(mysql_error(&m_handle));
 	}
 	return Csql_result(mysql_store_result(&m_handle));
-}
-
-Csql_result Cdatabase::query(const string& q)
-{
-	return query(q.c_str());
 }
 
 void Cdatabase::close()
