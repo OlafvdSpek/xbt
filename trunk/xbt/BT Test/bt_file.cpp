@@ -122,9 +122,7 @@ void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 
 bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 {
-	m_f = _open((parent_name + m_name).c_str(), oflag | _O_BINARY | _O_RDWR, _S_IREAD | _S_IWRITE);
-	if (m_f == -1)
-		m_f = _open((parent_name + m_name).c_str(), oflag | _O_BINARY | _O_RDONLY);
+	m_f = _open((parent_name + m_name).c_str(), oflag | _O_BINARY, _S_IREAD | _S_IWRITE);
 	return *this;
 }
 
@@ -153,7 +151,8 @@ int Cbt_file::open(const string& name, bool validate)
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
-		if (!i->open(m_name, 0))
+		if (!i->open(m_name, _O_RDWR)
+			&& !i->open(m_name, _O_RDONLY))
 		{
 			int b = (offset + i->size() - 1) / mcb_piece;
 			for (int a = offset / mcb_piece; a <= b; a++)
@@ -312,7 +311,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 						CreateDirectory(path.substr(0, a).c_str(), NULL);
 						i = a + 1;
 					}
-					if (i->open(m_name, _O_CREAT))
+					if (i->open(m_name, _O_CREAT | _O_RDWR))
 					{
 						char b = 0;
 						i->write(i->size() - 1, &b, 1);
@@ -320,7 +319,10 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 				}
 				int cb_write = min(size, i->size() - offset);
 				if (i->write(offset, r, cb_write))
+				{
 					alert(Calert(Calert::error, "Piece " + n(a) + ": write failed"));
+					m_run = false;
+				}
 				size -= cb_write;
 				if (!size)
 					break;
