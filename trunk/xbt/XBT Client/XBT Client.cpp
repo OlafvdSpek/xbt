@@ -43,6 +43,13 @@ BOOL CXBTClientApp::InitInstance()
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
 	SetRegistryKey("XBT");
+	char path[MAX_PATH];
+	if (SUCCEEDED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
+	{
+		strcat(path, "\\XBT");
+		CreateDirectory(path, NULL);
+		m_server.dir(path);
+	}
 	m_server_thread = AfxBeginThread(backend_thread, this);
 	m_server_thread->m_bAutoDelete = false;
 
