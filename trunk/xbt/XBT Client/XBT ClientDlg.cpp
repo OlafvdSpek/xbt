@@ -181,7 +181,7 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 #ifdef _DEBUG
 	m_initial_hide = false;
 #else
-	m_initial_hide = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
+	m_initial_hide = GetProfileInt("start_minimized", false);
 #endif
 	m_server_thread = NULL;
 	update_global_details();
@@ -328,45 +328,45 @@ BOOL CXBTClientDlg::OnInitDialog()
 	UpdateLayout();
 	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
 
-	m_bottom_view = AfxGetApp()->GetProfileInt(m_reg_key, "bottom_view", v_peers);
-	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
-	m_ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
-	m_server.bind_before_connect(AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false));
-	set_dir(string(AfxGetApp()->GetProfileString(m_reg_key, "completes_dir")),
-		string(AfxGetApp()->GetProfileString(m_reg_key, "incompletes_dir")),
-		string(AfxGetApp()->GetProfileString(m_reg_key, "local_app_data_dir")),
-		string(AfxGetApp()->GetProfileString(m_reg_key, "torrents_dir")));
-	m_hide_on_deactivate = AfxGetApp()->GetProfileInt(m_reg_key, "hide_on_deactivate", false);
-	lower_process_priority(AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", false));
-	m_server.peer_limit(AfxGetApp()->GetProfileInt(m_reg_key, "peer_limit", m_server.peer_limit()));
-	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port()));
-	string public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
+	m_bottom_view = GetProfileInt("bottom_view", v_peers);
+	m_server.admin_port(GetProfileInt("admin_port", m_server.admin_port()));
+	m_ask_for_location = GetProfileInt("ask_for_location", false);
+	m_server.bind_before_connect(GetProfileInt("bind_before_connect", false));
+	set_dir(GetProfileString("completes_dir"),
+		GetProfileString("incompletes_dir"),
+		GetProfileString("local_app_data_dir"),
+		GetProfileString("torrents_dir"));
+	m_hide_on_deactivate = GetProfileInt("hide_on_deactivate", false);
+	lower_process_priority(GetProfileInt("lower_process_priority", false));
+	m_server.peer_limit(GetProfileInt("peer_limit", m_server.peer_limit()));
+	m_server.peer_port(GetProfileInt("peer_port", m_server.peer_port()));
+	string public_ipa = GetProfileString("public_ipa");
 	if (!public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(public_ipa));
-	m_server.seeding_ratio(AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio()));
-	m_show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
-	m_show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
-	m_server.torrent_limit(AfxGetApp()->GetProfileInt(m_reg_key, "torrent_limit", m_server.torrent_limit()));
-	m_server.tracker_port(AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port()));
-	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
-	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));
+	m_server.seeding_ratio(GetProfileInt("seeding_ratio", m_server.seeding_ratio()));
+	m_show_advanced_columns = GetProfileInt("show_advanced_columns", false);
+	m_show_tray_icon = GetProfileInt("show_tray_icon", true);
+	m_server.torrent_limit(GetProfileInt("torrent_limit", m_server.torrent_limit()));
+	m_server.tracker_port(GetProfileInt("tracker_port", m_server.tracker_port()));
+	m_server.upload_rate(GetProfileInt("upload_rate", m_server.upload_rate()));
+	m_server.upload_slots(GetProfileInt("upload_slots", m_server.upload_slots()));
 	m_tab.SetCurSel(m_bottom_view);
 	start_server();
 	insert_columns(true);
-	m_events_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "events_sort_column", -1);
-	m_events_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "events_sort_reverse", false);
-	m_files_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "files_sort_column", -1);
-	m_files_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "files_sort_reverse", false);
-	m_global_events_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "global_events_sort_column", -1);
-	m_global_events_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "global_events_sort_reverse", false);
-	m_peers_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "peers_sort_column", pc_client);
-	m_peers_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "peers_sort_reverse", false);
-	m_pieces_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "pieces_sort_column", -1);
-	m_pieces_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "pieces_sort_reverse", false);
-	m_torrents_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "torrents_sort_column", fc_name);
-	m_torrents_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "torrents_sort_reverse", false);
+	m_events_sort_column = GetProfileInt("events_sort_column", -1);
+	m_events_sort_reverse = GetProfileInt("events_sort_reverse", false);
+	m_files_sort_column = GetProfileInt("files_sort_column", -1);
+	m_files_sort_reverse = GetProfileInt("files_sort_reverse", false);
+	m_global_events_sort_column = GetProfileInt("global_events_sort_column", -1);
+	m_global_events_sort_reverse = GetProfileInt("global_events_sort_reverse", false);
+	m_peers_sort_column = GetProfileInt("peers_sort_column", pc_client);
+	m_peers_sort_reverse = GetProfileInt("peers_sort_reverse", false);
+	m_pieces_sort_column = GetProfileInt("pieces_sort_column", -1);
+	m_pieces_sort_reverse = GetProfileInt("pieces_sort_reverse", false);
+	m_torrents_sort_column = GetProfileInt("torrents_sort_column", fc_name);
+	m_torrents_sort_reverse = GetProfileInt("torrents_sort_reverse", false);
 	m_file = NULL;
-	register_hot_key(AfxGetApp()->GetProfileInt(m_reg_key, "hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q'));
+	register_hot_key(GetProfileInt("hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q'));
 	register_tray();
 	SetTimer(0, 1000, NULL);
 	SetTimer(1, 60000, NULL);
@@ -1777,8 +1777,8 @@ void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	m_torrents_sort_reverse = m_torrents_columns[pNMListView->iSubItem] == m_torrents_sort_column && !m_torrents_sort_reverse;
 	m_torrents_sort_column = m_torrents_columns[pNMListView->iSubItem];
-	AfxGetApp()->WriteProfileInt(m_reg_key, "torrents_sort_column", m_torrents_sort_column);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "torrents_sort_reverse", m_torrents_sort_reverse);
+	WriteProfileInt("torrents_sort_column", m_torrents_sort_column);
+	WriteProfileInt("torrents_sort_reverse", m_torrents_sort_reverse);
 	sort_files();
 	*pResult = 0;
 }
@@ -1966,32 +1966,32 @@ void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	case v_events:
 		m_events_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_events_sort_column && !m_events_sort_reverse;
 		m_events_sort_column = m_peers_columns[pNMListView->iSubItem];
-		AfxGetApp()->WriteProfileInt(m_reg_key, "events_sort_column", m_events_sort_column);
-		AfxGetApp()->WriteProfileInt(m_reg_key, "events_sort_reverse", m_events_sort_reverse);
+		WriteProfileInt("events_sort_column", m_events_sort_column);
+		WriteProfileInt("events_sort_reverse", m_events_sort_reverse);
 		break;
 	case v_files:
 		m_files_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_files_sort_column && !m_files_sort_reverse;
 		m_files_sort_column = m_peers_columns[pNMListView->iSubItem];
-		AfxGetApp()->WriteProfileInt(m_reg_key, "files_sort_column", m_files_sort_column);
-		AfxGetApp()->WriteProfileInt(m_reg_key, "files_sort_reverse", m_files_sort_reverse);
+		WriteProfileInt("files_sort_column", m_files_sort_column);
+		WriteProfileInt("files_sort_reverse", m_files_sort_reverse);
 		break;
 	case v_global_events:
 		m_events_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_events_sort_column && !m_events_sort_reverse;
 		m_events_sort_column = m_peers_columns[pNMListView->iSubItem];
-		AfxGetApp()->WriteProfileInt(m_reg_key, "global_events_sort_column", m_global_events_sort_column);
-		AfxGetApp()->WriteProfileInt(m_reg_key, "global_events_sort_reverse", m_global_events_sort_reverse);
+		WriteProfileInt("global_events_sort_column", m_global_events_sort_column);
+		WriteProfileInt("global_events_sort_reverse", m_global_events_sort_reverse);
 		break;
 	case v_peers:
 		m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
 		m_peers_sort_column = m_peers_columns[pNMListView->iSubItem];
-		AfxGetApp()->WriteProfileInt(m_reg_key, "peers_sort_column", m_peers_sort_column);
-		AfxGetApp()->WriteProfileInt(m_reg_key, "peers_sort_reverse", m_peers_sort_reverse);
+		WriteProfileInt("peers_sort_column", m_peers_sort_column);
+		WriteProfileInt("peers_sort_reverse", m_peers_sort_reverse);
 		break;
 	case v_pieces:
 		m_pieces_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_pieces_sort_column && !m_pieces_sort_reverse;
 		m_pieces_sort_column = m_peers_columns[pNMListView->iSubItem];
-		AfxGetApp()->WriteProfileInt(m_reg_key, "pieces_sort_column", m_pieces_sort_column);
-		AfxGetApp()->WriteProfileInt(m_reg_key, "pieces_sort_reverse", m_pieces_sort_reverse);
+		WriteProfileInt("pieces_sort_column", m_pieces_sort_column);
+		WriteProfileInt("pieces_sort_reverse", m_pieces_sort_reverse);
 		break;
 	}
 	sort_peers();
@@ -2353,7 +2353,7 @@ void CXBTClientDlg::set_bottom_view(int v)
 {
 	if (v == m_bottom_view)
 		return;
-	AfxGetApp()->WriteProfileInt(m_reg_key, "bottom_view", v);
+	WriteProfileInt("bottom_view", v);
 	m_peers.DeleteAllItems();
 	m_bottom_view = v;
 	insert_bottom_columns();
@@ -2535,15 +2535,15 @@ void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::OnPopupViewAdvancedColumns()
 {
-	m_show_advanced_columns = !AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", m_show_advanced_columns);
+	m_show_advanced_columns = !GetProfileInt("show_advanced_columns", false);
+	WriteProfileInt("show_advanced_columns", m_show_advanced_columns);
 	insert_columns(true);
 }
 
 void CXBTClientDlg::OnPopupViewTrayIcon()
 {
-	m_show_tray_icon = !AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", m_show_tray_icon);
+	m_show_tray_icon = !GetProfileInt("show_tray_icon", true);
+	WriteProfileInt("show_tray_icon", m_show_tray_icon);
 	if (m_show_tray_icon)
 		register_tray();
 	else
@@ -2618,12 +2618,12 @@ void CXBTClientDlg::OnUpdatePopupViewGlobalEvents(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnPopupUploadRateLimit()
 {
-	m_server.upload_rate(m_server.upload_rate() ? 0 : AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
+	m_server.upload_rate(m_server.upload_rate() ? 0 : GetProfileInt("upload_rate", 0));
 }
 
 void CXBTClientDlg::OnUpdatePopupUploadRateLimit(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
+	pCmdUI->Enable(GetProfileInt("upload_rate", 0));
 	pCmdUI->SetCheck(m_server.upload_rate());
 }
 
@@ -2752,7 +2752,7 @@ void CXBTClientDlg::OnUpdatePopupStateStopped(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnCancel() 
 {
-	if (!AfxGetApp()->GetProfileInt(m_reg_key, "show_confirm_exit_dialog", false)
+	if (!GetProfileInt("show_confirm_exit_dialog", false)
 		|| IDOK == MessageBox("Would you like to exit XBT Client?", NULL, MB_ICONWARNING | MB_OKCANCEL))
 		ETSLayoutDialog::OnCancel();
 }
@@ -2865,25 +2865,25 @@ void CXBTClientDlg::OnToolsOptions()
 	unregister_hot_key();
 	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
-	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
-	data.ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
-	data.bind_before_connect = AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false);
+	data.admin_port = GetProfileInt("admin_port", m_server.admin_port());
+	data.ask_for_location = GetProfileInt("ask_for_location", false);
+	data.bind_before_connect = GetProfileInt("bind_before_connect", false);
 	data.completes_dir = m_server.completes_dir();
-	data.hide_on_deactivate = AfxGetApp()->GetProfileInt(m_reg_key, "hide_on_deactivate", false);
-	data.hot_key = AfxGetApp()->GetProfileInt(m_reg_key, "hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q');
+	data.hide_on_deactivate = GetProfileInt("hide_on_deactivate", false);
+	data.hot_key = GetProfileInt("hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q');
 	data.incompletes_dir = m_server.incompletes_dir();
-	data.lower_process_priority = AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true);
+	data.lower_process_priority = GetProfileInt("lower_process_priority", true);
 	data.peer_limit = m_server.peer_limit();
-	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
-	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
+	data.peer_port = GetProfileInt("peer_port", m_server.peer_port());
+	data.public_ipa = GetProfileString("public_ipa");
 	data.seeding_ratio = m_server.seeding_ratio();
-	data.show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
-	data.show_confirm_exit_dialog = AfxGetApp()->GetProfileInt(m_reg_key, "show_confirm_exit_dialog", false);
-	data.show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
-	data.start_minimized = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
+	data.show_advanced_columns = GetProfileInt("show_advanced_columns", false);
+	data.show_confirm_exit_dialog = GetProfileInt("show_confirm_exit_dialog", false);
+	data.show_tray_icon = GetProfileInt("show_tray_icon", true);
+	data.start_minimized = GetProfileInt("start_minimized", false);
 	data.torrent_limit = m_server.torrent_limit();
 	data.torrents_dir = m_server.torrents_dir();
-	data.tracker_port = AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port());
+	data.tracker_port = GetProfileInt("tracker_port", m_server.tracker_port());
 	data.upload_rate = m_server.upload_rate();
 	data.upload_slots = m_server.upload_slots();
 	dlg.set(data);
@@ -2907,27 +2907,27 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.tracker_port(data.tracker_port);
 	m_server.upload_rate(data.upload_rate);
 	m_server.upload_slots(data.upload_slots);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "ask_for_location", data.ask_for_location);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "bind_before_connect", data.bind_before_connect);
-	AfxGetApp()->WriteProfileString(m_reg_key, "completes_dir", data.completes_dir.c_str());
-	AfxGetApp()->WriteProfileInt(m_reg_key, "hide_on_deactivate", data.hide_on_deactivate);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "hot_key", data.hot_key);
-	AfxGetApp()->WriteProfileString(m_reg_key, "incompletes_dir", data.incompletes_dir.c_str());
-	AfxGetApp()->WriteProfileInt(m_reg_key, "lower_process_priority", data.lower_process_priority);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_limit", data.peer_limit);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
-	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
-	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", data.show_advanced_columns);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "show_confirm_exit_dialog", data.show_confirm_exit_dialog);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "start_minimized", data.start_minimized);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "torrent_limit", data.torrent_limit);
-	AfxGetApp()->WriteProfileString(m_reg_key, "torrents_dir", data.torrents_dir.c_str());
-	AfxGetApp()->WriteProfileInt(m_reg_key, "tracker_port", data.tracker_port);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
-	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
+	WriteProfileInt("admin_port", data.admin_port);
+	WriteProfileInt("ask_for_location", data.ask_for_location);
+	WriteProfileInt("bind_before_connect", data.bind_before_connect);
+	WriteProfileString("completes_dir", data.completes_dir);
+	WriteProfileInt("hide_on_deactivate", data.hide_on_deactivate);
+	WriteProfileInt("hot_key", data.hot_key);
+	WriteProfileString("incompletes_dir", data.incompletes_dir);
+	WriteProfileInt("lower_process_priority", data.lower_process_priority);
+	WriteProfileInt("peer_limit", data.peer_limit);
+	WriteProfileInt("peer_port", data.peer_port);
+	WriteProfileString("public_ipa", data.public_ipa);
+	WriteProfileInt("seeding_ratio", data.seeding_ratio);
+	WriteProfileInt("show_advanced_columns", data.show_advanced_columns);
+	WriteProfileInt("show_confirm_exit_dialog", data.show_confirm_exit_dialog);
+	WriteProfileInt("show_tray_icon", data.show_tray_icon);
+	WriteProfileInt("start_minimized", data.start_minimized);
+	WriteProfileInt("torrent_limit", data.torrent_limit);
+	WriteProfileString("torrents_dir", data.torrents_dir);
+	WriteProfileInt("tracker_port", data.tracker_port);
+	WriteProfileInt("upload_rate", data.upload_rate);
+	WriteProfileInt("upload_slots", data.upload_slots);
 	insert_columns(true);
 	register_hot_key(data.hot_key);
 	if (m_show_tray_icon)
@@ -3102,4 +3102,24 @@ void CXBTClientDlg::register_hot_key(DWORD v)
 void CXBTClientDlg::unregister_hot_key()
 {
 	UnregisterHotKey(GetSafeHwnd(), 0);
+}
+
+int CXBTClientDlg::GetProfileInt(LPCTSTR Entry, int Default)
+{
+	return AfxGetApp()->GetProfileInt(m_reg_key, Entry, Default);
+}
+
+string CXBTClientDlg::GetProfileString(LPCTSTR Entry, LPCTSTR Default)
+{
+	return string(AfxGetApp()->GetProfileString(m_reg_key, Entry, Default));
+}
+
+BOOL CXBTClientDlg::WriteProfileInt(LPCTSTR Entry, int Value)
+{
+	return AfxGetApp()->WriteProfileInt(m_reg_key, Entry, Value);
+}
+
+BOOL CXBTClientDlg::WriteProfileString(LPCTSTR Entry, const string& Value)
+{
+	return AfxGetApp()->WriteProfileString(m_reg_key, Entry, Value.c_str());
 }
