@@ -10,7 +10,6 @@
 #include "bt_strings.h"
 #include "transaction.h"
 
-const char* g_pid_fname = "xbt_tracker.pid";
 static volatile bool g_sig_hup = false;
 static volatile bool g_sig_term = false;
 
@@ -159,7 +158,7 @@ int Cserver::run()
 		exit(0);
 	}
 #endif
-	ofstream(g_pid_fname) << getpid() << endl;
+	ofstream(m_config.m_pid_file.c_str()) << getpid() << endl;
 	struct sigaction act;
 	act.sa_handler = sig_handler;
 	sigemptyset(&act.sa_mask);
@@ -301,7 +300,7 @@ int Cserver::run()
 	}
 	write_db_files();
 	write_db_users();
-	unlink(g_pid_fname);
+	unlink(m_config.m_pid_file.c_str());
 	return 0;
 }
 
