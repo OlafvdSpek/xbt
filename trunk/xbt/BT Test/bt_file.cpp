@@ -437,14 +437,15 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
 		if (m_pieces[i].m_valid 
+			|| m_pieces[i].m_priority == -10
 			|| !peer.m_remote_pieces[i] 
 			|| peer.m_pieces.find(&m_pieces[i]) != peer.m_pieces.end()
 			|| !end_mode && !m_pieces[i].m_peers.empty())
 			continue;
 		if (begin_mode && m_pieces[i].m_peers.empty() && !m_pieces[i].m_sub_pieces.empty())
 			return i;
-		int piece_rank = 2560000 * min(m_pieces[i].m_peers.size(), 9)
-			+ -256000 * m_pieces[i].m_priority 
+		int piece_rank = 5120000 * min(m_pieces[i].m_peers.size(), 9)
+			+ -256000 * max(0, min(m_pieces[i].m_priority + 9, 19)) 
 			+ 256 * min(m_pieces[i].mc_peers, 999)
 			+ m_pieces[i].m_sub_pieces.empty();
 		if (piece_rank > rank)
