@@ -748,52 +748,7 @@ void Cserver::read_config()
 		Csql_result result = m_database.query("select name, value from xbt_config where value is not null");
 		Cconfig config;
 		for (Csql_row row; row = result.fetch_row(); )
-		{
-			if (!strcmp(row.f(0), "announce_interval"))
-				config.m_announce_interval = row.f_int(1);
-			else if (!strcmp(row.f(0), "auto_register"))
-				config.m_auto_register = row.f_int(1);
-			else if (!strcmp(row.f(0), "anonymous_connect"))
-				config.m_anonymous_connect = row.f_int(1);
-			else if (!strcmp(row.f(0), "anonymous_announce"))
-				config.m_anonymous_announce = row.f_int(1);
-			else if (!strcmp(row.f(0), "anonymous_scrape"))
-				config.m_anonymous_scrape = row.f_int(1);
-			else if (!strcmp(row.f(0), "clean_up_interval"))
-				config.m_clean_up_interval = row.f_int(1);
-			else if (!strcmp(row.f(0), "daemon"))
-				config.m_daemon = row.f_int(1);
-			else if (!strcmp(row.f(0), "gzip_announce"))
-				config.m_gzip_announce = row.f_int(1);
-			else if (!strcmp(row.f(0), "gzip_debug"))
-				config.m_gzip_debug = row.f_int(1);
-			else if (!strcmp(row.f(0), "gzip_scrape"))
-				config.m_gzip_scrape = row.f_int(1);
-			else if (!strcmp(row.f(0), "listen_check"))
-				config.m_listen_check = row.f_int(1);
-			else if (!strcmp(row.f(0), "listen_ipa") && strcmp(row.f(1), "*"))
-				config.m_listen_ipas.insert(inet_addr(row.f(1)));
-			else if (!strcmp(row.f(0), "listen_port"))
-				config.m_listen_ports.insert(row.f_int(1));
-			else if (!strcmp(row.f(0), "log_access"))
-				config.m_log_access = row.f_int(1);
-			else if (!strcmp(row.f(0), "log_announce"))
-				config.m_log_announce = row.f_int(1);
-			else if (!strcmp(row.f(0), "log_scrape"))
-				config.m_log_scrape = row.f_int(1);
-			else if (!strcmp(row.f(0), "read_config_interval"))
-				config.m_read_config_interval = row.f_int(1);
-			else if (!strcmp(row.f(0), "read_db_interval"))
-				config.m_read_db_interval = row.f_int(1);
-			else if (!strcmp(row.f(0), "redirect_url"))
-				config.m_redirect_url = row.f(1);
-			else if (!strcmp(row.f(0), "scrape_interval"))
-				config.m_scrape_interval = row.f_int(1);
-			else if (!strcmp(row.f(0), "update_files_method"))
-				config.m_update_files_method = row.f_int(1);
-			else if (!strcmp(row.f(0), "write_db_interval"))
-				config.m_write_db_interval = row.f_int(1);
-		}
+			config.set(row.f(0), row.f(1));
 		m_config = config;
 	}
 	catch (Cxcc_error)
