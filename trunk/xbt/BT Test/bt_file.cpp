@@ -27,6 +27,7 @@ Cbt_file::Cbt_file()
 	m_total_uploaded = 0;
 	mc_leechers_total = 0;
 	mc_seeders_total = 0;
+	m_hasher = NULL;
 	m_run = true;
 }
 
@@ -156,6 +157,8 @@ int Cbt_file::open(const string& name)
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->left(0);
 		m_hasher = new Cbt_hasher(validate);
+		while (!validate && m_hasher->run(*this))
+			;
 	}
 	return 0;
 }

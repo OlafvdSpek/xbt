@@ -103,6 +103,10 @@ SOURCE=.\bt_file.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\bt_hasher.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\bt_link.cpp
 # End Source File
 # Begin Source File
@@ -164,6 +168,10 @@ SOURCE=.\StdAfx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\udp_tracker.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\xf2\misc\virtual_binary.cpp
 # End Source File
 # Begin Source File
@@ -181,6 +189,10 @@ SOURCE=.\bt_admin_link.h
 # Begin Source File
 
 SOURCE=.\bt_file.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\bt_hasher.h
 # End Source File
 # Begin Source File
 
@@ -233,6 +245,10 @@ SOURCE=.\StdAfx.h
 # Begin Source File
 
 SOURCE=..\misc\stream_writer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\udp_tracker.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
