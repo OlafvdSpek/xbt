@@ -32,6 +32,11 @@ public:
 		return mc_sub_pieces_left;
 	}
 
+	int cb_sub_piece() const
+	{
+		return 32 << 10;
+	}
+
 	int size() const
 	{
 		return m_size;
@@ -44,7 +49,6 @@ public:
 	t_peers m_peers;
 	int mc_peers;
 	t_sub_pieces m_sub_pieces;
-	int mcb_sub_piece;
 	bool m_valid;
 	char m_priority;
 private:

@@ -182,7 +182,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						if (piece->m_peers.size() > 1)
 							random_shuffle(sub_pieces.begin(), sub_pieces.end());
 						for (vector<int>::const_iterator i = sub_pieces.begin(); i != sub_pieces.end(); i++)
-							m_local_requests.push_back(t_local_request(m_f->mcb_piece * a + piece->mcb_sub_piece * *i, piece->cb_sub_piece(*i)));
+							m_local_requests.push_back(t_local_request(m_f->mcb_piece * a + piece->cb_sub_piece() * *i, piece->cb_sub_piece(*i)));
 					}
 					else
 						interested(false);
