@@ -16,7 +16,6 @@
 class Cserver  
 {
 public:
-	void read_config();
 	struct t_peer
 	{
 		int downloaded;
@@ -54,6 +53,7 @@ public:
 	typedef list<Cconnection> t_connections;
 	typedef map<string, t_file> t_files;
 
+	void read_config();
 	void write_db();
 	void read_db();
 	void clean_up();
