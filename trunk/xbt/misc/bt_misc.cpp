@@ -183,6 +183,8 @@ string peer_id2a(const string& v)
 			if (v[1] == 'A' && v[2] == 'Z')
 				return peer_id2a("Azureus ", v, 3);
 			break;
+		case 'M':
+			return peer_id2a("Mainline ", v, 1);
 		case 'S':
 			return peer_id2a("Shadow ", v, 1);
 		case 'T':
