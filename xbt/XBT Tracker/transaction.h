@@ -19,9 +19,9 @@ public:
 	__int64 connection_id() const;
 	void recv();
 	void send(const void* d, int cb_d);
-	void send_announce(const t_udp_tracker_input_announce&);
-	void send_connect(const t_udp_tracker_input_connect&);
-	void send_scrape(const t_udp_tracker_input_scrape&);
+	void send_announce(const t_udp_tracker_input_announce&, const char* r, const char* r_end);
+	void send_connect(const t_udp_tracker_input_connect&, const char* r, const char* r_end);
+	void send_scrape(const t_udp_tracker_input_scrape&, const char* r, const char* r_end);
 	void send_error(const t_udp_tracker_input&, const string& msg);
 	Ctransaction(Cserver& server, const Csocket& s);
 private:
