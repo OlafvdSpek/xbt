@@ -82,3 +82,5 @@
 	}
 	echo("</table>");
 ?>
+<hr>
+<a href="http://sourceforge.net/projects/xbtt/"><img src="http://sourceforge.net/sflogo.php?group_id=94951;type=1"></a>
