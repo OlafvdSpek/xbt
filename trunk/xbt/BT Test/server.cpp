@@ -861,8 +861,6 @@ void Cserver::update_chokes()
 				(j->m_local_interested ? links1 : links2).push_back(&*j);
 		}
 		files_limits[&*i] = make_pair(i->upload_slots_min(), i->upload_slots_max());
-		if (!files_limits[&*i].second)
-			files_limits[&*i].second = INT_MAX;
 	}
 	random_shuffle(links1.begin(), links1.end());
 	random_shuffle(links2.begin(), links2.end());
