@@ -323,32 +323,6 @@ private:
 	int m_incomplete;
 };
 
-struct t_udp_tracker_output_peer
-{
-	int host() const
-	{
-		return m_host;
-	}
-
-	void host(int v)
-	{
-		m_host = v;
-	}
-
-	int port() const
-	{
-		return m_port;
-	}
-
-	void port(int v)
-	{
-		m_port = v;
-	}
-private:
-	int m_host;
-	short m_port;
-};
-
 struct t_bt_handshake
 {
 	string info_hash() const

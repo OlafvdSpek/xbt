@@ -360,6 +360,19 @@ void Cserver::set_trackers(const Cvirtual_binary& d)
 	d.save(trackers_fname());
 }
 
+int Cserver::announce(const string& id)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != id)
+			continue;
+		i->m_tracker.m_announce_time = 0;
+		return 0;
+	}
+	return 1;
+}
+
 int Cserver::start_file(const string& id)
 {
 	Clock l(m_cs);
