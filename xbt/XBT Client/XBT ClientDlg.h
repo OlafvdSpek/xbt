@@ -24,12 +24,12 @@ public:
 	void insert_columns(bool auto_size);
 	void insert_top_columns();
 	void insert_bottom_columns();
-	void sort_events();
 	void sort_peers();
 	void sort_files();
 	int events_compare(int id_a, int id_b) const;
 	int files_compare(int id_a, int id_b) const;
 	int peers_compare(int id_a, int id_b) const;
+	int pieces_compare(int id_a, int id_b) const;
 	int sub_files_compare(int id_a, int id_b) const;
 	static unsigned int server_thread(void* p);
 	void start_server();
@@ -139,9 +139,12 @@ protected:
 	afx_msg void OnUpdatePopupTorrentPriorityLow(CCmdUI* pCmdUI);
 	afx_msg void OnPopupTorrentPriorityNormal();
 	afx_msg void OnUpdatePopupTorrentPriorityNormal(CCmdUI* pCmdUI);
+	afx_msg void OnPopupViewPieces();
+	afx_msg void OnUpdatePopupViewPieces(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
@@ -174,6 +177,16 @@ private:
 		bool removed;
 	};
 
+	struct t_piece
+	{
+		int c_chunks_invalid;
+		int c_chunks_valid;
+		int c_peers;
+		int priority;
+		int rank;
+		bool valid;
+	};
+
 	struct t_sub_file
 	{
 		string hash;
@@ -190,6 +203,7 @@ private:
 
 	typedef vector<t_event> t_events;
 	typedef map<int, t_peer> t_peers;
+	typedef vector<t_piece> t_pieces;
 	typedef vector<t_sub_file> t_sub_files;
 	typedef vector<t_tracker> t_trackers;
 
@@ -201,6 +215,7 @@ private:
 		t_events events;
 		t_trackers trackers;
 		t_peers peers;
+		t_pieces pieces;
 		t_sub_files sub_files;
 		__int64 downloaded;
 		__int64 downloaded_l5;
@@ -256,10 +271,12 @@ private:
 	int m_events_sort_column;
 	int m_files_sort_column;
 	int m_peers_sort_column;
+	int m_pieces_sort_column;
 	int m_torrents_sort_column;
 	bool m_events_sort_reverse;
 	bool m_files_sort_reverse;
 	bool m_peers_sort_reverse;
+	bool m_pieces_sort_reverse;
 	bool m_torrents_sort_reverse;
 	bool m_show_advanced_columns;
 	bool m_show_tray_icon;
