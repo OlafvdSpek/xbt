@@ -309,7 +309,7 @@ void Cserver::udp_recv(Csocket& s)
 					continue;
 				if (!c--)
 					break;
-				peer->host(ntohl(j->first));
+				peer->host(j->first);
 				peer->port(j->second.port);
 				peer++;
 			}
