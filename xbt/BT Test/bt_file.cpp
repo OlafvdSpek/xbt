@@ -374,7 +374,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		}
 		{
 			offset = a * mcb_piece;
-			size = cb_s;
+			size = mcb_piece;
 			for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			{
 				if (offset < i->size())
