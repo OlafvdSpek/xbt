@@ -33,6 +33,11 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			close();
 			return 0;
 		}
+		{
+			BOOL v = true;
+			if (!setsockopt(m_s, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(BOOL)))
+				m_s.bind(htonl(INADDR_ANY), htons(m_f->m_local_port));
+		}
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
 			close();
