@@ -98,6 +98,7 @@ int Cbt_file::info(const Cbvalue& info)
 			while (size)
 				size -= piece++->mcb_d = min(size, mcb_piece);
 		}
+		assert(piece - &m_pieces.front() == m_pieces.size());
 		return 0;
 	}
 	m_pieces.resize((mcb_f + mcb_piece - 1) / mcb_piece);
