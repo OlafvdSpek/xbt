@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "server.h"
 
-// #include <winsock2.h>
-
 int main(int argc, char* argv[])
 { 
 #ifdef WIN32
