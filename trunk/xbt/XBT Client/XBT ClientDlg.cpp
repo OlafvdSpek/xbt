@@ -1539,6 +1539,8 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 	t_file& f = m_files_map.find(m_files.GetItemData(index))->second;
 	Cdlg_torrent_options dlg;
 	Cdlg_torrent_options::t_data data;
+	for (t_trackers::const_iterator i = f.m_trackers.begin(); i != f.m_trackers.end(); i++)
+		data.trackers += i->url + "\r\n";
 	data.end_mode = f.m_allow_end_mode;
 	data.seeding_ratio = f.m_seeding_ratio;
 	data.seeding_ratio_override = f.m_seeding_ratio_override;
@@ -1552,6 +1554,7 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 	data = dlg.get();
 	m_server.torrent_end_mode(f.m_info_hash, data.end_mode);
 	m_server.torrent_seeding_ratio(f.m_info_hash, data.seeding_ratio_override, data.seeding_ratio);
+	m_server.torrent_trackers(f.m_info_hash, data.trackers);
 	m_server.torrent_upload_slots_max(f.m_info_hash, data.upload_slots_max_override, data.upload_slots_max);
 	m_server.torrent_upload_slots_min(f.m_info_hash, data.upload_slots_min_override, data.upload_slots_min);
 }

@@ -22,6 +22,7 @@ public:
 		bool end_mode;
 		int seeding_ratio;
 		bool seeding_ratio_override;
+		string trackers;
 		int upload_slots_min;
 		bool upload_slots_min_override;
 		int upload_slots_max;
@@ -45,6 +46,7 @@ public:
 	int		m_upload_slots_max_value;
 	int		m_upload_slots_min_value;
 	BOOL	m_end_mode;
+	CString	m_trackers;
 	//}}AFX_DATA
 
 
