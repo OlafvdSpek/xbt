@@ -660,15 +660,13 @@ void CXBTClientDlg::OnPopupAnnounce()
 
 void CXBTClientDlg::OnPopupStart() 
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index != -1)
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.start_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
 void CXBTClientDlg::OnPopupStop() 
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index != -1)
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.stop_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
@@ -713,8 +711,7 @@ void CXBTClientDlg::OnPopupOpen()
 
 void CXBTClientDlg::OnPopupClose() 
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index != -1)
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
