@@ -44,6 +44,18 @@ int Cbt_file::info(const Cbvalue& info)
 	m_info_hash = compute_sha1(m_info);
 	mcb_piece = info.d(bts_piece_length).i();
 	{
+		byte* w = m_info_hashes.write_start((m_info.size() + 4095) / 4096 * 20);
+		const byte* r = m_info;
+		const byte* r_end = m_info.data_end();
+		while (r < r_end)
+		{
+			compute_sha1(r, min(r_end - r, 4096), w);
+			r += 4096;
+			w += 20;
+		}
+		m_info_hashes_hash = compute_sha1(m_info_hashes);
+	}
+	{
 		mcb_f = 0;
 		const Cbvalue::t_list& files = info.d(bts_files).l();
 		for (Cbvalue::t_list::const_iterator i = files.begin(); i != files.end(); i++)
@@ -75,7 +87,7 @@ int Cbt_file::info(const Cbvalue& info)
 		return 1;
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
-		m_pieces[i].mcb_d = min(mcb_piece * (i + 1), mcb_f) - mcb_piece * i;
+		m_pieces[i].mcb_d = min(mcb_f - mcb_piece * i, mcb_piece);
 		memcpy(m_pieces[i].m_hash, piece_hashes.c_str() + 20 * i, 20);
 	}
 
@@ -392,7 +404,7 @@ ostream& operator<<(ostream& os, const Cbt_file& v)
 
 int Cbt_file::pre_dump() const
 {
-	int size = m_info_hash.length() + m_name.length() + 76;
+	int size = m_info_hash.length() + m_name.length() + 80;
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 		size += i->pre_dump();
 	return size;
@@ -412,6 +424,7 @@ void Cbt_file::dump(Cstream_writer& w) const
 	w.write_int32(m_up_counter.rate());
 	w.write_int32(c_leechers());
 	w.write_int32(c_seeders());
+	w.write_int32(m_run);
 	w.write_int32(m_peers.size());
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 		i->dump(w);

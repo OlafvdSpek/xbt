@@ -40,6 +40,7 @@ Cserver::Cserver()
 {
 	m_admin_port = 6879;
 	m_peer_port = 6889;
+	m_run = false;
 
 	InitializeCriticalSection(&m_cs);
 }
@@ -59,16 +60,27 @@ static string new_peer_id()
 	return v;
 }
 
-void Cserver::run()
+void Cserver::admin_port(int v)
+{
+	m_admin_port = v;
+}
+
+void Cserver::peer_port(int v)
+{
+	m_peer_port = v;
+}
+
+int Cserver::run()
 {
 	Csocket l, la;
 	if (l.open(SOCK_STREAM) == INVALID_SOCKET
 		|| la.open(SOCK_STREAM) == INVALID_SOCKET)
-		cerr << "socket failed" << endl;
-	if (l.bind(htonl(INADDR_ANY), htons(peer_port()))
-		|| la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())))
-		cerr << "bind failed" << endl;
-	else if (listen(l, SOMAXCONN)
+		return cerr << "socket failed" << endl, 1;
+	while (admin_port() < 0x10000 && la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
+		m_admin_port++;
+	while (peer_port() < 0x10000 && l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
+		m_peer_port++;
+	if (listen(l, SOMAXCONN)
 		|| listen(la, SOMAXCONN))
 		cerr << "listen failed" << endl;
 	else
@@ -181,6 +193,7 @@ void Cserver::run()
 			i->close();
 	}
 	save_state(false).save(state_fname());
+	return 0;
 }
 
 void Cserver::stop()
@@ -249,8 +262,36 @@ Cvirtual_binary Cserver::get_status()
 	return d;
 }
 
+int Cserver::start_file(const string& id)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != id)
+			continue;
+		i->m_run = true;
+		return 0;
+	}
+	return 1;
+}
+
+int Cserver::stop_file(const string& id)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != id)
+			continue;
+		i->m_run = false;
+		return 0;
+	}
+	return 1;
+}
+
 int Cserver::open(const Cvirtual_binary& info, const string& name)
 {
+	while (!m_run)
+		Sleep(100);
 	Clock l(m_cs);
 	Cbt_file f;
 	if (f.torrent(info))
@@ -285,6 +326,7 @@ int Cserver::close(const string& id)
 
 void Cserver::load_state(const Cvirtual_binary& d)
 {
+	Clock l(m_cs);
 	if (d.size() < 4)
 		return;
 	Cstream_reader r(d);
@@ -303,6 +345,7 @@ void Cserver::load_state(const Cvirtual_binary& d)
 
 Cvirtual_binary Cserver::save_state(bool intermediate)
 {
+	Clock l(m_cs);
 	Cvirtual_binary d;
 	int cb_d = 4;
 	{

@@ -30,8 +30,12 @@ public:
 	void write_keepalive();
 	void read_piece(int, int, int, const char*);
 	void write_handshake();
-	void write_cancel(int, int, int);
 	void write_request(int, int, int);
+	void write_cancel(int, int, int);
+	void write_get_info();
+	void write_info(int);
+	void write_get_peers();
+	void write_peers();
 	void choked(bool);
 	void interested(bool);
 	static byte* write(byte* w, int v);

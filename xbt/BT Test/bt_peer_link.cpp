@@ -277,7 +277,7 @@ byte* Cbt_peer_link::write(byte* w, int v)
 
 void Cbt_peer_link::write_handshake()
 {
-	write("\x13""BitTorrent protocol\0\0\0\0\0\0\0\0", 28);
+	write("\x13""BitTorrent protocol\0\0\0\0\0\0\0\3", 28);
 	write(m_f->m_info_hash.c_str(), 20);
 	write(m_f->m_peer_id.c_str(), 20);
 	m_local_choked = true;
@@ -395,6 +395,64 @@ void Cbt_peer_link::write_cancel(int piece, int offset, int size)
 	w = write(w, piece);
 	w = write(w, offset);
 	w = write(w, size);
+	write(d);
+}
+
+void Cbt_peer_link::write_get_info()
+{
+	Cvirtual_binary d;
+	byte* w = d.write_start(5);
+	w = write(w, d.size() - 4);
+	*w++ = bti_get_info;
+	write(d);
+}
+
+void Cbt_peer_link::write_info(int i)
+{
+	if (i < 0 || 4096 * i >= m_f->m_info.size())
+		return;
+	Cvirtual_binary d;
+	if (i)
+	{
+		int cb = min(m_f->m_info.size() - 4096 * i, 4096);
+		byte* w = d.write_start(5 + cb);
+		w = write(w, d.size() - 4);
+		*w++ = bti_info;
+		memcpy(w, m_f->m_info + 4096 * i, cb);
+	}
+	else
+	{
+		byte* w = d.write_start(5 + m_f->m_info_hashes.size());
+		w = write(w, d.size() - 4);
+		*w++ = bti_info;
+		m_f->m_info_hashes.read(w);
+	}
+	write(d);
+}
+
+void Cbt_peer_link::write_get_peers()
+{
+	Cvirtual_binary d;
+	byte* w = d.write_start(9);
+	w = write(w, d.size() - 4);
+	*w++ = bti_get_info;
+	w = write(w, m_f->m_local_port);
+	write(d);
+}
+
+void Cbt_peer_link::write_peers()
+{
+	Cvirtual_binary d;
+	byte* w = d.write_start(5 + 6 * m_f->m_peers.size());
+	w = write(w, d.size() - 4);
+	*w++ = bti_peers;
+	for (Cbt_file::t_peers::const_iterator i = m_f->m_peers.begin(); i != m_f->m_peers.end(); i++)
+	{
+		*reinterpret_cast<__int32*>(w) = i->m_a.sin_addr.s_addr;
+		w += 4;
+		*reinterpret_cast<__int16*>(w) = i->m_a.sin_port;
+		w += 2;
+	}
 	write(d);
 }
 
