@@ -12,6 +12,8 @@
 #include "ring_buffer.h"
 #include "socket.h"
 
+class Cserver;
+
 class Cbt_admin_link  
 {
 public:
@@ -21,7 +23,7 @@ public:
 	void recv();
 	void send();
 	Cbt_admin_link();
-	Cbt_admin_link(const sockaddr_in& a, const Csocket& s);
+	Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csocket& s);
 	~Cbt_admin_link();
 
 	Csocket s()
@@ -33,6 +35,8 @@ private:
 	Cring_buffer m_write_b;
 	sockaddr_in m_a;
 	Csocket m_s;
+	Cserver* m_server;
+	bool m_close;
 	int m_ctime;
 	int m_mtime;
 };

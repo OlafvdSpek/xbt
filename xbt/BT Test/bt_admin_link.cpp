@@ -5,6 +5,8 @@
 #include "stdafx.h"
 #include "bt_admin_link.h"
 
+#include "server.h"
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -13,14 +15,21 @@ Cbt_admin_link::Cbt_admin_link()
 {
 }
 
-Cbt_admin_link::Cbt_admin_link(const sockaddr_in& a, const Csocket& s)
+Cbt_admin_link::Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csocket& s)
 {
 	m_a = a;
 	m_s = s;
+	m_server = server;
+	m_close = false;
 	m_ctime = m_mtime = time(NULL);
 
 	m_read_b.size(4 << 10);
 	m_write_b.size(64 << 10);
+
+	strstream str;
+	m_server->dump(str);
+	m_write_b.write(str.str(), str.pcount());
+	m_close = true;
 }
 
 Cbt_admin_link::~Cbt_admin_link()
@@ -93,6 +102,8 @@ void Cbt_admin_link::send()
 		m_write_b.cb_r(r);
 		m_mtime = time(NULL);
 	}
+	if (m_close)
+		close();
 }
 
 void Cbt_admin_link::close()

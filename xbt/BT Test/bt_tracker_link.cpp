@@ -6,7 +6,16 @@
 #include "bt_tracker_link.h"
 
 #include "bt_file.h"
-#include "../misc/bt_strings.h"
+#include "bt_misc.h"
+#include "bt_strings.h"
+
+enum
+{
+	tp_http,
+	tp_tcp,
+	tp_udp,
+	tp_unknown
+};
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -21,38 +30,7 @@ Cbt_tracker_link::~Cbt_tracker_link()
 {
 }
 
-static string uri_encode(const string& v)
-{
-	string r;
-	r.reserve(v.length());
-	for (int i = 0; i < v.length(); i++)
-	{
-		char c = v[i];
-		if (isalpha(c) || isdigit(c))
-			r += c;
-		else
-		{
-			switch (c)
-			{
-			case ' ':
-				r += '+';
-				break;
-			case '-':
-			case ',':
-			case '.':
-			case '@':
-			case '_':
-				r += c;
-				break;
-			default:
-				r += "%" + hex_encode(2, c);
-			}
-		}
-	}
-	return r;
-};
-
-static int split_url(const string& url, string& protocol, string& address, int& port, string& path)
+static int split_url(const string& url, int& protocol, string& address, int& port, string& path)
 {
 	int a = url.find("://");
 	if (a == string::npos)
@@ -61,7 +39,14 @@ static int split_url(const string& url, string& protocol, string& address, int& 
 	int c = url.find('/', a + 3);
 	if (c == string::npos)
 		return 1;
-	protocol = url.substr(0, a);
+	if (url.substr(0, a) == "http")
+		protocol = tp_http;
+	else if (url.substr(0, a) == "tcp")
+		protocol = tp_tcp;
+	else if (url.substr(0, a) == "udp")
+		protocol = tp_udp;
+	else 
+		protocol = tp_unknown;
 	if (b == string::npos || b > c)
 	{
 		address = url.substr(a + 3, c - a - 3);
@@ -91,15 +76,26 @@ int Cbt_tracker_link::write(Cbt_file* f)
 		return 0;
 	}
 	m_f = f;
-	string protocol;
-	string host;
-	int port;
-	split_url(f->m_trackers.front(), protocol, host, port, m_path);
-	if (protocol != "http")
+	if (split_url(f->m_trackers.front(), m_protocol, m_host, m_port, m_path))
 		return 1;
-	if ((m_s.open(SOCK_STREAM)) == INVALID_SOCKET)
+	switch (m_protocol)
+	{
+	case tp_http:
+		if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
+			return 1;
+		break;
+	case tp_tcp:
+		if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
+			return 1;
+		break;
+	case tp_udp:
+		if (m_s.open(SOCK_DGRAM) == INVALID_SOCKET)
+			return 1;
+		break;
+	default:
 		return 1;
-	if (m_s.connect(Csocket::get_host(host), htons(port)) && WSAGetLastError() != WSAEWOULDBLOCK)
+	}
+	if (m_s.connect(Csocket::get_host(m_host), htons(m_port)) && WSAGetLastError() != WSAEWOULDBLOCK)
 		return 1;
 	m_w = m_d.write_start(16 << 10);
 	m_state = 1;
@@ -136,9 +132,10 @@ void Cbt_tracker_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd
 				<< "&uploaded=" << m_f->m_uploaded 
 				<< "&downloaded=" << m_f->m_downloaded 
 				<< "&left=" << m_f->m_left
-				<< "&event=" << uri_encode("started") 
+				// << "&event=" << uri_encode("started") 
 				<< " HTTP/1.0" << endl
-				// << "host: " << host << ':' << port << endl
+				// << "accept-encoding: gzip" << endl
+				<< "host: " << m_host << ':' << m_port << endl
 				<< endl;
 			if (m_s.send(os.str(), os.pcount()) != os.pcount())
 				close();

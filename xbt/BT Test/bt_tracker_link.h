@@ -29,6 +29,9 @@ public:
 	Cvirtual_binary m_d;
 	byte* m_w;
 	Cbt_file* m_f;
+	int m_protocol;
+	string m_host;
+	int m_port;
 	string m_path;
 	t_peers m_peers;
 	Csocket m_s;
