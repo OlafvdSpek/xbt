@@ -30,7 +30,7 @@ int Cbt_logger::string_id(const string& v)
 	t_strings::const_iterator i = m_strings.find(v);
 	if (i != m_strings.end())
 		return i->second;
-	m_strings[v] = m_strings.size();
+	m_strings[v] = m_strings.size() + 1;
 	return m_strings.find(v)->second;
 }
 
