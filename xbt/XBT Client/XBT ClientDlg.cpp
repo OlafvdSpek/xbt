@@ -228,9 +228,9 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_LOW, OnUpdatePopupTorrentPriorityLow)
 	ON_COMMAND(ID_POPUP_TORRENT_PRIORITY_NORMAL, OnPopupTorrentPriorityNormal)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_NORMAL, OnUpdatePopupTorrentPriorityNormal)
-	ON_WM_INITMENU()
 	ON_COMMAND(ID_POPUP_VIEW_PIECES, OnPopupViewPieces)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_PIECES, OnUpdatePopupViewPieces)
+	ON_WM_INITMENU()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -820,13 +820,6 @@ void CXBTClientDlg::OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CXBTClientDlg::OnSize(UINT nType, int cx, int cy)
-{
-	ETSLayoutDialog::OnSize(nType, cx, cy);
-	if (nType == SIZE_MINIMIZED && m_show_tray_icon)
-		ShowWindow(SW_HIDE);
-}
-
 void CXBTClientDlg::fill_peers()
 {
 	m_peers.DeleteAllItems();
@@ -1024,7 +1017,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		e.priority = static_cast<char>(sr.read_int(1));
 		e.rank = sr.read_int(4);
 		e.valid = sr.read_int(1);
-		f.pieces.push_back(e);
+		if (!e.valid)
+			f.pieces.push_back(e);
 	}
 	if (m_file == &f)
 	{
@@ -1595,13 +1589,23 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
+	case WM_SYSCOMMAND:
+		switch (wParam)
+		{
+		case SC_MINIMIZE:
+			if (!m_show_tray_icon)
+				break;
+			ShowWindow(SW_HIDE);
+			return true;
+		}
+		break;
 	default:
 		if (message == g_tray_message_id)
 		{
 			switch (lParam)
 			{
 			case WM_LBUTTONUP:
-				ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
+				ShowWindow(IsWindowVisible() ? SW_HIDE : m_show_tray_icon ? SW_SHOW : SW_SHOWMAXIMIZED);
 				if (IsWindowVisible())
 					SetForegroundWindow();
 				return 0;
@@ -2010,7 +2014,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		m_peers_columns.push_back(pic_c_chunks);
 		m_peers_columns.push_back(pic_c_peers);
 		m_peers_columns.push_back(pic_priority);
-		m_peers_columns.push_back(pic_valid);
+		// m_peers_columns.push_back(pic_valid);
 		m_peers_columns.push_back(pic_rank);
 		m_peers_columns.push_back(pic_end);
 		break;
@@ -2150,7 +2154,7 @@ void CXBTClientDlg::lower_process_priority(bool v)
 
 long CXBTClientDlg::OnHotKey(WPARAM, LPARAM)
 {
-	ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
+	ShowWindow(IsWindowVisible() ? SW_HIDE : m_show_tray_icon ? SW_SHOW : SW_SHOWMAXIMIZED);
 	if (IsWindowVisible())
 		SetForegroundWindow();
 	return 0;
