@@ -4,7 +4,7 @@
 
 Name "XBT Client ${VERSION}"
 Outfile "XBT_Client-${VERSION}.exe"
-InstallDir "$PROGRAMFILES\XBT"
+InstallDir "$PROGRAMFILES\XBT\Client"
 Page directory
 Page instfiles
 Section "Install"
@@ -35,4 +35,5 @@ Section "Uninstall"
 	DeleteRegKey HKCR "bittorrent"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client"
 	RMDir /r "$INSTDIR"
+	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
