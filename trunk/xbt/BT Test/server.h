@@ -67,7 +67,7 @@ public:
 	int pre_dump(int flags) const;
 	void dump(Cstream_writer&, int flags) const;
 	ostream& dump(ostream&) const;
-	void insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a, const Csocket& s);
+	void insert_peer(const char* r, const sockaddr_in& a, const Csocket& s);
 	int run();
 	void stop();
 	Cserver();

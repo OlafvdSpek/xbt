@@ -63,10 +63,10 @@ void Cbt_link::recv()
 		}
 		m_read_b.cb_w(r);
 		m_mtime = time(NULL);
-		if (m_read_b.cb_r() >= sizeof(t_bt_handshake))
+		if (m_read_b.cb_r() >= hs_size)
 		{
-			const t_bt_handshake& m = *reinterpret_cast<const t_bt_handshake*>(m_read_b.r());
-			if (m.cb_name == 19 && !memcmp(m.name, "BitTorrent protocol", 19))
+			const char* m = m_read_b.r();
+			if (m[hs_name_size] == 19 && !memcmp(m + hs_name, "BitTorrent protocol", 19))
 				m_server->insert_peer(m, m_a, m_s);
 			close();
 			return;
