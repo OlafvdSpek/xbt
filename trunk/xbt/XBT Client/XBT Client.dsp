@@ -104,6 +104,10 @@ SOURCE="..\BT Test\bt_file.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\bt_hasher.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_link.cpp"
 # End Source File
 # Begin Source File
@@ -254,6 +258,10 @@ SOURCE="..\BT Test\bt_admin_link.h"
 # Begin Source File
 
 SOURCE="..\BT Test\bt_file.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_hasher.h"
 # End Source File
 # Begin Source File
 
