@@ -226,7 +226,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	ETSLayoutDialog::OnInitDialog();
 	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
 
-	m_bottom_view = v_peers;
+	m_bottom_view = AfxGetApp()->GetProfileInt(m_reg_key, "bottom_view", v_peers);
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
 	m_ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
 	m_server.bind_before_connect(AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false));
@@ -1970,6 +1970,7 @@ void CXBTClientDlg::set_bottom_view(int v)
 {
 	if (v == m_bottom_view)
 		return;
+	AfxGetApp()->WriteProfileInt(m_reg_key, "bottom_view", v);
 	m_peers.DeleteAllItems();
 	m_bottom_view = v;
 	insert_bottom_columns();
