@@ -148,6 +148,10 @@ SOURCE="..\BT Test\bt_pl_write_data.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\bt_sub_file_data.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\bt_torrent.cpp
 # End Source File
 # Begin Source File
@@ -358,6 +362,10 @@ SOURCE="..\BT Test\bt_pl_write_data.h"
 # Begin Source File
 
 SOURCE=..\misc\bt_strings.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_sub_file_data.h"
 # End Source File
 # Begin Source File
 

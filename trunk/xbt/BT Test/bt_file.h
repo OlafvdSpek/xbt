@@ -15,6 +15,7 @@
 #include "bt_logger.h"
 #include "bt_piece.h"
 #include "bt_peer_link.h"
+#include "bt_sub_file_data.h"
 #include "bt_tracker_link.h"
 #include "data_counter.h"
 #include "merkle_tree.h"
@@ -99,7 +100,7 @@ public:
 		return m_state;
 	}
 
-	struct t_sub_file
+	struct t_sub_file: public Cbt_sub_file_data
 	{
 		int c_pieces(int cb_piece) const;
 		void close();
@@ -181,13 +182,7 @@ public:
 		}
 	private:
 		int m_f;
-		string m_merkle_hash;
 		Cmerkle_tree m_merkle_tree;
-		__int64 m_left;
-		string m_name;
-		__int64 m_offset;
-		int m_priority;
-		__int64 m_size;
 	};
 
 	typedef vector<bool> t_info_blocks_valid;

@@ -820,31 +820,31 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case sfc_name:
-		if (e.name.empty())
+		if (e.m_name.empty())
 		{
 			int i = m_file->m_name.rfind('\\');
 			m_buffer[m_buffer_w] = i == string::npos ? m_file->m_name : m_file->m_name.substr(i + 1);
 		}
 		else
-			m_buffer[m_buffer_w] = e.name;
+			m_buffer[m_buffer_w] = e.m_name;
 		break;
 	case sfc_done:
-		if (e.size)
-			m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
+		if (e.m_size)
+			m_buffer[m_buffer_w] = n((e.m_size - e.m_left) * 100 / e.m_size);
 		break;
 	case sfc_left:
-		if (e.left)
-			m_buffer[m_buffer_w] = b2a(e.left);
+		if (e.m_left)
+			m_buffer[m_buffer_w] = b2a(e.m_left);
 		break;
 	case sfc_size:
-		m_buffer[m_buffer_w] = b2a(e.size);
+		m_buffer[m_buffer_w] = b2a(e.m_size);
 		break;
 	case sfc_priority:
-		if (e.priority)
-			m_buffer[m_buffer_w] = priority2a(e.priority);
+		if (e.m_priority)
+			m_buffer[m_buffer_w] = priority2a(e.m_priority);
 		break;
 	case sfc_hash:
-		m_buffer[m_buffer_w] = hex_encode(e.hash);
+		m_buffer[m_buffer_w] = hex_encode(e.m_merkle_hash);
 		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
@@ -1042,11 +1042,11 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	for (int c_files = sr.read_int(4); c_files--; )
 	{
 		t_sub_file e;
-		e.left = sr.read_int(8);
-		e.name = sr.read_string();
-		e.priority = sr.read_int(4);
-		e.size = sr.read_int(8);
-		e.hash = sr.read_string();
+		e.m_left = sr.read_int(8);
+		e.m_name = sr.read_string();
+		e.m_priority = sr.read_int(4);
+		e.m_size = sr.read_int(8);
+		e.m_merkle_hash = sr.read_string();
 		f.m_sub_files.push_back(e);
 	}
 	f.pieces.clear();
@@ -1901,17 +1901,17 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 	switch (m_files_sort_column)
 	{
 	case sfc_name:
-		return compare(a.name, b.name);
+		return compare(a.m_name, b.m_name);
 	case sfc_done:
-		return compare(b.left, a.left);
+		return compare(b.m_left, a.m_left);
 	case sfc_left:
-		return compare(a.left, b.left);
+		return compare(a.m_left, b.m_left);
 	case sfc_size:
-		return compare(a.size, b.size);
+		return compare(a.m_size, b.m_size);
 	case sfc_priority:
-		return compare(b.priority, a.priority);
+		return compare(b.m_priority, a.m_priority);
 	case sfc_hash:
-		return compare(a.hash, b.hash);
+		return compare(a.m_merkle_hash, b.m_merkle_hash);
 	}
 	return 0;
 }
@@ -2421,8 +2421,8 @@ int CXBTClientDlg::get_priority()
 	{
 		const t_sub_file& e = m_file->m_sub_files[m_peers.GetItemData(index)];
 		if (v == 2)
-			v = e.priority;
-		else if (e.priority != v)
+			v = e.m_priority;
+		else if (e.m_priority != v)
 			return 2;
 	}
 	return v;
@@ -2435,7 +2435,7 @@ void CXBTClientDlg::set_priority(int v)
 	for (int index = -1; (index = m_peers.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
 		const t_sub_file& e = m_file->m_sub_files[m_peers.GetItemData(index)];
-		m_server.sub_file_priority(m_file->m_info_hash, e.name, v);
+		m_server.sub_file_priority(m_file->m_info_hash, e.m_name, v);
 	}
 }
 
@@ -2447,7 +2447,7 @@ void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	if (id == -1)
 		return;
 	const t_sub_file& e = m_file->m_sub_files[id];
-	ShellExecute(m_hWnd, "open", (m_file->m_name + e.name).c_str(), NULL, NULL, SW_SHOW);
+	ShellExecute(m_hWnd, "open", (m_file->m_name + e.m_name).c_str(), NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnPopupViewAdvancedColumns()
