@@ -12,6 +12,7 @@
 
 #pragma warning(disable: 4786)
 
+#include <ctime>
 #include <iostream>
 #include <map>
 #include <vector>
