@@ -224,8 +224,12 @@ private:
 	Cserver m_server;
 	CWinThread* m_server_thread;
 	int m_bottom_view;
+	int m_events_sort_column;
+	int m_files_sort_column;
 	int m_peers_sort_column;
 	int m_torrents_sort_column;
+	bool m_events_sort_reverse;
+	bool m_files_sort_reverse;
 	bool m_peers_sort_reverse;
 	bool m_torrents_sort_reverse;
 	bool m_show_advanced_columns;
