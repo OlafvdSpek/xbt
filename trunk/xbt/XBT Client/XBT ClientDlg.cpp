@@ -57,6 +57,7 @@ enum
 	pc_remote_interested,
 	pc_host,
 	pc_port,
+	pc_client,
 	pc_end
 };
 
@@ -408,6 +409,9 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = 'I';
 		break;
 	case pc_peer_id:
+		m_buffer[m_buffer_w] = hex_encode(e.peer_id);
+		break;
+	case pc_client:
 		m_buffer[m_buffer_w] = peer_id2a(e.peer_id);
 		break;
 	}
@@ -1175,8 +1179,8 @@ static int CALLBACK files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	m_files_sort_reverse = pNMListView->iSubItem == m_files_sort_column && !m_files_sort_reverse;
-	m_files_sort_column = pNMListView->iSubItem;
+	m_files_sort_reverse = m_torrents_columns[pNMListView->iSubItem] == m_files_sort_column && !m_files_sort_reverse;
+	m_files_sort_column = m_torrents_columns[pNMListView->iSubItem];
 	sort_files();
 	*pResult = 0;
 }
@@ -1219,6 +1223,8 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 		return compare(a.remote_interested, b.remote_interested);
 	case pc_peer_id:
 		return compare(a.peer_id, b.peer_id);
+	case pc_client:
+		return compare(peer_id2a(a.peer_id), peer_id2a(b.peer_id));
 	}
 	return 0;
 }
@@ -1231,8 +1237,8 @@ static int CALLBACK peers_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
-	m_peers_sort_reverse = pNMListView->iSubItem == m_peers_sort_column && !m_peers_sort_reverse;
-	m_peers_sort_column = pNMListView->iSubItem;
+	m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
+	m_peers_sort_column = m_peers_columns[pNMListView->iSubItem];
 	sort_peers();	
 	*pResult = 0;
 }
@@ -1262,7 +1268,7 @@ void CXBTClientDlg::insert_columns()
 	m_torrents_columns.push_back(fc_leechers);
 	m_torrents_columns.push_back(fc_seeders);
 	m_torrents_columns.push_back(fc_state);
-	m_peers_columns.push_back(pc_peer_id);
+	m_peers_columns.push_back(pc_client);
 	m_peers_columns.push_back(pc_done);
 	m_peers_columns.push_back(pc_left);
 	m_peers_columns.push_back(pc_downloaded);
@@ -1279,7 +1285,7 @@ void CXBTClientDlg::insert_columns()
 		m_torrents_columns.push_back(fc_hash);
 		m_peers_columns.push_back(pc_host);
 		m_peers_columns.push_back(pc_port);
-		m_peers_columns.push_back(pc_end);
+		m_peers_columns.push_back(pc_peer_id);
 	}
 	const char* torrents_columns_names[] =
 	{
@@ -1330,6 +1336,7 @@ void CXBTClientDlg::insert_columns()
 		"R",
 		"Host",
 		"Port",
+		"Client",
 		""
 	};
 	const int peers_columns_formats[] =
@@ -1348,6 +1355,7 @@ void CXBTClientDlg::insert_columns()
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 	};
 	while (m_peers.GetHeaderCtrl()->GetItemCount())

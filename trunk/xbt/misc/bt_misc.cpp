@@ -165,7 +165,7 @@ string b2a(__int64 v, const char* postfix)
 static string peer_id2a(const string& name, const string& peer_id, int i)
 {
 	int j;
-	for (j = i; j < 7; j++)
+	for (j = i; j < peer_id.size(); j++)
 	{
 		if (!isalnum(peer_id[j]))
 			break;
@@ -203,6 +203,10 @@ string peer_id2a(const string& v)
 	}
 	switch (v[0])
 	{
+	case '-':
+		if (v[1] == 'G' && v[2] == '3')
+			return peer_id2a("G3 ", v, 3);
+		break;
 	case 0:
 		{
 			int i = v.find_first_not_of('\0');
