@@ -976,7 +976,7 @@ string Cserver::statistics() const
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
 		+ "<tr><td>torrents<td align=right>" + n(torrents)
 		+ "<tr><td>"
-		+ "<tr><td>up time<td align=right>" + n(time() - m_stats.start_time)
+		+ "<tr><td>up time<td align=right>" + duration2a(time() - m_stats.start_time)
 		+ "<tr><td>"
 		+ "<tr><td>anonymous connect<td align=right>" + n(m_config.m_anonymous_connect)
 		+ "<tr><td>anonymous announce<td align=right>" + n(m_config.m_anonymous_announce)
