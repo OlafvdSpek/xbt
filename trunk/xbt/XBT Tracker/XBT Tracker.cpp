@@ -11,7 +11,10 @@ int main1()
 	Cdatabase database;
 	Cxcc_error error;
 	Cstatic_config static_config;
-	if (error = static_config.read("xbt_tracker.conf"))
+	char b[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH, b);
+	strcat(b, "/xbt_tracker.conf");
+	if (error = static_config.read(b))
 		cerr << error.message() << endl;
 	if (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true))
 		cerr << error.message() << endl;
