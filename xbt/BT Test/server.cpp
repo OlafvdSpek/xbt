@@ -8,6 +8,8 @@
 #include "bt_strings.h"
 #include "stream_reader.h"
 
+#define for if (0) {} else for
+
 class Clock
 {
 public:
@@ -42,6 +44,7 @@ Cserver::Cserver()
 	m_peer_port = 6889;
 	m_run = false;
 	m_update_chokes_time = 0;
+	m_update_send_quotas_time = time(NULL);
 	m_upload_rate = 0;
 
 	InitializeCriticalSection(&m_cs);
@@ -132,6 +135,7 @@ int Cserver::run()
 					n = max(n, z);
 				}
 			}
+			update_send_quotas();
 			unlock();
 			TIMEVAL tv;
 			tv.tv_sec = 1;
@@ -414,4 +418,47 @@ void Cserver::alert(const Calert& v)
 void Cserver::update_chokes()
 {
 	m_update_chokes_time = time(NULL);
+}
+
+void Cserver::update_send_quotas()
+{
+	if (m_upload_rate)
+	{
+		int t = time(NULL);
+		if (m_update_send_quotas_time == t)
+		{
+			if (!m_send_quota)
+				return;
+		}
+		else
+			m_send_quota = 0;
+		int cb = min(t - m_update_send_quotas_time, 3) * m_upload_rate;
+		m_update_send_quotas_time = t;
+
+		typedef multimap<int, Cbt_peer_link*> t_links;
+		t_links links;
+		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		{
+			for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
+			{
+				if (j->cb_write_buffer())
+					links.insert(t_links::value_type(j->cb_write_buffer(), &*j));
+			}
+		}
+		for (t_links::iterator i = links.begin(); i != links.end(); i++)
+		{
+			int q = min(i->first, cb / links.size());
+			i->second->send_quota(q);
+			cb -= q;
+		}
+		m_send_quota = cb;
+	}
+	else
+	{
+		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		{
+			for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
+				j->send_quota(INT_MAX);
+		}
+	}
 }

@@ -67,22 +67,40 @@ public:
 		return m_s != INVALID_SOCKET;
 	}
 
-	struct t_remote_request
+	struct t_local_request
 	{
-		int offset;
+		__int64 offset;
 		int size;
 
-		t_remote_request()
+		t_local_request()
 		{
 		}
 
-		t_remote_request(int _offset, int _size)
+		t_local_request(__int64 _offset, int _size)
 		{
 			offset = _offset;
 			size = _size;
 		}
 	};
 
+	struct t_remote_request
+	{
+		__int64 offset;
+		int size;
+
+		t_remote_request()
+		{
+		}
+
+		t_remote_request(__int64 _offset, int _size)
+		{
+			offset = _offset;
+			size = _size;
+		}
+	};
+
+	typedef list<t_local_request> t_local_requests;
+	typedef set<Cbt_piece*> t_pieces;
 	typedef vector<bool> t_remote_pieces;
 	typedef list<t_remote_request> t_remote_requests;
 	typedef list<Cbt_pl_write_data> t_write_buffer;
@@ -93,7 +111,7 @@ public:
 	int m_state;
 	Cring_buffer m_read_b;
 	t_write_buffer m_write_b;
-	Cbt_piece* m_piece;
+	t_pieces m_pieces;
 	int m_rtime;
 	int m_stime;
 	int m_send_quota;
@@ -101,6 +119,8 @@ public:
 	bool m_local_link;
 	bool m_local_choked;
 	bool m_local_interested;
+	t_local_requests m_local_requests;
+	int mc_local_requests_pending;
 	bool m_remote_choked;
 	bool m_remote_interested;
 	string m_remote_peer_id;
@@ -112,6 +132,10 @@ public:
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
 	int m_piece_rtime;
+	int m_get_peers_stime;
+	int m_peers_stime;
+	bool m_get_info_extension;
+	bool m_get_peers_extension;
 };
 
 ostream& operator<<(ostream&, const Cbt_peer_link&);
