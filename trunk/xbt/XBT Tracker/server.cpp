@@ -110,11 +110,11 @@ void Cserver::insert_peer(const Ctracker_input& v)
 		peer.peer_id = v.m_peer_id;
 		peer.port = v.m_port;
 		// peer.uploaded = v.m_uploaded;
-		peer.mtime = time(NULL);
 		(peer.left ? file.leechers : file.seeders)++;
 
-		if (!peer.listening)
+		if (time(NULL) - peer.mtime > 900)
 			m_peer_links.push_front(Cpeer_link(inet_addr(v.m_ipa.c_str()), v.m_port, this, v.m_info_hash, v.m_ipa));
+		peer.mtime = time(NULL);
 	}
 	switch (v.m_event)
 	{
