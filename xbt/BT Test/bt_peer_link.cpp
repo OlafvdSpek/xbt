@@ -789,7 +789,7 @@ void Cbt_peer_link::check_pieces()
 {
 	for (t_pieces::iterator i = m_pieces.begin(); i != m_pieces.end(); )
 	{
-		if ((*i)->check_peer(this))
+		if ((*i)->check_peer(this, 600))
 			i++;
 		else
 			i = m_pieces.erase(i);
