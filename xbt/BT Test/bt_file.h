@@ -25,6 +25,7 @@ class Cserver;
 class Cbt_file  
 {
 public:
+	int c_max_requests_pending() const;
 	bool end_mode() const;
 	bool begin_mode() const;
 	Cbt_logger& logger();
@@ -198,6 +199,7 @@ public:
 	Cdata_counter m_up_counter;
 
 	Cbt_hasher* m_hasher;
+	bool m_end_mode;
 	bool m_merkle;
 	bool m_run;
 	bool m_validate;

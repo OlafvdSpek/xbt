@@ -66,6 +66,8 @@ enum
 	pc_local_requests,
 	pc_remote_requests,
 	pc_pieces,
+	pc_recv_time,
+	pc_send_time,
 	pc_host,
 	pc_port,
 	pc_client,
@@ -714,6 +716,12 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		if (e.c_pieces)
 			m_buffer[m_buffer_w] = n(e.c_pieces);
 		break;
+	case pc_recv_time:
+		m_buffer[m_buffer_w] = n(time(NULL) - e.rtime);
+		break;
+	case pc_send_time:
+		m_buffer[m_buffer_w] = n(time(NULL) - e.stime);
+		break;
 	case pc_peer_id:
 		m_buffer[m_buffer_w] = hex_encode(e.peer_id);
 		break;
@@ -1093,6 +1101,8 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	p.remote_interested = sr.read_int(1);
 	p.c_remote_requests = sr.read_int(4);
 	p.c_pieces = sr.read_int(4);
+	p.rtime = sr.read_int(4);
+	p.stime = sr.read_int(4);
 	if (p.peer_id.empty())
 		return;
 	t_peers::iterator i;
@@ -2006,6 +2016,8 @@ void CXBTClientDlg::insert_bottom_columns()
 			m_peers_columns.push_back(pc_local_requests);
 			m_peers_columns.push_back(pc_remote_requests);
 			m_peers_columns.push_back(pc_pieces);
+			m_peers_columns.push_back(pc_recv_time);
+			m_peers_columns.push_back(pc_send_time);
 			m_peers_columns.push_back(pc_host);
 			m_peers_columns.push_back(pc_port);
 			m_peers_columns.push_back(pc_peer_id);
@@ -2016,7 +2028,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		m_peers_columns.push_back(pic_c_chunks);
 		m_peers_columns.push_back(pic_c_peers);
 		m_peers_columns.push_back(pic_priority);
-		// m_peers_columns.push_back(pic_valid);
+		m_peers_columns.push_back(pic_valid);
 		m_peers_columns.push_back(pic_rank);
 		m_peers_columns.push_back(pic_end);
 		break;
@@ -2049,6 +2061,8 @@ void CXBTClientDlg::insert_bottom_columns()
 		"LR",
 		"RR",
 		"P",
+		"RT",
+		"ST",
 		"Host",
 		"Port",
 		"Client",
@@ -2092,6 +2106,8 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
