@@ -118,13 +118,8 @@ int Cserver::run()
 			else
 			{
 				lt.push_back(Ctcp_listen_socket(this, l0));
-#ifdef EPOLL
 				if (m_epoll.ctl(EPOLL_CTL_ADD, l0, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
-				{
-					cerr << "epoll_ctl failed" << endl;
 					return 1;
-				}
-#endif				
 				continue;
 			}
 			return 1;
@@ -140,13 +135,8 @@ int Cserver::run()
 			else
 			{
 				lu.push_back(Cudp_listen_socket(this, l1));
-#ifdef EPOLL
 				if (m_epoll.ctl(EPOLL_CTL_ADD, l1, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lu.back()))
-				{
-					cerr << "epoll_ctl failed" << endl;
 					return 1;
-				}					
-#endif				
 				continue;
 			}
 			return 1;
@@ -335,10 +325,8 @@ void Cserver::accept(const Csocket& l)
 				cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
 			m_connections.push_back(Cconnection(this, s, a, m_log_access));
-#ifdef EPOLL
 			if (m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back()))
 				cerr << "epoll_ctl failed" << endl;
-#endif				
 		}
 	}
 }
@@ -396,10 +384,8 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 			if (peer_link.s() != INVALID_SOCKET)
 			{
 				m_peer_links.push_back(peer_link);
-#ifdef EPOLL
 				if (m_epoll.ctl(EPOLL_CTL_ADD, peer_link.s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_peer_links.back()))
 					cerr << "epoll_ctl failed" << endl;
-#endif
 			}
 		}
 		peer.mtime = time();
