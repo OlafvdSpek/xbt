@@ -168,6 +168,7 @@ public:
 	Cdata_counter m_up_counter;
 
 	Cbt_hasher* m_hasher;
+	bool m_merkle;
 	bool m_run;
 	bool m_validate;
 	Cserver* m_server;
