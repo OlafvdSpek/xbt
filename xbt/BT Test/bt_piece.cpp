@@ -13,6 +13,7 @@ Cbt_piece::Cbt_piece()
 {
 	mc_peers = 0;
 	mcb_sub_piece = 32 << 10;
+	m_priority = 0;
 	m_valid = false;
 }
 
@@ -57,6 +58,21 @@ int Cbt_piece::rank() const
 		+ 2000 * min(mc_peers, 9)
 		+ 1000 * m_sub_pieces.empty()
 		+ min(mc_peers, 999);
+}
+
+void Cbt_piece::load_state(Cstream_reader& r)
+{
+	m_valid = r.read_int(1);
+}
+
+int Cbt_piece::pre_save_state() const
+{
+	return 1;
+}
+
+void Cbt_piece::save_state(Cstream_writer& w) const
+{
+	w.write_int(1, m_valid);
 }
 
 void Cbt_piece::dump(Cstream_writer& w) const
