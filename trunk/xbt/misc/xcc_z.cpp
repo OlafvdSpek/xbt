@@ -6,11 +6,7 @@
 #include "xcc_z.h"
 
 #include <cstdio>
-#ifdef _MSC_VER
-#include <zlib/zlib.h>
-#else
 #include <zlib.h>
-#endif
 
 Cvirtual_binary xcc_z::gunzip(const void* s0, int cb_s)
 {

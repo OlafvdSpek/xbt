@@ -12,12 +12,9 @@
 Cbt_piece::Cbt_piece()
 {
 	m_peer = NULL;
+	mc_peers = 0;
 	mcb_sub_piece = 16 << 10;
 	m_valid = false;
-}
-
-Cbt_piece::~Cbt_piece()
-{
 }
 
 void Cbt_piece::write(int offset, const char* s, int cb_s)
@@ -35,22 +32,17 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 	{
 		m_peer->m_piece = NULL;
 		m_peer = NULL;
+		m_sub_pieces.clear();
 		if (memcmp(compute_sha1(m_d).c_str(), m_hash, 20))
 		{
+			m_d.clear();
 			cout << "invalid" << endl;
-			clear();
 		}
 		else
 		{
-			m_sub_pieces.clear();
 			m_valid = true;
 		}
 	}
-}
-
-void Cbt_piece::clear()
-{
-	m_sub_pieces.clear();
 }
 
 int Cbt_piece::c_sub_pieces() const

@@ -86,8 +86,8 @@ public:
 	string m_remote_peer_id;
 	t_remote_pieces m_remote_pieces;
 	t_remote_requests m_remote_requests;
-	int m_downloaded;
-	int m_uploaded;
+	__int64 m_downloaded;
+	__int64 m_uploaded;
 	int m_piece_rtime;
 };
 
