@@ -98,6 +98,11 @@ enum
 	pic_end,
 
 	tc_url,
+
+	gec_time,
+	gec_level,
+	gec_source,
+	gec_message,
 };
 
 enum
@@ -108,6 +113,7 @@ enum
 	v_peers,
 	v_pieces,
 	v_trackers,
+	v_global_events,
 };
 
 enum
@@ -264,9 +270,11 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_FILE_DELETE, OnUpdateFileDelete)
 	ON_COMMAND(ID_HELP_HOME_PAGE, OnHelpHomePage)
 	ON_WM_SYSCOMMAND()
+	ON_WM_COPYDATA()
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
-	ON_WM_COPYDATA()
+	ON_COMMAND(ID_POPUP_VIEW_GLOBAL_EVENTS, OnPopupViewGlobalEvents)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_GLOBAL_EVENTS, OnUpdatePopupViewGlobalEvents)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -291,6 +299,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_tab.InsertItem(v_peers, "Peers");
 	m_tab.InsertItem(v_pieces, "Pieces");
 	m_tab.InsertItem(v_trackers, "Trackers");
+	m_tab.InsertItem(v_global_events, "Global Events");
 	UpdateLayout();
 	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
 
@@ -319,13 +328,18 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_tab.SetCurSel(m_bottom_view);
 	start_server();
 	insert_columns(true);
-	m_events_sort_column = -1;
-	m_files_sort_column = -1;
-	m_peers_sort_column = pc_client;
-	m_peers_sort_reverse = false;
-	m_pieces_sort_column = -1;
-	m_torrents_sort_column = fc_name;
-	m_torrents_sort_reverse = false;
+	m_events_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "events_sort_column", -1);
+	m_events_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "events_sort_reverse", false);
+	m_files_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "files_sort_column", -1);
+	m_files_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "files_sort_reverse", false);
+	m_global_events_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "global_events_sort_column", -1);
+	m_global_events_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "global_events_sort_reverse", false);
+	m_peers_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "peers_sort_column", pc_client);
+	m_peers_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "peers_sort_reverse", false);
+	m_pieces_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "pieces_sort_column", -1);
+	m_pieces_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "pieces_sort_reverse", false);
+	m_torrents_sort_column = AfxGetApp()->GetProfileInt(m_reg_key, "torrents_sort_column", fc_name);
+	m_torrents_sort_reverse = AfxGetApp()->GetProfileInt(m_reg_key, "torrents_sort_reverse", false);
 	m_file = NULL;
 	register_tray();
 	RegisterHotKey(GetSafeHwnd(), 0, MOD_CONTROL | MOD_SHIFT, 'Q');
@@ -1605,6 +1619,8 @@ void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	m_torrents_sort_reverse = m_torrents_columns[pNMListView->iSubItem] == m_torrents_sort_column && !m_torrents_sort_reverse;
 	m_torrents_sort_column = m_torrents_columns[pNMListView->iSubItem];
+	AfxGetApp()->WriteProfileInt(m_reg_key, "torrents_sort_column", m_torrents_sort_column);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "torrents_sort_reverse", m_torrents_sort_reverse);
 	sort_files();
 	*pResult = 0;
 }
@@ -1767,18 +1783,32 @@ void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	case v_events:
 		m_events_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_events_sort_column && !m_events_sort_reverse;
 		m_events_sort_column = m_peers_columns[pNMListView->iSubItem];
+		AfxGetApp()->WriteProfileInt(m_reg_key, "events_sort_column", m_events_sort_column);
+		AfxGetApp()->WriteProfileInt(m_reg_key, "events_sort_reverse", m_events_sort_reverse);
 		break;
 	case v_files:
 		m_files_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_files_sort_column && !m_files_sort_reverse;
 		m_files_sort_column = m_peers_columns[pNMListView->iSubItem];
+		AfxGetApp()->WriteProfileInt(m_reg_key, "files_sort_column", m_files_sort_column);
+		AfxGetApp()->WriteProfileInt(m_reg_key, "files_sort_reverse", m_files_sort_reverse);
+		break;
+	case v_global_events:
+		m_events_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_events_sort_column && !m_events_sort_reverse;
+		m_events_sort_column = m_peers_columns[pNMListView->iSubItem];
+		AfxGetApp()->WriteProfileInt(m_reg_key, "global_events_sort_column", m_global_events_sort_column);
+		AfxGetApp()->WriteProfileInt(m_reg_key, "global_events_sort_reverse", m_global_events_sort_reverse);
 		break;
 	case v_peers:
 		m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
 		m_peers_sort_column = m_peers_columns[pNMListView->iSubItem];
+		AfxGetApp()->WriteProfileInt(m_reg_key, "peers_sort_column", m_peers_sort_column);
+		AfxGetApp()->WriteProfileInt(m_reg_key, "peers_sort_reverse", m_peers_sort_reverse);
 		break;
 	case v_pieces:
 		m_pieces_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_pieces_sort_column && !m_pieces_sort_reverse;
 		m_pieces_sort_column = m_peers_columns[pNMListView->iSubItem];
+		AfxGetApp()->WriteProfileInt(m_reg_key, "pieces_sort_column", m_pieces_sort_column);
+		AfxGetApp()->WriteProfileInt(m_reg_key, "pieces_sort_reverse", m_pieces_sort_reverse);
 		break;
 	}
 	sort_peers();
@@ -1935,6 +1965,12 @@ void CXBTClientDlg::insert_bottom_columns()
 	case v_trackers:
 		m_peers_columns.push_back(tc_url);
 		break;
+	case v_global_events:
+		m_peers_columns.push_back(gec_time);
+		m_peers_columns.push_back(gec_level);
+		m_peers_columns.push_back(gec_source);
+		m_peers_columns.push_back(gec_message);
+		break;
 	}
 	const char* peers_columns_names[] =
 	{
@@ -1984,6 +2020,11 @@ void CXBTClientDlg::insert_bottom_columns()
 		"",
 
 		"URL",
+
+		"Time",
+		"Level",
+		"Source",
+		"Message",
 	};
 	const int peers_columns_formats[] =
 	{
@@ -2033,6 +2074,11 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
 
+		LVCFMT_LEFT,
+
+		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 	};
 	m_peers.DeleteAllColumns();
@@ -2147,6 +2193,11 @@ void CXBTClientDlg::OnPopupViewPieces()
 void CXBTClientDlg::OnPopupViewTrackers()
 {
 	set_bottom_view(v_trackers);
+}
+
+void CXBTClientDlg::OnPopupViewGlobalEvents() 
+{
+	set_bottom_view(v_global_events);
 }
 
 void CXBTClientDlg::OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult)
@@ -2352,6 +2403,11 @@ void CXBTClientDlg::OnUpdatePopupViewPieces(CCmdUI* pCmdUI)
 void CXBTClientDlg::OnUpdatePopupViewTrackers(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetRadio(m_bottom_view == v_trackers);
+}
+
+void CXBTClientDlg::OnUpdatePopupViewGlobalEvents(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetRadio(m_bottom_view == v_global_events);
 }
 
 void CXBTClientDlg::OnPopupUploadRateLimit()
