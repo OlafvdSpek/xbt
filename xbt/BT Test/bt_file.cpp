@@ -59,6 +59,7 @@ int Cbt_file::info(const Cbvalue& info)
 	mcb_piece = info.d(bts_piece_length).i();
 	{
 		mcb_f = 0;
+		__int64 offset = 0;
 		const Cbvalue::t_list& files = info.d(bts_files).l();
 		for (Cbvalue::t_list::const_iterator i = files.begin(); i != files.end(); i++)
 		{
@@ -72,11 +73,14 @@ int Cbt_file::info(const Cbvalue& info)
 			if (name.empty() || size < 1)
 				return 1;
 			mcb_f += size;
-			m_sub_files.push_back(t_sub_file(i->d(bts_merkle_hash).s(), name, 0, size));
+			m_sub_files.push_back(t_sub_file(i->d(bts_merkle_hash).s(), name, offset, 0, size));
+			offset += size;
+			if (m_merkle)
+				offset += - offset & (mcb_piece - 1);
 		}
 	}
 	if (m_sub_files.empty())
-		m_sub_files.push_back(t_sub_file(info.d(bts_merkle_hash).s(), "", 0, mcb_f = info.d(bts_length).i()));
+		m_sub_files.push_back(t_sub_file(info.d(bts_merkle_hash).s(), "", 0, 0, mcb_f = info.d(bts_length).i()));
 	if (mcb_f < 1 
 		|| mcb_piece < 16 << 10
 		|| mcb_piece > 16 << 20)
@@ -111,6 +115,11 @@ int Cbt_file::info(const Cbvalue& info)
 		memcpy(m_pieces[i].m_hash, piece_hashes.c_str() + 20 * i, 20);
 	}
 	return 0;
+}
+
+int Cbt_file::t_sub_file::c_pieces(int cb_piece) const
+{
+	return (size() + cb_piece - 1) / cb_piece;
 }
 
 void Cbt_file::t_sub_file::close()

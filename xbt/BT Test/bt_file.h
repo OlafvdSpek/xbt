@@ -64,6 +64,7 @@ public:
 
 	struct t_sub_file
 	{
+		int c_pieces(int cb_piece) const;
 		void close();
 		void dump(Cstream_writer&) const;
 		void erase(const string& parent_name);
@@ -102,6 +103,11 @@ public:
 			return m_name;
 		}
 
+		__int64 offset() const
+		{
+			return m_offset;
+		}
+
 		int priority() const
 		{
 			return m_priority;
@@ -126,12 +132,13 @@ public:
 		{
 		}
 
-		t_sub_file(const string& merkle_hash, const string& name, int priority, __int64 size)
+		t_sub_file(const string& merkle_hash, const string& name, __int64 offset, int priority, __int64 size)
 		{
 			m_f = -1;
 			m_merkle_hash = merkle_hash;
 			m_merkle_tree.resize(size + 0x3fff >> 14);
 			m_name = name;
+			m_offset = offset;
 			m_priority = priority;
 			m_size = size;
 		}
@@ -141,6 +148,7 @@ public:
 		Cmerkle_tree m_merkle_tree;
 		__int64 m_left;
 		string m_name;
+		__int64 m_offset;
 		int m_priority;
 		__int64 m_size;
 	};
