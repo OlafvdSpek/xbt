@@ -87,6 +87,7 @@ const string bts_time = "time";
 const string bts_torrent = "torrent";
 const string bts_torrent_limit = "torrent limit";
 const string bts_torrents_dir = "torrents dir";
+const string bts_torrents_limit_reached = "access denied, torrents limit reached";
 const string bts_total_downloaded = "total downloaded";
 const string bts_total_uploaded = "total uploaded";
 const string bts_tracker_port = "tracker port";
