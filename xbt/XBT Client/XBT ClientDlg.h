@@ -161,6 +161,8 @@ protected:
 	afx_msg void OnHelpHomePage();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
+	afx_msg void OnPopupViewGlobalEvents();
+	afx_msg void OnUpdatePopupViewGlobalEvents(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
@@ -249,6 +251,7 @@ private:
 	bool m_initial_hide;
 	t_columns m_torrents_columns;
 	t_columns m_peers_columns;
+	t_events m_events;
 	t_file* m_file;
 	t_files m_files_map;
 	CString m_reg_key;
@@ -257,11 +260,13 @@ private:
 	int m_bottom_view;
 	int m_events_sort_column;
 	int m_files_sort_column;
+	int m_global_events_sort_column;
 	int m_peers_sort_column;
 	int m_pieces_sort_column;
 	int m_torrents_sort_column;
 	bool m_events_sort_reverse;
 	bool m_files_sort_reverse;
+	bool m_global_events_sort_reverse;
 	bool m_peers_sort_reverse;
 	bool m_pieces_sort_reverse;
 	bool m_torrents_sort_reverse;
