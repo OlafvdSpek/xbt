@@ -212,7 +212,7 @@ void Cserver::run()
 
 void Cserver::insert_peer(const Ctracker_input& v)
 {
-	if (m_log)
+	if (m_log_announce)
 	{
 		Csql_query q(m_database);
 		q.write("(%d, %d, %d, %s, %s, %d, %d, %d, %d)");
@@ -366,7 +366,7 @@ Cbvalue Cserver::t_file::scrape() const
 
 Cbvalue Cserver::scrape(const Ctracker_input& ti)
 {
-	if (m_log)
+	if (m_log_scrape)
 	{
 		Csql_query q(m_database);
 		q.write("(%d, %s, %d)");
@@ -515,7 +515,8 @@ void Cserver::read_config()
 	m_gzip_scrape = true;
 	m_listen_check = true;
 	m_listen_ports.clear();
-	m_log = false;
+	m_log_announce = false;
+	m_log_scrape = false;
 	m_read_config_interval = 300;
 	m_read_db_interval = 60;
 	m_write_db_interval = 60;
@@ -547,8 +548,10 @@ void Cserver::read_config()
 				m_listen_check = row.f_int(1);
 			else if (!strcmp(row.f(0), "listen_port"))
 				m_listen_ports.insert(row.f_int(1));
-			else if (!strcmp(row.f(0), "log"))
-				m_log = row.f_int(1);
+			else if (!strcmp(row.f(0), "log_announce"))
+				m_log_announce = row.f_int(1);
+			else if (!strcmp(row.f(0), "log_scrape"))
+				m_log_scrape = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_config_interval"))
 				m_read_config_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_db_interval"))
