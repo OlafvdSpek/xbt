@@ -95,7 +95,8 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 			m_local_requests.pop_front();
 		}
-		FD_SET(m_s, fd_read_set);
+		if (m_read_b.cb_w())
+			FD_SET(m_s, fd_read_set);
 		if (m_write_b.empty() && time(NULL) - m_stime > 120)
 			write_keepalive();
 		if (m_send_quota && !m_write_b.empty())
@@ -233,7 +234,7 @@ void Cbt_peer_link::recv()
 		m_rtime = time(NULL);
 		m_read_b.cb_w(r);
 	}
-	if (m_read_b.cb_w())
+	if (!m_read_b.cb_w())
 		return;
 	alert(Calert(Calert::debug, m_a, "Peer: connection closed"));
 	close();

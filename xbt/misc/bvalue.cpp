@@ -173,7 +173,7 @@ int Cbvalue::write(const char*& s, const char* s_end)
 			if (s++ >= s_end)
 				return 1;
 			m_value_type = vt_int;
-			m_int = _atoi64(a);
+			m_int = atoll(a);
 			return 0;
 		}
 	case 'l':

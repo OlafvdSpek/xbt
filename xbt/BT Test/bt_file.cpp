@@ -333,6 +333,9 @@ int Cbt_file::read_piece(int a, byte* d)
 
 int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 {
+	if (!m_left)
+		return -1;
+
 	vector<int> invalid_pieces;
 
 	invalid_pieces.reserve(c_invalid_pieces());
