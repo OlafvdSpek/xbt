@@ -18,9 +18,13 @@
 class Cbt_file  
 {
 public:
-	__int64 left() const;
-	int time_remaining();
-	void dump(ostream& os);
+	int size() const;
+	int c_seeders() const;
+	int c_leechers() const;
+	int time_remaining() const;
+	int pre_dump() const;
+	void dump(Cstream_writer&) const;
+	ostream& dump(ostream&) const;
 	void write_have(int);
 	int next_invalid_piece(const Cbt_peer_link::t_remote_pieces&) const;
 	int read_piece(int a, byte* d);
@@ -31,7 +35,7 @@ public:
 	int c_pieces() const;
 	int c_valid_pieces() const;
 	void insert_peer(const sockaddr_in& a);
-	void insert_peer(const sockaddr_in& a, const Csocket& s);
+	void insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a, const Csocket& s);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	int info(const Cvirtual_binary&);
@@ -42,6 +46,7 @@ public:
 	struct t_sub_file
 	{
 		FILE* m_f;
+		string m_full_name;
 		string m_name;
 		int m_size;
 
@@ -75,11 +80,14 @@ public:
 	int mcb_f;
 
 	__int64 m_downloaded;
+	__int64 m_left;
 	__int64 m_uploaded;
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
 
 	int m_local_port;
 };
+
+ostream& operator<<(ostream&, const Cbt_file&);
 
 #endif // !defined(AFX_BT_FILE_H__E64A5C96_20E5_4C90_8267_F9BC96F99888__INCLUDED_)

@@ -69,6 +69,7 @@ int Cbt_file::info(const Cbvalue& v)
 	}
 
 	m_downloaded = 0;
+	m_left = 0;
 	m_uploaded = 0;
 
 	return 0;
@@ -78,23 +79,9 @@ int Cbt_file::open(const string& name)
 {
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
-		i->m_f = fopen((i->m_name.empty() ? name : name + '/' + i->m_name).c_str(), "r+b");
-		if (!i->m_f)
-		{
-			char b = 0;
-			if ((i->m_f = fopen((i->m_name.empty() ? name : name + '/' + i->m_name).c_str(), "w+b"))
-				&& i->m_size
-				&& !fseek(i->m_f, i->m_size - 1, SEEK_SET)
-				&& fwrite(&b, 1, 1, i->m_f) == 1)
-				fflush(i->m_f);
-		}
-		if (!i->m_f)
-		{
-			close();
-			return 1;
-		}
+		i->m_full_name = i->m_name.empty() ? name : name + '/' + i->m_name;
+		i->m_f = fopen(i->m_full_name.c_str(), "r+b");
 	}
-	if (1)
 	{
 		Cvirtual_binary d;
 		for (int i = 0; i < m_pieces.size(); i++)
@@ -102,8 +89,28 @@ int Cbt_file::open(const string& name)
 			Cbt_piece& piece = m_pieces[i];
 			piece.m_valid = !read_piece(i, d.write_start(piece.mcb_d))
 				&& !memcmp(compute_sha1(d).c_str(), piece.m_hash, 20);
+			if (!piece.m_valid)
+				m_left += piece.mcb_d;
 		}
 		cout << c_valid_pieces() << '/' << m_pieces.size() << endl;
+	}
+	{
+		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		{
+			if (i->m_f)
+				continue;
+			char b = 0;
+			if ((i->m_f = fopen(i->m_full_name.c_str(), "w+b"))
+				&& i->m_size
+				&& !fseek(i->m_f, i->m_size - 1, SEEK_SET)
+				&& fwrite(&b, 1, 1, i->m_f) == 1)
+				fflush(i->m_f);
+			if (!i->m_f)
+			{
+				close();
+				return 1;
+			}
+		}
 	}
 	return 0;
 }
@@ -120,6 +127,14 @@ void Cbt_file::close()
 
 int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
+	{
+		for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+		{
+			if (i->m_state != 3)
+				continue;
+			i->choked(false); // !i->m_local_interested);
+		}
+	}
 	int n = m_tracker.pre_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
@@ -152,10 +167,11 @@ void Cbt_file::insert_peer(const sockaddr_in& a)
 	Cbt_peer_link peer;
 	peer.m_a = a;
 	peer.m_f = this;
+	peer.m_local_link = true;
 	m_peers.push_back(peer);
 }
 
-void Cbt_file::insert_peer(const sockaddr_in& a, const Csocket& s)
+void Cbt_file::insert_peer(const t_bt_handshake& h, const sockaddr_in& a, const Csocket& s)
 {
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
@@ -166,8 +182,10 @@ void Cbt_file::insert_peer(const sockaddr_in& a, const Csocket& s)
 	peer.m_a = a;
 	peer.m_f = this;
 	peer.m_s = s;
-	peer.m_state = 2;
+	peer.m_local_link = false;
+	peer.m_remote_peer_id = h.peer_id();
 	peer.write_handshake();
+	peer.m_state = 4;
 	m_peers.push_back(peer);
 }
 
@@ -200,10 +218,12 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 	if (a < m_pieces.size())
 	{
 		Cbt_piece& piece = m_pieces[a];
-		if (!piece.m_valid)
-			piece.write(o % mcb_piece, s, cb_s);
+		if (piece.m_valid)
+			return;
+		piece.write(o % mcb_piece, s, cb_s);
 		if (!piece.m_valid)
 			return;
+		m_left -= piece.mcb_d;
 		int offset = a * mcb_piece;
 		int size = piece.m_d.size();
 		const byte* r = piece.m_d;
@@ -249,7 +269,7 @@ int Cbt_file::read_piece(int a, byte* d)
 		if (offset < i->m_size)
 		{
 			int cb_read = min(size, i->m_size - offset);
-			if (fseek(i->m_f, offset, SEEK_SET))
+			if (!i->m_f || fseek(i->m_f, offset, SEEK_SET))
 				return 1;
 			if (fread(w, cb_read, 1, i->m_f) != 1)
 				return 1;
@@ -288,11 +308,11 @@ void Cbt_file::write_have(int a)
 		i->write_have(a);
 }
 
-void Cbt_file::dump(ostream& os)
+ostream& Cbt_file::dump(ostream& os) const
 {
 	os << "<table>"
-		<< "<tr><td align=right>invalid pieces:<td align=right>" << c_invalid_pieces()
-		<< "<tr><td align=right>valid pieces:<td align=right>" << c_valid_pieces()
+		<< "<tr><td align=right>invalid pieces:<td align=right>" << c_invalid_pieces() << "<td align=right>" << (mcb_piece * c_invalid_pieces() >> 20) << " mb"
+		<< "<tr><td align=right>valid pieces:<td align=right>" << c_valid_pieces() << "<td align=right>" << (mcb_piece * c_valid_pieces() >> 20) << " mb"
 		<< "<tr><td align=right>downloaded:<td align=right>" << static_cast<int>(m_downloaded >> 20) << " mb<td align=right>" << (m_down_counter.rate() >> 10) << " kb/s<td align=right>";
 	int t = time_remaining();
 	if (t != -1)
@@ -304,35 +324,85 @@ void Cbt_file::dump(ostream& os)
 	os << "<tr><td align=right>uploaded:<td align=right>" << static_cast<int>(m_uploaded >> 20) << " mb<td align=right>" << (m_up_counter.rate() >> 10) << " kb/s"
 		<< "</table>"
 		<< "<hr>"
-		<< "<table>";
-	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
-	{
-		os << "<tr><td>" << inet_ntoa(i->m_a.sin_addr) 
-			<< "<td>" << ntohs(i->m_a.sin_port) 
-			<< "<td align=right>" << static_cast<int>(i->m_downloaded >> 10) 
-			<< "<td align=right>" << static_cast<int>(i->m_uploaded >> 10)
-			<< "<td>" << (i->m_local_choked ? 'C' : ' ') 
-			<< "<td>" << (i->m_local_interested ? 'I' : ' ')
-			<< "<td>" << (i->m_remote_choked ? 'C' : ' ') 
-			<< "<td>" << (i->m_remote_interested ? 'I' : ' ')
-			<< "<td align=right>" << i->m_read_b.cb_read()
-			<< "<td align=right>" << i->m_write_b.size()
-			<< "<td align=right>" << i->m_remote_requests.size()
-			<< "<td align=right>" << time(NULL) - i->m_piece_rtime
-			<< "<td align=right>" << i->m_piece
-			<< "<td align=right>" << (i->m_piece && !i->m_piece->m_sub_pieces.empty() ? i->m_piece->mc_sub_pieces_left : 0)
-			<< "<td>" << escape_string(i->m_remote_peer_id);
-	}
+		<< "<table><tr><th><th><th>D<th>U<th><th colspan=2>L<th colspan=2>R";
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+		os << *i;
 	os << "</table>";
+	if (0)
+	{
+		os << "<hr><table>";
+		for (int i = 0; i < m_pieces.size(); i++)
+		{
+			if (m_pieces[i].mc_peers)
+				os << "<tr><td align=right>" << i << "<td align=right>" << m_pieces[i].mc_peers;
+		}
+		os << "</table>";
+	}
+	return os;
 }
 
-int Cbt_file::time_remaining()
+ostream& operator<<(ostream& os, const Cbt_file& v)
+{
+	return v.dump(os);
+}
+
+int Cbt_file::pre_dump() const
+{
+	int size = m_info_hash.length() + 56;
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+		size += i->pre_dump();
+	return size;
+}
+
+void Cbt_file::dump(Cstream_writer& w) const
+{
+	w.write_string(m_info_hash);
+	w.write_int64(m_downloaded);
+	w.write_int64(m_left);
+	w.write_int64(size());
+	w.write_int64(m_uploaded);
+	w.write_int32(m_down_counter.rate());
+	w.write_int32(m_up_counter.rate());
+	w.write_int32(c_leechers());
+	w.write_int32(c_seeders());
+	w.write_int32(m_peers.size());
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+		i->dump(w);
+}
+
+int Cbt_file::time_remaining() const
 {
 	int rate = m_down_counter.rate();
 	return rate ? mcb_piece * c_invalid_pieces() / rate : -1;
 }
 
-__int64 Cbt_file::left() const
+int Cbt_file::c_leechers() const
 {
-	return mcb_piece * c_invalid_pieces();
+	int c = 0;
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	{
+		if (i->m_left)
+			c++;
+	}
+	return c;
+}
+
+int Cbt_file::c_seeders() const
+{
+	int c = 0;
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	{
+		if (!i->m_left)
+			c++;
+	}
+	return c;
+}
+
+int Cbt_file::size() const
+{
+	int c = 0;
+	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		c += i->m_size;
+	return c;
+
 }

@@ -82,11 +82,18 @@ void Cserver::run()
 				}
 			}
 			{
-				for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+				for (t_links::iterator i = m_links.begin(); i != m_links.end(); i++)
 				{
 					int z = i->pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
 					n = max(n, z);
 				}
+			}
+			{
+				Cvirtual_binary d;
+				Cstream_writer w(d.write_start(pre_dump()));
+				dump(w);
+				assert(w.w() == d.data_end());
+				d.save("d:/temp/xbt/dump.bin");
 			}
 			TIMEVAL tv;
 			tv.tv_sec = 1;
@@ -107,7 +114,7 @@ void Cserver::run()
 				{
 					if (s.blocking(false))
 						cerr << "ioctlsocket failed" << endl;
-					m_files.front().insert_peer(a, s);
+					m_links.push_back(Cbt_link(this, a, s));
 				}
 			}
 			if (FD_ISSET(la, &fd_read_set))
@@ -135,13 +142,13 @@ void Cserver::run()
 				}
 			}
 			{
-				for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); )
+				for (t_links::iterator i = m_links.begin(); i != m_links.end(); )
 				{
 					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 					if (*i)
 						i++;
 					else
-						i = m_peers.erase(i);
+						i = m_links.erase(i);
 				}
 			}
 			{
@@ -159,13 +166,43 @@ void Cserver::stop()
 	m_run = false;
 }
 
-void Cserver::dump(ostream& os)
+ostream& Cserver::dump(ostream& os) const
 {
 	os << "<link rel=stylesheet href=\"http://xccu.sourceforge.net/xcc.css\"><meta http-equiv=refresh content=5><title>XBT Client</title>";
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
 		if (i != m_files.begin())
 			os << "<hr>";
-		i->dump(os);
+		os << *i;
+	}
+	return os;
+}
+
+ostream& operator<<(ostream& os, const Cserver& v)
+{
+	return v.dump(os);
+}
+
+int Cserver::pre_dump() const
+{
+	int size = 4;
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		size += i->pre_dump();
+	return size;
+}
+
+void Cserver::dump(Cstream_writer& w) const
+{
+	w.write_int32(m_files.size());
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		i->dump(w);
+}
+
+void Cserver::insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a, const Csocket& s)
+{
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash == handshake.info_hash())
+			i->insert_peer(handshake, a, s);
 	}
 }
