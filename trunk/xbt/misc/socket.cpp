@@ -10,8 +10,13 @@
 #else
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 #include <netdb.h>
 #include <unistd.h>
+#endif
+
+#ifndef INADDR_NONE
+const int INADDR_NONE = -1;
 #endif
 
 #ifndef MSG_NOSIGNAL
@@ -79,8 +84,12 @@ int Csocket::bind(int h, int p)
 
 int Csocket::blocking(bool v)
 {
+#if 1
 	unsigned long p = !v;
 	return ioctlsocket(*this, FIONBIO, &p);
+#else
+	return fcntl(*this, F_SETFL, v ? 0 : O_NONBLOCK) == -1;
+#endif
 }
 
 void Csocket::close()
