@@ -45,6 +45,9 @@ using namespace std;
 #include <signal.h>
 #include <unistd.h>
 
+#ifdef BSD
+#define atoll atoi
+#endif
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
