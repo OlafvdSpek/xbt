@@ -152,6 +152,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			recv();
 			switch (m_state)
 			{
+			case -1:
+				return 0;
 			case 2:
 				if (m_read_b.cb_r() < hs_size)
 					break;
