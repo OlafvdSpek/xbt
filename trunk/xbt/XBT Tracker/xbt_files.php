@@ -23,8 +23,8 @@
 	printf("<tr><th align=right>scraped<td align=right>%d<td align=right>100 %%", $result[scraped]);
 	if ($result[scraped])
 	{
-		printf("<tr><th align=right>scraped_http<td align=right>%d<td align=right>%d %%", $result[scraped_http], $result[scraped_http] * 100 / $result[announced]);
-		printf("<tr><th align=right>scraped_udp<td align=right>%d<td align=right>%d %%", $result[scraped_udp], $result[scraped_up] * 100 / $result[announced]);
+		printf("<tr><th align=right>scraped_http<td align=right>%d<td align=right>%d %%", $result[scraped_http], $result[scraped_http] * 100 / $result[scraped]);
+		printf("<tr><th align=right>scraped_udp<td align=right>%d<td align=right>%d %%", $result[scraped_udp], $result[scraped_udp] * 100 / $result[scraped]);
 	}
 	printf("<tr><th align=right>completed<td align=right>%d<td>", $result[completed]);
 	printf("<tr><th align=right>started<td align=right>%d<td>", $result[started]);
