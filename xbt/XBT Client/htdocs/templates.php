@@ -93,7 +93,7 @@
 	{
 		$d = '';
 		$d .= '<tr>';
-		$d .= sprintf('<td><input type=checkbox name="%s"%s>', urlencode($v['info_hash']['value']), $_REQUEST['torrent'] == $v['info_hash']['value'] ? ' checked' : '');
+		$d .= sprintf('<td><input type=checkbox name="%s"%s>', implode('', unpack('H40', $v['info_hash']['value'])), $_REQUEST['torrent'] == $v['info_hash']['value'] ? ' checked' : '');
 		$d .= sprintf('<td align=left><a href="?torrent=%s">%s</a>', implode('', unpack('H40', $v['info_hash']['value'])), htmlspecialchars(strip_name($v['name']['value'])));
 		$d .= $v['size']['value']
 			? sprintf('<td align=right>%d', ($v['size']['value'] - $v['left']['value']) * 100 / $v['size']['value'])
