@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../bt test/bt_file.h"
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "bvalue.h"
@@ -92,23 +93,37 @@ int main(int argc, char* argv[])
 		}
 		else if (!strcmp(argv[1], "pause"))
 		{
-			v.d(bts_action, bts_pause_torrent);
+			v.d(bts_action, bts_set_state);
 			v.d(bts_hash, hash);
+			v.d(bts_state, Cbt_file::s_paused);
 		}
 		else if (!strcmp(argv[1], "peer_port"))
 		{
 			v.d(bts_action, bts_set_options);
 			v.d(bts_peer_port, atoi(argv[2]));
 		}
+		else if (!strcmp(argv[1], "queue"))
+		{
+			v.d(bts_action, bts_set_state);
+			v.d(bts_hash, hash);
+			v.d(bts_state, Cbt_file::s_queued);
+		}
+		else if (!strcmp(argv[1], "start"))
+		{
+			v.d(bts_action, bts_set_state);
+			v.d(bts_hash, hash);
+			v.d(bts_state, Cbt_file::s_running);
+		}
+		else if (!strcmp(argv[1], "stop"))
+		{
+			v.d(bts_action, bts_set_state);
+			v.d(bts_hash, hash);
+			v.d(bts_state, Cbt_file::s_stopped);
+		}
 		else if (!strcmp(argv[1], "tracker_port"))
 		{
 			v.d(bts_action, bts_set_options);
 			v.d(bts_tracker_port, atoi(argv[2]));
-		}
-		else if (!strcmp(argv[1], "unpause"))
-		{
-			v.d(bts_action, bts_unpause_torrent);
-			v.d(bts_hash, hash);
 		}
 		else if (!strcmp(argv[1], "upload_rate"))
 		{
