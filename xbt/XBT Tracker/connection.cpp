@@ -37,17 +37,15 @@ int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
 	return m_s;
 }
 
-void Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
+int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
-	if (FD_ISSET(m_s, fd_read_set))
-		recv();
-	if (FD_ISSET(m_s, fd_write_set))
-		send();
-	if (time(NULL) - m_ctime > 15 || m_state == 5 && m_write_b.empty())
-		close();
+	return FD_ISSET(m_s, fd_read_set) && recv()
+		|| FD_ISSET(m_s, fd_write_set) && send()
+		|| time(NULL) - m_ctime > 15
+		|| m_state == 5 && m_write_b.empty();
 }
 
-void Cconnection::recv()
+int Cconnection::recv()
 {
 	for (int r; r = m_s.recv(&m_read_b.front() + m_w, m_read_b.size() - m_w); )
 	{
@@ -58,17 +56,15 @@ void Cconnection::recv()
 			{
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
-				close();
+				return 1;;
 			case WSAEWOULDBLOCK:
-				break;
-			default:
-				cerr << "recv failed: " << e << endl;
-				close();
+				return 0;;
 			}
-			return;
+			cerr << "recv failed: " << e << endl;
+			return 1;
 		}
 		if (m_state == 5)
-			return;
+			return 0;
 		char* a = &m_read_b.front() + m_w;
 		m_w += r;
 		int state;
@@ -103,12 +99,13 @@ void Cconnection::recv()
 		}
 		while (state != m_state);
 		if (m_state == 5)
-			return;
+			return 0;
 	}
 	m_state = 5;
+	return 0;
 }
 
-void Cconnection::send()
+int Cconnection::send()
 {
 	for (int r; r = m_s.send(&m_write_b.front() + m_r, m_write_b.size() - m_r); )
 	{
@@ -119,14 +116,12 @@ void Cconnection::send()
 			{
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
-				close();
+				return 1;
 			case WSAEWOULDBLOCK:
-				break;
-			default:
-				cerr << "send failed: " << e << endl;
-				close();
+				return 0;
 			}
-			return;
+			cerr << "send failed: " << e << endl;
+			return 0;
 		}
 		m_r += r;
 		if (m_r == m_write_b.size())
@@ -135,11 +130,7 @@ void Cconnection::send()
 			break;
 		}
 	}
-}
-
-void Cconnection::close()
-{
-	m_s.close();
+	return 0;
 }
 
 void Cconnection::read(const string& v)
@@ -199,8 +190,12 @@ void Cconnection::read(const string& v)
 	{
 		static ofstream f("xbt_tracker_gzip.log");
 		f << time(NULL) << '\t' << v[5] << '\t' << s.size() << '\t';
-		s = xcc_z::gzip(s);
-		f << s.size() << '\t' << ti.m_compact << '\t' << ti.m_no_peer_id << endl;
+		Cvirtual_binary s2 = xcc_z::gzip(s);
+		f << s2.size() << '\t' << ti.m_compact << '\t' << ti.m_no_peer_id << endl;
+		if (s2.size() + 24 < s.size())
+			s = s2;
+		else
+			gzip = false;
 	}
 	const char* h = gzip
 		? "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n"
