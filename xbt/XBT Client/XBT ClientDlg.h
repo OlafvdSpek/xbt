@@ -119,6 +119,8 @@ protected:
 	afx_msg void OnPopupPriorityHigh();
 	afx_msg void OnPopupPriorityLow();
 	afx_msg void OnPopupPriorityNormal();
+	afx_msg void OnPopupViewAdvancedColumns();
+	afx_msg void OnPopupViewTrayIcon();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
