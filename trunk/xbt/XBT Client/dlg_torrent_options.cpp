@@ -21,6 +21,7 @@ Cdlg_torrent_options::Cdlg_torrent_options(CWnd* pParent /*=NULL*/)
 	m_seeding_ratio_value = 0;
 	m_upload_slots_max_value = 0;
 	m_upload_slots_min_value = 0;
+	m_end_mode = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -38,6 +39,7 @@ void Cdlg_torrent_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_SEEDING_RATIO, m_seeding_ratio_value);
 	DDX_Text(pDX, IDC_UPLOAD_SLOTS_MAX, m_upload_slots_max_value);
 	DDX_Text(pDX, IDC_UPLOAD_SLOTS_MIN, m_upload_slots_min_value);
+	DDX_Check(pDX, IDC_END_MODE, m_end_mode);
 	//}}AFX_DATA_MAP
 }
 
@@ -55,6 +57,7 @@ END_MESSAGE_MAP()
 
 BOOL Cdlg_torrent_options::OnInitDialog()
 {
+	m_end_mode = m_data.end_mode;
 	m_seeding_ratio_value = m_data.seeding_ratio;
 	m_upload_slots_min_value = m_data.upload_slots_min;
 	m_upload_slots_max_value = m_data.upload_slots_max;
@@ -91,6 +94,7 @@ void Cdlg_torrent_options::OnUploadSlotsMaxOverride()
 void Cdlg_torrent_options::OnOK()
 {
 	CDialog::OnOK();
+	m_data.end_mode = m_end_mode;
 	m_data.seeding_ratio = m_seeding_ratio_value;
 	m_data.seeding_ratio_override = m_seeding_ratio_override.GetState() & 3;
 	m_data.upload_slots_min = m_upload_slots_min_value;

@@ -1238,6 +1238,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.mc_distributed_copies = sr.read_int(4);
 	f.mc_distributed_copies_remainder = sr.read_int(4);
 	f.m_priority = sr.read_int(4);
+	f.m_allow_end_mode = sr.read_int(4);
 	f.m_seeding_ratio = sr.read_int(4);
 	f.m_seeding_ratio_override = sr.read_int(4);
 	f.m_upload_slots_max = sr.read_int(4);
@@ -1524,6 +1525,7 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 	t_file& f = m_files_map.find(m_files.GetItemData(index))->second;
 	Cdlg_torrent_options dlg;
 	Cdlg_torrent_options::t_data data;
+	data.end_mode = f.m_allow_end_mode;
 	data.seeding_ratio = f.m_seeding_ratio;
 	data.seeding_ratio_override = f.m_seeding_ratio_override;
 	data.upload_slots_max = f.m_upload_slots_max;
@@ -1534,6 +1536,7 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 	if (IDOK != dlg.DoModal())
 		return;
 	data = dlg.get();
+	m_server.torrent_end_mode(f.m_info_hash, data.end_mode);
 	m_server.torrent_seeding_ratio(f.m_info_hash, data.seeding_ratio_override, data.seeding_ratio);
 	m_server.torrent_upload_slots_max(f.m_info_hash, data.upload_slots_max_override, data.upload_slots_max);
 	m_server.torrent_upload_slots_min(f.m_info_hash, data.upload_slots_min_override, data.upload_slots_min);
@@ -2858,7 +2861,6 @@ void CXBTClientDlg::OnToolsOptions()
 	data.ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
 	data.bind_before_connect = AfxGetApp()->GetProfileInt(m_reg_key, "bind_before_connect", false);
 	data.completes_dir = m_server.completes_dir();
-	data.end_mode = m_server.end_mode();
 	data.hide_on_deactivate = AfxGetApp()->GetProfileInt(m_reg_key, "hide_on_deactivate", false);
 	data.incompletes_dir = m_server.incompletes_dir();
 	data.lower_process_priority = AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true);
@@ -2882,7 +2884,6 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.admin_port(data.admin_port);
 	m_ask_for_location = data.ask_for_location;
 	m_server.bind_before_connect(data.bind_before_connect);
-	m_server.end_mode(data.end_mode);
 	m_hide_on_deactivate = data.hide_on_deactivate;
 	lower_process_priority(data.lower_process_priority);
 	set_dir(data.completes_dir, data.incompletes_dir, "", data.torrents_dir);
