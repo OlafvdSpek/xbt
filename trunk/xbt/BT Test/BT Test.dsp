@@ -89,6 +89,10 @@ SOURCE=".\BT Test.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE=.\bt_admin_link.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\bt_file.cpp
 # End Source File
 # Begin Source File
@@ -125,6 +129,10 @@ SOURCE=.\ring_buffer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\server.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\sha1.cpp
 # End Source File
 # Begin Source File
@@ -144,6 +152,10 @@ SOURCE=..\..\xf2\misc\virtual_binary.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\bt_admin_link.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\bt_file.h
@@ -179,6 +191,10 @@ SOURCE=.\data_counter.h
 # Begin Source File
 
 SOURCE=.\ring_buffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\server.h
 # End Source File
 # Begin Source File
 
