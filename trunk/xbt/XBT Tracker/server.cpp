@@ -325,8 +325,7 @@ void Cserver::accept(const Csocket& l)
 				cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
 			m_connections.push_back(Cconnection(this, s, a, m_log_access));
-			if (m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back()))
-				cerr << "epoll_ctl failed" << endl;
+			m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
 	}
 }
@@ -384,8 +383,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 			if (peer_link.s() != INVALID_SOCKET)
 			{
 				m_peer_links.push_back(peer_link);
-				if (m_epoll.ctl(EPOLL_CTL_ADD, peer_link.s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_peer_links.back()))
-					cerr << "epoll_ctl failed" << endl;
+				m_epoll.ctl(EPOLL_CTL_ADD, peer_link.s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_peer_links.back());
 			}
 		}
 		peer.mtime = time();
