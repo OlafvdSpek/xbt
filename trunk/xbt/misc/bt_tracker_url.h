@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cbt_tracker_url  
+class Cbt_tracker_url
 {
 public:
 	enum

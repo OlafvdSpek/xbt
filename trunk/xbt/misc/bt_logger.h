@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cbt_logger  
+class Cbt_logger
 {
 public:
 	void choke(const string& file, const string& peer, bool remote, bool v);

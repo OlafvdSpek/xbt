@@ -11,7 +11,7 @@
 
 #include "virtual_binary.h"
 
-class Cbvalue  
+class Cbvalue
 {
 public:
 	enum t_value_type

@@ -24,7 +24,7 @@ public:
 		warn,
 		notice,
 		info,
-		debug,  
+		debug,
 	};
 
 	int time() const
