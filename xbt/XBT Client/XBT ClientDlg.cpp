@@ -71,12 +71,6 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 	m_reg_key = "Options";
 	m_initial_hide = false;
 	m_server_thread = NULL;
-	char path[MAX_PATH];
-	if (SUCCEEDED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
-	{
-		strcat(path, "\\XBT");
-		set_dir(path);
-	}
 }
 
 void CXBTClientDlg::DoDataExchange(CDataExchange* pDX)
@@ -137,6 +131,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	ETSLayoutDialog::OnInitDialog();
 
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
+	set_dir(static_cast<string>(AfxGetApp()->GetProfileString(m_reg_key, "files_location")));
 	m_server.dir(static_cast<string>(m_dir));
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port()));
 	string public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
@@ -748,6 +743,7 @@ void CXBTClientDlg::OnPopupOptions()
 	m_server.upload_rate(data.upload_rate);
 	m_server.upload_slots(data.upload_slots);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
+	AfxGetApp()->WriteProfileString(m_reg_key, "files_location", data.files_location.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
 	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);
@@ -1123,6 +1119,15 @@ void CXBTClientDlg::insert_columns()
 
 void CXBTClientDlg::set_dir(const string& v)
 {
-	m_dir = v.c_str();
+	if (v.empty())
+	{
+		char path[MAX_PATH];
+		if (FAILED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
+			strcpy(path, "C:");
+		strcat(path, "\\XBT");	
+		m_dir = path;
+	}
+	else
+		m_dir = v.c_str();
 	CreateDirectory(m_dir, NULL);
 }
