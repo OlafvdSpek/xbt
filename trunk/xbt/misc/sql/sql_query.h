@@ -23,7 +23,7 @@ public:
 	void operator=(const string&);
 	void operator+=(const string&);
 	void p(const string& v);
-	void p(int v);
+	void p(__int64 v);
 	void pe(const string& v);
 	void pe(const Cvirtual_binary& v);
 	Csql_query(Cdatabase&, const string& = "");
