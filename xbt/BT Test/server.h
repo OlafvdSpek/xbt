@@ -26,6 +26,7 @@ public:
 		df_alerts = 1,
 		df_files = 2,
 		df_peers = 4,
+		df_pieces = 16,
 		df_trackers = 8,
 	};
 

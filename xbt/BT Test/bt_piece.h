@@ -16,6 +16,9 @@ class Cbt_piece
 public:
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;
+	int pre_dump() const;
+	void dump(Cstream_writer&) const;
+	int rank() const;
 	void write(int offset, const char* s, int cb_s);
 	Cbt_piece();
 
