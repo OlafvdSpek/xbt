@@ -669,7 +669,7 @@ void Cserver::read_config()
 				m_read_db_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "redirect_url"))
 				m_redirect_url = row.f(1);
-			else if (!strcmp(row.f(0), "m_update_files_method"))
+			else if (!strcmp(row.f(0), "update_files_method"))
 				m_update_files_method = row.f_int(1);
 			else if (!strcmp(row.f(0), "write_db_interval"))
 				m_write_db_interval = row.f_int(1);
