@@ -135,6 +135,7 @@ class post_functions extends Post {
 		$this->post['attach_hits'] = $this->upload['attach_hits'];
 		$this->post['attach_file'] = $this->upload['attach_file'];
 		$this->post['bt_info_hash'] = $this->upload['bt_info_hash'];
+		$this->post['bt_size'] = $this->upload['bt_size'];
 
 		//-------------------------------------------------
 		// Insert the post into the database to get the

@@ -1,5 +1,13 @@
 <?php
 
+function b2a($v)
+{
+	for ($l = 0; $v < -9999 || $v > 9999; $l++)
+		$v >>= 10;
+	$a = array("b", "kb", "mb", "gb", "tb", "pb");
+	return sprintf("%d %s", $v, $a[$l]);
+}
+
 class skin_topic {
 
 function warn_level_warn($id, $percent) {
@@ -395,18 +403,24 @@ EOF;
 
 function Show_attachments($data) {
 global $ibforums;
+if ($data['bt_size'])
+{
+	$data['bt_size'] = sprintf(", size: %s", b2a($data['bt_size']));
+}
+else
+	unset($data['bt_size']);
 if ($data['leechers'])
-	$data['leechers'] = sprintf(", leechers: %d", $data['leechers']);
+	$data['leechers'] = sprintf(", %d leecher%s", $data['leechers'], $data['leechers'] == 1 ? "" : "s");
 else
 	unset($data['leechers']);
 if ($data['seeders'])
-	$data['seeders'] = sprintf(", seeders: %d", $data['seeders']);
+	$data['seeders'] = sprintf(", %d seeder%s", $data['seeders'], $data['seeders'] == 1 ? "" : "s");
 else
 	unset($data['seeders']);
 return <<<EOF
 <br />
 <br />
-<strong><span class='edit'>{$ibforums->lang['attached_file']} ( {$ibforums->lang['attach_hits']}: {$data['hits']}{$data['leechers']}{$data['seeders']})</span></strong>
+<strong><span class='edit'>{$ibforums->lang['attached_file']} ( {$ibforums->lang['attach_hits']}: {$data['hits']}{$data['bt_size']}{$data['leechers']}{$data['seeders']})</span></strong>
 <br />
 <a href='{$ibforums->base_url}act=Attach&amp;type=post&amp;id={$data['pid']}' title='{$ibforums->lang['attach_dl']}' target='_blank'><img src='{$ibforums->vars['mime_img']}/{$data['image']}' border='0' alt='{$ibforums->lang['attached_file']}' /></a>
 &nbsp;<a href='{$ibforums->base_url}act=Attach&amp;type=post&amp;id={$data['pid']}' title='{$ibforums->lang['attach_dl']}' target='_blank'>{$data['name']}</a>

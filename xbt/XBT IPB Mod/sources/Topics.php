@@ -766,6 +766,7 @@ class Topics {
 
 					$row['attachment'] = $this->html->Show_attachments( array (
 																				'hits'  => $row['attach_hits'],
+																				'bt_size'  => $row['bt_size'],
 																				'leechers' => $row['leechers'],
 																				'seeders' => $row['seeders'],
 																				'image' => $this->mimetypes[ $row['attach_type'] ][1],
