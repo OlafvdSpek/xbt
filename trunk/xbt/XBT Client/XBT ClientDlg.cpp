@@ -1522,6 +1522,28 @@ void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+int CXBTClientDlg::events_compare(int id_a, int id_b) const
+{
+	if (!m_file)
+		return 0;
+	if (m_peers_sort_reverse)
+		swap(id_a, id_b);
+	const t_event& a = m_file->events[id_a];
+	const t_event& b = m_file->events[id_b];
+	switch (m_peers_sort_column)
+	{
+	case ec_time:
+		return compare(b.time, a.time);
+	case ec_level:
+		return compare(a.level, b.level);
+	case ec_source:
+		return compare(a.source, b.source);
+	case ec_message:
+		return compare(a.message, b.message);
+	}
+	return 0;
+}
+
 int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 {
 	if (!m_file)
@@ -1592,6 +1614,11 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 	return 0;
 }
 
+static int CALLBACK events_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->events_compare(lParam1, lParam2);
+}
+
 static int CALLBACK peers_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
 	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->peers_compare(lParam1, lParam2);
@@ -1611,6 +1638,11 @@ void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+void CXBTClientDlg::sort_events()
+{
+	m_files.SortItems(::events_compare, reinterpret_cast<DWORD>(this));	
+}
+
 void CXBTClientDlg::sort_files()
 {
 	m_files.SortItems(::files_compare, reinterpret_cast<DWORD>(this));	
@@ -1620,6 +1652,9 @@ void CXBTClientDlg::sort_peers()
 {
 	switch (m_bottom_view)
 	{
+	case v_events:
+		m_peers.SortItems(::events_compare, reinterpret_cast<DWORD>(this));
+		break;
 	case v_files:
 		m_peers.SortItems(::sub_files_compare, reinterpret_cast<DWORD>(this));
 		break;
