@@ -470,6 +470,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		switch (pDispInfo->item.iItem)
 		{
 		case dr_chunks:
+			m_buffer[m_buffer_w] = n(m_file->c_valid_chunks) + " / " + n(m_file->c_invalid_chunks + m_file->c_valid_chunks) + " x " + b2a(m_file->cb_chunk, "b");
 			break;
 		case dr_completed_at:
 			if (m_file->completed_at)
@@ -478,6 +479,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				m_buffer[m_buffer_w] = time2a(m_file->left * (time(NULL) - m_file->started_at) / m_file->downloaded + time(NULL)) + " (estimated)";
 			break;
 		case dr_distributed_copies:
+			if (m_file->c_distributed_copies)
+				m_buffer[m_buffer_w] = n(m_file->c_distributed_copies);
 			break;
 		case dr_downloaded:
 			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b");
@@ -842,8 +845,11 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.c_seeders = sr.read_int(4);
 	f.c_leechers_total = sr.read_int(4);
 	f.c_seeders_total = sr.read_int(4);
+	f.c_invalid_chunks = sr.read_int(4);
 	f.c_invalid_pieces = sr.read_int(4);
+	f.c_valid_chunks = sr.read_int(4);
 	f.c_valid_pieces = sr.read_int(4);
+	f.cb_chunk = sr.read_int(4);
 	f.cb_piece = sr.read_int(4);
 	f.hashing = false;
 	f.running = false;
@@ -858,6 +864,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	}
 	f.started_at = sr.read_int(4);
 	f.completed_at = sr.read_int(4);
+	f.c_distributed_copies = sr.read_int(4);
 	f.removed = false;
 	{
 		int i = f.display_name.rfind('\\');
