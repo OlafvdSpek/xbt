@@ -124,8 +124,9 @@ public:
 		string pass;
 	};
 
-	typedef map<string, t_user*> t_passes;
-	typedef map<string, t_user> t_users;
+	typedef map<int, t_user> t_users;
+	typedef map<string, t_user*> t_users_names;
+	typedef map<string, t_user*> t_users_torrent_passes;
 
 	int test_sql();
 	void accept(const Csocket& l);
@@ -238,8 +239,9 @@ private:
 	Cepoll m_epoll;
 	t_files m_files;
 	t_ipas m_ipas;
-	t_passes m_passes;
 	t_users m_users;
+	t_users_names m_users_names;
+	t_users_torrent_passes m_users_torrent_passes;
 	string m_announce_log_buffer;
 	string m_files_users_updates_buffer;
 	string m_scrape_log_buffer;
