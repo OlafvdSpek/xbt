@@ -38,6 +38,7 @@ void Cdlg_torrent::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(Cdlg_torrent, ETSLayoutDialog)
 	//{{AFX_MSG_MAP(Cdlg_torrent)
 	ON_WM_SIZE()
+	ON_WM_TIMER()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -57,7 +58,8 @@ BOOL Cdlg_torrent::OnInitDialog()
 	m_alerts.InsertColumn(1, "Level");
 	m_alerts.InsertColumn(2, "Source");
 	m_alerts.InsertColumn(3, "Message");
-	load_data();	
+	load_data();
+	SetTimer(0, 15000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -90,6 +92,7 @@ void Cdlg_torrent::load_data()
 			sr.skip(37);
 		}
 	}
+	m_alerts.DeleteAllItems();
 	{
 		int c_alerts = sr.read_int32();
 		for (int i = 0; i < c_alerts; i++)
@@ -121,4 +124,10 @@ void Cdlg_torrent::OnSize(UINT nType, int cx, int cy)
 	ETSLayoutDialog::OnSize(nType, cx, cy);
 	if (m_alerts.GetSafeHwnd())
 		auto_size();
+}
+
+void Cdlg_torrent::OnTimer(UINT nIDEvent) 
+{
+	load_data();	
+	ETSLayoutDialog::OnTimer(nIDEvent);
 }
