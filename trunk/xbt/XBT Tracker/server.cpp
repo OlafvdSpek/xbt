@@ -409,7 +409,7 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
 		if (user)
-			(i->second.left ? user->incompletes : user->completes)++;
+			(peer.left ? user->incompletes : user->completes)++;
 
 		if (!m_config.m_listen_check || !listen_check)
 			peer.listening = true;
