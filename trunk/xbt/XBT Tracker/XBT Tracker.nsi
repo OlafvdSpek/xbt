@@ -22,6 +22,7 @@ Section "Install"
 	File xbt_tracker.sql
 	SetOverwrite off
 	File /oname=xbt_tracker.conf xbt_tracker.conf.default
+	Exec "$INSTDIR\XBT Tracker.exe --install"
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	CreateShortCut "$SMPROGRAMS\XBT Tracker.lnk" "$INSTDIR\XBT Tracker.exe"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker" "DisplayName" "XBT Tracker ${VERSION}"
@@ -31,6 +32,7 @@ SectionEnd
 
 Section "Uninstall"
 	SetShellVarContext all
+	Exec "$INSTDIR\XBT Tracker.exe --uninstall"
 	Delete "$SMPROGRAMS\XBT Tracker.lnk"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker"
 	RMDir /r "$INSTDIR"
