@@ -496,7 +496,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
 		if (m_pieces[i].valid()
-			|| m_pieces[i].m_priority == -10
+			|| m_pieces[i].priority() == -10
 			|| !peer.m_remote_pieces[i] 
 			|| !m_pieces[i].c_unrequested_sub_pieces())
 			continue;
@@ -789,13 +789,13 @@ void Cbt_file::sub_file_priority(const string& id, int priority)
 void Cbt_file::update_piece_priorities()
 {
 	for (int i = 0; i < m_pieces.size(); i++)
-		m_pieces[i].m_priority = -128;
+		m_pieces[i].priority(-128);
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
 		int b = (offset + i->size() - 1) / mcb_piece;
 		for (int a = offset / mcb_piece; a <= b; a++)
-			m_pieces[a].m_priority = max(m_pieces[a].m_priority, i->priority());
+			m_pieces[a].priority(max(m_pieces[a].priority(), i->priority()));
 		offset += i->size();
 	}
 }
