@@ -150,6 +150,11 @@ public:
 	int m_peers_stime;
 	bool m_get_info_extension;
 	bool m_get_peers_extension;
+	bool m_local_choked_goal;
+	bool m_local_interested_goal;
+private:
+	void write_choke(bool);
+	void write_interested(bool);
 };
 
 #endif // !defined(AFX_BT_PEER_LINK_H__50DC0701_DE7E_4A9D_B266_8C3188C24072__INCLUDED_)
