@@ -49,6 +49,7 @@ Cserver::Cserver():
 	m_version_check_handler(*this)
 {
 	m_admin_port = m_config.m_admin_port;
+	m_check_remote_links_time = 0;
 	m_peer_port = m_config.m_peer_port;
 	m_run = false;
 	m_run_scheduler_time = 0;
@@ -305,6 +306,8 @@ int Cserver::run()
 			save_state(true).save(state_fname());
 		else if (time() - m_run_scheduler_time > 60)
 			run_scheduler();
+		else if (time() - m_check_remote_links_time > 900)
+			check_remote_links();
 		unlock();
 	}
 	config().read().read().save(options_fname());
@@ -1079,4 +1082,20 @@ Chttp_link* Cserver::http_request(int h, int p, const string& request, Chttp_res
 		return l;
 	m_http_links.pop_back();
 	return NULL;
+}
+
+void Cserver::check_remote_links()
+{
+	m_check_remote_links_time = time();
+	int c_local_links = 0;
+	int c_remote_links = 0;
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		c_local_links += i->c_local_links();
+		c_remote_links += i->c_remote_links();
+	}
+	if (c_remote_links || c_local_links < 10)
+		return;
+	alert(Calert(Calert::warn, "Did you forget to open a port in your firewall or router?"));
+	alert(Calert(Calert::warn, n(c_local_links) + " local links, but no remote links have been established."));
 }
