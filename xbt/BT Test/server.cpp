@@ -815,15 +815,17 @@ void Cserver::update_chokes()
 		else
 			links1.push_back(&*i->second);
 	}
-	while (slots_left-- && !links1.empty())
+	while (slots_left && !links1.empty())
 	{
+		slots_left--;
 		int i = rand() % links1.size();
 		links1[i]->choked(false);
 		links1[i] = links1.back();
 		links1.pop_back();
 	}
-	while (slots_left-- && !links2.empty())
+	while (slots_left && !links2.empty())
 	{
+		slots_left--;
 		int i = rand() % links2.size();
 		links2[i]->choked(false);
 		links2[i] = links2.back();
