@@ -173,12 +173,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_PEERS, OnGetdispinfoPeers)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_FILES, OnItemchangedFiles)
 	ON_WM_TIMER()
-	ON_COMMAND(ID_POPUP_OPEN, OnPopupOpen)
-	ON_COMMAND(ID_POPUP_CLOSE, OnPopupClose)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_CLOSE, OnUpdatePopupClose)
 	ON_COMMAND(ID_POPUP_OPTIONS, OnPopupOptions)
 	ON_WM_DROPFILES()
-	ON_COMMAND(ID_POPUP_EXIT, OnFileExit)
 	ON_COMMAND(ID_POPUP_EXPLORE, OnPopupExplore)
 	ON_WM_DESTROY()
 	ON_WM_WINDOWPOSCHANGING()
@@ -186,16 +182,10 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_PEERS, OnColumnclickPeers)
 	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
-	ON_COMMAND(ID_POPUP_COPY, OnPopupCopy)
-	ON_COMMAND(ID_POPUP_PASTE, OnPopupPaste)
 	ON_COMMAND(ID_POPUP_TRACKERS, OnPopupTrackers)
 	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
 	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
-	ON_COMMAND(ID_POPUP_ABOUT, OnHelpAbout)
-	ON_COMMAND(ID_POPUP_MAKE_TORRENT, OnPopupMakeTorrent)
 	ON_COMMAND(ID_POPUP_TORRENT_DELETE, OnPopupTorrentDelete)
-	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnPopupTorrentClipboardCopyAnnounceUrl)
-	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH, OnPopupTorrentClipboardCopyHash)
 	ON_COMMAND(ID_POPUP_VIEW_DETAILS, OnPopupViewDetails)
 	ON_COMMAND(ID_POPUP_VIEW_FILES, OnPopupViewFiles)
 	ON_COMMAND(ID_POPUP_VIEW_PEERS, OnPopupViewPeers)
@@ -217,9 +207,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_PEERS, OnUpdatePopupViewPeers)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_TRACKERS, OnUpdatePopupViewTrackers)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_DELETE, OnUpdatePopupTorrentDelete)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnUpdatePopupTorrentClipboardCopyAnnounceUrl)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH, OnUpdatePopupTorrentClipboardCopyHash)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_COPY, OnUpdatePopupCopy)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_ANNOUNCE, OnUpdatePopupAnnounce)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE_TRACKER, OnUpdatePopupExploreTracker)
 	ON_COMMAND(ID_POPUP_UPLOAD_RATE_LIMIT, OnPopupUploadRateLimit)
@@ -249,10 +236,23 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_SCHEDULER, OnPopupScheduler)
 	ON_COMMAND(ID_POPUP_PROFILES, OnPopupProfiles)
 	ON_WM_ACTIVATEAPP()
+	ON_COMMAND(ID_POPUP_EXIT, OnFileExit)
+	ON_COMMAND(ID_POPUP_ABOUT, OnHelpAbout)
+	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+	ON_COMMAND(ID_FILE_CLOSE, OnFileClose)
+	ON_UPDATE_COMMAND_UI(ID_FILE_CLOSE, OnUpdateFileClose)
+	ON_COMMAND(ID_EDIT_COPY_ANNOUNCE_URL, OnEditCopyAnnounceUrl)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY_ANNOUNCE_URL, OnUpdateEditCopyAnnounceUrl)
+	ON_COMMAND(ID_EDIT_COPY_HASH, OnEditCopyHash)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY_HASH, OnUpdateEditCopyHash)
+	ON_COMMAND(ID_EDIT_COPY_URL, OnEditCopyUrl)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY_URL, OnUpdateEditCopyUrl)
+	ON_COMMAND(ID_EDIT_PASTE_URL, OnEditPasteUrl)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
 	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
 	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
+	ON_COMMAND(ID_FILE_NEW, OnFileNew)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1283,74 +1283,6 @@ void CXBTClientDlg::OnUpdatePopupAnnounce(CCmdUI* pCmdUI)
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
 }
 
-void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl()
-{
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
-	if (id == -1)
-		return;
-	const t_file& file = m_files_map.find(id)->second;
-	if (!file.m_trackers.empty())
-		set_clipboard(file.m_trackers.front().url);
-}
-
-void CXBTClientDlg::OnUpdatePopupTorrentClipboardCopyAnnounceUrl(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
-}
-
-void CXBTClientDlg::OnPopupTorrentClipboardCopyHash()
-{
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
-	if (id != -1)
-		set_clipboard(hex_encode(m_files_map.find(id)->second.m_info_hash));
-}
-
-void CXBTClientDlg::OnUpdatePopupTorrentClipboardCopyHash(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
-}
-
-void CXBTClientDlg::OnPopupCopy()
-{
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
-	if (id != -1)
-		set_clipboard(m_server.get_url(m_files_map.find(id)->second.m_info_hash));
-}
-
-void CXBTClientDlg::OnUpdatePopupCopy(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
-}
-
-void CXBTClientDlg::OnPopupPaste()
-{
-	if (!OpenClipboard())
-		return;
-	void* h = GetClipboardData(CF_TEXT);
-	void* p = GlobalLock(h);
-	if (p)
-		open_url(reinterpret_cast<char*>(p));
-	CloseClipboard();
-}
-
-void CXBTClientDlg::OnPopupOpen()
-{
-	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
-	if (IDOK == dlg.DoModal())
-		open(static_cast<string>(dlg.GetPathName()), m_ask_for_location);
-}
-
-void CXBTClientDlg::OnPopupClose()
-{
-	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.m_info_hash);
-}
-
-void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
-}
-
 void CXBTClientDlg::OnPopupTorrentDelete()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
@@ -1360,13 +1292,6 @@ void CXBTClientDlg::OnPopupTorrentDelete()
 void CXBTClientDlg::OnUpdatePopupTorrentDelete(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
-}
-
-void CXBTClientDlg::OnPopupMakeTorrent()
-{
-	Cdlg_make_torrent dlg;
-	if (IDOK == dlg.DoModal() && dlg.m_seed_after_making)
-		open(dlg.torrent_fname(), true);
 }
 
 void CXBTClientDlg::OnPopupTorrentOptions()
@@ -2673,9 +2598,84 @@ void CXBTClientDlg::OnActivateApp(BOOL bActive, HTASK hTask)
 		ShowWindow(SW_HIDE);
 }
 
+void CXBTClientDlg::OnFileNew() 
+{
+	Cdlg_make_torrent dlg;
+	if (IDOK == dlg.DoModal() && dlg.m_seed_after_making)
+		open(dlg.torrent_fname(), true);
+}
+
+void CXBTClientDlg::OnFileOpen() 
+{
+	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
+	if (IDOK == dlg.DoModal())
+		open(static_cast<string>(dlg.GetPathName()), m_ask_for_location);
+}
+
+void CXBTClientDlg::OnFileClose() 
+{
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.m_info_hash);
+}
+
+void CXBTClientDlg::OnUpdateFileClose(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+}
+
 void CXBTClientDlg::OnFileExit() 
 {
 	OnCancel();
+}
+
+void CXBTClientDlg::OnEditCopyAnnounceUrl() 
+{
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id == -1)
+		return;
+	const t_file& file = m_files_map.find(id)->second;
+	if (!file.m_trackers.empty())
+		set_clipboard(file.m_trackers.front().url);
+}
+
+void CXBTClientDlg::OnUpdateEditCopyAnnounceUrl(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+}
+
+void CXBTClientDlg::OnEditCopyHash() 
+{
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id != -1)
+		set_clipboard(hex_encode(m_files_map.find(id)->second.m_info_hash));
+}
+
+void CXBTClientDlg::OnUpdateEditCopyHash(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+}
+
+void CXBTClientDlg::OnEditCopyUrl() 
+{
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id != -1)
+		set_clipboard(m_server.get_url(m_files_map.find(id)->second.m_info_hash));
+}
+
+void CXBTClientDlg::OnUpdateEditCopyUrl(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+}
+
+void CXBTClientDlg::OnEditPasteUrl()
+{
+	if (!OpenClipboard())
+		return;
+	void* h = GetClipboardData(CF_TEXT);
+	void* p = GlobalLock(h);
+	if (p)
+		open_url(reinterpret_cast<char*>(p));
+	CloseClipboard();
 }
 
 void CXBTClientDlg::OnHelpAbout() 
