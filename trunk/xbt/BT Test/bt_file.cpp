@@ -231,7 +231,7 @@ void Cbt_file::erase()
 	strcpy(b, m_name.c_str());
 	b[m_name.size() + 1] = 0;
 	op.pFrom = b;
-	op.fFlags = FOF_ALLOWUNDO;
+	op.fFlags = FOF_ALLOWUNDO | FOF_NOERRORUI;
 	SHFileOperation(&op);
 #else
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
