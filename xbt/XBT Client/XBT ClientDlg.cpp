@@ -228,6 +228,15 @@ void CXBTClientDlg::open(const string& name)
 		strcat(path, "\\Incompletes\\");
 		strcat(path, torrent.name().c_str());
 	}
+	else if (torrent.files().size() == 1)
+	{
+		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
+		if (path)
+			dlg.m_ofn.lpstrInitialDir = path;
+		if (IDOK != dlg.DoModal())
+			return;
+		strcpy(path, dlg.GetPathName());
+	}
 	else
 	{
 		BROWSEINFO bi;
