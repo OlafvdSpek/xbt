@@ -17,8 +17,6 @@ using namespace std;
 #include <windows.h>
 
 typedef int socklen_t;
-
-const int MSG_NOSIGNAL = 0;
 #endif
 
 class Csocket_source
