@@ -100,6 +100,7 @@ protected:
 	afx_msg void OnPopupTorrentDelete();
 	afx_msg void OnPopupTorrentClipboardCopyAnnounceUrl();
 	afx_msg void OnPopupTorrentClipboardCopyHash();
+	afx_msg void OnPopupTorrentAlerts();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
