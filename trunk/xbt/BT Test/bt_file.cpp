@@ -130,7 +130,7 @@ bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 
 int Cbt_file::t_sub_file::pre_dump() const
 {
-	return name().size() + 24;
+	return name().size() + merkle_hash().size() + 28;
 }
 
 int Cbt_file::t_sub_file::read(__int64 offset, void* s, int cb_s)
