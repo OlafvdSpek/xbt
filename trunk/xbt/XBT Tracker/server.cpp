@@ -591,7 +591,7 @@ void Cserver::read_db_files()
 			file.scraped_udp = row.f_int(10, 0);
 		}
 	}
-	catch (Cxcc_error error)
+	catch (Cxcc_error)
 	{
 	}
 }
@@ -606,7 +606,7 @@ void Cserver::read_db_ipas()
 		for (Csql_row row; row = result.fetch_row(); )
 			m_ipas[row.f_int(0)] = row.f_int(1);
 	}
-	catch (Cxcc_error error)
+	catch (Cxcc_error)
 	{
 	}
 	m_read_db_ipas_time = time();
@@ -627,7 +627,7 @@ void Cserver::read_db_users()
 			m_passes[row.f(3)] = user.uid;
 		}
 	}
-	catch (Cxcc_error error)
+	catch (Cxcc_error)
 	{
 	}
 	m_read_db_users_time = time();
@@ -689,7 +689,7 @@ void Cserver::write_db_files()
 			m_database.query("delete from xbt_files_updates");
 		}
 	}
-	catch (Cxcc_error error)
+	catch (Cxcc_error)
 	{
 	}
 	if (!m_announce_log_buffer.empty())
@@ -699,7 +699,7 @@ void Cserver::write_db_files()
 			m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
 			m_database.query("insert delayed into xbt_announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
 		}
-		catch (Cxcc_error error)
+		catch (Cxcc_error)
 		{
 		}
 		m_announce_log_buffer.erase();
@@ -711,7 +711,7 @@ void Cserver::write_db_files()
 			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
 			m_database.query("insert delayed into xbt_scrape_log (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
 		}
-		catch (Cxcc_error error)
+		catch (Cxcc_error)
 		{
 		}
 		m_scrape_log_buffer.erase();
@@ -733,7 +733,7 @@ void Cserver::write_db_users()
 				" where u.uid = uu.uid");
 			m_database.query("delete from xbt_users_updates");
 		}
-		catch (Cxcc_error error)
+		catch (Cxcc_error)
 		{
 		}
 		m_users_updates_buffer.erase();
@@ -743,10 +743,10 @@ void Cserver::write_db_users()
 
 void Cserver::read_config()
 {
-	Cconfig config;
 	try
 	{
 		Csql_result result = m_database.query("select name, value from xbt_config where value is not null");
+		Cconfig config;
 		for (Csql_row row; row = result.fetch_row(); )
 		{
 			if (!strcmp(row.f(0), "announce_interval"))
@@ -785,7 +785,7 @@ void Cserver::read_config()
 				config.m_read_db_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "redirect_url"))
 				config.m_redirect_url = row.f(1);
-			if (!strcmp(row.f(0), "scrape_interval"))
+			else if (!strcmp(row.f(0), "scrape_interval"))
 				config.m_scrape_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "update_files_method"))
 				config.m_update_files_method = row.f_int(1);
@@ -798,7 +798,7 @@ void Cserver::read_config()
 			config.m_listen_ports.insert(2710);
 		m_config = config;
 	}
-	catch (Cxcc_error error)
+	catch (Cxcc_error)
 	{
 	}
 	m_read_config_time = time();
