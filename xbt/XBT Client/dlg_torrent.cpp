@@ -50,7 +50,7 @@ BOOL Cdlg_torrent::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
-		<< item (IDC_ALERTS, GREEDY)
+		<< item(IDC_ALERTS, GREEDY)
 		;
 	UpdateLayout();
 

@@ -54,6 +54,7 @@ protected:
 	afx_msg void OnOpen();
 	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnExplore();
+	afx_msg void OnExclude();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

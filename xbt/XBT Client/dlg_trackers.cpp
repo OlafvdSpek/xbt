@@ -52,14 +52,14 @@ BOOL Cdlg_trackers::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
-		<< item (IDC_LIST, GREEDY)
+		<< item(IDC_LIST, GREEDY)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
 			<< itemGrowing(HORIZONTAL)
-			<< item (IDC_INSERT, NORESIZE)
-			<< item (IDC_EDIT, NORESIZE)
-			<< item (IDC_DELETE, NORESIZE)
-			<< item (IDOK, NORESIZE)
-			<< item (IDCANCEL, NORESIZE)
+			<< item(IDC_INSERT, NORESIZE)
+			<< item(IDC_EDIT, NORESIZE)
+			<< item(IDC_DELETE, NORESIZE)
+			<< item(IDOK, NORESIZE)
+			<< item(IDCANCEL, NORESIZE)
 			)
 		;
 	UpdateLayout();
