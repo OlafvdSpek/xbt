@@ -147,6 +147,10 @@ SOURCE=.\static_config.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\stats.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -225,6 +229,10 @@ SOURCE=..\misc\sha1.h
 # Begin Source File
 
 SOURCE=.\static_config.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\stats.h
 # End Source File
 # Begin Source File
 
