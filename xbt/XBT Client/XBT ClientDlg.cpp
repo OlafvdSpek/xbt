@@ -158,6 +158,7 @@ enum
 	gdr_peers,
 	gdr_seeders,
 	gdr_size,
+	gdr_started_at,
 	gdr_torrents_complete,
 	gdr_torrents_incomplete,
 	gdr_uploaded,
@@ -619,7 +620,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case dr_completed_at:
 			if (m_file->m_completed_at)
-				buffer = time2a(m_file->m_completed_at);
+				buffer = time2a(m_file->m_completed_at) + " (" + duration2a(time(NULL) - m_file->m_completed_at) + " ago)";
 			else if (m_file->m_downloaded && m_file->m_left && time(NULL) - m_file->m_session_started_at > 300)
 				buffer = time2a(m_file->m_left * (time(NULL) - m_file->m_session_started_at) / m_file->m_downloaded + time(NULL)) + " (estimated)";
 			break;
@@ -685,7 +686,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case dr_started_at:
 			if (m_file->m_started_at)
-				buffer = time2a(m_file->m_started_at);
+				buffer = time2a(m_file->m_started_at) + " (" + duration2a(time(NULL) - m_file->m_started_at) + " ago)";
 			break;
 		case dr_tracker:
 			if (!m_file->m_trackers.empty())
@@ -730,6 +731,7 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Peers",
 		"Seeders",
 		"Size",
+		"Started at",
 		"Torrents Complete",
 		"Torrents Incomplete",
 		"Uploaded",
@@ -760,8 +762,7 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			buffer = n(m_global_details.mc_leechers);
 			break;
 		case gdr_left:
-			if (m_global_details.m_left)
-				buffer = b2a(m_global_details.m_left, "b");
+			buffer = b2a(m_global_details.m_left, "b");
 			break;
 		case gdr_peers:
 			buffer = n(m_global_details.mc_leechers + m_global_details.mc_seeders);
@@ -771,6 +772,9 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case gdr_size:
 			buffer = b2a(m_global_details.m_size, "b");
+			break;
+		case gdr_started_at:
+			buffer = time2a(m_global_details.m_start_time) + " (" + duration2a(time(NULL) - m_global_details.m_start_time) + " ago)";
 			break;
 		case gdr_torrents_complete:
 			buffer = n(m_global_details.mc_torrents_complete);
@@ -1152,6 +1156,7 @@ void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
 		for (int i = 0; i < c_files; i++)
 			read_file_dump(sr);
 	}
+	m_global_details.m_start_time = sr.read_int(4);
 	if (m_bottom_view == v_global_events)
 	{
 		while (m_peers.GetItemCount() < m_events.size())
