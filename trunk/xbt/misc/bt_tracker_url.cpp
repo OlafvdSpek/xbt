@@ -66,7 +66,7 @@ void Cbt_tracker_url::write(const string& v)
 	string host = v.substr(a, b - a);
 	int port;
 	if (v[b] == '/')
-		port = m_protocol == tp_http ? 80 : 2710;
+		port = protocol == tp_http ? 80 : 2710;
 	else
 	{
 		b++;
