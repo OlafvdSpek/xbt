@@ -503,11 +503,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 			continue;
 		if (begin_mode && m_pieces[i].m_peers.empty() && !m_pieces[i].m_sub_pieces.empty())
 			return i;
-		int piece_rank = 400000 * min(m_pieces[i].m_peers.size(), 9)
-			+ 20000 * max(0, min(9 - m_pieces[i].m_priority, 19)) 
-			+ 2000 * min(m_pieces[i].mc_peers, 9)
-			+ 1000 * m_pieces[i].m_sub_pieces.empty()
-			+ min(m_pieces[i].mc_peers, 999);
+		int piece_rank = m_pieces[i].rank();
 		if (piece_rank > rank)
 			continue;
 		if (piece_rank < rank)
