@@ -305,6 +305,7 @@ void CXBTManagerDlg::tracker_output(const string& hash, const Cbvalue& v)
 		}
 		else
 			i->second.error = v.d(bts_failure_reason).s();
+		i->second.mtime = time(NULL);
 		LVFINDINFO lvf;
 		lvf.flags = LVFI_PARAM;
 		lvf.lParam = i->first;
