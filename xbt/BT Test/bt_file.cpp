@@ -379,19 +379,20 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		if (!m_left)
 		{
 			m_tracker.event(Cbt_tracker_link::t_event::e_completed);
-			for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-			{
-				i->close();
-				i->open(m_name, _O_RDONLY);
-			}
 		}
 		{
+			offset = a * mcb_piece;
 			for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			{
 				if (offset < i->size())
 				{
 					int cb_write = min(size, i->size() - offset);
 					i->left(i->left() - cb_write);
+					if (!i->left())
+					{
+						i->close();
+						i->open(m_name, _O_RDONLY);
+					}
 					size -= cb_write;
 					if (!size)
 						break;
