@@ -1,8 +1,23 @@
+CREATE TABLE xbt_announce_log
+(
+  id int NOT NULL auto_increment,
+  ipa int NOT NULL,
+  port int NOT NULL,
+  event int NOT NULL,
+  info_hash blob NOT NULL,
+  peer_id blob NOT NULL,
+  downloaded bigint NOT NULL,
+  left0 bigint NOT NULL,
+  uploaded bigint NOT NULL,
+  mtime int NOT NULL,
+  PRIMARY KEY (id)
+);
+
 CREATE TABLE xbt_config
 (
   name varchar(255) NOT NULL,
   value varchar(255),
-  PRIMARY KEY  (name)
+  PRIMARY KEY (name)
 );
 
 CREATE TABLE xbt_files
@@ -18,4 +33,13 @@ CREATE TABLE xbt_files
   ctime timestamp NOT NULL,
   PRIMARY KEY (fid),
   UNIQUE KEY (info_hash(20))
+);
+
+CREATE TABLE xbt_scrape_log
+(
+  id int NOT NULL auto_increment,
+  ipa int NOT NULL,
+  info_hash blob,
+  mtime int NOT NULL,
+  PRIMARY KEY (id)
 );
