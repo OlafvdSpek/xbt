@@ -96,6 +96,10 @@ SOURCE=..\misc\alerts.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\windows\browse_for_directory.cpp
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_admin_link.cpp"
 # End Source File
 # Begin Source File
@@ -254,6 +258,10 @@ SOURCE=..\misc\xif_value.cpp
 # Begin Source File
 
 SOURCE=..\misc\alerts.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\windows\browse_for_directory.h
 # End Source File
 # Begin Source File
 

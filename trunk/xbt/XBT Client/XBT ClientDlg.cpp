@@ -5,6 +5,7 @@
 #include "XBT ClientDlg.h"
 
 #include <sys/stat.h>
+#include "windows/browse_for_directory.h"
 #include "bt_misc.h"
 #include "bt_torrent.h"
 #include "dlg_about.h"
@@ -357,23 +358,10 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 	else
 	{
 		SetForegroundWindow();
-		BROWSEINFO bi;
-		ZeroMemory(&bi, sizeof(BROWSEINFO));
-		bi.hwndOwner = GetSafeHwnd();
-		bi.lpszTitle = torrent.name().c_str();
-		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
-		ITEMIDLIST* idl = SHBrowseForFolder(&bi);
-		if (!idl)
+		string path1 = m_server.incompletes_dir();
+		if (browse_for_directory(GetSafeHwnd(), torrent.name(), path1))
 			return;
-		char path1[MAX_PATH];
-		if (!SHGetPathFromIDList(idl, path1))
-			*path1 = 0;
-		LPMALLOC lpm;
-		if (SHGetMalloc(&lpm) == NOERROR)
-			lpm->Free(idl);
-		if (!*path1)
-			return;
-		path = static_cast<string>(path1) + '/' + torrent.name();
+		path = path1 + '/' + torrent.name();
 	}
 	CWaitCursor wc;
 	if (!m_server.open(d, path))
