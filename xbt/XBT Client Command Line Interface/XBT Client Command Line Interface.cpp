@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 			if (b.write(a))
 				return cerr << "Unable to parse .torrent" << endl, 1;
 			v.d(bts_action, bts_open_torrent);
-			v.d(bts_torrent, b);
+			v.d(bts_torrent, string(reinterpret_cast<const char*>(a.data()), a.size()));
 		}
 		else if (!strcmp(argv[1], "pause"))
 		{
