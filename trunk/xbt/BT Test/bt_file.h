@@ -67,6 +67,11 @@ public:
 		int read(__int64  offset, void* s, int cb_s);
 		int write(__int64  offset, const void* s, int cb_s);
 		
+		const string& merkle_hash() const
+		{
+			return m_merkle_hash;
+		}
+
 		__int64 left() const
 		{
 			return m_left;
@@ -106,15 +111,17 @@ public:
 		{
 		}
 
-		t_sub_file(const string& name, int priority, __int64 size)
+		t_sub_file(const string& merkle_hash, const string& name, int priority, __int64 size)
 		{
 			m_f = -1;
+			m_merkle_hash = merkle_hash;
 			m_name = name;
 			m_priority = priority;
 			m_size = size;
 		}
 	private:
 		int m_f;
+		string m_merkle_hash;
 		__int64 m_left;
 		string m_name;
 		int m_priority;
