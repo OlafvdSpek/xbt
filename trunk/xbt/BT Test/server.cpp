@@ -152,7 +152,6 @@ int Cserver::run()
 	{
 		load_state(Cvirtual_binary(state_fname()));
 		m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
-		save_state(true).save(state_fname());
 #ifndef WIN32
 		if (daemon(true, false))
 			alert(Calert(Calert::error, "Server", "daemon failed" + n(errno)));
@@ -296,6 +295,8 @@ int Cserver::run()
 			post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 			if (time(NULL) - m_update_chokes_time > 10)
 				update_chokes();
+			else if (time(NULL) - m_save_state_time > 60)
+				save_state(true).save(state_fname());
 			unlock();
 		}
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -658,6 +659,7 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->save_state(w, intermediate);
 	assert(w.w() == d.data_end());
+	m_save_state_time = time(NULL);
 	return d;
 }
 

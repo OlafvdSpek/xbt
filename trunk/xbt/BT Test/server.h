@@ -169,6 +169,7 @@ private:
 	int m_public_ipa;
 	int m_send_quota;
 	bool m_run;
+	int m_save_state_time;
 	int m_seeding_ratio;
 	int m_tracker_port;
 	int m_update_chokes_time;
