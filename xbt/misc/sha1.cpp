@@ -390,11 +390,31 @@ void SHA1PadMessage(SHA1Context *context)
     SHA1ProcessMessageBlock(context);
 }
 
-void compute_sha1(const void* s, int cb_s, void* d)
+Csha1::Csha1()
 {
-	SHA1Context context;
-	SHA1Reset(&context);
-	SHA1Input(&context, s, cb_s);
-	SHA1Result(&context, reinterpret_cast<unsigned char*>(d));
+	SHA1Reset(&m_context);
+}
+
+Csha1::Csha1(const void* s, int cb_s)
+{
+	SHA1Reset(&m_context);
+	write(s, cb_s);
+}
+
+void Csha1::read(void* d)
+{
+	SHA1Result(&m_context, reinterpret_cast<unsigned char*>(d));
+}
+
+string Csha1::read()
+{
+	char d[SHA1HashSize];
+	read(d);
+	return string(d, SHA1HashSize);
+}
+
+void Csha1::write(const void* s, int cb_s)
+{
+	SHA1Input(&m_context, s, cb_s);
 }
 

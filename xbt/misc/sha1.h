@@ -17,6 +17,10 @@
 #ifndef _SHA1_H_
 #define _SHA1_H_
 
+#include <string>
+
+using namespace std;
+
 #ifdef WIN32
 typedef unsigned int uint32_t;
 typedef int int_least16_t;
@@ -75,7 +79,17 @@ int SHA1Input(  SHA1Context *,
 int SHA1Result( SHA1Context *,
                 uint8_t Message_Digest[SHA1HashSize]);
 
-void compute_sha1(const void* s, int cb_s, void* d);
+class Csha1
+{
+public:
+	void read(void*);
+	string read();
+	void write(const void*, int);
+	Csha1();
+	Csha1(const void*, int);
+private:
+	SHA1Context m_context;
+};
 
 #endif
 

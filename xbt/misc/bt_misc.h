@@ -26,21 +26,14 @@ string peer_id2a(const string& v);
 string uri_decode(const string& v);
 string uri_encode(const string& v);
 
-inline string compute_sha1(const void* s, int cb_s)
-{
-	char d[20];
-	compute_sha1(s, cb_s, d);
-	return string(d, 20);
-}
-
 inline void compute_sha1(const Cvirtual_binary& s, void* d)
 {
-	compute_sha1(s, s.size(), d);
+	Csha1(s, s.size()).read(d);
 }
 
 inline string compute_sha1(const Cvirtual_binary& s)
 {
-	return compute_sha1(s, s.size());
+	return Csha1(s, s.size()).read();
 }
 
 inline __int64 htonll(__int64 v)

@@ -214,13 +214,11 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				if (account)
 				{
 					*w++ = 1;
-					char pass_hash[20];
-					compute_sha1(account->pass().c_str(), account->pass().size(), pass_hash);
 					memset(w, 0, 8);
 					memcpy(w, account->user().c_str(), min(account->user().size(), 8));
 					w += 8;
-					memcpy(w, pass_hash, 20);
-					memcpy(w, compute_sha1(b, w + 20 - b).c_str(), 20);
+					Csha1(account->pass().c_str(), account->pass().size()).read(w);
+					Csha1(b, w + 20 - b).read(w);
 					w += 8;
 				}
 				if (m_s.send(&uti, w - b) != w - b)
