@@ -77,6 +77,14 @@ enum
 	sfc_priority,
 	sfc_hash,
 
+	pic_index,
+	pic_c_chunks,
+	pic_c_peers,
+	pic_priority,
+	pic_valid,
+	pic_rank,
+	pic_end,
+
 	tc_url,
 };
 
@@ -86,6 +94,7 @@ enum
 	v_events,
 	v_files,
 	v_peers,
+	v_pieces,
 	v_trackers,
 };
 
@@ -212,13 +221,15 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_HIGH, OnUpdatePopupPriorityHigh)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_LOW, OnUpdatePopupPriorityLow)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_NORMAL, OnUpdatePopupPriorityNormal)
-	ON_WM_INITMENU()
 	ON_COMMAND(ID_POPUP_TORRENT_PRIORITY_HIGH, OnPopupTorrentPriorityHigh)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_HIGH, OnUpdatePopupTorrentPriorityHigh)
 	ON_COMMAND(ID_POPUP_TORRENT_PRIORITY_LOW, OnPopupTorrentPriorityLow)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_LOW, OnUpdatePopupTorrentPriorityLow)
 	ON_COMMAND(ID_POPUP_TORRENT_PRIORITY_NORMAL, OnPopupTorrentPriorityNormal)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_NORMAL, OnUpdatePopupTorrentPriorityNormal)
+	ON_WM_INITMENU()
+	ON_COMMAND(ID_POPUP_VIEW_PIECES, OnPopupViewPieces)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_PIECES, OnUpdatePopupViewPieces)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -261,6 +272,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_files_sort_column = -1;
 	m_peers_sort_column = pc_client;
 	m_peers_sort_reverse = false;
+	m_pieces_sort_column = -1;
 	m_torrents_sort_column = fc_name;
 	m_torrents_sort_reverse = false;
 	m_file = NULL;
@@ -626,6 +638,9 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	case v_files:
 		OnGetdispinfoSubFiles(pNMHDR, pResult);
 		return;
+	case v_pieces:
+		OnGetdispinfoPieces(pNMHDR, pResult);
+		return;
 	case v_trackers:
 		OnGetdispinfoTrackers(pNMHDR, pResult);
 		return;
@@ -699,6 +714,43 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case pc_client:
 		m_buffer[m_buffer_w] = peer_id2a(e.peer_id);
+		break;
+	}
+	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	*pResult = 0;
+}
+
+void CXBTClientDlg::OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	if (!m_file)
+		return;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
+	m_buffer[++m_buffer_w &= 3].erase();
+	const t_piece& e = m_file->pieces[pDispInfo->item.lParam];
+	switch (m_peers_columns[pDispInfo->item.iSubItem])
+	{
+	case pic_index:
+		m_buffer[m_buffer_w] = n(pDispInfo->item.lParam);
+		break;
+	case pic_c_chunks:
+		if (e.c_chunks_valid)
+			m_buffer[m_buffer_w] = n(e.c_chunks_valid) + " / " + n(e.c_chunks_invalid + e.c_chunks_valid);
+		break;
+	case pic_c_peers:
+		if (e.c_peers)
+			m_buffer[m_buffer_w] = n(e.c_peers);
+		break;
+	case pic_priority:
+		if (e.priority)
+			m_buffer[m_buffer_w] = priority2a(e.priority);
+		break;
+	case pic_valid:
+		if (e.valid)
+			m_buffer[m_buffer_w] = 'V';
+		break;
+	case pic_rank:
+		if (e.rank != INT_MAX)
+			m_buffer[m_buffer_w] = n(e.rank);
 		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
@@ -795,6 +847,10 @@ void CXBTClientDlg::fill_peers()
 	case v_peers:
 		for (t_peers::const_iterator i = m_file->peers.begin(); i != m_file->peers.end(); i++)
 			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
+		break;
+	case v_pieces:
+		for (int i = 0; i < m_file->pieces.size(); i++)
+			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_trackers:
 		for (t_trackers::const_iterator i = m_file->trackers.begin(); i != m_file->trackers.end(); i++)
@@ -953,6 +1009,18 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		e.hash = sr.read_string();
 		f.sub_files.push_back(e);
 	}
+	f.pieces.clear();
+	for (int c_pieces = sr.read_int(4); c_pieces--; )
+	{
+		t_piece e;
+		e.c_chunks_invalid = sr.read_int(1);
+		e.c_chunks_valid = sr.read_int(1);
+		e.c_peers = sr.read_int(4);
+		e.priority = static_cast<char>(sr.read_int(1));
+		e.rank = sr.read_int(4);
+		e.valid = sr.read_int(1);
+		f.pieces.push_back(e);
+	}
 	if (m_file == &f)
 	{
 		switch (m_bottom_view)
@@ -1059,7 +1127,7 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 			break;
 		m_files.SetRedraw(false);
 		m_peers.SetRedraw(false);
-		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_alerts | Cserver::df_files | Cserver::df_peers | Cserver::df_trackers)));
+		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_alerts | Cserver::df_files | Cserver::df_peers | Cserver::df_pieces | Cserver::df_trackers)));
 		sort_files();
 		sort_peers();
 		m_files.SetRedraw(true);
@@ -1701,6 +1769,32 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	return 0;
 }
 
+int CXBTClientDlg::pieces_compare(int id_a, int id_b) const
+{
+	if (!m_file)
+		return 0;
+	if (m_pieces_sort_reverse)
+		swap(id_a, id_b);
+	const t_piece& a = m_file->pieces[id_a];
+	const t_piece& b = m_file->pieces[id_b];
+	switch (m_pieces_sort_column)
+	{
+	case pic_index:
+		return compare(id_a, id_b);
+	case pic_c_chunks:
+		return compare(b.c_chunks_valid, a.c_chunks_valid);
+	case pic_c_peers:
+		return compare(b.c_peers, a.c_peers);
+	case pic_priority:
+		return compare(a.priority, b.priority);
+	case pic_valid:
+		return compare(b.valid, a.valid);
+	case pic_rank:
+		return compare(a.rank, b.rank);
+	}
+	return 0;
+}
+
 int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 {
 	if (!m_file)
@@ -1737,6 +1831,11 @@ static int CALLBACK peers_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->peers_compare(lParam1, lParam2);
 }
 
+static int CALLBACK pieces_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->pieces_compare(lParam1, lParam2);
+}
+
 static int CALLBACK sub_files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
 	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->sub_files_compare(lParam1, lParam2);
@@ -1759,14 +1858,13 @@ void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
 		m_peers_sort_column = m_peers_columns[pNMListView->iSubItem];
 		break;
+	case v_pieces:
+		m_pieces_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_pieces_sort_column && !m_pieces_sort_reverse;
+		m_pieces_sort_column = m_peers_columns[pNMListView->iSubItem];
+		break;
 	}
 	sort_peers();
 	*pResult = 0;
-}
-
-void CXBTClientDlg::sort_events()
-{
-	m_files.SortItems(::events_compare, reinterpret_cast<DWORD>(this));
 }
 
 void CXBTClientDlg::sort_files()
@@ -1786,6 +1884,9 @@ void CXBTClientDlg::sort_peers()
 		break;
 	case v_peers:
 		m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
+		break;
+	case v_pieces:
+		m_peers.SortItems(::pieces_compare, reinterpret_cast<DWORD>(this));
 		break;
 	}
 }
@@ -1895,6 +1996,15 @@ void CXBTClientDlg::insert_bottom_columns()
 			m_peers_columns.push_back(pc_peer_id);
 		}
 		break;
+	case v_pieces:
+		m_peers_columns.push_back(pic_index);
+		m_peers_columns.push_back(pic_c_chunks);
+		m_peers_columns.push_back(pic_c_peers);
+		m_peers_columns.push_back(pic_priority);
+		m_peers_columns.push_back(pic_valid);
+		m_peers_columns.push_back(pic_rank);
+		m_peers_columns.push_back(pic_end);
+		break;
 	case v_trackers:
 		m_peers_columns.push_back(tc_url);
 		break;
@@ -1934,6 +2044,14 @@ void CXBTClientDlg::insert_bottom_columns()
 		"Priority",
 		"Hash",
 
+		"Index",
+		"Chunks",
+		"Peers",
+		"Priority",
+		"Valid",
+		"Rank",
+		"",
+
 		"URL",
 	};
 	const int peers_columns_formats[] =
@@ -1966,6 +2084,14 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_LEFT,
 
 		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
+
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
@@ -2069,6 +2195,11 @@ void CXBTClientDlg::OnPopupViewFiles()
 void CXBTClientDlg::OnPopupViewPeers()
 {
 	set_bottom_view(v_peers);
+}
+
+void CXBTClientDlg::OnPopupViewPieces() 
+{
+	set_bottom_view(v_pieces);
 }
 
 void CXBTClientDlg::OnPopupViewTrackers()
@@ -2271,6 +2402,11 @@ void CXBTClientDlg::OnUpdatePopupViewPeers(CCmdUI* pCmdUI)
 	pCmdUI->SetRadio(m_bottom_view == v_peers);
 }
 
+void CXBTClientDlg::OnUpdatePopupViewPieces(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetRadio(m_bottom_view == v_pieces);
+}
+
 void CXBTClientDlg::OnUpdatePopupViewTrackers(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetRadio(m_bottom_view == v_trackers);
@@ -2342,3 +2478,4 @@ void CXBTClientDlg::OnUpdatePopupTorrentPriorityLow(CCmdUI* pCmdUI)
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
 	pCmdUI->SetCheck(get_torrent_priority() == -1);
 }
+
