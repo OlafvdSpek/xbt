@@ -83,8 +83,8 @@ BEGIN
     EDITTEXT        IDC_PEER_PORT,7,25,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
     EDITTEXT        IDC_PUBLIC_IPA,7,43,277,14,ES_AUTOHSCROLL
-    LTEXT           "Admin port",IDC_STATIC,288,7,34,8
-    LTEXT           "Peer port",IDC_STATIC,288,25,30,8
+    LTEXT           "Admin port (TCP)",IDC_STATIC,288,7,54,8
+    LTEXT           "Peer port (TCP)",IDC_STATIC,288,25,50,8
     LTEXT           "Public IP address",IDC_STATIC,288,43,56,8
     LTEXT           "Upload rate (kbyte/s)",IDC_STATIC,288,61,68,8
     LTEXT           "Upload slots",IDC_STATIC,288,79,40,8
@@ -92,7 +92,7 @@ BEGIN
     LTEXT           "Completes directory",IDC_STATIC,288,115,62,8
     LTEXT           "Incompletes directory",IDC_STATIC,288,133,68,8
     LTEXT           "Torrents directory",IDC_STATIC,288,151,56,8
-    LTEXT           "Tracker port",IDC_STATIC,288,169,40,8
+    LTEXT           "Tracker port (UDP)",IDC_STATIC,288,169,61,8
     LTEXT           "Peer limit",IDC_STATIC,288,187,29,8
     LTEXT           "Torrent limit",IDC_STATIC,288,205,37,8
 END
