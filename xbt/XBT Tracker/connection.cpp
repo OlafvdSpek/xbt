@@ -26,7 +26,6 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_ctime = time(NULL);
 	
 	m_state = 0;
-	m_read_b.resize(4 << 10);
 	m_w = 0;
 	m_log_access = log_access;
 }
@@ -49,6 +48,8 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 
 int Cconnection::recv()
 {
+	if (!m_read_b.size())
+		m_read_b.resize(4 << 10);
 	for (int r; r = m_s.recv(&m_read_b.front() + m_w, m_read_b.size() - m_w); )
 	{
 		if (r == SOCKET_ERROR)
