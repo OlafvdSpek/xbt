@@ -662,11 +662,11 @@ string Cserver::t_file::debug() const
 string Cserver::debug(const Ctracker_input& ti) const
 {
 	string page;
-	page += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title><table>";
+	page += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	int leechers = 0;
 	int seeders = 0;
 	int torrents = 0;
-	if (ti.m_info_hash.empty())
+	if (ti.m_compact)
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
@@ -675,30 +675,46 @@ string Cserver::debug(const Ctracker_input& ti) const
 			leechers += i->second.leechers;
 			seeders += i->second.seeders;
 			torrents++;
-			page += "<tr><td align=right>" + n(i->second.fid) 
-				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
-				+ "<td>" + (i->second.dirty ? '*' : ' ')
-				+ "<td align=right>" + n(i->second.leechers) 
-				+ "<td align=right>" + n(i->second.seeders) 
-				+ "<td align=right>" + n(i->second.announced_http) 
-				+ "<td align=right>" + n(i->second.announced_http_compact) 
-				+ "<td align=right>" + n(i->second.announced_http_no_peer_id) 
-				+ "<td align=right>" + n(i->second.announced_udp) 
-				+ "<td align=right>" + n(i->second.scraped_http) 
-				+ "<td align=right>" + n(i->second.scraped_udp) 
-				+ "<td align=right>" + n(i->second.completed) 
-				+ "<td align=right>" + n(i->second.started) 
-				+ "<td align=right>" + n(i->second.stopped);
 		}
 	}
-	else
+	else 
 	{
-		t_files::const_iterator i = m_files.find(ti.m_info_hash);
-		if (i != m_files.end())
-			page += i->second.debug();
+		page += "<table>";
+		if (ti.m_info_hash.empty())
+		{
+			for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+			{
+				if (!i->second.leechers && !i->second.seeders)
+					continue;
+				leechers += i->second.leechers;
+				seeders += i->second.seeders;
+				torrents++;
+				page += "<tr><td align=right>" + n(i->second.fid) 
+					+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
+					+ "<td>" + (i->second.dirty ? '*' : ' ')
+					+ "<td align=right>" + n(i->second.leechers) 
+					+ "<td align=right>" + n(i->second.seeders) 
+					+ "<td align=right>" + n(i->second.announced_http) 
+					+ "<td align=right>" + n(i->second.announced_http_compact) 
+					+ "<td align=right>" + n(i->second.announced_http_no_peer_id) 
+					+ "<td align=right>" + n(i->second.announced_udp) 
+					+ "<td align=right>" + n(i->second.scraped_http) 
+					+ "<td align=right>" + n(i->second.scraped_udp) 
+					+ "<td align=right>" + n(i->second.completed) 
+					+ "<td align=right>" + n(i->second.started) 
+					+ "<td align=right>" + n(i->second.stopped);
+			}
+		}
+		else
+		{
+			t_files::const_iterator i = m_files.find(ti.m_info_hash);
+			if (i != m_files.end())
+				page += i->second.debug();
+		}
+		page += "</table><hr>";
 	}
 	int t = time(NULL);
-	page += "</table><hr><table><tr><td>leechers<td>" + n(leechers)
+	page += "<table><tr><td>leechers<td>" + n(leechers)
 		+ "<tr><td>seeders<td>" + n(seeders)
 		+ "<tr><td>torrents<td>" + n(torrents)
 		+ "<tr><td>"
