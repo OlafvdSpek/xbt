@@ -262,16 +262,9 @@ int Cbt_peer_link::recv()
 		if (r == SOCKET_ERROR)
 		{
 			int e = WSAGetLastError();
-			switch (e)
-			{
-			case WSAECONNABORTED:
-			case WSAECONNRESET:
-				alert(Calert(Calert::debug, m_a, "Peer: connection aborted/reset"));
-				return 1;
-			case WSAEWOULDBLOCK:
+			if (e == WSAEWOULDBLOCK)
 				return 0;
-			}
-			alert(Calert(Calert::debug, m_a, "Peer: recv failed:" + n(e)));
+			alert(Calert(Calert::debug, m_a, "Peer: recv failed:" + Csocket::error2a(e)));
 			return 1;
 		}
 		m_rtime = time(NULL);
@@ -292,16 +285,9 @@ int Cbt_peer_link::send()
 		if (r == SOCKET_ERROR)
 		{
 			int e = WSAGetLastError();
-			switch (e)
-			{
-			case WSAECONNABORTED:
-			case WSAECONNRESET:
-				alert(Calert(Calert::debug, m_a, "Peer: connection aborted/reset"));
-				return 1;
-			case WSAEWOULDBLOCK:
+			if (e == WSAEWOULDBLOCK)
 				return 0;
-			}
-			alert(Calert(Calert::debug, m_a, "Peer: send failed:" + n(e)));
+			alert(Calert(Calert::debug, m_a, "Peer: send failed:" + Csocket::error2a(e)));
 			return 1;
 		}
 		else if (!r)
