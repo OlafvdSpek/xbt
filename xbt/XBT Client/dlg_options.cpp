@@ -29,6 +29,8 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_show_advanced_columns = FALSE;
 	m_files_location = _T("");
 	m_start_minimized = FALSE;
+	m_ask_for_location = FALSE;
+	m_tracker_port = 0;
 	//}}AFX_DATA_INIT
 }
 
@@ -49,6 +51,9 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_SHOW_ADVANCED_COLUMNS, m_show_advanced_columns);
 	DDX_Text(pDX, IDC_FILES_LOCATION, m_files_location);
 	DDX_Check(pDX, IDC_START_MINIMIZED, m_start_minimized);
+	DDX_Check(pDX, IDC_ASK_FOR_LOCATION, m_ask_for_location);
+	DDX_Text(pDX, IDC_TRACKER_PORT, m_tracker_port);
+	DDV_MinMaxInt(pDX, m_tracker_port, 0, 65535);
 	//}}AFX_DATA_MAP
 }
 
@@ -66,6 +71,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 {
 	t_data v;
 	v.admin_port = m_admin_port;
+	v.ask_for_location = m_ask_for_location;
 	v.files_location = m_files_location;
 	v.peer_port = m_peer_port;
 	v.public_ipa = m_public_ipa;
@@ -73,6 +79,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.show_advanced_columns = m_show_advanced_columns;
 	v.show_tray_icon = m_show_tray_icon;
 	v.start_minimized = m_start_minimized;
+	v.tracker_port = m_tracker_port;
 	v.upload_rate = m_upload_rate << 10;
 	v.upload_slots = m_upload_slots;
 	return v;
@@ -81,6 +88,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 void Cdlg_options::set(const t_data& v)
 {
 	m_admin_port = v.admin_port;
+	m_ask_for_location = v.ask_for_location;
 	m_files_location = v.files_location.c_str();
 	m_peer_port = v.peer_port;
 	m_public_ipa = v.public_ipa.c_str();
@@ -88,6 +96,7 @@ void Cdlg_options::set(const t_data& v)
 	m_show_advanced_columns = v.show_advanced_columns;
 	m_show_tray_icon = v.show_tray_icon;
 	m_start_minimized = v.start_minimized;
+	m_tracker_port = v.tracker_port;
 	m_upload_rate = v.upload_rate >> 10;
 	m_upload_slots = v.upload_slots;
 }

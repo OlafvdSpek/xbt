@@ -47,6 +47,7 @@ Cserver::Cserver()
 	m_public_ipa = 0;
 	m_run = false;
 	m_seeding_ratio = 0;
+	m_tracker_port = 2710;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time(NULL);
 	m_upload_rate = 0;
@@ -91,6 +92,11 @@ void Cserver::seeding_ratio(int v)
 	m_seeding_ratio = max(0, v);
 }
 
+void Cserver::tracker_port(int v)
+{
+	m_new_tracker_port = max(0, v);
+}
+
 void Cserver::upload_rate(int v)
 {
 	m_upload_rate = max(0, v);
@@ -105,14 +111,18 @@ int Cserver::run()
 {
 	m_admin_port = m_new_admin_port;
 	m_peer_port = m_new_peer_port;
-	Csocket l, la;
+	m_tracker_port = m_new_tracker_port;
+	Csocket l, la, lt;
 	if (l.open(SOCK_STREAM) == INVALID_SOCKET
-		|| la.open(SOCK_STREAM) == INVALID_SOCKET)
+		|| la.open(SOCK_STREAM) == INVALID_SOCKET
+		|| lt.open(SOCK_DGRAM) == INVALID_SOCKET)
 		return alert(Calert(Calert::emerg, "Server", "socket failed" + n(WSAGetLastError()))), 1;
 	while (admin_port() < 0x10000 && la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_admin_port++;
 	while (peer_port() < 0x10000 && l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_peer_port++;
+	while (tracker_port() < 0x10000 && lt.bind(htonl(INADDR_ANY), htons(tracker_port())) && WSAGetLastError() == WSAEADDRINUSE)
+		m_tracker_port++;
 	if (l.listen()
 		|| la.listen())
 		return alert(Calert(Calert::emerg, "Server", "listen failed" + n(WSAGetLastError()))), 1;
@@ -152,6 +162,16 @@ int Cserver::run()
 				{
 					l = s;
 					m_peer_port = m_new_peer_port;
+				}
+			}
+			if (m_new_tracker_port != m_tracker_port)
+			{
+				Csocket s;
+				if (s.open(SOCK_DGRAM) != INVALID_SOCKET
+					&& !s.bind(htonl(INADDR_ANY), htons(m_new_tracker_port)))
+				{
+					lt = s;
+					m_tracker_port = m_new_tracker_port;
 				}
 			}
 			update_send_quotas();

@@ -18,6 +18,7 @@
 #define IDC_PEER_PORT                   1003
 #define IDC_ALERTS                      1004
 #define IDC_UPLOAD_RATE                 1004
+#define IDC_TRACKER_PORT                1005
 #define IDC_PUBLIC_IPA                  1010
 #define IDC_UPLOAD_SLOTS                1012
 #define IDC_DECREASE_PRIORITY           1013
@@ -36,6 +37,7 @@
 #define IDC_PASS_STATIC                 1022
 #define IDC_SHOW_TRAY_ICON              1023
 #define IDC_SHOW_ADVANCED_COLUMNS       1024
+#define IDC_ASK_FOR_LOCATION            1025
 #define IDC_SITE                        1026
 #define IDC_START_MINIMIZED             1027
 #define ID_POPUP_OPEN                   32771
