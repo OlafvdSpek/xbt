@@ -90,6 +90,7 @@ enum
 
 enum
 {
+	dr_completed_at,
 	dr_downloaded,
 	dr_hash,
 	dr_leechers,
@@ -99,6 +100,7 @@ enum
 	dr_pieces,
 	dr_seeders,
 	dr_size,
+	dr_started_at,
 	dr_tracker,
 	dr_uploaded,
 	dr_count
@@ -421,6 +423,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	m_buffer[++m_buffer_w &= 3].erase();
 	const char* row_names[] =
 	{
+		"Completed at",
 		"Downloaded",
 		"Hash",
 		"Leechers",
@@ -430,6 +433,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Pieces",
 		"Seeders",
 		"Size",
+		"Started at",
 		"Tracker",
 		"Uploaded",
 	};
@@ -441,6 +445,10 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	case dc_value:
 		switch (pDispInfo->item.iItem)
 		{
+		case dr_completed_at:
+			if (m_file->completed_at)
+				m_buffer[m_buffer_w] = time2a(m_file->completed_at);
+			break;
 		case dr_downloaded:
 			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b") + " / " + b2a(m_file->total_downloaded, "b");
 			if (m_file->size)
@@ -475,6 +483,10 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case dr_size:
 			m_buffer[m_buffer_w] = b2a(m_file->size, "b");
+			break;
+		case dr_started_at:
+			if (m_file->started_at)
+				m_buffer[m_buffer_w] = time2a(m_file->started_at);
 			break;
 		case dr_tracker:
 			if (!m_file->trackers.empty())
@@ -825,6 +837,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		f.hashing = true;
 		break;
 	}
+	f.started_at = sr.read_int(4);
+	f.completed_at = sr.read_int(4);
 	f.removed = false;
 	{
 		int i = f.display_name.rfind('\\');

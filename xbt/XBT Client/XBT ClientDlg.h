@@ -193,6 +193,8 @@ private:
 		int c_invalid_pieces;
 		int c_valid_pieces;
 		int cb_piece;
+		int started_at;
+		int completed_at;
 		bool hashing;
 		bool running;
 		bool removed;

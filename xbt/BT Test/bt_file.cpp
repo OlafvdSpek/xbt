@@ -27,6 +27,8 @@ Cbt_file::Cbt_file()
 	mc_leechers_total = 0;
 	mc_seeders_total = 0;
 	m_hasher = NULL;
+	m_started_at = time(NULL);
+	m_completed_at = 0;
 	m_run = true;
 	m_validate = true;
 }
@@ -405,7 +407,10 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 	piece.m_valid = true;
 	m_left -= piece.mcb_d;
 	if (!m_left)
+	{
+		m_completed_at = time(NULL);
 		m_tracker.event(Cbt_tracker_link::e_completed);
+	}
 	{
 		offset = a * mcb_piece;
 		size = piece.mcb_d;
@@ -540,7 +545,7 @@ ostream& operator<<(ostream& os, const Cbt_file& v)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 112;
+	int size = m_info_hash.length() + m_name.length() + 120;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -592,6 +597,8 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, c_valid_pieces());
 	w.write_int(4, mcb_piece);
 	w.write_int(4, m_hasher ? 2 : m_run);
+	w.write_int(4, m_started_at);
+	w.write_int(4, m_completed_at);
 	if (flags & Cserver::df_peers)
 	{
 		w.write_int(4, m_peers.size());
