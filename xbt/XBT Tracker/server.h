@@ -26,11 +26,11 @@ public:
 			mtime = 0;
 		}
 
-		// int downloaded;
-		int left;
+		// __int64 downloaded;
+		__int64 left;
 		string peer_id;
 		int port;
-		// int uploaded;
+		// __int64 uploaded;
 
 		bool listening;
 		int mtime;
