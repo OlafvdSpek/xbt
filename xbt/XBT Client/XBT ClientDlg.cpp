@@ -335,10 +335,10 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 	string path;
 	if (!m_server.incompletes_dir().empty() && !ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
 	{
-		path = m_server.completes_dir + '/' + torrent.name().c_str();
+		path = m_server.completes_dir() + '/' + torrent.name().c_str();
 		struct _stati64 b;
 		if (_stati64(path.c_str(), &b))
-			path = m_server.incompletes_dir + '/' + torrent.name().c_str();
+			path = m_server.incompletes_dir() + '/' + torrent.name().c_str();
 	}
 	else if (torrent.files().size() == 1)
 	{
@@ -369,7 +369,7 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 			lpm->Free(idl);
 		if (!*path1)
 			return;
-		path = static_cast<string>(path1) + "\\" + torrent.name();
+		path = static_cast<string>(path1) + '/' + torrent.name();
 	}
 	CWaitCursor wc;
 	if (!m_server.open(d, path))
@@ -778,7 +778,7 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	case sfc_name:
 		if (e.name.empty())
 		{
-			int i = m_file->name.rfind('\\');
+			int i = m_file->name.find_last_of("/\\");
 			m_buffer[m_buffer_w] = i == string::npos ? m_file->name : m_file->name.substr(i + 1);
 		}
 		else
@@ -977,7 +977,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.priority = sr.read_int(4);
 	f.removed = false;
 	{
-		int i = f.display_name.rfind('\\');
+		int i = f.display_name.find_last_of("/\\");
 		if (i != string::npos)
 			f.display_name.erase(0, i + 1);
 	}
@@ -1197,12 +1197,10 @@ void CXBTClientDlg::OnPopupExplore()
 	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
 	if (id == -1)
 	{
-		ShellExecute(m_hWnd, "open", m_server.completes_dir().c_str(), NULL, NULL, SW_SHOW);
+		ShellExecute(m_hWnd, "open", backward_slashes(m_server.completes_dir()).c_str(), NULL, NULL, SW_SHOW);
 		return;
 	}
-	string name = m_files_map.find(id)->second.name;
-	for (int i = 0; (i = name.find('/', i)) != string::npos; i++)
-		name[i] = '\\';
+	string name = backward_slashes(m_files_map.find(id)->second.name);
 	struct _stati64 b;
 	if (_stati64(name.c_str(), &b) || ~b.st_mode & S_IFDIR)
 	{
