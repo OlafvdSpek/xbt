@@ -792,7 +792,7 @@ void Cbt_peer_link::check_pieces()
 		if ((*i)->check_peer(this, 600))
 			i++;
 		else
-			i = m_pieces.erase(i);
+			m_pieces.erase(i++);
 	}
 	m_check_pieces_time = time(NULL);
 }
