@@ -415,7 +415,7 @@ string Cserver::t_file::debug() const
 			+ "<td align=right>" + n(ntohs(i->second.port))
 			+ "<td>" + (i->second.listening ? '*' : ' ')
 			+ "<td align=right>" + n(i->second.left)
-			+ "<td align=right>" + n(i->second.mtime)
+			+ "<td align=right>" + n(time(NULL) - i->second.mtime)
 			+ "<td>" + hex_encode(i->second.peer_id);
 	}
 	return page;
