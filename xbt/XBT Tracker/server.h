@@ -143,7 +143,7 @@ public:
 	void update_peer(const string& file_id, int peer_id, bool listening);
 	string debug(const Ctracker_input&) const;
 	string statistics() const;
-	Cbvalue select_peers(const Ctracker_input&);
+	Cbvalue select_peers(const Ctracker_input&, const t_user*);
 	Cbvalue scrape(const Ctracker_input&);
 	int run();
 	static void term();

@@ -353,6 +353,9 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	}
 	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
 		return;
+	t_file& file = m_files[v.m_info_hash];
+	if (user && user->fid_end && file.fid > user->fid_end)
+		return;
 	if (m_use_sql && user)
 	{
 		Csql_query q(m_database, "(1,?,?,?,?,?),");
@@ -377,7 +380,6 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		q.p(user->uid);
 		m_files_users_updates_buffer += q.read();
 	}
-	t_file& file = m_files[v.m_info_hash];
 	t_peers::iterator i = file.peers.find(v.m_ipa);
 	if (i != file.peers.end())
 		(i->second.left ? file.leechers : file.seeders)--;
@@ -480,11 +482,13 @@ void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o
 	}
 }
 
-Cbvalue Cserver::select_peers(const Ctracker_input& ti)
+Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 {
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
 	if (i == m_files.end()) 
 		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent);
+	if (user && user->fid_end && i->second.fid > user->fid_end)
+		return Cbvalue().d(bts_failure_reason, bts_wait_time);
 	if (ti.m_compact)
 	{
 		Cannounce_output_http_compact o;
