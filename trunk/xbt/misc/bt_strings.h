@@ -36,8 +36,8 @@ enum
 	bti_started,
 	bti_stopped,
 };
-
 const string bts_action = "action";
+const string bts_admin_port = "admin port";
 const string bts_announce = "announce";
 const string bts_announce_list = "announce-list";
 const string bts_close_torrent = "close torrent";
@@ -63,17 +63,22 @@ const string bts_pass = "pass";
 const string bts_path = "path";
 const string bts_pause_torrent = "pause torrent";
 const string bts_peer_id = "peer id";
+const string bts_peer_port = "peer port";
 const string bts_peers = "peers";
 const string bts_piece_length = "piece length";
 const string bts_pieces = "pieces";
 const string bts_port = "port";
+const string bts_seeding_ratio = "seeding ratio";
 const string bts_set_options = "set options";
 const string bts_size = "size";
 const string bts_torrent = "torrent";
 const string bts_total_downloaded = "total downloaded";
 const string bts_total_uploaded = "total uploaded";
+const string bts_tracker_port = "tracker port";
 const string bts_unpause_torrent = "unpause torrent";
 const string bts_unregistered_torrent = "unregistered torrent";
 const string bts_up_rate = "up rate";
+const string bts_upload_rate = "upload rate";
+const string bts_upload_slots = "upload slots";
 
 #endif // !defined(AFX_BT_STRINGS_H__2BC4A814_E7F6_45BF_AEA3_59B270DA3A9A__INCLUDED_)
