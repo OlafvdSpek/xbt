@@ -98,6 +98,11 @@ int Csocket::connect(int h, int p)
 	return ::connect(*this, reinterpret_cast<sockaddr*>(&a), sizeof(sockaddr_in));
 }
 
+int Csocket::listen()
+{
+	return ::listen(*this, SOMAXCONN);
+}
+
 const Csocket& Csocket::open(int t, bool _blocking)
 {
 	*this = socket(AF_INET, t, 0);

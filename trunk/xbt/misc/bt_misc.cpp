@@ -39,6 +39,18 @@ static int hex_decode(char v)
 	return -1;
 };
 
+string hex_decode(const string& v)
+{
+	string r;
+	r.resize(v.length() >> 1);
+	for (int i = 0; i + 2 <= v.length(); i += 2)
+	{
+		int a = hex_decode(v[i]);
+		r[i >> 1] = a << 4 | hex_decode(v[i + 1]);
+	}
+	return r;
+}
+
 string hex_encode(int l, int v)
 {
 	string r;

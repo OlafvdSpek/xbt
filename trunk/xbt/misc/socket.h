@@ -59,6 +59,7 @@ public:
 	int blocking(bool v);
 	void close();
 	int connect(int h, int p);
+	int listen();
 	const Csocket& open(int t, bool blocking = false);
 	int recv(void*, int);
 	int recvfrom(void* d, int cb_d, sockaddr* a, socklen_t* cb_a);
