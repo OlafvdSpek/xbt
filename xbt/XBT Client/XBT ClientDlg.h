@@ -1,6 +1,3 @@
-// XBT ClientDlg.h : header file
-//
-
 #if !defined(AFX_XBTCLIENTDLG_H__24B01140_CC8B_4862_B4FD_31A9CF22FAF8__INCLUDED_)
 #define AFX_XBTCLIENTDLG_H__24B01140_CC8B_4862_B4FD_31A9CF22FAF8__INCLUDED_
 
@@ -13,12 +10,8 @@
 #include "resource.h"
 #include "stream_reader.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CXBTClientDlg dialog
-
 class CXBTClientDlg : public ETSLayoutDialog
 {
-// Construction
 public:
 	void set_bottom_view(int v);
 	void set_priority(int v);
@@ -45,25 +38,22 @@ public:
 	void fill_peers();
 	void open(const string& name, bool ask_for_location);
 	void open_url(const string&);
-	CXBTClientDlg(CWnd* pParent = NULL);	// standard constructor
+	CXBTClientDlg(CWnd* pParent = NULL);
 
-// Dialog Data
 	//{{AFX_DATA(CXBTClientDlg)
 	enum { IDD = IDD_XBTCLIENT_DIALOG };
 	CListCtrlEx	m_peers;
 	CListCtrlEx	m_files;
 	//}}AFX_DATA
 
-	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CXBTClientDlg)
 	public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+	virtual void DoDataExchange(CDataExchange* pDX);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
-// Implementation
 protected:
 	afx_msg void OnContextMenu(CWnd*, CPoint point);
 	afx_msg void OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult);
@@ -72,17 +62,12 @@ protected:
 	HACCEL m_hAccel;
 	HICON m_hIcon;
 
-	// Generated message map functions
 	//{{AFX_MSG(CXBTClientDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimer(UINT nIDEvent);
@@ -103,7 +88,6 @@ protected:
 	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnPopupCopy();
 	afx_msg void OnPopupPaste();
-	afx_msg void OnPopupFiles();
 	afx_msg void OnPopupTrackers();
 	afx_msg void OnPopupAnnounce();
 	afx_msg void OnPopupExploreTracker();
@@ -112,7 +96,6 @@ protected:
 	afx_msg void OnPopupTorrentDelete();
 	afx_msg void OnPopupTorrentClipboardCopyAnnounceUrl();
 	afx_msg void OnPopupTorrentClipboardCopyHash();
-	afx_msg void OnPopupTorrentAlerts();
 	afx_msg void OnPopupViewDetails();
 	afx_msg void OnPopupViewFiles();
 	afx_msg void OnPopupViewPeers();
@@ -125,7 +108,27 @@ protected:
 	afx_msg void OnPopupViewAdvancedColumns();
 	afx_msg void OnPopupViewTrayIcon();
 	afx_msg void OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
+	afx_msg void OnUpdatePopupViewAdvancedColumns(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupViewTrayIcon(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupViewDetails(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupViewEvents(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupViewFiles(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupViewPeers(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupViewTrackers(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupTorrentDelete(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupTorrentClipboardCopyAnnounceUrl(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupTorrentClipboardCopyHash(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupCopy(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupStart(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupStop(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupAnnounce(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupExploreTracker(CCmdUI* pCmdUI);
 	//}}AFX_MSG
+	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
 private:
 	struct t_event

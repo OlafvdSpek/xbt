@@ -159,7 +159,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				}
 				m_remote_requests.pop_front();
 			}
-			if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 120)
+			if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 600)
 				clear_local_requests();
 			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < 8)
 			{
