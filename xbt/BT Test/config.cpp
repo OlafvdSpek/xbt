@@ -30,7 +30,7 @@ Cconfig::Cconfig()
 	m_seeding_ratio = 0;
 	m_send_stop_event = false;
 	m_torrent_limit = 0;
-	m_torrent_upload_slots_max = 0;
+	m_torrent_upload_slots_max = INT_MAX;
 	m_torrent_upload_slots_min = 0;
 	m_torrents_dir = "Torrents";
 	m_tracker_port = 2710;
