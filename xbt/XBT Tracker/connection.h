@@ -17,8 +17,8 @@ public:
 	void read(const string&);
 	void close();
 	void recv();
-	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
-	void post_select(fd_set* fd_read_set, fd_set* fd_write_set);
+	int pre_select(fd_set* fd_read_set);
+	void post_select(fd_set* fd_read_set);
 	Cconnection();
 	Cconnection(Cserver* server, SOCKET s, const sockaddr_in& a);
 
