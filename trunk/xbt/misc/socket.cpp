@@ -152,6 +152,17 @@ int Csocket::sendto(const void* s, int cb_s, const sockaddr* a, socklen_t cb_a) 
 	return ::sendto(*this, reinterpret_cast<const char*>(s), cb_s, MSG_NOSIGNAL, a, cb_a);
 }
 
+int Csocket::getsockopt(int level, int name, void* v, int& cb_v)
+{
+	return ::getsockopt(*this, level, name, reinterpret_cast<char*>(v), &cb_v);
+}
+
+int Csocket::getsockopt(int level, int name, int& v)
+{
+	int cb_v = sizeof(int);
+	return getsockopt(level, name, &v, cb_v);
+}
+
 int Csocket::setsockopt(int level, int name, const void* v, int cb_v)
 {
 	return ::setsockopt(*this, level, name, reinterpret_cast<const char*>(v), cb_v);
