@@ -632,7 +632,7 @@ string Cserver::t_file::debug() const
 string Cserver::debug(const Ctracker_input& ti) const
 {
 	string page;
-	page += "<meta http-equiv=refresh content=60><title>XBT Tracker</title><table>";
+	page += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title><table>";
 	int leechers = 0;
 	int seeders = 0;
 	int torrents = 0;
