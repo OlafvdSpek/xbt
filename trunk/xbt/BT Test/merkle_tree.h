@@ -16,6 +16,7 @@ class Cmerkle_tree
 public:
 	static string compute_root(const byte* s, const byte* s_end);
 	static string compute_root(const Cvirtual_binary&);
+	void invalidate();
 	string root() const;
 	void root(const string&);
 	int load(const Cvirtual_binary&);
@@ -26,6 +27,11 @@ public:
 	void resize(int);
 	void set(int i, const string&);
 	Cmerkle_tree();
+
+	int size() const
+	{
+		return m_size;
+	}
 private:
 	char* d(int);
 	const char* d(int) const;

@@ -27,6 +27,11 @@ void Cmerkle_tree::resize(int v)
 	memset(m_d.data_edit(), 0, m_d.size());
 }
 
+void Cmerkle_tree::invalidate()
+{
+	memset(m_d.data_edit(), 0, m_d.size());
+}
+
 string Cmerkle_tree::get(int i) const
 {
 	assert(i >= 0);
