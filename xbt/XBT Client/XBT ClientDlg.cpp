@@ -853,24 +853,27 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		e.hash = sr.read_string();
 		f.sub_files.push_back(e);
 	}
-	switch (m_bottom_view)
+	if (m_file == &f)
 	{
-	case v_events:
-		while (m_peers.GetItemCount() < f.events.size())
+		switch (m_bottom_view)
 		{
-			m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
-			inserted = true;
+		case v_events:
+			while (m_peers.GetItemCount() < f.events.size())
+			{
+				m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
+				inserted = true;
+			}
+			while (m_peers.GetItemCount() > f.events.size())
+				m_peers.DeleteItem(m_peers.GetItemCount() - 1);
+			break;
+		case v_files:
+			while (m_peers.GetItemCount() < f.sub_files.size())
+			{
+				m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
+				inserted = true;
+			}
+			break;
 		}
-		while (m_peers.GetItemCount() > f.events.size())
-			m_peers.DeleteItem(m_peers.GetItemCount() - 1);
-		break;
-	case v_files:
-		while (m_peers.GetItemCount() < f.sub_files.size())
-		{
-			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
-			inserted = true;
-		}
-		break;
 	}
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); )
