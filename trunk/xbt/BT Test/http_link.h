@@ -32,8 +32,6 @@ private:
 	Cring_buffer m_read_b;
 	Csocket m_s;
 	Cserver* m_server;
-	// int m_ctime;
-	// int m_mtime;
 };
 
 #endif // !defined(AFX_HTTP_LINK_H__3D0CB646_2C1F_427A_A561_F1C21E61CB90__INCLUDED_)
