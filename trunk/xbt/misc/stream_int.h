@@ -16,6 +16,12 @@ __int64 read_int(int cb, const T r0)
 }
 
 template <class T>
+__int64 read_int(int cb, const T r, const T s_end)
+{
+	return read_int(cb, r);
+}
+
+template <class T>
 T write_int(int cb, T w0, __int64 v)
 {
 	unsigned char* w = reinterpret_cast<unsigned char*>(w0);
@@ -37,6 +43,12 @@ __int64 read_int_le(int cb, const T r0)
 	while (cb--)
 		v = v << 8 | *--r;
 	return v;
+}
+
+template <class T>
+__int64 read_int_le(int cb, const T r, const T s_end)
+{
+	return read_int_le(cb, r);
 }
 
 template <class T>

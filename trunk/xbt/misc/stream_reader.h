@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "stream_int.h"
 #include "virtual_binary.h"
 
 class Cstream_reader  
@@ -38,17 +39,26 @@ public:
 
 	int read_int8()
 	{
-		return *reinterpret_cast<const char*>(read(1));
+		m_r++;
+		return read_int(1, m_r - 1);
+	}
+
+	int read_int16()
+	{
+		m_r += 2;
+		return read_int(2, m_r - 2);
 	}
 
 	int read_int32()
 	{
-		return *reinterpret_cast<const int*>(read(4));
+		m_r += 4;
+		return read_int(4, m_r - 4);
 	}
 
 	__int64 read_int64()
 	{
-		return *reinterpret_cast<const __int64*>(read(8));
+		m_r += 8;
+		return read_int(8, m_r - 8);
 	}
 
 	Cvirtual_binary read_data()
