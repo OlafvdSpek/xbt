@@ -840,7 +840,8 @@ class Post {
 		$attach_data['attach_type'] = $FILE_TYPE;
 		$attach_data['attach_file'] = $FILE_NAME;
 
-		if ($FILE_TYPE == "application/x-bittorrent")
+		if ($FILE_TYPE == "application/bittorrent"
+			|| $FILE_TYPE == "application/x-bittorrent")
 		{
 			require ROOT_PATH."sources/benc.php";
 			$torrent = bdec_file($ibforums->vars['upload_dir']."/".$real_file_name, 1 << 20);
