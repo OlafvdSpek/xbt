@@ -44,3 +44,9 @@ CREATE TABLE xbt_scrape_log
   mtime int NOT NULL,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE xbt_users
+(
+  name char(8) NOT NULL,
+  pass blob NOT NULL,
+);
