@@ -85,8 +85,13 @@ enum
 enum
 {
 	dr_downloaded,
+	dr_hash,
+	dr_leechers,
+	dr_left,
 	dr_name,
+	dr_peers,
 	dr_pieces,
+	dr_seeders,
 	dr_uploaded,
 	dr_count
 };
@@ -400,8 +405,13 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	const char* row_names[] =
 	{
 		"Downloaded",
+		"Hash",
+		"Leechers",
+		"Left",
 		"Name",
+		"Peers",
 		"Pieces",
+		"Seeders",
 		"Uploaded",
 	};
 	switch (m_torrents_columns[pDispInfo->item.iSubItem])
@@ -413,13 +423,37 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		switch (pDispInfo->item.iItem)
 		{
 		case dr_downloaded:
-			m_buffer[m_buffer_w] = b2a(m_file->downloaded) + " / " + b2a(m_file->total_downloaded);
+			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b") + " / " + b2a(m_file->total_downloaded, "b");
+			break;
+		case dr_hash:
+			m_buffer[m_buffer_w] = hex_encode(m_file->info_hash);
+			break;
+		case dr_leechers:
+			m_buffer[m_buffer_w] = n(m_file->c_leechers);
+			if (m_file->c_leechers_total)
+				m_buffer[m_buffer_w] += " / " + n(m_file->c_leechers_total);
+			break;
+		case dr_left:
+			m_buffer[m_buffer_w] = b2a(m_file->left, "b");
 			break;
 		case dr_name:
 			m_buffer[m_buffer_w] = m_file->name;
 			break;
+		case dr_peers:
+			m_buffer[m_buffer_w] = n(m_file->c_leechers + m_file->c_seeders);
+			if (m_file->c_leechers_total + m_file->c_seeders_total)
+				m_buffer[m_buffer_w] += " / " + n(m_file->c_leechers_total + m_file->c_seeders_total);
+			break;
+		case dr_pieces:
+			m_buffer[m_buffer_w] = n(0) + " / " + n(0) + " x " + b2a(0, "b");
+			break;
+		case dr_seeders:
+			m_buffer[m_buffer_w] = n(m_file->c_seeders);
+			if (m_file->c_seeders_total)
+				m_buffer[m_buffer_w] += " / " + n(m_file->c_seeders_total);
+			break;
 		case dr_uploaded:
-			m_buffer[m_buffer_w] = b2a(m_file->uploaded) + " / " + b2a(m_file->total_uploaded);
+			m_buffer[m_buffer_w] = b2a(m_file->uploaded, "b") + " / " + b2a(m_file->total_uploaded, "b");
 			break;
 		}
 		break;
