@@ -31,7 +31,7 @@ STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP |
     WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
 CAPTION "XBT Client"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,114,50
@@ -313,7 +313,7 @@ BEGIN
             MENUITEM "Open...\tIns",                ID_POPUP_OPEN
             MENUITEM "&Close\tDel",                 ID_POPUP_CLOSE
             MENUITEM "Delete",                      ID_POPUP_TORRENT_DELETE
-            MENUITEM "Make...",                     ID_POPUP_MAKE_TORRENT
+            MENUITEM "Make...\tCtrl+M",             ID_POPUP_MAKE_TORRENT
             MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
         END
         POPUP "&View"
@@ -324,12 +324,12 @@ BEGIN
             MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
             MENUITEM "&Trackers\t5",                ID_POPUP_VIEW_TRACKERS
             MENUITEM SEPARATOR
-            MENUITEM "Advanced columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
+            MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
-            MENUITEM "Tray icon",                   ID_POPUP_VIEW_TRAY_ICON
+            MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END
         MENUITEM SEPARATOR
-        MENUITEM "Options...",                  ID_POPUP_OPTIONS
+        MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "About",                       ID_POPUP_ABOUT
     END
@@ -355,12 +355,12 @@ BEGIN
             MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
             MENUITEM "&Trackers\t5",                ID_POPUP_VIEW_TRACKERS
             MENUITEM SEPARATOR
-            MENUITEM "Advanced columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
+            MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
-            MENUITEM "Tray icon",                   ID_POPUP_VIEW_TRAY_ICON
+            MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END
         MENUITEM SEPARATOR
-        MENUITEM "Options...",                  ID_POPUP_OPTIONS
+        MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "About",                       ID_POPUP_ABOUT
     END
@@ -378,15 +378,34 @@ BEGIN
             MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
             MENUITEM "&Trackers\t5",                ID_POPUP_VIEW_TRACKERS
             MENUITEM SEPARATOR
-            MENUITEM "Advanced columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
+            MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
-            MENUITEM "Tray icon",                   ID_POPUP_VIEW_TRAY_ICON
+            MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END
         MENUITEM SEPARATOR
-        MENUITEM "Options...",                  ID_POPUP_OPTIONS
+        MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "About",                       ID_POPUP_ABOUT
     END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+BEGIN
+    "1",            ID_POPUP_VIEW_DETAILS,  VIRTKEY, NOINVERT
+    "2",            ID_POPUP_VIEW_EVENTS,   VIRTKEY, NOINVERT
+    "3",            ID_POPUP_VIEW_FILES,    VIRTKEY, NOINVERT
+    "4",            ID_POPUP_VIEW_PEERS,    VIRTKEY, NOINVERT
+    "5",            ID_POPUP_VIEW_TRACKERS, VIRTKEY, NOINVERT
+    "M",            ID_POPUP_MAKE_TORRENT,  VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_POPUP_OPTIONS,       VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_POPUP_CLOSE,         VIRTKEY, NOINVERT
+    VK_INSERT,      ID_POPUP_OPEN,          VIRTKEY, NOINVERT
 END
 
 
