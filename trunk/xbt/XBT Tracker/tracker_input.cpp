@@ -13,6 +13,7 @@ Ctracker_input::Ctracker_input()
 {
 	m_downloaded = 0;
 	m_event = e_none;
+	m_ipa = 0;
 	m_left = 0;
 	m_port = 0;
 	m_uploaded = 0;

@@ -125,3 +125,10 @@ string uri_encode(const string& v)
 	return r;
 };
 
+bool is_private_ipa(int a)
+{
+	return (ntohl(a) & 0xff000000) == 0x0a000000
+		|| (ntohl(a) & 0xff000000) == 0x7f000000
+		|| (ntohl(a) & 0xfff00000) == 0xac100000
+		|| (ntohl(a) & 0xffff0000) == 0xc0a80000;
+}
