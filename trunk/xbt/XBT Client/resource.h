@@ -12,6 +12,7 @@
 #define IDD_TRACKERS                    134
 #define IDD_TRACKER                     135
 #define IDD_ABOUT                       136
+#define IDD_MAKE_TORRENT                137
 #define IDC_FILES                       1000
 #define IDC_PEERS                       1002
 #define IDC_ADMIN_PORT                  1002
@@ -40,6 +41,7 @@
 #define IDC_ASK_FOR_LOCATION            1025
 #define IDC_SITE                        1026
 #define IDC_START_MINIMIZED             1027
+#define IDC_SAVE                        1030
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -54,14 +56,15 @@
 #define ID_POPUP_ANNOUNCE               32782
 #define ID_POPUP_EXPLORE_TRACKER        32783
 #define ID_POPUP_ABOUT                  32784
+#define ID_POPUP_MAKE_TORRENT           32785
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
-#define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_RESOURCE_VALUE        138
+#define _APS_NEXT_COMMAND_VALUE         32786
+#define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

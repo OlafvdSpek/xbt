@@ -156,6 +156,10 @@ SOURCE=.\dlg_files.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\dlg_make_torrent.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\dlg_options.cpp
 # End Source File
 # Begin Source File
@@ -298,6 +302,10 @@ SOURCE=.\dlg_about.h
 # Begin Source File
 
 SOURCE=.\dlg_files.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_make_torrent.h
 # End Source File
 # Begin Source File
 
