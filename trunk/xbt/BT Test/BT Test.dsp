@@ -163,7 +163,15 @@ SOURCE=..\misc\windows\nt_service.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\profiles.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ring_buffer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scheduler.cpp
 # End Source File
 # Begin Source File
 
@@ -193,6 +201,18 @@ SOURCE=..\..\xf2\misc\virtual_binary.cpp
 # Begin Source File
 
 SOURCE=..\misc\xcc_z.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\xif_key.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\xif_key_r.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\xif_value.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -256,7 +276,15 @@ SOURCE=.\merkle_tree.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\profiles.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ring_buffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\scheduler.h
 # End Source File
 # Begin Source File
 

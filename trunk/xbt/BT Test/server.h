@@ -34,6 +34,7 @@ public:
 	};
 
 	void clean_scheduler();
+	void run_scheduler();
 	void torrent_seeding_ratio(const string& file_id, bool override, int v);
 	Cbvalue admin_request(const Cbvalue& s);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
@@ -76,6 +77,7 @@ public:
 	Cvirtual_binary get_file_status(const string& id, int flags);
 	Cvirtual_binary get_status(int flags);
 	void load_profile(const Cxif_key&);
+	void load_profile(const Cprofile&);
 	Cxif_key get_profiles();
 	void set_profiles(const Cxif_key&);
 	Cxif_key get_scheduler();
@@ -237,6 +239,7 @@ private:
 	int m_peer_port;
 	int m_send_quota;
 	bool m_run;
+	int m_run_scheduler_time;
 	int m_save_state_time;
 	int m_time;
 	int m_tracker_port;
