@@ -53,4 +53,3 @@ private:
 };
 
 #endif // !defined(AFX_BT_TRACKER_LINK_H__19566F35_0475_4CE0_BF87_19345BBD0E42__INCLUDED_)
-
