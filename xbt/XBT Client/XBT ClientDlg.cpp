@@ -225,10 +225,7 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 	}
 	string path = m_dir;
 	if (!m_dir.IsEmpty() && !ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
-	{
 		path += "\\Incompletes\\" + torrent.name();
-		update_tray("Opened", torrent.name().c_str());
-	}
 	else if (torrent.files().size() == 1)
 	{
 		SetForegroundWindow();
@@ -261,7 +258,8 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 		path += static_cast<string>(path1) + "\\" + torrent.name();
 	}
 	CWaitCursor wc;
-	m_server.open(d, path);
+	if (!m_server.open(d, path))
+		update_tray("Opened", torrent.name().c_str());
 }
 
 void CXBTClientDlg::open_url(const string& v)
