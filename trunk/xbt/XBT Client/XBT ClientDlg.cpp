@@ -113,6 +113,7 @@ enum
 	dr_distributed_copies,
 	dr_downloaded,
 	dr_downloaded_l5_overhead,
+	dr_files,
 	dr_hash,
 	dr_leechers,
 	dr_left,
@@ -510,6 +511,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Distributed Copies",
 		"Downloaded",
 		"Downloaded (layer 5 overhead)",
+		"Files",
 		"Hash",
 		"Leechers",
 		"Left",
@@ -559,6 +561,9 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case dr_downloaded_l5_overhead:
 			m_buffer[m_buffer_w] = b2a(m_file->downloaded_l5 - m_file->downloaded, "b");
+			break;
+		case dr_files:
+			m_buffer[m_buffer_w] = n(m_file->sub_files.size());
 			break;
 		case dr_hash:
 			m_buffer[m_buffer_w] = hex_encode(m_file->info_hash);
