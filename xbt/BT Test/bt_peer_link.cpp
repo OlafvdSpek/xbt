@@ -335,7 +335,7 @@ void Cbt_peer_link::remote_requests(int piece, int offset, int size)
 void Cbt_peer_link::remote_merkle_requests(__int64 offset, int c_hashes)
 {
 	int piece = offset / m_f->mcb_piece;
-	if (offset < 0 || m_remote_requests.size() >= 256 || piece >= m_pieces.size() || !m_f->m_pieces[piece].m_valid || m_local_choked)
+	if (offset < 0 || m_remote_requests.size() >= 256 || piece >= m_f->m_pieces.size() || !m_f->m_pieces[piece].m_valid || m_local_choked)
 		return;
 	m_remote_requests.push_back(t_remote_request(offset, min(m_f->m_pieces[piece].mcb_d - offset % m_f->mcb_piece, 32 << 10), c_hashes));
 }

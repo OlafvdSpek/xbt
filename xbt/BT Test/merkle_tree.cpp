@@ -66,7 +66,7 @@ string Cmerkle_tree::get(int i, int c) const
 	while (b - a >= 2 && c--)
 	{
 		int j = i ^ 1;
-		if (j < b)
+		if (a + j < b)
 			v += get0(a + j);
 		int c = a;
 		a = b;
@@ -89,7 +89,7 @@ bool Cmerkle_tree::test_and_set(int i, const string& v, const string& w)
 	{
 		if (*d(a + i))
 		{
-			if (memcmp(h.c_str(), d(a + i) + 1, 20))
+			if (h != get0(a + i))
 				return false;
 			set(i0, v, w);
 			return true;
@@ -97,7 +97,7 @@ bool Cmerkle_tree::test_and_set(int i, const string& v, const string& w)
 		if (b - a < 2 || z + 20 > w.size())
 			return false;
 		int j = i ^ 1;
-		if (j < b)
+		if (a + j < b)
 		{
 			h = i < j ? internal_hash(h, w.substr(z, 20)) : internal_hash(w.substr(z, 20), h);
 			z += 20;
@@ -133,7 +133,7 @@ void Cmerkle_tree::set(int i, const string& v)
 	while (b - a >= 2)
 	{
 		int j = i ^ 1;
-		if (j < b && !*d(a + j))
+		if (a + j < b && !*d(a + j))
 			break;
 		if (i > j)
 			swap(i, j);
@@ -143,7 +143,7 @@ void Cmerkle_tree::set(int i, const string& v)
 		if (*d(a + i))
 			break;
 		*d(a + i) = true;
-		if (j < b)
+		if (c + j < b)
 			set0(a + i, internal_hash(get0(c + j - 1), get0(c + j)));
 		else
 			set0(a + i, get0(c + j - 1));
@@ -167,7 +167,7 @@ void Cmerkle_tree::set(int i, const string& v, const string& w)
 		if (b - a < 2 || z + 20 > w.size())
 			return;
 		int j = i ^ 1;
-		if (j < b)
+		if (a + j < b)
 		{
 			set0(a + j, w.substr(z, 20));
 			z += 20;
