@@ -121,7 +121,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 		if (FD_ISSET(m_s, fd_except_set))
 		{
 			int e = 0;
-			int size = sizeof(int);
+			socklen_t size = sizeof(int);
 			getsockopt(m_s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&e), &size);
 			if (e == WSAEADDRINUSE)
 			{
