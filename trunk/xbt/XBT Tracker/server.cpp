@@ -47,7 +47,7 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 		}
 		FD_SET(lt, &fd_read_set);
 		FD_SET(lu, &fd_read_set);
-		if (select(n + 1, &fd_read_set, NULL, &fd_except_set, NULL) == SOCKET_ERROR)
+		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, NULL) == SOCKET_ERROR)
 			cerr << "select failed: " << WSAGetLastError() << endl;
 		else 
 		{
@@ -114,7 +114,7 @@ void Cserver::insert_peer(const Ctracker_input& v)
 		// peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
 
-		if (time(NULL) - peer.mtime > 900)
+		if (!peer.listening && time(NULL) - peer.mtime > 900)
 			m_peer_links.push_front(Cpeer_link(ntohl(inet_addr(v.m_ipa.c_str())), v.m_port, this, v.m_info_hash, v.m_ipa));
 		peer.mtime = time(NULL);
 	}
