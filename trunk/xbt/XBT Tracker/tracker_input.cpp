@@ -34,7 +34,7 @@ void Ctracker_input::set(const string& name, const string& value)
 		break;
 	case 'd':
 		if (name == "downloaded")
-			m_downloaded = atoi(value.c_str());
+			m_downloaded = atoll(value.c_str());
 		break;
 	case 'e':
 		if (name == "event")
@@ -57,7 +57,7 @@ void Ctracker_input::set(const string& name, const string& value)
 		break;
 	case 'l':
 		if (name == "left")
-			m_left = atoi(value.c_str());
+			m_left = atoll(value.c_str());
 		break;
 	case 'n':
 		if (name == "no_peer_id")
@@ -73,7 +73,7 @@ void Ctracker_input::set(const string& name, const string& value)
 		break;
 	case 'u':
 		if (name == "uploaded")
-			m_uploaded = atoi(value.c_str());
+			m_uploaded = atoll(value.c_str());
 		break;
 	}
 }

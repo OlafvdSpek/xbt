@@ -29,6 +29,8 @@ using namespace std;
 
 #include <windows.h>
 
+#define atoll _atoi64
+
 #pragma comment(lib, "libmysql.lib")
 #pragma comment(lib, "ws2_32.lib")
 #else
