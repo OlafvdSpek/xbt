@@ -70,6 +70,7 @@ BOOL Cdlg_files::OnInitDialog()
 	m_files.InsertColumn(3, "Size", LVCFMT_RIGHT);
 	m_files.InsertColumn(4, "Priority");
 	m_sort_column = 0;
+	m_sort_reverse = false;
 	load_data();
 	SetTimer(0, 15000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
