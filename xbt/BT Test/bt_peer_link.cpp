@@ -176,7 +176,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						vector<int> sub_pieces;
 						for (int b = 0; b < piece->c_sub_pieces(); b++)
 						{
-							if (piece->m_sub_pieces.empty() || !piece->m_sub_pieces[b])
+							if (piece->m_sub_pieces.empty() || !piece->m_sub_pieces[b].valid())
 								sub_pieces.push_back(b);
 						}
 						if (piece->m_peers.size() > 1)

@@ -30,9 +30,9 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 		return;
 	if (m_sub_pieces.empty())
 		m_sub_pieces.resize(mc_sub_pieces_left = c_sub_pieces());
-	if (m_sub_pieces[b])
+	if (m_sub_pieces[b].valid())
 		return;
-	m_sub_pieces[b] = true;
+	m_sub_pieces[b].valid(true);
 	if (!--mc_sub_pieces_left)
 	{
 		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
@@ -78,8 +78,8 @@ void Cbt_piece::load_state(Cstream_reader& r)
 		m_sub_pieces.resize(mc_sub_pieces_left = c_sub_pieces());
 		for (t_sub_pieces::iterator i = m_sub_pieces.begin(); i != m_sub_pieces.end(); i++)
 		{
-			*i = r.read_int(1);
-			mc_sub_pieces_left -= *i;
+			i->valid(r.read_int(1));
+			mc_sub_pieces_left -= i->valid();
 		}
 		break;
 	case 2:
@@ -103,7 +103,7 @@ void Cbt_piece::save_state(Cstream_writer& w) const
 	{
 		w.write_int(1, 1);
 		for (t_sub_pieces::const_iterator i = m_sub_pieces.begin(); i != m_sub_pieces.end(); i++)
-			w.write_int(1, *i);
+			w.write_int(1, i->valid());
 	}
 }
 

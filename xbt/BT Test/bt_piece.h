@@ -12,6 +12,27 @@
 #include "bt_peer_link.h"
 #include "stream_reader.h"
 
+class Cbt_sub_piece
+{
+public:
+	Cbt_sub_piece()
+	{
+		m_valid = false;
+	}
+
+	bool valid() const
+	{
+		return m_valid;
+	}
+
+	bool valid(bool v)
+	{
+		return m_valid = v;
+	}
+private:
+	bool m_valid;
+};
+
 class Cbt_piece  
 {
 public:
@@ -40,10 +61,10 @@ public:
 	int size() const
 	{
 		return m_size;
-	}
+	}	
 
 	typedef set<Cbt_peer_link*> t_peers;
-	typedef vector<bool> t_sub_pieces;
+	typedef vector<Cbt_sub_piece> t_sub_pieces;
 	
 	char m_hash[20];
 	t_peers m_peers;
