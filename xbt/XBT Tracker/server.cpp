@@ -98,19 +98,19 @@ void Cserver::run()
 			Csocket l0, l1;
 			int v = true;
 			if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
-				cerr << "socket failed: " << WSAGetLastError() << endl;
+				cerr << "socket failed: " << error2a(WSAGetLastError()) << endl;
 			else if (setsockopt(l0, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
 				l0.bind(*j, htons(*i)))			
-				cerr << "bind failed: " << WSAGetLastError() << endl;
+				cerr << "bind failed: " << error2a(WSAGetLastError()) << endl;
 			else if (l0.listen())
-				cerr << "listen failed: " << WSAGetLastError() << endl;
+				cerr << "listen failed: " << error2a(WSAGetLastError()) << endl;
 			else
 				lt.push_back(l0);
 			if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
-				cerr << "socket failed: " << WSAGetLastError() << endl;
+				cerr << "socket failed: " << error2a(WSAGetLastError()) << endl;
 			else if (setsockopt(l1, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
 				l1.bind(*j, htons(*i)))
-				cerr << "bind failed: " << WSAGetLastError() << endl;
+				cerr << "bind failed: " << error2a(WSAGetLastError()) << endl;
 			else
 				lu.push_back(l1);
 		}
@@ -160,7 +160,7 @@ void Cserver::run()
 			n = max(n, static_cast<SOCKET>(*i));
 		}
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, NULL) == SOCKET_ERROR)
-			cerr << "select failed: " << WSAGetLastError() << endl;
+			cerr << "select failed: " << error2a(WSAGetLastError()) << endl;
 		else 
 		{
 			for (t_sockets::iterator i = lt.begin(); i != lt.end(); i++)
@@ -171,11 +171,11 @@ void Cserver::run()
 				socklen_t cb_a = sizeof(sockaddr_in);
 				Csocket s = accept(*i, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
-					cerr << "accept failed: " << WSAGetLastError() << endl;
+					cerr << "accept failed: " << error2a(WSAGetLastError()) << endl;
 				else
 				{
 					if (s.blocking(false))
-						cerr << "ioctlsocket failed: " << WSAGetLastError() << endl;
+						cerr << "ioctlsocket failed: " << error2a(WSAGetLastError()) << endl;
 					m_connections.push_front(Cconnection(this, s, a));
 				}
 			}

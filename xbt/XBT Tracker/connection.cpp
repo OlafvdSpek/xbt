@@ -60,7 +60,7 @@ int Cconnection::recv()
 			case WSAEWOULDBLOCK:
 				return 0;;
 			}
-			cerr << "recv failed: " << e << endl;
+			cerr << "recv failed: " << error2a(e) << endl;
 			return 1;
 		}
 		if (m_state == 5)
@@ -120,7 +120,7 @@ int Cconnection::send()
 			case WSAEWOULDBLOCK:
 				return 0;
 			}
-			cerr << "send failed: " << e << endl;
+			cerr << "send failed: " << error2a(e) << endl;
 			return 0;
 		}
 		m_r += r;
@@ -212,7 +212,7 @@ void Cconnection::read(const string& v)
 	s.read(d.data_edit() + h.size());
 	int r = m_s.send(d, d.size());
 	if (r == SOCKET_ERROR)
-		cerr << "send failed: " << WSAGetLastError() << endl;
+		cerr << "send failed: " << error2a(WSAGetLastError()) << endl;
 	else if (r != d.size())
 	{
 		m_write_b.resize(d.size() - r);
