@@ -513,7 +513,7 @@ int Cserver::start_file(const string& id)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->open(i->m_name);
+		i->open();
 		return 0;
 	}
 	return 1;
@@ -585,11 +585,12 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 		if (i->m_info_hash == f.m_info_hash)
 			return 2;
 	}
-	if (f.open(name.empty() ? incompletes_dir() + '/' + f.m_name : name))
-		return 3;
+	f.m_name = name.empty() ? incompletes_dir() + '/' + f.m_name : name;
 	f.m_peer_id = new_peer_id();
 	m_files.push_front(f);
 	save_state(true).save(state_fname());
+	if (below_torrent_limit() && f.open())
+		return 3;
 	return 0;
 }
 
@@ -669,7 +670,7 @@ void Cserver::load_state(const Cvirtual_binary& d)
 		Cbt_file f;
 		f.m_server = this;
 		f.load_state(r);
-		if (f.open(f.m_name))
+		if (f.open())
 			continue;
 		f.m_peer_id = new_peer_id();
 		m_files.push_front(f);
@@ -856,6 +857,16 @@ bool Cserver::below_peer_limit() const
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		c += i->m_peers.size();
 	return c < m_peer_limit;
+}
+
+bool Cserver::below_torrent_limit() const
+{
+	if (!m_torrent_limit)
+		return true;
+	int c = 0;
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		c += i->is_open();
+	return c < m_torrent_limit;
 }
 
 void Cserver::sig_handler(int v)
