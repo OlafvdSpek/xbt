@@ -225,9 +225,14 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 		CreateDirectory(path.c_str(), NULL);
 		d.save(path + "\\" + torrent.name() + ".torrent");
 	}
-	string path = m_dir;
+	string path;
 	if (!m_dir.IsEmpty() && !ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
-		path += "\\Incompletes\\" + torrent.name();
+	{
+		path = m_dir + "\\Completes\\" + torrent.name().c_str();
+		struct _stati64 b;
+		if (_stati64(path.c_str(), &b))
+			path = m_dir + "\\Incompletes\\" + torrent.name().c_str();
+	}
 	else if (torrent.files().size() == 1)
 	{
 		SetForegroundWindow();
