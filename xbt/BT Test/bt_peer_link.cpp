@@ -627,7 +627,7 @@ void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 		m_f->m_down_counter.add(size);
 		m_f->m_total_downloaded += size;
 		m_local_requests.erase(i);
-		m_f->write_data(m_f->mcb_piece * piece + offset, s, size, this);
+		write_data(m_f->mcb_piece * piece + offset, s, size, t);
 		return;
 	}
 	alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b"));
@@ -641,10 +641,25 @@ void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, c
 		alert(Calert::warn, "Chunk " + n(offset >> 15) + ": invalid");
 		return;
 	}
-	m_f->write_data(offset, s, size, this);
+	write_data(offset, s, size, 0);
 	m_f->m_downloaded += size;
 	m_f->m_down_counter.add(size);
 	m_f->m_total_downloaded += size;
+}
+
+int Cbt_peer_link::write_data(__int64 o, const char* s, int cb_s, int latency)
+{
+	int a = o / m_f->mcb_piece;
+	if (a < 0 || a >= m_f->m_pieces.size())
+		return 0;
+	Cbt_piece& piece = m_f->m_pieces[a];
+	if (!m_f->write_data(o, s, cb_s, this))
+		return 0;
+	if (o % piece.cb_sub_piece())
+		alert(Calert::debug, "Piece " + n(a) + ", offset " + n(o % m_f->mcb_piece) + ", size " + b2a(cb_s) + ": invalid offset (" + peer_id2a(m_remote_peer_id) + ")");
+	else
+		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(o % m_f->mcb_piece / piece.cb_sub_piece()) + ", size " + b2a(cb_s) + ", latency: " + n(latency) + " s: rejected (" + peer_id2a(m_remote_peer_id) + ")");
+	return 1;
 }
 
 void Cbt_peer_link::read_message(const char* r, const char* r_end)
