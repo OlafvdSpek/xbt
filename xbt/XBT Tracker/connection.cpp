@@ -194,21 +194,18 @@ void Cconnection::read(const string& v)
 				"Location: " + m_server->redirect_url() + "\r\n";
 		}
 	}
-	if (!s)
-		gzip = false;
-	else if (gzip)
+	if (gzip && s)
 	{
 		static ofstream f("xbt_tracker_gzip.log");
 		f << time(NULL) << '\t' << v[5] << '\t' << s.size() << '\t';
 		Cvirtual_binary s2 = xcc_z::gzip(s);
 		f << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << endl;
 		if (s2.size() + 24 < s.size())
+		{
+			h += "Content-Encoding: gzip\r\n";
 			s = s2;
-		else
-			gzip = false;
+		}
 	}
-	if (gzip)
-		h += "Content-Encoding: gzip\r\n";
 	h += "\r\n";
 	Cvirtual_binary d;
 	memcpy(d.write_start(h.size() + s.size()), h.c_str(), h.size());
