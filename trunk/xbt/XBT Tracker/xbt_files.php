@@ -1,13 +1,14 @@
 <?php
 	ob_start("ob_gzhandler");
+	require_once("xbt_config.php");
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <link rel=stylesheet href="xbt.css">
 <meta http-equiv=refresh content=60>
 <title>XBT Files</title>
 <?php
-	mysql_connect("localhost", "xbt", "pass");
-	mysql_select_db("xbt");
+	mysql_connect($mysql_host, $mysql_user, $mysql_pass);
+	mysql_select_db($mysql_db);
 	$results = mysql_query("select sum(announced_http) announced_http, sum(announced_http_compact) announced_http_compact, sum(announced_http_no_peer_id) announced_http_no_peer_id, sum(announced_udp) announced_udp, sum(scraped_http) scraped_http, sum(scraped_udp) scraped_udp, sum(completed) completed, sum(started) started, sum(stopped) stopped, sum(leechers) leechers, sum(seeders) seeders, sum(leechers or seeders) torrents from xbt_files");
 	$result = mysql_fetch_assoc($results);
 	$result['announced'] = $result['announced_http'] + $result['announced_http_compact'] + $result['announced_http_no_peer_id'] + $result['announced_udp'];
