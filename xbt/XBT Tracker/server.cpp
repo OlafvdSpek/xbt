@@ -117,10 +117,7 @@ int Cserver::run()
 				cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 			{
-				Ctcp_listen_socket ls;
-				ls.s(l0);
-				ls.m_server = this;
-				lt.push_back(ls);
+				lt.push_back(Ctcp_listen_socket(this, l0));
 #ifdef EPOLL
 				if (m_epoll.ctl(EPOLL_CTL_ADD, l0, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
 				{
@@ -142,10 +139,7 @@ int Cserver::run()
 				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 			{
-				Cudp_listen_socket ls;
-				ls.s(l1);
-				ls.m_server = this;
-				lu.push_back(ls);
+				lu.push_back(Cudp_listen_socket(this, l1));
 #ifdef EPOLL
 				if (m_epoll.ctl(EPOLL_CTL_ADD, l1, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lu.back()))
 				{
