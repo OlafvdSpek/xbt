@@ -17,6 +17,9 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void register_tray();
+	void unregister_tray();
+	void update_tray();
 	void server(Cserver& server);
 	void auto_size_files();
 	void auto_size_peers();
@@ -38,6 +41,7 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -62,6 +66,7 @@ protected:
 	afx_msg void OnDropFiles(HDROP hDropInfo);
 	afx_msg void OnPopupExit();
 	afx_msg void OnPopupExplore();
+	afx_msg void OnDestroy();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

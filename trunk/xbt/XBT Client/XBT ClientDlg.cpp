@@ -16,6 +16,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+const static UINT g_tray_message_id = RegisterWindowMessage("XBT Client Tray Message");
+
 /////////////////////////////////////////////////////////////////////////////
 // CXBTClientDlg dialog
 
@@ -70,6 +72,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_WM_DROPFILES()
 	ON_COMMAND(ID_POPUP_EXIT, OnPopupExit)
 	ON_COMMAND(ID_POPUP_EXPLORE, OnPopupExplore)
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -115,6 +118,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_peers.InsertColumn(13, "Peer ID");
 	m_file = NULL;
 	auto_size();
+	register_tray();
 	SetTimer(0, 1000, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -324,7 +328,9 @@ void CXBTClientDlg::auto_size_peers()
 void CXBTClientDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	ETSLayoutDialog::OnSize(nType, cx, cy);
-	if (m_files.GetSafeHwnd())
+	if (nType == SIZE_MINIMIZED)
+		ShowWindow(SW_HIDE);
+	else if (m_files.GetSafeHwnd())
 		auto_size();
 }
 
@@ -534,6 +540,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 void CXBTClientDlg::OnTimer(UINT nIDEvent) 
 {
 	read_server_dump(Cstream_reader(m_server->get_status()));
+	update_tray();
 	ETSLayoutDialog::OnTimer(nIDEvent);
 }
 
@@ -618,8 +625,73 @@ void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 
 BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg) 
 {
-	if (pMsg->message == WM_KEYDOWN &&
-		(pMsg->wParam == VK_CANCEL || pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_RETURN))
-		return true;
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		switch (pMsg->wParam)
+		{
+		case VK_CANCEL:
+		case VK_ESCAPE:
+			ShowWindow(SW_HIDE);
+		case VK_RETURN:
+			return true;
+		}
+	}
 	return ETSLayoutDialog::PreTranslateMessage(pMsg);
+}
+
+void CXBTClientDlg::OnDestroy() 
+{
+	unregister_tray();
+	ETSLayoutDialog::OnDestroy();
+}
+
+void CXBTClientDlg::register_tray()
+{
+	NOTIFYICONDATA nid;
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = GetSafeHwnd();
+	nid.uID = 0;
+	nid.uFlags = NIF_ICON | NIF_MESSAGE;
+	nid.uCallbackMessage = g_tray_message_id;
+	nid.hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	Shell_NotifyIcon(NIM_ADD, &nid);
+}
+
+void CXBTClientDlg::unregister_tray()
+{
+	NOTIFYICONDATA nid;
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = GetSafeHwnd();
+	nid.uID = 0;
+	nid.uFlags = 0;
+	Shell_NotifyIcon(NIM_DELETE, &nid);
+}
+
+void CXBTClientDlg::update_tray()
+{
+	NOTIFYICONDATA nid;
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = GetSafeHwnd();
+	nid.uID = 0;
+	nid.uFlags = NIF_TIP;
+	strcpy(nid.szTip, "XBT Client");
+	Shell_NotifyIcon(NIM_MODIFY, &nid);
+}
+
+
+LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+{
+	if (message == g_tray_message_id)
+	{	
+		switch (lParam)
+		{
+		case WM_LBUTTONDBLCLK:
+			if (IsWindowVisible())
+				SetForegroundWindow();
+			else
+				ShowWindow(SW_RESTORE);
+			return 0;
+		}
+	}
+	return ETSLayoutDialog::WindowProc(message, wParam, lParam);
 }
