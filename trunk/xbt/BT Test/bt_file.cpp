@@ -106,7 +106,7 @@ int Cbt_file::info(const Cbvalue& info)
 		{
 			__int64 size = i->size();
 			while (size)
-				size -= piece++->mcb_d = min(size, mcb_piece);
+				size -= piece++->resize(min(size, mcb_piece));
 		}
 		assert(piece - &m_pieces.front() == m_pieces.size());
 		return 0;
@@ -117,7 +117,7 @@ int Cbt_file::info(const Cbvalue& info)
 		return 1;
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
-		m_pieces[i].mcb_d = min(mcb_f - mcb_piece * i, mcb_piece);
+		m_pieces[i].resize(min(mcb_f - mcb_piece * i, mcb_piece));
 		memcpy(m_pieces[i].m_hash, piece_hashes.c_str() + 20 * i, 20);
 	}
 	return 0;
@@ -407,7 +407,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 	if (piece.mc_sub_pieces_left)
 		return;
 	Cvirtual_binary d;
-	read_data(a * mcb_piece, d.write_start(piece.mcb_d), piece.mcb_d);
+	read_data(a * mcb_piece, d.write_start(piece.size()), piece.size());
 	if (!m_merkle && memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
 	{
 		alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
@@ -415,7 +415,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		return;
 	}
 	piece.m_valid = true;
-	m_left -= piece.mcb_d;
+	m_left -= piece.size();
 	if (!m_left)
 	{
 		m_completed_at = time(NULL);
@@ -423,7 +423,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 	}
 	{
 		offset = a * mcb_piece;
-		size = piece.mcb_d;
+		size = piece.size();
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		{
 			if (offset >= i->offset() + i->size())

@@ -15,6 +15,7 @@
 class Cbt_piece  
 {
 public:
+	int resize(int);
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;
 	void load_state(Cstream_reader&);
@@ -26,10 +27,14 @@ public:
 	void write(int offset, const char* s, int cb_s);
 	Cbt_piece();
 
+	int size() const
+	{
+		return m_size;
+	}
+
 	typedef set<Cbt_peer_link*> t_peers;
 	typedef vector<bool> t_sub_pieces;
 	
-	int mcb_d;
 	char m_hash[20];
 	t_peers m_peers;
 	int mc_peers;
@@ -38,6 +43,8 @@ public:
 	int mcb_sub_piece;
 	bool m_valid;
 	char m_priority;
+private:
+	int m_size;
 };
 
 #endif // !defined(AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_)
