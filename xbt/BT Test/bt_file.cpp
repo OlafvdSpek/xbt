@@ -30,6 +30,7 @@ Cbt_file::Cbt_file()
 	mc_seeders_total = 0;
 	m_hasher = NULL;
 	m_started_at = time(NULL);
+	m_session_started_at = time(NULL);
 	m_completed_at = 0;
 	m_priority = 0;
 	m_run = true;
@@ -489,8 +490,8 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	vector<int> invalid_pieces;
 
 	invalid_pieces.reserve(c_invalid_pieces());
-	bool begin_mode = c_valid_pieces() < 4;
-	bool end_mode = m_server->end_mode() && c_invalid_pieces() < 16;
+	bool begin_mode = Cbt_file::begin_mode();
+	bool end_mode = Cbt_file::end_mode();
 	int rank = INT_MAX;
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
@@ -502,10 +503,11 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 			continue;
 		if (begin_mode && m_pieces[i].m_peers.empty() && !m_pieces[i].m_sub_pieces.empty())
 			return i;
-		int piece_rank = 5120000 * min(m_pieces[i].m_peers.size(), 9)
-			+ -256000 * max(0, min(m_pieces[i].m_priority + 9, 19)) 
-			+ 256 * min(m_pieces[i].mc_peers, 999)
-			+ m_pieces[i].m_sub_pieces.empty();
+		int piece_rank = 400000 * min(m_pieces[i].m_peers.size(), 9)
+			+ 20000 * max(0, min(9 - m_pieces[i].m_priority, 19)) 
+			+ 2000 * min(m_pieces[i].mc_peers, 9)
+			+ 1000 * m_pieces[i].m_sub_pieces.empty()
+			+ min(m_pieces[i].mc_peers, 999);
 		if (piece_rank > rank)
 			continue;
 		if (piece_rank < rank)
@@ -518,7 +520,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 160;
+	int size = m_info_hash.length() + m_name.length() + 164;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -591,6 +593,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, mcb_piece);
 	w.write_int(4, m_hasher ? 2 : m_run);
 	w.write_int(4, m_started_at);
+	w.write_int(4, m_session_started_at);
 	w.write_int(4, m_completed_at);
 	w.write_int(4, c_distributed_copies);
 	w.write_int(4, c_distributed_copies_remainder);
@@ -663,6 +666,8 @@ void Cbt_file::load_state(Cstream_reader& r)
 	m_total_downloaded = r.read_int(8);
 	m_total_uploaded = r.read_int(8);
 	m_validate = r.read_int(4);
+	m_completed_at = r.read_int(4);
+	m_started_at = r.read_int(4);
 	{
 		Cvirtual_binary pieces = r.read_data();
 		for (int i = 0; i < min(pieces.size(), m_pieces.size()); i++)
@@ -682,7 +687,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 40;
+	int c = m_info.size() + m_name.size() + m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 48;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	return c;
@@ -698,6 +703,8 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	w.write_int(8, m_total_downloaded);
 	w.write_int(8, m_total_uploaded);
 	w.write_int(4, intermediate && m_left || m_validate);
+	w.write_int(4, m_completed_at);
+	w.write_int(4, m_started_at);
 	w.write_int(4, m_pieces.size());
 	for (int j = 0; j < m_pieces.size(); j++)
 		w.write_int(1, m_pieces[j].m_valid);
@@ -808,4 +815,14 @@ bool Cbt_file::test_and_set_hashes(__int64 offset, const string& v, const string
 Cbt_logger& Cbt_file::logger()
 {
 	return m_server->logger();
+}
+
+bool Cbt_file::begin_mode() const
+{
+	return c_valid_pieces() < 4;
+}
+
+bool Cbt_file::end_mode() const
+{
+	return m_server->end_mode() && c_invalid_pieces() < 16;
 }

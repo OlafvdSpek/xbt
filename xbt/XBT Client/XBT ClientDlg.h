@@ -225,6 +225,7 @@ private:
 		int cb_chunk;
 		int cb_piece;
 		int started_at;
+		int session_started_at;
 		int completed_at;
 		int priority;
 		bool hashing;

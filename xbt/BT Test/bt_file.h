@@ -25,6 +25,8 @@ class Cserver;
 class Cbt_file  
 {
 public:
+	bool end_mode() const;
+	bool begin_mode() const;
 	Cbt_logger& logger();
 	string get_hashes(__int64 offset, int c) const;
 	bool test_and_set_hashes(__int64 offset, const string& v, const string& w);
@@ -178,6 +180,7 @@ public:
 	t_trackers m_trackers;
 	Cvirtual_binary m_info;
 	int m_started_at;
+	int m_session_started_at;
 	int m_completed_at;
 	int mc_leechers_total;
 	int mc_seeders_total;
