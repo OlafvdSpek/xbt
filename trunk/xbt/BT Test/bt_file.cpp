@@ -635,26 +635,26 @@ __int64 Cbt_file::size() const
 
 void Cbt_file::load_state(Cstream_reader& r)
 {
-	for (int c_trackers = r.read_int32(); c_trackers--; )
+	for (int c_trackers = r.read_int(4); c_trackers--; )
 		m_trackers.push_back(r.read_string());
 	info(r.read_data());
 	m_name = r.read_string();
-	m_total_downloaded = r.read_int64();
-	m_total_uploaded = r.read_int64();
-	m_validate = r.read_int32();
+	m_total_downloaded = r.read_int(8);
+	m_total_uploaded = r.read_int(8);
+	m_validate = r.read_int(4);
 	{
 		Cvirtual_binary pieces = r.read_data();
 		for (int i = 0; i < min(pieces.size(), m_pieces.size()); i++)
 			m_pieces[i].m_valid = pieces[i];
 	}
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		i->priority(r.read_int8());
+		i->priority(r.read_int(1));
 	update_piece_priorities();
 	{
-		for (int c_peers = r.read_int32(); c_peers--; )
+		for (int c_peers = r.read_int(4); c_peers--; )
 		{
-			int h = r.read_int32();
-			m_old_peers[h] = m_new_peers[h] = r.read_int32();
+			int h = r.read_int(4);
+			m_old_peers[h] = m_new_peers[h] = r.read_int(4);
 		}
 	}
 }
