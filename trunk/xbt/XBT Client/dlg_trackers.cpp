@@ -109,8 +109,8 @@ void Cdlg_trackers::OnDelete()
 	int index = m_list.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
 		return;
-	m_list.DeleteItem(index);
 	m_trackers.erase(m_list.GetItemData(index));
+	m_list.DeleteItem(index);
 }
 
 void Cdlg_trackers::insert(const t_tracker& e)

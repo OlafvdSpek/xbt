@@ -176,6 +176,14 @@ SOURCE=.\dlg_options.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\dlg_profile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_profiles.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\dlg_scheduler.cpp
 # End Source File
 # Begin Source File
@@ -354,6 +362,14 @@ SOURCE=.\dlg_make_torrent.h
 # Begin Source File
 
 SOURCE=.\dlg_options.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_profile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_profiles.h
 # End Source File
 # Begin Source File
 

@@ -17,6 +17,8 @@
 #define IDD_MAKE_TORRENT                137
 #define IDD_TORRENT_OPTIONS             138
 #define IDD_SCHEDULER                   139
+#define IDD_PROFILES                    140
+#define IDD_PROFILE                     141
 #define IDC_FILES                       1000
 #define IDC_PEERS                       1002
 #define IDC_ADMIN_PORT                  1002
@@ -69,6 +71,11 @@
 #define IDC_INCOMPLETES_DIRECTORY_BROWSE 1044
 #define IDC_TORRENTS_DIRECTORY_BROWSE   1045
 #define IDC_SEEDING_RATIO_OVERRIDE      1047
+#define IDC_SEEDING_RATIO_ENABLE        1049
+#define IDC_UPLOAD_RATE_ENABLE          1050
+#define IDC_UPLOAD_SLOTS_ENABLE         1051
+#define IDC_PEER_LIMIT_ENABLE           1052
+#define IDC_TORRENT_LIMIT_ENABLE        1053
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -113,14 +120,15 @@
 #define ID_POPUP_STATE_PAUSED           32816
 #define ID_POPUP_STATE_STOPPED          32817
 #define ID_POPUP_SCHEDULER              32818
+#define ID_POPUP_PROFILES               32821
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        140
-#define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1048
+#define _APS_NEXT_RESOURCE_VALUE        142
+#define _APS_NEXT_COMMAND_VALUE         32822
+#define _APS_NEXT_CONTROL_VALUE         1054
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

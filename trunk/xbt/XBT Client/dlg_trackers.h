@@ -30,7 +30,7 @@ public:
 	void insert(const t_tracker&);
 	Cdlg_trackers(CWnd* pParent);   // standard constructor
 
-	const t_trackers& trackers()
+	const t_trackers& trackers() const
 	{
 		return m_trackers;
 	}

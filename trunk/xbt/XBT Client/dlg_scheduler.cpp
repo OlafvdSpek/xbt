@@ -62,8 +62,7 @@ BOOL Cdlg_scheduler::OnInitDialog()
 	UpdateLayout();
 
 	m_list.InsertColumn(0, "Time");
-	m_list.InsertColumn(1, "Name");
-	m_list.InsertColumn(2, "Value");
+	m_list.InsertColumn(1, "Profile");
 	m_list.auto_size();
 	return true;
 }
