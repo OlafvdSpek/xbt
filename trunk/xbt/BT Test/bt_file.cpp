@@ -409,6 +409,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 	if (!m_merkle && memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
 	{
 		alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
+		logger().invalid(m_info_hash, false, a);
 		return;
 	}
 	piece.m_valid = true;
@@ -455,6 +456,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 			i->open(m_name, O_RDONLY);
 	}
 	alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
+	logger().valid(m_info_hash, false, a);
 }
 
 int Cbt_file::read_data(__int64 offset, byte* d, int cb_d)

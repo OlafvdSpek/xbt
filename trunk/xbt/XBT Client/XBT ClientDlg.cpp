@@ -225,6 +225,8 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));
 	start_server();
 	insert_columns(true);
+	m_events_sort_column = -1;
+	m_files_sort_column = -1;
 	m_peers_sort_column = pc_client;
 	m_peers_sort_reverse = false;
 	m_torrents_sort_column = fc_name;
@@ -1522,7 +1524,7 @@ int CXBTClientDlg::events_compare(int id_a, int id_b) const
 		swap(id_a, id_b);
 	const t_event& a = m_file->events[id_a];
 	const t_event& b = m_file->events[id_b];
-	switch (m_peers_sort_column)
+	switch (m_events_sort_column)
 	{
 	case ec_time:
 		return compare(b.time, a.time);
@@ -1588,7 +1590,7 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 		swap(id_a, id_b);
 	const t_sub_file& a = m_file->sub_files[id_a];
 	const t_sub_file& b = m_file->sub_files[id_b];
-	switch (m_peers_sort_column)
+	switch (m_files_sort_column)
 	{
 	case sfc_name:
 		return compare(a.name, b.name);
@@ -1624,8 +1626,21 @@ static int CALLBACK sub_files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lPa
 void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
-	m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
-	m_peers_sort_column = m_peers_columns[pNMListView->iSubItem];
+	switch (m_bottom_view)
+	{
+	case v_events:
+		m_events_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_events_sort_column && !m_events_sort_reverse;
+		m_events_sort_column = m_peers_columns[pNMListView->iSubItem];
+		break;
+	case v_files:
+		m_files_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_files_sort_column && !m_files_sort_reverse;
+		m_files_sort_column = m_peers_columns[pNMListView->iSubItem];
+		break;
+	case v_peers:
+		m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
+		m_peers_sort_column = m_peers_columns[pNMListView->iSubItem];
+		break;
+	}
 	sort_peers();
 	*pResult = 0;
 }
@@ -1903,7 +1918,6 @@ void CXBTClientDlg::set_bottom_view(int v)
 		return;
 	m_peers.DeleteAllItems();
 	m_bottom_view = v;
-	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
 }
