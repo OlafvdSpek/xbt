@@ -28,10 +28,10 @@ public:
 	string m_info_hash;
 	int m_ipa;
 	string m_peer_id;
-	int m_downloaded;
-	int m_left;
+	__int64 m_downloaded;
+	__int64 m_left;
 	int m_port;
-	int m_uploaded;
+	__int64 m_uploaded;
 	int m_num_want;
 	bool m_no_peer_id;
 };
