@@ -90,6 +90,12 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 	return true;
 }
 
+static string base_name(const string& v)
+{
+	int i = v.rfind('\\');
+	return i == string::npos ? v : v.substr(i + 1);
+}
+
 void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo) 
 {
 	int c_files = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
@@ -101,6 +107,11 @@ void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo)
 		insert(name);
 	}
 	ETSLayoutDialog::OnDropFiles(hDropInfo);
+	if (m_map.size() == 1)
+	{
+		m_name = base_name(m_map.begin()->second.name).c_str();
+		UpdateData(false);
+	}
 	auto_size();
 	sort();
 }
@@ -108,14 +119,37 @@ void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo)
 void Cdlg_make_torrent::insert(const string& name)
 {
 	struct stat b;
-	if (stat(name.c_str(), &b) || !b.st_size)
+	if (stat(name.c_str(), &b))
+		return;
+	if (b.st_mode & _S_IFDIR)
+	{
+		if (m_map.empty())
+		{
+			m_name = base_name(name).c_str();
+			UpdateData(false);
+		}
+		WIN32_FIND_DATA finddata;
+		HANDLE findhandle = FindFirstFile((name + "\\*").c_str(), &finddata);
+		if (findhandle != INVALID_HANDLE_VALUE)
+		{
+			do
+			{
+				if (*finddata.cFileName != '.')
+					insert(name + "\\" + finddata.cFileName);
+			}
+			while (FindNextFile(findhandle, &finddata));
+			FindClose(findhandle);
+		}
+		return;
+	}
+	if (!b.st_size)
 		return;
 	int id = m_map.empty() ? 0 : m_map.rbegin()->first + 1;
 	t_map_entry& e = m_map[id];
 	e.name = name;
 	e.size = b.st_size;
 	m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), id);
-	m_save.EnableWindow();
+	m_save.EnableWindow(m_map.size() < 256);
 }
 
 void Cdlg_make_torrent::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -126,7 +160,7 @@ void Cdlg_make_torrent::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (pDispInfo->item.iSubItem)
 	{
 	case 0:
-		m_buffer[m_buffer_w] = e.name;
+		m_buffer[m_buffer_w] = base_name(e.name);
 		break;
 	case 1:
 		m_buffer[m_buffer_w] = n(e.size);
@@ -187,14 +221,7 @@ void Cdlg_make_torrent::OnSave()
 			cb_f += cb_d;
 		}
 		_close(f);
-		string name = i->second.name;
-		int j = name.rfind('\\');
-		if (j != string::npos)
-			name.erase(0, j + 1);
-		Cbvalue file;
-		file.d(bts_length, cb_f);
-		file.d(bts_path, Cbvalue().l(name));
-		files.l(file);
+		files.l(Cbvalue().d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name))));
 	}
 	if (w != d)
 		pieces += Csha1(d, w - d).read();
