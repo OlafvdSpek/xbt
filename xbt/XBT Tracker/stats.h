@@ -14,6 +14,12 @@ class Cstats
 public:
 	Cstats();
 
+	int announced_http;
+	int announced_http_compact;
+	int announced_http_no_peer_id;
+	int announced_udp;
+	int scraped_http;
+	int scraped_udp;
 	int start_time;
 };
 
