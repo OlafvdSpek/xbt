@@ -47,7 +47,9 @@ public:
 	int connect(int h, int p);
 	const Csocket& open(int t, bool blocking = false);
 	int recv(void*, int);
+	int recvfrom(void* d, int cb_d, sockaddr* a, socklen_t* cb_a);
 	int send(const void*, int);
+	int sendto(const void*, int, const sockaddr* a, socklen_t cb_a);	
 	Csocket(SOCKET = INVALID_SOCKET);
 	Csocket(const Csocket&);
 	const Csocket& operator=(const Csocket&);

@@ -104,9 +104,19 @@ int Csocket::recv(void* d, int cb_d)
 	return ::recv(*this, reinterpret_cast<char*>(d), cb_d, MSG_NOSIGNAL);
 }
 
+int Csocket::recvfrom(void* d, int cb_d, sockaddr* a, socklen_t* cb_a)
+{
+	return ::recvfrom(*this, reinterpret_cast<char*>(d), cb_d, MSG_NOSIGNAL, a, cb_a);
+}
+
 int Csocket::send(const void* s, int cb_s)
 {
 	return ::send(*this, reinterpret_cast<const char*>(s), cb_s, MSG_NOSIGNAL);
+}
+
+int Csocket::sendto(const void* s, int cb_s, const sockaddr* a, socklen_t cb_a)
+{
+	return ::sendto(*this, reinterpret_cast<const char*>(s), cb_s, MSG_NOSIGNAL, a, cb_a);
 }
 
 int Csocket::get_host(const string& name)
