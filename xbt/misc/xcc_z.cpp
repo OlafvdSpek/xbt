@@ -12,6 +12,38 @@
 #include <zlib.h>
 #endif
 
+Cvirtual_binary xcc_z::gunzip(const void* s0, int cb_s)
+{
+	const byte* s = reinterpret_cast<const byte*>(s0);
+	if (cb_s < 18)
+		return Cvirtual_binary();
+	Cvirtual_binary d;
+	z_stream stream;
+	stream.zalloc = NULL;
+	stream.zfree = NULL;
+	stream.opaque = NULL;
+	stream.next_in = const_cast<byte*>(s) + 10;
+	stream.avail_in = cb_s - 18;
+	stream.next_out = d.write_start(*reinterpret_cast<const int*>(s + cb_s - 4));
+	stream.avail_out = d.size();
+	return stream.next_out
+		&& Z_OK == inflateInit2(&stream, -MAX_WBITS)
+		&& Z_STREAM_END == inflate(&stream, Z_FINISH)
+		&& Z_OK == inflateEnd(&stream)
+		? d 
+		: Cvirtual_binary();
+}
+
+Cvirtual_binary xcc_z::gunzip(const string& v)
+{
+	return gunzip(reinterpret_cast<const byte*>(v.c_str()), v.length());
+}
+
+Cvirtual_binary xcc_z::gunzip(const Cvirtual_binary& s)
+{
+	return gunzip(s, s.size());
+}
+
 Cvirtual_binary xcc_z::gzip(const byte* s, int cb_s)
 {
 	Cvirtual_binary d;
