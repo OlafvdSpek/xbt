@@ -14,6 +14,7 @@
 #include "connection.h"
 #include "epoll.h"
 #include "peer_link.h"
+#include "stats.h"
 #include "tcp_listen_socket.h"
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
@@ -201,6 +202,11 @@ public:
 		return m_secret;
 	}
 
+	Cstats& stats()
+	{
+		return m_stats;
+	}
+
 	int time() const
 	{
 		return m_time;
@@ -214,6 +220,7 @@ private:
 	static void sig_handler(int v);
 
 	Cconfig m_config;
+	Cstats m_stats;
 	bool m_use_sql;
 	int m_clean_up_time;
 	int m_read_config_time;
