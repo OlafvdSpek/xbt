@@ -164,13 +164,12 @@ string b2a(__int64 v, const char* postfix)
 
 static string peer_id2a(const string& name, const string& peer_id, int i)
 {
-	int j;
-	for (j = i; j < peer_id.size(); j++)
+	for (int j = i; j < peer_id.size(); j++)
 	{
 		if (!isalnum(peer_id[j]))
-			break;
+			return name + peer_id.substr(i, j - i);
 	}
-	return name + peer_id.substr(i, j - i);
+	return name + peer_id.substr(i);
 }
 
 string peer_id2a(const string& v)
