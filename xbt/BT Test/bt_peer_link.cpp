@@ -757,38 +757,6 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 	}
 }
 
-ostream& Cbt_peer_link::dump(ostream& os) const
-{
-	os << "<tr><td>" << inet_ntoa(m_a.sin_addr) 
-		<< "<td>" << ntohs(m_a.sin_port) 
-		<< "<td align=right>" << static_cast<int>(m_downloaded >> 10) 
-		<< "<td align=right>" << static_cast<int>(m_uploaded >> 10)
-		<< "<td>" << (m_local_link ? 'L' : 'R') 
-		<< "<td>" << (m_local_choked ? 'C' : ' ') 
-		<< "<td>" << (m_local_interested ? 'I' : ' ')
-		<< "<td>" << (m_remote_choked ? 'C' : ' ') 
-		<< "<td>" << (m_remote_interested ? 'I' : ' ')
-		<< "<td align=right>" << m_read_b.cb_read()
-		<< "<td align=right>" << cb_write_buffer()
-		<< "<td align=right>" << (m_write_b.empty() ? 0 : m_write_b.front().m_s_end - m_write_b.front().m_r)
-		<< "<td align=right>" << m_write_b.size()
-		<< "<td align=right>" << m_remote_requests.size()
-		<< "<td align=right>" << time(NULL) - m_piece_rtime
-		<< "<td align=right>";
-	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
-		os << *i - &m_f->m_pieces.front() << ' ';
-	os << "<td align=right>";
-	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
-		os << ((*i)->m_sub_pieces.empty() ? (*i)->c_sub_pieces() : (*i)->mc_sub_pieces_left) << ' ';
-	os << "<td>" << peer_id2a(m_remote_peer_id);
-	return os;
-}
-
-ostream& operator<<(ostream& os, const Cbt_peer_link& v)
-{
-	return v.dump(os);
-}
-
 int Cbt_peer_link::pre_dump() const
 {
 	int size = m_remote_peer_id.length() + 49;

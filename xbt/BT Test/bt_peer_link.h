@@ -29,7 +29,6 @@ public:
 	void alert(const Calert&);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
-	ostream& dump(ostream&) const;
 	void write_piece(int, int, int, const void*);
 	void write_merkle_piece(__int64 offset, int size, const void* s, const string& hashes);
 	void queue_have(int);
@@ -154,7 +153,5 @@ public:
 	bool m_get_info_extension;
 	bool m_get_peers_extension;
 };
-
-ostream& operator<<(ostream&, const Cbt_peer_link&);
 
 #endif // !defined(AFX_BT_PEER_LINK_H__50DC0701_DE7E_4A9D_B266_8C3188C24072__INCLUDED_)
