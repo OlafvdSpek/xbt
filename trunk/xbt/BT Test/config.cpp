@@ -30,4 +30,14 @@ Cconfig::Cconfig()
 	m_tracker_port = 2710;
 	m_upload_rate = 0;
 	m_upload_slots = 8;
+#ifndef WIN32
+	string home = get_env("HOME");
+	if (!home.empty())
+	{
+		m_completes_dir = home + "/XBT/Completes";
+		m_local_app_data_dir = home + "/XBT";
+		m_incompletes_dir = home + "/XBT/Incompletes";
+		m_torrents_dir = home + "/XBT/Torrents";
+	}
+#endif
 }
