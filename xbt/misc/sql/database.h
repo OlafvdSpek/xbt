@@ -18,7 +18,6 @@ class Cdatabase
 public:
 	Cxcc_error open(const char* host, const char* user, const char* password, const char* database, bool echo_errors = false);
 	Cxcc_error open(const string& host, const string& user, const string& password, const string& database, bool echo_errors = false);
-	Csql_result query(const char* q);
 	Csql_result query(const string& q);
 	int insert_id();
 	void close();
