@@ -111,7 +111,7 @@ void Cconnection::read(const string& v)
 				break;
 			int d = v.find_first_of(" &", c);
 			assert(d != string::npos);
-			ti.set(v.substr(a, c - a - 1),  uri_decode(v.substr(c, d - c)));
+			ti.set(v.substr(a, c - a - 1), uri_decode(v.substr(c, d - c)));
 			a = d + 1;
 		}
 	}
