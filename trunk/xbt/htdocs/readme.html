@@ -1,0 +1,66 @@
+<title>XBT Tracker</title>
+<h1>XBT Tracker</h1>
+<hr>
+<h2>Overview</h2>
+
+XBT Tracker is a BitTorrent tracker written in C++.
+It's designed to offer high performance while consuming little resources (CPU and RAM).
+It's a pure tracker, so it doesn't offer a frontend. You can use any (PHP) frontend you want.
+
+<p>
+XBT Tracker listens on port 2710. The announce URL is http://...:2710/announce. The debug URL is http://...:2710/debug. The scrape URL is http://...:2710/scrape.
+An experimental UDP tracker extension is also supported via announce URL udp://...:2710.
+
+<hr>
+<h2>MySQL</h2>
+
+The tracker stores stats in a MySQL database/table.
+Create a database (xbt) and a user (xbt) with password for the tracker and use these in the next step.
+Create the tables defined in xbt_tracker.sql.
+
+<hr>
+<h2>Installing under Windows</h2>
+
+Unzip the executable to a directory.
+
+<hr>
+<h2>Starting under Windows</h2>
+
+Just start the executable. An empty DOS window should appear.
+<hr>
+<h2>Installing under Linux</h2>
+
+Enter the following commands in a terminal. Replace the "database host user pass" line with details that apply to your setup.
+<pre>
+cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xbtt co xbt
+cd xbt/XBT\ Tracker/
+chmod 755 make.sh
+./make.sh
+cat>xbt_tracker.conf
+database host user pass
+&lt;Ctrl+D>
+</pre>
+<hr>
+<h2>Starting under Linux</h2>
+
+Enter the following commands in a terminal.
+<pre>
+./xbt_tracker
+</pre>
+<hr>
+<h2>Stopping under Linux</h2>
+
+Enter the following commands in a terminal.
+<pre>
+kill `cat xbt_tracker.pid`
+</pre>
+<hr>
+<h2>Links</h2>
+
+<table>
+<tr><td>Apache<td><a href="http://httpd.apache.org/">http://httpd.apache.org/</a>
+<tr><td>MySQL<td><a href="http://mysql.com/">http://mysql.com/</a><td><img src="http://mysql.com/images/mysql.png">
+<tr><td>PHP<td><a href="http://php.net/">http://php.net/</a><td>
+<tr><td>SF<td><a href="http://sourceforge.net/projects/xbtt/">http://sourceforge.net/projects/xbtt/</a><td><img src="http://sourceforge.net/sflogo.php?group_id=94951&amp;type=1">
+<tr><td>XBT<td><a href="http://xbtt.sourceforge.net/">http://xbtt.sourceforge.net/</a>
+</table>
