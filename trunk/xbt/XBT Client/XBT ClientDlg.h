@@ -149,6 +149,7 @@ private:
 		bool removed;
 	};
 
+	typedef vector<int> t_columns;
 	typedef map<int, t_file> t_files;
 
 	void read_peer_dump(t_file& f, Cstream_reader& sr);
@@ -159,6 +160,8 @@ private:
 	bool m_initial_hide;
 	string m_buffer[4];
 	int m_buffer_w;
+	t_columns m_torrents_columns;
+	t_columns m_peers_columns;
 	t_file* m_file;
 	t_files m_files_map;
 	CString m_dir;
