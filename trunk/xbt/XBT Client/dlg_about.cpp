@@ -28,7 +28,7 @@ void Cdlg_about::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(Cdlg_about)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
+	DDX_Control(pDX, IDC_SITE, m_site);
 	//}}AFX_DATA_MAP
 }
 
@@ -45,4 +45,13 @@ END_MESSAGE_MAP()
 void Cdlg_about::OnSite() 
 {
 	ShellExecute(m_hWnd, "open", "http://xbtt.sourceforge.net/", NULL, NULL, SW_SHOW);	
+}
+
+BOOL Cdlg_about::OnInitDialog() 
+{
+	CDialog::OnInitDialog();
+	
+	m_site.ModifyStyle(0, SS_NOTIFY);
+	
+	return true;
 }
