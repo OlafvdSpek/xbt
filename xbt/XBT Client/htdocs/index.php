@@ -1,5 +1,6 @@
 <?php
 	ob_start('ob_gzhandler');
+	error_reporting(error_reporting() & ~E_NOTICE);
 
 	require_once('common.php');
 	require_once('templates.php');
