@@ -24,7 +24,7 @@ Cdlg_make_torrent::Cdlg_make_torrent(CWnd* pParent):
 	ETSLayoutDialog(Cdlg_make_torrent::IDD, pParent, "Cdlg_make_torrent")
 {
 	//{{AFX_DATA_INIT(Cdlg_make_torrent)
-		// NOTE: the ClassWizard will add member initialization here
+	m_tracker = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -35,6 +35,7 @@ void Cdlg_make_torrent::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(Cdlg_make_torrent)
 	DDX_Control(pDX, IDC_SAVE, m_save);
 	DDX_Control(pDX, IDC_LIST, m_list);
+	DDX_Text(pDX, IDC_TRACKER, m_tracker);
 	//}}AFX_DATA_MAP
 }
 
@@ -72,6 +73,7 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 	m_list.InsertColumn(0, "Name");
 	m_list.InsertColumn(1, "Size", LVCFMT_RIGHT);
 	m_list.InsertColumn(2, "");
+	m_tracker = AfxGetApp()->GetProfileString(m_strRegStore, "tracker");
 	m_sort_column = 0;
 	m_sort_reverse = false;
 	
@@ -146,9 +148,10 @@ void Cdlg_make_torrent::OnSize(UINT nType, int cx, int cy)
 
 void Cdlg_make_torrent::OnSave() 
 {
-	CFileDialog dlg(false, "torrent", NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "Torrents|*.torrent|", this);
+	CFileDialog dlg(false, "torrent", NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
+	AfxGetApp()->WriteProfileString(m_strRegStore, "tracker", m_tracker);
 	EndDialog(IDOK);
 }
 
