@@ -1,3 +1,15 @@
+/*
+	XBT Make Torrent
+	Olaf van der Spek
+	OvdSpek@LIACS.NL
+	http://sourceforge.net/projects/xbtt/
+	http://xbtt.sourceforge.net/udp_tracker_protocol.html
+	http://open-content.net/specs/draft-jchapweske-thex-02.html
+
+	This application creates a gzipped merkle torrent from an input file or directory.
+	The code also contains a path for standard non-merkle (v1) torrents.
+*/
+
 #include "stdafx.h"
 
 #include <sys/stat.h>
@@ -16,12 +28,16 @@ string g_name;
 
 static string base_name(const string& v)
 {
-	int i = v.rfind('\\');
-	return i == string::npos ? v : v.substr(i + 1);
+	int i = v.rfind('/');
+	int j = v.rfind('\\');
+	if (i == string::npos)
+		return j == string::npos ? v : v.substr(j + 1);
+	return j == string::npos ? v.substr(i + 1) : v.substr(max(i, j) + 1);
 }
 
 static Cvirtual_binary gzip(const Cvirtual_binary& s)
 {
+	// gzip input if it results in a smaller size
 	Cvirtual_binary d = xcc_z::gzip(s);
 	return d.size() < s.size() ? d : s;
 }
@@ -37,6 +53,7 @@ void insert(const string& name)
 		g_name = base_name(name).c_str();
 	if (b.st_mode & _S_IFDIR)
 	{
+		// name is a directory, so add it's contents
 		WIN32_FIND_DATA finddata;
 		HANDLE findhandle = FindFirstFile((name + "\\*").c_str(), &finddata);
 		if (findhandle != INVALID_HANDLE_VALUE)
@@ -51,6 +68,7 @@ void insert(const string& name)
 		}
 		return;
 	}
+	// don't add empty files
 	if (!b.st_size)
 		return;
 	int id = g_map.empty() ? 0 : g_map.rbegin()->first + 1;
@@ -67,11 +85,13 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	string tracker = argc >= 3 ? argv[2] : "udp://localhost:2710";
-	bool use_merkle = true;
+	bool use_merkle = true; // set to false for a non-merkle torrent
 	insert(argv[1]);
+	// use 1 mbyte pieces by default
 	int cb_piece = 1 << 20;
 	if (!use_merkle)
 	{
+		// find optimal piece size for a non-merkle torrent
 		__int64 cb_total = 0;
 		for (t_map::const_iterator i = g_map.begin(); i != g_map.end(); i++)
 			cb_total += i->second.size;
@@ -93,6 +113,7 @@ int main(int argc, char* argv[])
 		int cb_d;
 		if (use_merkle)
 		{
+			// calculate merkle root hash as explained in XBT Make Merkle Tree.cpp
 			typedef map<int, string> t_map;
 
 			t_map map;
@@ -129,6 +150,7 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			// calculate piece hashes
 			while (cb_d = _read(f, w, d.data_end() - w))
 			{
 				if (cb_d < 0)
@@ -143,6 +165,7 @@ int main(int argc, char* argv[])
 			}
 		}
 		_close(f);
+		// add file to files key
 		files.l(merkle_hash.empty()
 			? Cbvalue().d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name)))
 			: Cbvalue().d(bts_merkle_hash, merkle_hash).d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name))));
@@ -155,6 +178,7 @@ int main(int argc, char* argv[])
 		info.d(bts_pieces, pieces);
 	if (g_map.size() == 1)
 	{
+		// single-file torrent
 		if (use_merkle)
 			info.d(bts_merkle_hash, files.l().front().d(bts_merkle_hash));
 		info.d(bts_length, files.l().front().d(bts_length));
@@ -162,6 +186,7 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
+		// multi-file torrent
 		info.d(bts_files, files);
 		info.d(bts_name, g_name);
 	}
