@@ -90,11 +90,11 @@ Cserver::Cserver(Cdatabase& database):
 
 	for (int i = 0; i < 8; i++)
 		m_secret = m_secret << 8 ^ rand();
+	m_time = ::time(NULL);
 }
 
 int Cserver::run()
 {
-	m_time = ::time(NULL);
 	read_config();
 	t_sockets lt, lu;
 	for (t_listen_ipas::const_iterator j = m_listen_ipas.begin(); j != m_listen_ipas.end(); j++)
