@@ -19,7 +19,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(Cdlg_about)
 	enum { IDD = IDD_ABOUT };
-		// NOTE: the ClassWizard will add data members here
+	CStatic	m_site;
 	//}}AFX_DATA
 
 
@@ -36,6 +36,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(Cdlg_about)
 	afx_msg void OnSite();
+	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
