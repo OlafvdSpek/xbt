@@ -27,6 +27,7 @@ class Cserver;
 class Cbt_file: public Cbt_file_data
 {
 public:
+	void trackers(const string&);
 	int c_local_links() const;
 	int c_remote_links() const;
 	int seeding_ratio() const;

@@ -86,6 +86,7 @@ public:
 	void sub_file_priority(const string& file_id, const string& sub_file_id, int priority);
 	void torrent_end_mode(const string& file_id, bool v);
 	void torrent_seeding_ratio(const string& file_id, bool override, int v);
+	void torrent_trackers(const string& file_id, const string& v);
 	void torrent_upload_slots_max(const string& file_id, bool override, int v);
 	void torrent_upload_slots_min(const string& file_id, bool override, int v);
 	void torrents_dir(const string&);

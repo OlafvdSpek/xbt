@@ -34,6 +34,8 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 	switch (m_state)
 	{
 	case 0:
+		if (m_current_tracker >= f.m_trackers.size())
+			m_current_tracker = 0;
 		if (f.state() != Cbt_file::s_running
 			|| m_announce_time > time(NULL) 
 			|| m_current_tracker < 0 
