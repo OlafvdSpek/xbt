@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "XBT Client.h"
 #include "XBT ClientDlg.h"
 
 #include <sys/stat.h>
