@@ -25,6 +25,7 @@ public:
 	enum { IDD = IDD_MAKE_TORRENT };
 	CButton	m_save;
 	CListCtrl	m_list;
+	CString	m_tracker;
 	//}}AFX_DATA
 
 
