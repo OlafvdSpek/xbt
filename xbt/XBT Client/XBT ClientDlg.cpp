@@ -726,7 +726,7 @@ void CXBTClientDlg::fill_peers()
 		break;
 	case v_files:
 		for (int i = 0; i < m_file->sub_files.size(); i++)
-			m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), i);
+			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_peers:
 		for (t_peers::const_iterator i = m_file->peers.begin(); i != m_file->peers.end(); i++)
@@ -743,7 +743,7 @@ void CXBTClientDlg::fill_peers()
 
 void CXBTClientDlg::OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	if (pNMListView->uNewState & LVIS_FOCUSED && m_file != &m_files_map.find(pNMListView->lParam)->second)
 	{
 		m_file = &m_files_map.find(pNMListView->lParam)->second;
@@ -1515,7 +1515,7 @@ static int CALLBACK files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 
 void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	m_files_sort_reverse = m_torrents_columns[pNMListView->iSubItem] == m_files_sort_column && !m_files_sort_reverse;
 	m_files_sort_column = m_torrents_columns[pNMListView->iSubItem];
 	sort_files();
@@ -1566,14 +1566,45 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	return 0;
 }
 
+int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
+{
+	if (!m_file)
+		return 0;
+	if (m_peers_sort_reverse)
+		swap(id_a, id_b);
+	const t_sub_file& a = m_file->sub_files[id_a];
+	const t_sub_file& b = m_file->sub_files[id_b];
+	switch (m_peers_sort_column)
+	{
+	case sfc_name:
+		return compare(a.name, b.name);
+	case sfc_done:
+		return compare(b.left, a.left);
+	case sfc_left:
+		return compare(a.left, b.left);
+	case sfc_size:
+		return compare(a.size, b.size);
+	case sfc_priority:
+		return compare(b.priority, a.priority);
+	case sfc_hash:
+		return compare(a.hash, b.hash);
+	}
+	return 0;
+}
+
 static int CALLBACK peers_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
 	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->peers_compare(lParam1, lParam2);
 }
 
+static int CALLBACK sub_files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->sub_files_compare(lParam1, lParam2);
+}
+
 void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
 	m_peers_sort_column = m_peers_columns[pNMListView->iSubItem];
 	sort_peers();	
@@ -1587,7 +1618,15 @@ void CXBTClientDlg::sort_files()
 
 void CXBTClientDlg::sort_peers()
 {
-	m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
+	switch (m_bottom_view)
+	{
+	case v_files:
+		m_peers.SortItems(::sub_files_compare, reinterpret_cast<DWORD>(this));
+		break;
+	case v_peers:
+		m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
+		break;
+	}
 }
 
 void CXBTClientDlg::insert_top_columns()

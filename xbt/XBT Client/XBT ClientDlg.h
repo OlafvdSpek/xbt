@@ -30,6 +30,7 @@ public:
 	void sort_files();
 	int files_compare(int id_a, int id_b) const;
 	int peers_compare(int id_a, int id_b) const;
+	int sub_files_compare(int id_a, int id_b) const;
 	static unsigned int server_thread(void* p);
 	void start_server();
 	void stop_server();
