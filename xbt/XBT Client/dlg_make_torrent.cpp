@@ -6,6 +6,7 @@
 #include "dlg_make_torrent.h"
 
 #include "bt_strings.h"
+#include "xcc_z.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -31,6 +32,7 @@ Cdlg_make_torrent::Cdlg_make_torrent(CWnd* pParent):
 	m_tracker = _T("");
 	m_name = _T("");
 	m_use_merkle = FALSE;
+	m_trackers = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -44,6 +46,7 @@ void Cdlg_make_torrent::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_TRACKER, m_tracker);
 	DDX_Text(pDX, IDC_NAME, m_name);
 	DDX_Check(pDX, IDC_USE_MERKLE, m_use_merkle);
+	DDX_Text(pDX, IDC_TRACKERS, m_trackers);
 	//}}AFX_DATA_MAP
 }
 
@@ -64,6 +67,8 @@ END_MESSAGE_MAP()
 BOOL Cdlg_make_torrent::OnInitDialog() 
 {
 	m_tracker = AfxGetApp()->GetProfileString(m_strRegStore, "tracker");
+	m_trackers = AfxGetApp()->GetProfileString(m_strRegStore, "trackers");
+	m_use_merkle = AfxGetApp()->GetProfileInt(m_strRegStore, "use_merkle", false);
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
@@ -73,6 +78,10 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
 			<< item (IDC_TRACKER_STATIC, NORESIZE)
 			<< item (IDC_TRACKER, GREEDY)
+			)
+		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
+			<< item (IDC_TRACKERS_STATIC, NORESIZE)
+			<< item (IDC_TRACKERS, GREEDY)
 			)
 		<< item (IDC_LIST, GREEDY)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
@@ -202,6 +211,32 @@ void Cdlg_make_torrent::OnSize(UINT nType, int cx, int cy)
 		auto_size();	
 }
 
+static Cvirtual_binary gzip(const Cvirtual_binary& s)
+{
+	Cvirtual_binary d = xcc_z::gzip(s);
+	return d.size() < s.size() ? d : s;
+}
+
+static Cbvalue parse_trackers(const string& v)
+{
+	Cbvalue announce_list;
+	for (int i = 0; i < v.length(); )
+	{
+		int j = v.find_first_of("\n\r ", i);
+		if (i == j)
+		{
+			i++;
+			continue;
+		}
+		if (j == string::npos)
+			j = v.length();
+		string url = v.substr(i, j - i);
+		announce_list.l(Cbvalue().l(url));
+		i = j + 1;
+	}
+	return announce_list;
+}
+
 void Cdlg_make_torrent::OnSave() 
 {
 	if (!UpdateData())
@@ -209,7 +244,10 @@ void Cdlg_make_torrent::OnSave()
 	CFileDialog dlg(false, "torrent", m_name + ".torrent", OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
+	CWaitCursor wc;
 	AfxGetApp()->WriteProfileString(m_strRegStore, "tracker", m_tracker);
+	AfxGetApp()->WriteProfileString(m_strRegStore, "trackers", m_trackers);
+	AfxGetApp()->WriteProfileInt(m_strRegStore, "use_merkle", m_use_merkle);
 	int cb_piece = 512 << 10;
 	if (!m_use_merkle)
 	{
@@ -296,8 +334,10 @@ void Cdlg_make_torrent::OnSave()
 		info.d(bts_pieces, pieces);
 	if (m_map.size() == 1)
 	{
-		info.d(bts_length, files.l().front().d(bts_length).i());
-		info.d(bts_name, files.l().front().d(bts_path).l().front().s());
+		if (m_use_merkle)
+			info.d(bts_merkle_hash, files.l().front().d(bts_merkle_hash));
+		info.d(bts_length, files.l().front().d(bts_length));
+		info.d(bts_name, files.l().front().d(bts_path).l().front());
 	}
 	else
 	{
@@ -306,8 +346,13 @@ void Cdlg_make_torrent::OnSave()
 	}
 	Cbvalue torrent;
 	torrent.d(bts_announce, static_cast<string>(m_tracker));
+	if (!m_trackers.IsEmpty())
+		torrent.d(bts_announce_list, parse_trackers(static_cast<string>(m_trackers)));
 	torrent.d(bts_info, info);
-	torrent.read().save(static_cast<string>(dlg.GetPathName()));
+	Cvirtual_binary s = torrent.read();
+	if (m_use_merkle)
+		s = gzip(s);
+	s.save(static_cast<string>(dlg.GetPathName()));
 	EndDialog(IDOK);
 }
 

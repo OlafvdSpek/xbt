@@ -29,6 +29,7 @@ public:
 	CString	m_tracker;
 	CString	m_name;
 	BOOL	m_use_merkle;
+	CString	m_trackers;
 	//}}AFX_DATA
 
 
