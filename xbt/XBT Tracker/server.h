@@ -203,8 +203,8 @@ private:
 	typedef set<int> t_listen_ipas;
 	typedef set<int> t_listen_ports;
 	typedef list<Cpeer_link> t_peer_links;
-	typedef vector<Ctcp_listen_socket> t_tcp_sockets;
-	typedef vector<Cudp_listen_socket> t_udp_sockets;
+	typedef list<Ctcp_listen_socket> t_tcp_sockets;
+	typedef list<Cudp_listen_socket> t_udp_sockets;
 
 	static void sig_handler(int v);
 
