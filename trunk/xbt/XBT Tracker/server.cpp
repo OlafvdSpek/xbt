@@ -46,7 +46,7 @@ void Cserver::run()
 		else
 			lu.push_back(l1);
 	}
-	if (lt.empty() && lu.empty())
+	if (lt.empty() || lu.empty())
 		return;
 #ifndef WIN32
 	if (m_daemon && daemon(true, false))
