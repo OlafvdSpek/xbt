@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <zlib.h>
+#include "stream_int.h"
 
 Cvirtual_binary xcc_z::gunzip(const void* s0, int cb_s)
 {
@@ -20,7 +21,7 @@ Cvirtual_binary xcc_z::gunzip(const void* s0, int cb_s)
 	stream.opaque = NULL;
 	stream.next_in = const_cast<byte*>(s) + 10;
 	stream.avail_in = cb_s - 18;
-	stream.next_out = d.write_start(*reinterpret_cast<const int*>(s + cb_s - 4));
+	stream.next_out = d.write_start(read_int_le(4, s + cb_s - 4));
 	stream.avail_out = d.size();
 	return stream.next_out
 		&& Z_OK == inflateInit2(&stream, -MAX_WBITS)
@@ -70,10 +71,8 @@ Cvirtual_binary xcc_z::gzip(const void* s0, int cb_s)
 		deflateEnd(&stream);
 		w = stream.next_out;
 	}
-	*reinterpret_cast<int*>(w) = crc32(crc32(0, NULL, 0), s, cb_s);
-	w += 4;
-	*reinterpret_cast<int*>(w) = cb_s;
-	w += 4;
+	w = write_int_le(4, w, crc32(crc32(0, NULL, 0), s, cb_s));
+	w = write_int_le(4, w, cb_s);
 	d.size(w - d.data());
 	return d;
 }
