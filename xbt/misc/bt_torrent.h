@@ -41,6 +41,7 @@ public:
 		__int64 m_size;
 	};
 
+	typedef vector<string> t_announces;
 	typedef vector<Cfile> t_files;
 
 	__int64 size() const;
@@ -53,6 +54,11 @@ public:
 	const string& announce() const
 	{
 		return m_announce;
+	}
+
+	const t_announces& announces() const
+	{
+		return m_announces;
 	}
 
 	const t_files& files() const
@@ -71,6 +77,7 @@ public:
 	}
 private:
 	string m_announce;
+	t_announces m_announces;
 	t_files m_files;
 	string m_name;
 	int m_piece_size;
