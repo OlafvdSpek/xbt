@@ -19,6 +19,7 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void set_priority(int v);
 	void set_clipboard(const string&);
 	void lower_process_priority(bool);
 	void set_dir(const string&);

@@ -1883,16 +1883,31 @@ void CXBTClientDlg::OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::OnPopupPriorityHigh() 
 {
+	set_priority(1);
 }
 
 void CXBTClientDlg::OnPopupPriorityNormal() 
 {
+	set_priority(0);
 }
 
 void CXBTClientDlg::OnPopupPriorityLow() 
 {
+	set_priority(-1);
 }
 
 void CXBTClientDlg::OnPopupPriorityExclude() 
 {
+	set_priority(-10);
+}
+
+void CXBTClientDlg::set_priority(int v)
+{
+	if (m_bottom_view != v_files || !m_file)
+		return;
+	for (int index = -1; (index = m_peers.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_sub_file& e = m_file->sub_files[m_peers.GetItemData(index)];
+		m_server.sub_file_priority(m_file->info_hash, e.name, v);
+	}
 }
