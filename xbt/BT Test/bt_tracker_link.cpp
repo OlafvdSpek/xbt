@@ -140,6 +140,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			strstream os;
 			os << "GET " << m_path 
 				<< "?info_hash=" << uri_encode(f.m_info_hash) 
+				<< "&no_peer_id=1"
 				<< "&peer_id=" << uri_encode(f.m_peer_id) 
 				// << "&ip=" << uri_encode("62.163.33.227")
 				<< "&port=" << f.m_local_port
