@@ -231,6 +231,7 @@ private:
 	t_passes m_passes;
 	t_users m_users;
 	string m_announce_log_buffer;
+	string m_files_users_updates_buffer;
 	string m_scrape_log_buffer;
 	string m_users_updates_buffer;
 };

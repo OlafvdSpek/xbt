@@ -353,6 +353,30 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	}
 	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
 		return;
+	if (m_use_sql && uid)
+	{
+		Csql_query q(m_database, "(1,?,?,?,?,?),");
+		switch (v.m_event)
+		{
+		case Ctracker_input::e_completed:
+			q.p(1);
+			q.p(0);
+			q.p(0);
+			break;
+		case Ctracker_input::e_stopped:
+			q.p(0);
+			q.p(v.m_downloaded);
+			q.p(v.m_uploaded);
+			break;
+		default:
+			q.p(0);
+			q.p(0);
+			q.p(0);
+		}
+		q.pe(v.m_info_hash);
+		q.p(uid);
+		m_files_users_updates_buffer += q.read();
+	}
 	t_file& file = m_files[v.m_info_hash];
 	t_peers::iterator i = file.peers.find(v.m_ipa);
 	if (i != file.peers.end())
@@ -760,6 +784,23 @@ void Cserver::write_db_users()
 {
 	if (!m_use_sql)
 		return;
+	if (!m_files_users_updates_buffer.empty())
+	{
+		m_files_users_updates_buffer.erase(m_files_users_updates_buffer.size() - 1);
+		try
+		{
+			m_database.query("insert into xbt_files_users_updates (announced, completed, downloaded, uploaded, info_hash, uid) values " + m_files_users_updates_buffer);
+			m_database.query("insert ignore into xbt_files_users (info_hash, uid) select info_hash, uid from xbt_files_users_updates");
+			m_database.query("update xbt_files_users fu, xbt_files_users_updates fuu"
+				" set fu.announced = fu.announced + fuu.announced, fu.completed = fu.completed + fuu.completed, fu.downloaded = fu.downloaded + fuu.downloaded, fu.uploaded = fu.uploaded + fuu.uploaded"
+				" where fu.uid = fuu.uid");
+			m_database.query("delete from xbt_files_users_updates");
+		}
+		catch (Cxcc_error)
+		{
+		}
+		m_files_users_updates_buffer.erase();
+	}
 	if (!m_users_updates_buffer.empty())
 	{
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
