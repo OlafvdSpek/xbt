@@ -1013,6 +1013,10 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.m_priority = sr.read_int(4);
 	f.m_seeding_ratio = sr.read_int(4);
 	f.m_seeding_ratio_override = sr.read_int(4);
+	f.m_upload_slots_max = sr.read_int(4);
+	f.m_upload_slots_max_override = sr.read_int(4);
+	f.m_upload_slots_min = sr.read_int(4);
+	f.m_upload_slots_min_override = sr.read_int(4);
 	f.m_removed = false;
 	{
 		int i = f.m_display_name.rfind('\\');
@@ -1371,11 +1375,17 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 	Cdlg_torrent_options::t_data data;
 	data.seeding_ratio = f.m_seeding_ratio;
 	data.seeding_ratio_override = f.m_seeding_ratio_override;
+	data.upload_slots_max = f.m_upload_slots_max;
+	data.upload_slots_max_override = f.m_upload_slots_max_override;
+	data.upload_slots_min = f.m_upload_slots_min;
+	data.upload_slots_min_override = f.m_upload_slots_min_override;
 	dlg.set(data);
 	if (IDOK != dlg.DoModal())
 		return;
 	data = dlg.get();
 	m_server.torrent_seeding_ratio(f.m_info_hash, data.seeding_ratio_override, data.seeding_ratio);
+	m_server.torrent_upload_slots_max(f.m_info_hash, data.upload_slots_max_override, data.upload_slots_max);
+	m_server.torrent_upload_slots_min(f.m_info_hash, data.upload_slots_min_override, data.upload_slots_min);
 }
 
 void CXBTClientDlg::OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI)
