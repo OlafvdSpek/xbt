@@ -24,4 +24,5 @@ Section "Uninstall"
 	SetShellVarContext all
 	Delete "$SMPROGRAMS\XBT Tracker.lnk"
 	RMDir /r "$INSTDIR"
+	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
