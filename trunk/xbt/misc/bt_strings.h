@@ -63,6 +63,7 @@ const string bts_length = "length";
 const string bts_login = "login";
 const string bts_merkle_hash = "merkle hash";
 const string bts_message = "message";
+const string bts_min_interval = "min interval";
 const string bts_min_request_interval = "min_request_interval";
 const string bts_name = "name";
 const string bts_open_torrent = "open torrent";
