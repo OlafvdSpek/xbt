@@ -470,7 +470,8 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->open(m_name, O_RDONLY);
 	}
-	alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
+	if (m_server->log_piece_valid())
+		alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
 	logger().valid(m_info_hash, false, a);
 	return 0;
 }
