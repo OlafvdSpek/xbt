@@ -11,15 +11,21 @@ int main1()
 	Cdatabase database;
 	Cxcc_error error;
 	Cstatic_config static_config;
+	if (error = static_config.read("xbt_tracker.conf"))
 #ifdef WIN32
-	char b[MAX_PATH];
-	GetModuleFileName(NULL, b, MAX_PATH);
-	strcpy(strrchr(b, '\\') + 1, "xbt_tracker.conf");
-	if (error = static_config.read(b))
+	{
+		char b[MAX_PATH];
+		*b = 0;
+		GetModuleFileName(NULL, b, MAX_PATH);
+		if (*b)
+			strrchr(b, '\\')[1] = 0;
+		strcat(b, "xbt_tracker.conf");
+		if (error = static_config.read(b))
+			cerr << error.message() << endl;
+	}
 #else
-	if (error = static_config.read(xbt_tracker.conf))
-#endif
 		cerr << error.message() << endl;
+#endif	
 	if (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true))
 		cerr << error.message() << endl;
 	return Cserver(database).run();
