@@ -369,23 +369,6 @@ void Cserver::stop()
 	m_run = false;
 }
 
-ostream& Cserver::dump(ostream& os) const
-{
-	os << "<link rel=stylesheet href=\"http://xccu.sourceforge.net/xcc.css\"><meta http-equiv=refresh content=5><title>XBT Client</title>";
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i != m_files.begin())
-			os << "<hr>";
-		os << *i;
-	}
-	return os;
-}
-
-ostream& operator<<(ostream& os, const Cserver& v)
-{
-	return v.dump(os);
-}
-
 int Cserver::pre_file_dump(const string& id, int flags) const
 {
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)

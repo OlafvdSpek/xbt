@@ -92,6 +92,7 @@ enum
 	dr_completed_at,
 	dr_distributed_copies,
 	dr_downloaded,
+	dr_downloaded_l5_overhead,
 	dr_hash,
 	dr_leechers,
 	dr_left,
@@ -103,6 +104,7 @@ enum
 	dr_started_at,
 	dr_tracker,
 	dr_uploaded,
+	dr_uploaded_l5_overhead,
 	dr_count
 };
 
@@ -449,6 +451,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Completed at",
 		"Distributed Copies",
 		"Downloaded",
+		"Downloaded (layer 5 overhead)",
 		"Hash",
 		"Leechers",
 		"Left",
@@ -460,6 +463,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Started at",
 		"Tracker",
 		"Uploaded",
+		"Uploaded (layer 5 overhead)",
 	};
 	switch (m_torrents_columns[pDispInfo->item.iSubItem])
 	{
@@ -488,6 +492,9 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				m_buffer[m_buffer_w] += " / " + b2a(m_file->total_downloaded, "b");
 			if (m_file->size)
 				m_buffer[m_buffer_w] += " (" + n(m_file->total_downloaded * 100 / m_file->size) + " %)";
+			break;
+		case dr_downloaded_l5_overhead:
+			m_buffer[m_buffer_w] = b2a(m_file->downloaded_l5 - m_file->downloaded, "b");
 			break;
 		case dr_hash:
 			m_buffer[m_buffer_w] = hex_encode(m_file->info_hash);
@@ -533,6 +540,9 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				m_buffer[m_buffer_w] += " / " + b2a(m_file->total_uploaded, "b");
 			if (m_file->size)
 				m_buffer[m_buffer_w] += " (" + n(m_file->total_uploaded * 100 / m_file->size) + " %)";
+			break;
+		case dr_uploaded_l5_overhead:
+			m_buffer[m_buffer_w] = b2a(m_file->uploaded_l5 - m_file->uploaded, "b");
 			break;
 		}
 		break;
@@ -834,9 +844,11 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		f.trackers.push_back(e);
 	}
 	f.downloaded = sr.read_int(8);
+	f.downloaded_l5 = sr.read_int(8);
 	f.left = sr.read_int(8);
 	f.size = sr.read_int(8);
 	f.uploaded = sr.read_int(8);
+	f.uploaded_l5 = sr.read_int(8);
 	f.total_downloaded = sr.read_int(8);
 	f.total_uploaded = sr.read_int(8);
 	f.down_rate = sr.read_int(4);

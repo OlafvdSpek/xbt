@@ -193,9 +193,11 @@ private:
 		t_peers peers;
 		t_sub_files sub_files;
 		__int64 downloaded;
+		__int64 downloaded_l5;
 		__int64 left;
 		__int64 size;
 		__int64 uploaded;
+		__int64 uploaded_l5;
 		__int64 total_downloaded;
 		__int64 total_uploaded;
 		int down_rate;

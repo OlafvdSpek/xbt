@@ -46,7 +46,6 @@ public:
 	int time_remaining() const;
 	int pre_dump(int flags) const;
 	void dump(Cstream_writer&, int flags) const;
-	ostream& dump(ostream&) const;
 	int next_invalid_piece(const Cbt_peer_link&);
 	int read_data(__int64 o, byte* d, int cb_d);
 	void write_data(__int64 o, const char* s, int cb_s);
@@ -187,8 +186,10 @@ public:
 	__int64 mcb_f;
 
 	__int64 m_downloaded;
+	__int64 m_downloaded_l5;
 	__int64 m_left;
 	__int64 m_uploaded;
+	__int64 m_uploaded_l5;
 	__int64 m_total_downloaded;
 	__int64 m_total_uploaded;
 	Cdata_counter m_down_counter;
@@ -201,7 +202,5 @@ public:
 	Cbt_logger* m_logger;
 	Cserver* m_server;
 };
-
-ostream& operator<<(ostream&, const Cbt_file&);
 
 #endif // !defined(AFX_BT_FILE_H__E64A5C96_20E5_4C90_8267_F9BC96F99888__INCLUDED_)
