@@ -19,6 +19,7 @@ public:
 public:
 	std::string& get_buffer();
 	void select_all();
+	void DeleteAllColumns();
 	DWORD GetItemData(int nItem) const;
 	void auto_size();
 protected:
