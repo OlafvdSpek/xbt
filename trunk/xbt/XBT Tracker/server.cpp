@@ -148,6 +148,32 @@ void Cserver::update_peer(const string& file_id, const string& peer_id, bool lis
 	j->second.listening = listening;
 }
 
+Cbvalue Cserver::t_file::select_peers(const Ctracker_input& ti) const
+{
+	typedef vector<t_peers::const_iterator> t_candidates;
+
+	t_candidates candidates;
+	{
+		for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
+		{
+			if ((ti.m_left || i->second.left) && i->second.listening)
+				candidates.push_back(i);
+		}
+	}
+	Cbvalue peers(Cbvalue::vt_list);
+	int c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
+	for (t_candidates::const_iterator i = candidates.begin(); c-- && i != candidates.end(); i++)
+	{
+		Cbvalue peer;
+		if (!ti.m_no_peer_id)
+			peer.d(bts_peer_id, (*i)->second.peer_id);
+		peer.d(bts_ipa, (*i)->first);
+		peer.d(bts_port, (*i)->second.port);
+		peers.l(peer);
+	}	
+	return peers;
+}
+
 Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 {
 	if (time(NULL) - m_clean_up_time > m_clean_up_interval)
@@ -159,30 +185,8 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 		return Cbvalue();
 	Cbvalue v;
 	v.d(bts_interval, m_announce_interval);
-	Cbvalue peers(Cbvalue::vt_list);
-	int c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
-	for (t_peers::const_iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
-	{
-		if (!ti.m_left && !j->second.left || !j->second.listening)
-			continue;
-		if (!c--)
-			break;
-		Cbvalue peer;
-		if (!ti.m_no_peer_id)
-			peer.d(bts_peer_id, j->second.peer_id);
-		peer.d(bts_ipa, j->first);
-		peer.d(bts_port, j->second.port);
-		peers.l(peer);
-	}
-	v.d(bts_peers, peers);
+	v.d(bts_peers, i->second.select_peers(ti));	
 	return v;
-}
-
-void Cserver::clean_up()
-{
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->second.clean_up(m_announce_interval);
-	m_clean_up_time = time(NULL);
 }
 
 void Cserver::t_file::clean_up(int announce_interval)
@@ -199,6 +203,13 @@ void Cserver::t_file::clean_up(int announce_interval)
 		else
 			i++;
 	}
+}
+
+void Cserver::clean_up()
+{
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		i->second.clean_up(m_announce_interval);
+	m_clean_up_time = time(NULL);
 }
 
 Cbvalue Cserver::t_file::scrape() const
