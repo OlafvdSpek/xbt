@@ -314,12 +314,12 @@ void Cserver::dump(Cstream_writer& w, int flags) const
 		i->dump(w, flags);
 }
 
-void Cserver::insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a, const Csocket& s)
+void Cserver::insert_peer(const char* r, const sockaddr_in& a, const Csocket& s)
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
-		if (i->m_info_hash == handshake.info_hash())
-			i->insert_peer(handshake, a, s);
+		if (i->m_info_hash == string(r + hs_info_hash, 20))
+			i->insert_peer(r, a, s);
 	}
 }
 
