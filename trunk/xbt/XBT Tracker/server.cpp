@@ -191,12 +191,11 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 	return v;
 }
 
-void Cserver::t_file::clean_up(int announce_interval)
+void Cserver::t_file::clean_up(int t)
 {
-	int t = time(NULL);
 	for (t_peers::iterator i = peers.begin(); i != peers.end(); )
 	{
-		if (t - i->second.mtime > 1.5 * announce_interval)
+		if (i->second.mtime < t)
 		{
 			(i->second.left ? leechers : seeders)--;
 			peers.erase(i++);
@@ -210,7 +209,7 @@ void Cserver::t_file::clean_up(int announce_interval)
 void Cserver::clean_up()
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->second.clean_up(m_announce_interval);
+		i->second.clean_up(time(NULL) - 1.5 * m_announce_interval);
 	m_clean_up_time = time(NULL);
 }
 
@@ -422,13 +421,13 @@ void Cserver::read_config()
 		{
 			if (!row.f(1))
 				continue;
-			if (row.f(0) == "announce_interval")
+			if (!strcmp(row.f(0), "announce_interval"))
 				m_announce_interval = row.f_int(1);
-			else if (row.f(0) == "read_config_interval")
+			else if (!strcmp(row.f(0), "read_config_interval"))
 				m_read_config_interval = row.f_int(1);
-			else if (row.f(0) == "read_db_interval")
+			else if (!strcmp(row.f(0), "read_db_interval"))
 				m_read_db_interval = row.f_int(1);
-			else if (row.f(0) == "write_db_interval")
+			else if (!strcmp(row.f(0), "write_db_interval"))
 				m_write_db_interval = row.f_int(1);
 		}
 	}
