@@ -607,6 +607,37 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		return;
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	m_buffer[++m_buffer_w &= 3].erase();
+	const t_sub_file& e = m_file->sub_files[pDispInfo->item.lParam];
+	switch (m_peers_columns[pDispInfo->item.iSubItem])
+	{
+	case sfc_name:
+		if (e.name.empty())
+		{
+			int i = m_file->name.rfind('\\');
+			m_buffer[m_buffer_w] = i == string::npos ? m_file->name : m_file->name.substr(i + 1);
+		}
+		else
+			m_buffer[m_buffer_w] = e.name;
+		break;
+	case sfc_done:
+		if (e.size)
+			m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
+		break;
+	case sfc_left:
+		if (e.left)
+			m_buffer[m_buffer_w] = b2a(e.left);
+		break;
+	case sfc_size:
+		m_buffer[m_buffer_w] = b2a(e.size);
+		break;
+	case sfc_priority:
+		if (e.priority)
+			m_buffer[m_buffer_w] = n(e.priority);
+		break;
+	case sfc_hash:
+		m_buffer[m_buffer_w] = hex_encode(e.hash);
+		break;
+	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
 	*pResult = 0;
 }
@@ -669,6 +700,8 @@ void CXBTClientDlg::fill_peers()
 			m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_files:
+		for (int i = 0; i < m_file->sub_files.size(); i++)
+			m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_peers:
 		for (t_peers::const_iterator i = m_file->peers.begin(); i != m_file->peers.end(); i++)
@@ -809,8 +842,20 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		e.source = sr.read_string();
 		f.events.push_back(e);
 	}
-	if (m_bottom_view == v_events)
+	f.sub_files.clear();
+	for (int c_files = sr.read_int(4); c_files--; )
 	{
+		t_sub_file e;
+		e.left = sr.read_int(8);
+		e.name = sr.read_string();
+		e.priority = sr.read_int(4);
+		e.size = sr.read_int(8);
+		e.hash = sr.read_string();
+		f.sub_files.push_back(e);
+	}
+	switch (m_bottom_view)
+	{
+	case v_events:
 		while (m_peers.GetItemCount() < f.events.size())
 		{
 			m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
@@ -818,8 +863,15 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		}
 		while (m_peers.GetItemCount() > f.events.size())
 			m_peers.DeleteItem(m_peers.GetItemCount() - 1);
+		break;
+	case v_files:
+		while (m_peers.GetItemCount() < f.sub_files.size())
+		{
+			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
+			inserted = true;
+		}
+		break;
 	}
-	sr.read_int(4);
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); )
 		{
@@ -900,7 +952,7 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 			break;
 		m_files.SetRedraw(false);
 		m_peers.SetRedraw(false);
-		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_alerts | Cserver::df_peers | Cserver::df_trackers)));
+		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_alerts | Cserver::df_files | Cserver::df_peers | Cserver::df_trackers)));
 		sort_files();
 		sort_peers();
 		m_files.SetRedraw(true);
@@ -1679,7 +1731,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
-		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
 
 		LVCFMT_LEFT,
