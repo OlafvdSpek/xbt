@@ -165,7 +165,7 @@ void Cconnection::read(const string& v)
 	switch (v.length() >= 5 ? v[5] : 0) 
 	{
 	case 'a':
-		gzip = m_server->gzip_announce();
+		gzip = m_server->gzip_announce() && !ti.m_compact;
 		if (ti.valid())
 		{
 			m_server->insert_peer(ti);
@@ -180,7 +180,7 @@ void Cconnection::read(const string& v)
 		}
 		break;
 	case 's':
-		gzip = m_server->gzip_scrape();
+		gzip = m_server->gzip_scrape() && ti.m_info_hash.empty();
 		s = m_server->scrape(ti).read();
 		break;
 	}
