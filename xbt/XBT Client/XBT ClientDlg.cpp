@@ -151,6 +151,7 @@ enum
 enum
 {
 	gdr_downloaded,
+	gdr_down_rate,
 	gdr_files,
 	gdr_leechers,
 	gdr_left,
@@ -158,6 +159,7 @@ enum
 	gdr_seeders,
 	gdr_size,
 	gdr_uploaded,
+	gdr_up_rate,
 	gdr_count
 };
 
@@ -719,6 +721,7 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	const char* row_names[] =
 	{
 		"Downloaded",
+		"Down rate",
 		"Files",
 		"Leechers",
 		"Left",
@@ -726,6 +729,7 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Seeders",
 		"Size",
 		"Uploaded",
+		"Up rate",
 	};
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
@@ -741,6 +745,9 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				buffer += " / " + b2a(m_global_details.m_downloaded_total, "b");
 			if (m_global_details.m_size)
 				buffer += " (" + n(m_global_details.m_downloaded_total * 100 / m_global_details.m_size) + " %)";
+			break;
+		case gdr_down_rate:
+			buffer = b2a(m_global_details.m_down_rate, "b/s");
 			break;
 		case gdr_files:
 			buffer = n(m_global_details.mc_files);
@@ -767,6 +774,9 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				buffer += " / " + b2a(m_global_details.m_uploaded_total, "b");
 			if (m_global_details.m_size)
 				buffer += " (" + n(m_global_details.m_uploaded_total * 100 / m_global_details.m_size) + " %)";
+			break;
+		case gdr_up_rate:
+			buffer = b2a(m_global_details.m_up_rate, "b/s");
 			break;
 		}
 		break;
