@@ -684,16 +684,17 @@ void Cserver::update_chokes()
 	typedef vector<Cbt_peer_link*> t_links1;
 	t_links0 links0;
 	t_links1 links1;
+	t_links1 links2;
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
 		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
 		{
-			if (!i->m_run)
+			if (!i->m_run || !j->m_left)
 				j->choked(true);
-			else if (j->m_remote_interested && j->m_down_counter.rate())
+			else if (j->m_down_counter.rate() > 256)
 				links0.insert(t_links0::value_type(j->m_down_counter.rate(), &*j));
-			else
-				links1.push_back(&*j);
+			else if (j->m_remote_interested)
+				(j->m_local_interested ? links1 : links2).push_back(&*j);
 		}
 	}
 	int slots_left = m_upload_slots ? max(4, m_upload_slots) : INT_MAX;
@@ -701,7 +702,8 @@ void Cserver::update_chokes()
 	{
 		if (slots_left)
 		{
-			slots_left--;
+			if (i->second->m_remote_interested)
+				slots_left--;
 			i->second->choked(false);
 		}
 		else
@@ -712,7 +714,14 @@ void Cserver::update_chokes()
 		int i = rand() % links1.size();
 		links1[i]->choked(false);
 		links1[i] = links1.back();
-		links1.resize(links1.size() - 1);
+		links1.pop_back();
+	}
+	while (slots_left-- && !links2.empty())
+	{
+		int i = rand() % links2.size();
+		links2[i]->choked(false);
+		links2[i] = links2.back();
+		links2.pop_back();
 	}
 	for (t_links1::const_iterator i = links1.begin(); i != links1.end(); i++)
 		(*i)->choked(true);
