@@ -64,7 +64,7 @@ public:
 	int write_data(__int64 o, const char* s, int cb_s, Cbt_peer_link*);
 	void close();
 	void erase();
-	int open();
+	void open();
 	int c_invalid_pieces() const;
 	int c_pieces() const;
 	int c_valid_pieces() const;

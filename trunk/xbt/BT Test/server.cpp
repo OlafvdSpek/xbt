@@ -156,115 +156,112 @@ int Cserver::run()
 	while (tracker_port() < 0x10000 && lt.bind(htonl(INADDR_ANY), htons(tracker_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_tracker_port++;
 	mkpath(local_app_data_dir());
-	if (l.listen()
-		|| la.listen())
+	if (l.listen() || la.listen())
 		return alert(Calert(Calert::emerg, "Server", "listen failed" + Csocket::error2a(WSAGetLastError()))), 1;
-	else
-	{
-		load_state(Cvirtual_binary(state_fname()));
-		m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
+	load_state(Cvirtual_binary(state_fname()));
+	m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
 #ifndef WIN32
-		if (daemon(true, false))
-			alert(Calert(Calert::error, "Server", "daemon failed" + n(errno)));
-		ofstream(g_pid_fname) << getpid() << endl;
-		struct sigaction act;
-		act.sa_handler = sig_handler;
-		sigemptyset(&act.sa_mask);
-		act.sa_flags = 0;
-		if (sigaction(SIGTERM, &act, NULL))
-			cerr << "sigaction failed" << endl;
+	if (daemon(true, false))
+		alert(Calert(Calert::error, "Server", "daemon failed" + n(errno)));
+	ofstream(g_pid_fname) << getpid() << endl;
+	struct sigaction act;
+	act.sa_handler = sig_handler;
+	sigemptyset(&act.sa_mask);
+	act.sa_flags = 0;
+	if (sigaction(SIGTERM, &act, NULL))
+		cerr << "sigaction failed" << endl;
 #endif
-		m_save_state_time = time(NULL);
-		fd_set fd_read_set;
-		fd_set fd_write_set;
-		fd_set fd_except_set;
-		for (m_run = true; !g_sig_term && m_run; )
+	m_save_state_time = time(NULL);
+	fd_set fd_read_set;
+	fd_set fd_write_set;
+	fd_set fd_except_set;
+	for (m_run = true; !g_sig_term && m_run; )
+	{
+		lock();
+		if (m_new_admin_port != m_admin_port)
 		{
-			lock();
-			if (m_new_admin_port != m_admin_port)
+			Csocket s;
+			if (s.open(SOCK_STREAM) != INVALID_SOCKET
+				&& !s.bind(htonl(INADDR_LOOPBACK), htons(m_new_admin_port))
+				&& !s.listen())
 			{
-				Csocket s;
-				if (s.open(SOCK_STREAM) != INVALID_SOCKET
-					&& !s.bind(htonl(INADDR_LOOPBACK), htons(m_new_admin_port))
-					&& !s.listen())
-				{
-					la = s;
-					m_admin_port = m_new_admin_port;
-				}
+				la = s;
+				m_admin_port = m_new_admin_port;
 			}
-			if (m_new_peer_port != m_peer_port)
+		}
+		if (m_new_peer_port != m_peer_port)
+		{
+			Csocket s;
+			if (s.open(SOCK_STREAM) != INVALID_SOCKET
+				&& !s.bind(htonl(INADDR_ANY), htons(m_new_peer_port))
+				&& !s.listen())
 			{
-				Csocket s;
-				if (s.open(SOCK_STREAM) != INVALID_SOCKET
-					&& !s.bind(htonl(INADDR_ANY), htons(m_new_peer_port))
-					&& !s.listen())
-				{
-					l = s;
-					m_peer_port = m_new_peer_port;
-				}
+				l = s;
+				m_peer_port = m_new_peer_port;
 			}
-			if (m_new_tracker_port != m_tracker_port)
+		}
+		if (m_new_tracker_port != m_tracker_port)
+		{
+			Csocket s;
+			if (s.open(SOCK_DGRAM) != INVALID_SOCKET
+				&& !s.bind(htonl(INADDR_ANY), htons(m_new_tracker_port)))
 			{
-				Csocket s;
-				if (s.open(SOCK_DGRAM) != INVALID_SOCKET
-					&& !s.bind(htonl(INADDR_ANY), htons(m_new_tracker_port)))
-				{
-					lt = s;
-					m_tracker_port = m_new_tracker_port;
-				}
+				lt = s;
+				m_tracker_port = m_new_tracker_port;
 			}
-			update_send_quotas();
-			FD_ZERO(&fd_read_set);
-			FD_ZERO(&fd_write_set);
-			FD_ZERO(&fd_except_set);
-			bool hash = true;
-			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-			{
-				if (hash && i->hash())
-					hash = false;
-			}
-			int n = pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
-			if (below_peer_limit())
-			{
-				FD_SET(l, &fd_read_set);
-				n = max(n, static_cast<SOCKET>(l));
-			}
-			FD_SET(la, &fd_read_set);
-			n = max(n, static_cast<SOCKET>(la));
-			FD_SET(lt, &fd_read_set);
-			n = max(n, static_cast<SOCKET>(lt));
-			unlock();
-			timeval tv;
-			tv.tv_sec = hash ? 1 : 0;
-			tv.tv_usec = 0;
-			if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
-			{
-				alert(Calert(Calert::error, "Server", "select failed: " + Csocket::error2a(WSAGetLastError())));
-				break;
-			}
-			if (0)
-			{
+		}
+		update_send_quotas();
+		FD_ZERO(&fd_read_set);
+		FD_ZERO(&fd_write_set);
+		FD_ZERO(&fd_except_set);
+		bool hash = true;
+		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		{
+			if (hash && i->hash())
+				hash = false;
+		}
+		int n = pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
+		if (below_peer_limit())
+		{
+			FD_SET(l, &fd_read_set);
+			n = max(n, static_cast<SOCKET>(l));
+		}
+		FD_SET(la, &fd_read_set);
+		n = max(n, static_cast<SOCKET>(la));
+		FD_SET(lt, &fd_read_set);
+		n = max(n, static_cast<SOCKET>(lt));
+		unlock();
+		timeval tv;
+		tv.tv_sec = hash ? 1 : 0;
+		tv.tv_usec = 0;
+		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
+		{
+			alert(Calert(Calert::error, "Server", "select failed: " + Csocket::error2a(WSAGetLastError())));
+			break;
+		}
+		if (0)
+		{
 #ifdef WIN32
-				static ofstream f("/temp/select log.txt");
-				f << time(NULL);
-				f << "\tR:";
-				for (int i = 0; i < fd_read_set.fd_count; i++)
-					f << ' ' << fd_read_set.fd_array[i];
-				f << "\tW:";
-				for (int i = 0; i < fd_write_set.fd_count; i++)
-					f << ' ' << fd_write_set.fd_array[i];
-				f << "\tE:";
-				for (int i = 0; i < fd_except_set.fd_count; i++)
-					f << ' ' << fd_except_set.fd_array[i];
-				f << endl;
+			static ofstream f("/temp/select log.txt");
+			f << time(NULL);
+			f << "\tR:";
+			for (int i = 0; i < fd_read_set.fd_count; i++)
+				f << ' ' << fd_read_set.fd_array[i];
+			f << "\tW:";
+			for (int i = 0; i < fd_write_set.fd_count; i++)
+				f << ' ' << fd_write_set.fd_array[i];
+			f << "\tE:";
+			for (int i = 0; i < fd_except_set.fd_count; i++)
+				f << ' ' << fd_except_set.fd_array[i];
+			f << endl;
 #endif
-			}
-			lock();
-			if (FD_ISSET(l, &fd_read_set))
+		}
+		lock();
+		if (FD_ISSET(l, &fd_read_set))
+		{
+			sockaddr_in a;
+			while (1)
 			{
-				sockaddr_in a;
-				while (1)
-				{
 				socklen_t cb_a = sizeof(sockaddr_in);
 				Csocket s = accept(l, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
@@ -279,42 +276,41 @@ int Cserver::run()
 						alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + Csocket::error2a(WSAGetLastError())));
 					m_links.push_back(Cbt_link(this, a, s));
 				}
-				}
 			}
-			if (FD_ISSET(la, &fd_read_set))
-			{
-				sockaddr_in a;
-				while (1)
-				{
-					socklen_t cb_a = sizeof(sockaddr_in);
-					Csocket s = accept(la, reinterpret_cast<sockaddr*>(&a), &cb_a);
-					if (s == SOCKET_ERROR)
-					{
-						if (WSAGetLastError() != WSAEWOULDBLOCK)
-							alert(Calert(Calert::error, "Server", "accept failed: " + Csocket::error2a(WSAGetLastError())));
-						break;						
-					}
-					else
-					{
-						if (s.blocking(false))
-							alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + Csocket::error2a(WSAGetLastError())));
-						m_admins.push_back(Cbt_admin_link(this, a, s));
-					}
-				}
-			}
-			if (FD_ISSET(lt, &fd_read_set))
-				m_udp_tracker.recv(lt);
-			post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-			if (time(NULL) - m_update_chokes_time > 10)
-				update_chokes();
-			else if (time(NULL) - m_save_state_time > 60)
-				save_state(true).save(state_fname());
-			unlock();
 		}
-		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-			i->close();
+		if (FD_ISSET(la, &fd_read_set))
+		{
+			sockaddr_in a;
+			while (1)
+			{
+				socklen_t cb_a = sizeof(sockaddr_in);
+				Csocket s = accept(la, reinterpret_cast<sockaddr*>(&a), &cb_a);
+				if (s == SOCKET_ERROR)
+				{
+					if (WSAGetLastError() != WSAEWOULDBLOCK)
+						alert(Calert(Calert::error, "Server", "accept failed: " + Csocket::error2a(WSAGetLastError())));
+					break;						
+				}
+				else
+				{
+					if (s.blocking(false))
+						alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + Csocket::error2a(WSAGetLastError())));
+					m_admins.push_back(Cbt_admin_link(this, a, s));
+				}
+			}
+		}
+		if (FD_ISSET(lt, &fd_read_set))
+			m_udp_tracker.recv(lt);
+		post_select(&fd_read_set, &fd_write_set, &fd_except_set);
+		if (time(NULL) - m_update_chokes_time > 10)
+			update_chokes();
+		else if (time(NULL) - m_save_state_time > 60)
+			save_state(true).save(state_fname());
+		unlock();
 	}
 	save_state(false).save(state_fname());
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		i->close();
 	unlink(g_pid_fname);
 	return 0;
 }
@@ -587,10 +583,10 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	}
 	f.m_name = name.empty() ? incompletes_dir() + '/' + f.m_name : name;
 	f.m_peer_id = new_peer_id();
+	if (below_torrent_limit())
+		f.open();
 	m_files.push_front(f);
 	save_state(true).save(state_fname());
-	if (below_torrent_limit() && f.open())
-		return 3;
 	return 0;
 }
 
@@ -670,8 +666,6 @@ void Cserver::load_state(const Cvirtual_binary& d)
 		Cbt_file f;
 		f.m_server = this;
 		f.load_state(r);
-		if (f.open())
-			continue;
 		f.m_peer_id = new_peer_id();
 		m_files.push_front(f);
 	}

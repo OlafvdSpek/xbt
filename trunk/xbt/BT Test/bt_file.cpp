@@ -175,10 +175,10 @@ int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 		|| ::write(m_f, s, cb_s) != cb_s;
 }
 
-int Cbt_file::open()
+void Cbt_file::open()
 {
 	if (is_open())
-		return 1;
+		return;
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
@@ -202,7 +202,6 @@ int Cbt_file::open()
 	}
 	announce();
 	m_state = s_hashing;
-	return 0;
 }
 
 bool Cbt_file::hash()
@@ -691,6 +690,10 @@ void Cbt_file::load_state(Cstream_reader& r)
 			m_old_peers[h] = m_new_peers[h] = r.read_int(4);
 		}
 	}
+	if (!is_open())
+		return;
+	m_state = s_stopped;
+	open();
 }
 
 int Cbt_file::pre_save_state(bool intermediate) const
