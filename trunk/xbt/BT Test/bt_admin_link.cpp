@@ -27,6 +27,7 @@ Cbt_admin_link::Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csoc
 	m_write_b.size(64 << 10);
 
 	strstream str;
+	str << "HTTP/1.0 200\r\ncontent-type: text/html\r\n\r\n";
 	m_server->dump(str);
 	m_write_b.write(str.str(), str.pcount());
 	m_close = true;
