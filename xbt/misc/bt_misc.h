@@ -15,7 +15,7 @@
 
 using namespace std;
 
-string b2a(__int64 v);
+string b2a(__int64 v, const char* postfix = NULL);
 string escape_string(const string& v);
 bool is_private_ipa(int a);
 string n(int v);

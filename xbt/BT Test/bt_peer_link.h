@@ -22,6 +22,8 @@ class Cbt_piece;
 class Cbt_peer_link  
 {
 public:
+	void update_interested();
+	int cb_write_buffer();
 	void alert(const Calert&);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
@@ -54,6 +56,11 @@ public:
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	Cbt_peer_link();
 	~Cbt_peer_link();
+
+	void send_quota(int v)
+	{
+		m_send_quota = v;
+	}
 
 	operator bool() const
 	{
@@ -89,6 +96,7 @@ public:
 	Cbt_piece* m_piece;
 	int m_rtime;
 	int m_stime;
+	int m_send_quota;
 
 	bool m_local_link;
 	bool m_local_choked;

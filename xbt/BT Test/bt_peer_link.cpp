@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "bt_peer_link.h"
 
+#include <algorithm>
 #include "bt_file.h"
 #include "bt_strings.h"
 
@@ -16,6 +17,7 @@ Cbt_peer_link::Cbt_peer_link()
 {
 	m_f = NULL;
 	m_piece = NULL;
+	m_send_quota = -1;
 	m_state = 1;
 }
 
@@ -75,11 +77,16 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			{
 				m_piece = &m_f->m_pieces[a];
 				m_piece->m_peers.insert(this);
+				vector<int> sub_pieces;
 				for (int b = 0; b < m_piece->c_sub_pieces(); b++)
 				{
 					if (m_piece->m_sub_pieces.empty() || !m_piece->m_sub_pieces[b])
-						write_request(a, m_piece->mcb_sub_piece * b, m_piece->cb_sub_piece(b));
+						sub_pieces.push_back(b);
 				}
+				if (m_piece->m_peers.size() > 1)
+					random_shuffle(sub_pieces.begin(), sub_pieces.end());
+				for (vector<int>::const_iterator i = sub_pieces.begin(); i != sub_pieces.end(); i++)
+					write_request(a, m_piece->mcb_sub_piece * *i, m_piece->cb_sub_piece(*i));
 				m_piece_rtime = time(NULL);
 			}
 		}
@@ -130,7 +137,6 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 			case 4:
 				m_remote_pieces.resize(m_f->m_pieces.size());
 				write_bitfield();
-				interested(m_f->c_invalid_pieces());
 				m_state = 3;
 			case 3:
 				while (1)
@@ -186,6 +192,14 @@ void Cbt_peer_link::write(const Cvirtual_binary& s)
 void Cbt_peer_link::write(const void* s, int cb_s)
 {
 	m_write_b.push_back(Cbt_pl_write_data(reinterpret_cast<const char*>(s), cb_s));
+}
+
+int Cbt_peer_link::cb_write_buffer()
+{
+	int cb = 0;
+	for (t_write_buffer::const_iterator i = m_write_b.begin(); i != m_write_b.end(); i++)
+		cb += i->m_s_end - i->m_s;
+	return 0;
 }
 
 void Cbt_peer_link::recv()
@@ -255,6 +269,8 @@ void Cbt_peer_link::remote_has(int v)
 		m_f->m_pieces[v].mc_peers++;
 		m_left -= m_f->m_pieces[v].mcb_d;
 		m_remote_pieces[v] = true;
+		if (!m_local_interested && !m_f->m_pieces[v].m_valid)
+			interested(true);
 	}
 }
 
@@ -309,6 +325,12 @@ void Cbt_peer_link::write_keepalive()
 
 void Cbt_peer_link::write_have(int a)
 {
+	if (m_remote_pieces[a])
+	{
+		if (m_local_interested)
+			interested(m_f->next_invalid_piece(m_remote_pieces) != -1);
+		return;
+	}
 	Cvirtual_binary d;
 	byte* w = d.write_start(9);
 	w = write(w, d.size() - 4);
@@ -561,9 +583,13 @@ ostream& Cbt_peer_link::dump(ostream& os) const
 		<< "<td align=right>" << m_write_b.size()
 		<< "<td align=right>" << m_remote_requests.size()
 		<< "<td align=right>" << time(NULL) - m_piece_rtime
-		<< "<td align=right>" << m_piece
-		<< "<td align=right>" << (m_piece && !m_piece->m_sub_pieces.empty() ? m_piece->mc_sub_pieces_left : 0)
-		<< "<td>" << peer_id2a(m_remote_peer_id);
+		<< "<td align=right>";
+	if (m_piece)
+	os << m_piece - m_f->m_pieces.begin();
+	os << "<td align=right>";
+	if (m_piece && !m_piece->m_sub_pieces.empty())
+		os << m_piece->mc_sub_pieces_left;
+	os << "<td>" << peer_id2a(m_remote_peer_id);
 	return os;
 }
 
