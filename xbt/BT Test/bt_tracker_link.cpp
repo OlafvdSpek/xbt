@@ -308,8 +308,8 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 					if (v.d(bts_failure_reason).s().empty())
 					{
 						m_announce_time = time(NULL) + max(300, v.d(bts_interval).i());
-						f.mc_leechers_total = 0;
-						f.mc_seeders_total = 0;
+						f.mc_leechers_total = v.d(bts_incomplete).i();
+						f.mc_seeders_total = v.d(bts_complete).i();
 						mc_attempts = 0;
 						if (v.d(bts_peers).s().empty())
 						{

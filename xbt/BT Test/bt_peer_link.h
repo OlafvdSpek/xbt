@@ -31,7 +31,7 @@ public:
 	ostream& dump(ostream&) const;
 	void write_piece(int, int, int, const void*);
 	void write_have(int);
-	void read_handshake(const t_bt_handshake&);
+	int read_handshake(const t_bt_handshake&);
 	void read_message(const char* s, const char* s_end);
 	void read_info(const char* r, const char* r_end);
 	void write_keepalive();
@@ -57,7 +57,7 @@ public:
 	void write(const void* s, int cb_s);
 	void close();
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
-	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
+	int post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	Cbt_peer_link();
 	~Cbt_peer_link();
 
