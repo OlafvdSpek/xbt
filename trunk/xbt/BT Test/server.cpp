@@ -691,13 +691,15 @@ void Cserver::update_chokes()
 		{
 			if (!i->m_run || !j->m_left)
 				j->choked(true);
+			else if (!m_upload_slots)
+				j->choked(false);
 			else if (j->m_down_counter.rate() > 256)
 				links0.insert(t_links0::value_type(j->m_down_counter.rate(), &*j));
 			else if (j->m_remote_interested)
 				(j->m_local_interested ? links1 : links2).push_back(&*j);
 		}
 	}
-	int slots_left = m_upload_slots ? max(4, m_upload_slots) : INT_MAX;
+	int slots_left = max(4, m_upload_slots);
 	for (t_links0::iterator i = links0.begin(); i != links0.end(); i++)
 	{
 		if (slots_left)
