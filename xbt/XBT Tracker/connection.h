@@ -20,7 +20,7 @@ public:
 	int pre_select(fd_set* fd_read_set);
 	void post_select(fd_set* fd_read_set);
 	Cconnection();
-	Cconnection(Cserver* server, SOCKET s, const sockaddr_in& a);
+	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a);
 
 	operator bool() const
 	{

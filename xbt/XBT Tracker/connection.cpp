@@ -16,7 +16,7 @@ Cconnection::Cconnection()
 {
 }
 
-Cconnection::Cconnection(Cserver* server, SOCKET s, const sockaddr_in& a)
+Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a)
 {
 	m_server = server;
 	m_s = s;
@@ -111,6 +111,7 @@ void Cconnection::read(const string& v)
 	switch (v.length() >= 5 ? v[5] : 0) 
 	{
 	case 'a':
+		gzip = m_server->gzip_announce();
 		if (ti.valid())
 		{
 			m_server->insert_peer(ti);
@@ -118,16 +119,20 @@ void Cconnection::read(const string& v)
 		}
 		break;
 	case 'd':
+		gzip = m_server->gzip_debug();
 		{
 			string v = m_server->debug(ti);
 			s = Cvirtual_binary(v.c_str(), v.length());
 		}
 		break;
 	case 's':
+		gzip = m_server->gzip_scrape();
 		s = m_server->scrape(ti).read();
 		break;
 	}
-	if (gzip)
+	if (!s)
+		gzip = false;
+	else if (gzip)
 		s = xcc_z::gzip(s);
 	const char* h = gzip
 		? "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n"
