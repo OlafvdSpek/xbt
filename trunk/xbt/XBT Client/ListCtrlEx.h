@@ -21,6 +21,7 @@ public:
 	void select_all();
 	void DeleteAllColumns();
 	DWORD GetItemData(int nItem) const;
+	void InsertItemData(int nItem, DWORD dwData);
 	void auto_size();
 protected:
 	//{{AFX_MSG(CListCtrlEx)
