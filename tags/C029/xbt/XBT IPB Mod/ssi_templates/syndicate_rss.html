@@ -1,0 +1,27 @@
+[TOP]
+<?xml version="1.0"?>
+<rss version="2.0">
+<channel>
+<title>{board_name}</title>
+<link>{board_url}</link>
+<description>{board_name} Syndication</description>
+<language>en-us</language>
+<generator>Invision Power Board</generator>
+<ttl>30</ttl>
+[/TOP]
+
+[ROW]
+	<item>
+		<title>{topic_title}</title>
+		<link>{topic_link}</link>
+		<comments>{topic_link}</comments>
+		<category>{forum_title}</category>
+		<description><![CDATA[Forum: <a href="{board_url}?showforum={forum_id}" target="_blank">{forum_title}</a><br />Last Poster: <a href="{board_url}?showuser={last_poster_id}" target="_blank">{last_post_name}</a><br />Last Post: {last_post_time}]]></description>
+		<pubDate>{rfc_date}</pubDate>
+	</item>
+[/ROW]
+
+[BOTTOM]
+</channel>
+</rss>
+[/BOTTOM]
