@@ -29,11 +29,11 @@ public:
 			mtime = 0;
 		}
 
-		// __int64 downloaded;
+		__int64 downloaded;
 		__int64 left;
 		string peer_id;
 		int port;
-		// __int64 uploaded;
+		__int64 uploaded;
 
 		bool listening;
 		int mtime;
@@ -126,6 +126,7 @@ public:
 	typedef map<string, t_user*> t_passes;
 	typedef map<string, t_user> t_users;
 
+	int test_sql();
 	void accept(const Csocket& l);
 	const t_user* find_user_by_name(const string&) const;
 	const t_user* find_user_by_ipa(int) const;
