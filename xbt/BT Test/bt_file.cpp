@@ -77,14 +77,38 @@ int Cbt_file::info(const Cbvalue& v, bool torrent)
 	return 0;
 }
 
+void Cbt_file::t_sub_file::close()
+{
+	if (m_f)
+		fclose(m_f);
+	m_f = NULL;
+}
+
+FILE* Cbt_file::t_sub_file::open(const string& parent_name, const char* mode)
+{
+	return m_f = fopen((m_name.empty() ? parent_name : parent_name + '/' + m_name).c_str(), mode);
+}
+
+int Cbt_file::t_sub_file::read(int offset, void* s, int cb_s)
+{
+	return !m_f
+		|| fseek(m_f, offset, SEEK_SET)
+		|| fread(s, cb_s, 1, m_f) != 1;
+}
+
+int Cbt_file::t_sub_file::write(int offset, const void* s, int cb_s)
+{
+	return !m_f
+		|| fseek(m_f, offset, SEEK_SET)
+		|| fwrite(s, cb_s, 1, m_f) != 1
+		|| fflush(m_f);
+}
+
 int Cbt_file::open(const string& name, bool validate)
 {
 	m_name = name;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-	{
-		i->m_full_name = i->m_name.empty() ? name : name + '/' + i->m_name;
-		i->m_f = fopen(i->m_full_name.c_str(), "r+b");
-	}
+		i->open(m_name, "r+b");
 	{
 		Cvirtual_binary d;
 		for (int i = 0; i < m_pieces.size(); i++)
@@ -100,35 +124,13 @@ int Cbt_file::open(const string& name, bool validate)
 		}
 		cout << c_valid_pieces() << '/' << m_pieces.size() << endl;
 	}
-	{
-		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		{
-			if (i->m_f)
-				continue;
-			char b = 0;
-			if ((i->m_f = fopen(i->m_full_name.c_str(), "w+b"))
-				&& i->m_size
-				&& !fseek(i->m_f, i->m_size - 1, SEEK_SET)
-				&& fwrite(&b, 1, 1, i->m_f) == 1)
-				fflush(i->m_f);
-			if (!i->m_f)
-			{
-				close();
-				return 1;
-			}
-		}
-	}
 	return 0;
 }
 
 void Cbt_file::close()
 {
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-	{
-		if (i->m_f)
-			fclose(i->m_f);
-		i->m_f = NULL;
-	}
+		i->close();
 }
 
 int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
@@ -243,21 +245,21 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 		piece.write(o % mcb_piece, s, cb_s);
 		if (!piece.m_valid)
 			return;
-		m_left -= piece.mcb_d;
 		int offset = a * mcb_piece;
 		int size = piece.m_d.size();
 		const byte* r = piece.m_d;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		{
 			if (offset < i->m_size)
-			{					
+			{
+				if (!*i && i->m_size && i->open(m_name, "w+b"))
+				{
+					char b = 0;
+					i->write(i->m_size - 1, &b, 1);
+				}
 				int cb_write = min(size, i->m_size - offset);
-				if (fseek(i->m_f, offset, SEEK_SET))
-					cerr << "fseek failed" << endl;
-				else if (fwrite(r, cb_write, 1, i->m_f) != 1)
+				if (i->write(offset, r, cb_write))
 					cerr << "fwrite failed" << endl;
-				else
-					fflush(i->m_f);
 				size -= cb_write;
 				if (!size)
 					break;
@@ -267,6 +269,7 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 			else
 				offset -= i->m_size;
 		}
+		m_left -= piece.mcb_d;
 		if (!m_left)
 			m_tracker.event(Cbt_tracker_link::t_event::e_completed);
 		piece.m_d.clear();
@@ -294,9 +297,7 @@ int Cbt_file::read_piece(int a, byte* d)
 		if (offset < i->m_size)
 		{
 			int cb_read = min(size, i->m_size - offset);
-			if (!i->m_f || fseek(i->m_f, offset, SEEK_SET))
-				return 1;
-			if (fread(w, cb_read, 1, i->m_f) != 1)
+			if (i->read(offset, w, cb_read))
 				return 1;
 			size -= cb_read;
 			if (!size)
@@ -459,15 +460,15 @@ void Cbt_file::load_state(Cstream_reader& r)
 	}
 }
 
-int Cbt_file::pre_save_state() const
+int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + m_pieces.size() + 8 * m_peers.size() + 24;
+	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + 8 * m_peers.size() + 24;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	return c;
 }
 
-void Cbt_file::save_state(Cstream_writer& w) const
+void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 {
 	w.write_int32(m_trackers.size());	
 	{
@@ -476,9 +477,14 @@ void Cbt_file::save_state(Cstream_writer& w) const
 	}
 	w.write_data(m_info);
 	w.write_string(m_name);
-	w.write_int32(m_pieces.size());
-	for (int j = 0; j < m_pieces.size(); j++)
-		*w.write(1) = m_pieces[j].m_valid;
+	if (intermediate)
+		w.write_data(Cvirtual_binary());
+	else
+	{
+		w.write_int32(m_pieces.size());
+		for (int j = 0; j < m_pieces.size(); j++)
+			*w.write(1) = m_pieces[j].m_valid;
+	}
 	{
 		w.write_int32(m_peers.size());
 		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)

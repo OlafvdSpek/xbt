@@ -20,8 +20,8 @@ class Cbt_file
 {
 public:
 	void load_state(Cstream_reader&);
-	int pre_save_state() const;
-	void save_state(Cstream_writer&) const;
+	int pre_save_state(bool intermediate) const;
+	void save_state(Cstream_writer&, bool intermediate) const;
 	int size() const;
 	int c_seeders() const;
 	int c_leechers() const;
@@ -49,10 +49,18 @@ public:
 
 	struct t_sub_file
 	{
-		FILE* m_f;
-		string m_full_name;
 		string m_name;
 		__int64 m_size;
+
+		void close();
+		FILE* open(const string& parent_name, const char* mode);
+		int read(int offset, void* s, int cb_s);
+		int write(int offset, const void* s, int cb_s);
+		
+		operator bool() const
+		{
+			return m_f;
+		}
 
 		t_sub_file()
 		{
@@ -64,6 +72,8 @@ public:
 			m_name = name;
 			m_size = size;
 		}
+	private:
+		FILE* m_f;
 	};
 
 	typedef map<int, int> t_new_peers;
