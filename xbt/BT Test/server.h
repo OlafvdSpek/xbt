@@ -63,6 +63,7 @@ public:
 	void tracker_port(int);
 	void upload_rate(int);
 	void upload_slots(int);
+	string options_fname() const;
 	string profiles_fname() const;
 	string scheduler_fname() const;
 	string state_fname() const;
