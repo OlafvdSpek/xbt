@@ -97,6 +97,7 @@ Cserver::Cserver(Cdatabase& database, bool use_sql):
 
 int Cserver::run()
 {
+	test_sql();
 	read_config();
 	if (m_epoll.create(1 << 10) == -1)
 	{
@@ -399,11 +400,11 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	else
 	{
 		t_peer& peer = file.peers[v.m_ipa];
-		// peer.downloaded = v.m_downloaded;
+		peer.downloaded = v.m_downloaded;
 		peer.left = v.m_left;
 		peer.peer_id = v.m_peer_id;
 		peer.port = v.m_port;
-		// peer.uploaded = v.m_uploaded;
+		peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
 
 		if (!m_config.m_listen_check || !listen_check)
@@ -1026,4 +1027,28 @@ void Cserver::sig_handler(int v)
 void Cserver::term()
 {
 	g_sig_term = true;
+}
+
+int Cserver::test_sql()
+{
+	if (!m_use_sql)
+		return 0;
+	try
+	{
+		m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from xbt_announce_log where 0 = 1");
+		m_database.query("select name, value from xbt_config where 0 = 1");
+		m_database.query("select fid, info_hash, leechers, seeders, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, completed, started, stopped, flags, mtime, ctime from xbt_files where 0 = 1");
+		m_database.query("select fid, leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp from xbt_files_updates where 0 = 1");
+		m_database.query("select info_hash, uid, announced, completed, downloaded, uploaded from xbt_files_users where 0 = 1");
+		m_database.query("select info_hash, uid, announced, completed, downloaded, uploaded from xbt_files_users_updates where 0 = 1");
+		m_database.query("select ipa, uid, mtime from xbt_ipas where 0 = 1");
+		m_database.query("select id, ipa, info_hash, uid, mtime from xbt_scrape_log where 0 = 1");
+		m_database.query("select uid, name, pass, fid_end, torrent_pass, downloaded, uploaded from xbt_users where 0 = 1");
+		m_database.query("select uid, downloaded, uploaded from xbt_users_updates where 0 = 1");
+		return 0;
+	}
+	catch (Cxcc_error)
+	{
+	}
+	return 1;
 }
