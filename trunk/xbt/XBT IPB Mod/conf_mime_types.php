@@ -37,7 +37,8 @@ $mime_types = array(
     "text/plain" 				   => array( 1, 'text.gif'      , 'Text File'        ) ,
     "image/pjpeg" 				   => array( 1, 'jpeg.gif'      , 'JPEG Image'     ,1) ,
     "application/x-shockwave-flash"=> array( 0, 'quicktime.gif' , 'Flash'          ,0) ,
-     
+    "application/x-bittorrent"	   => array( 1, 'zip.gif' 		, 'BitTorrent'     ) ,
+
 );
 
 

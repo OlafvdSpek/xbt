@@ -1,0 +1,2 @@
+alter table ibf_posts add bt_info_hash blob;
+alter table ibf_topics add bt_info_hash blob;

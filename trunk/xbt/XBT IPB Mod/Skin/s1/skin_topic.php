@@ -78,7 +78,7 @@ return <<<EOF
 	$data
 	</select>&nbsp;<input type='submit' value='{$ibforums->lang['jmp_go']}' class='forminput' /></form>
   </div>
-        
+
 EOF;
 }
 
@@ -99,7 +99,7 @@ return <<<EOF
 	<!--
 	function emo_pop()
 	{
-	  window.open('index.{$ibforums->vars['php_ext']}?act=legends&amp;CODE=emoticons&amp;s={$ibforums->session_id}','Legends','width=250,height=500,resizable=yes,scrollbars=yes'); 
+	  window.open('index.{$ibforums->vars['php_ext']}?act=legends&amp;CODE=emoticons&amp;s={$ibforums->session_id}','Legends','width=250,height=500,resizable=yes,scrollbars=yes');
 	}
 	//-->
 	</script>
@@ -155,22 +155,22 @@ global $ibforums;
 return <<<EOF
     <script language='javascript' type='text/javascript'>
     <!--
-    
+
     function link_to_post(pid)
     {
     	temp = prompt( "{$ibforums->lang['tt_prompt']}", "{$ibforums->base_url}showtopic={$ibforums->input['t']}&view=findpost&p=" + pid );
     	return false;
     }
-    
+
     function delete_post(theURL) {
        if (confirm('{$ibforums->lang['js_del_1']}')) {
           window.location.href=theURL;
        }
        else {
           alert ('{$ibforums->lang['js_del_2']}');
-       } 
+       }
     }
-    
+
     function PopUp(url, name, width,height,center,resize,scroll,posleft,postop) {
     if (posleft != 0) { x = posleft }
     if (postop  != 0) { y = postop  }
@@ -186,12 +186,12 @@ return <<<EOF
 
     var Win = window.open( url, name, 'width='+width+',height='+height+',top='+Y+',left='+X+',resizable='+resize+',scrollbars='+scroll+',location=no,directories=no,status=no,menubar=no,toolbar=no');
 	}
-	
+
 	function ShowHide(id1, id2) {
 	  if (id1 != '') expMenu(id1);
 	  if (id2 != '') expMenu(id2);
 	}
-	
+
 	function expMenu(id) {
 	  var itm = null;
 	  if (document.getElementById) {
@@ -201,7 +201,7 @@ return <<<EOF
 	  } else if (document.layers){
 		itm = document.layers[id];
 	  }
-	
+
 	  if (!itm) {
 	   // do nothing
 	  }
@@ -213,7 +213,7 @@ return <<<EOF
 	}
     //-->
     </script>
-    
+
 <a name='top'></a>
 <!--IBF.FORUM_RULES-->
 
@@ -232,7 +232,7 @@ return <<<EOF
 	  <a href='{$ibforums->base_url}act=Forward&amp;f={$data['FORUM']['id']}&amp;t={$data['TOPIC']['tid']}'>{$ibforums->lang['forward']}</a> |
 	  <a href='{$ibforums->base_url}act=Print&amp;client=printer&amp;f={$data['FORUM']['id']}&amp;t={$data['TOPIC']['tid']}'>{$ibforums->lang['print']}</a></strong>
 	</div>
-	
+
 EOF;
 }
 
@@ -246,19 +246,19 @@ return <<<EOF
     <tr>
       <td valign='middle' class='row4' width="1%"><a name='entry{$post['pid']}'></a><span class='{$post['name_css']}'>{$author['name']}</span></td>
         <td class='row4' valign='top' width="99%">
-        
+
         <!-- POSTED DATE DIV -->
-        
+
         <div align='left' class='row4' style='float:left;padding-top:4px;padding-bottom:4px'>
         {$post['post_icon']}<span class='postdetails'><b><a title="{$ibforums->lang['tt_link']}" href="#" onclick="link_to_post({$post['pid']}); return false;" style="text-decoration:underline">{$ibforums->lang['posted_on']}</a></b> {$post['post_date']}</span>
         </div>
-        
+
         <!-- REPORT / DELETE / EDIT / QUOTE DIV -->
-        
+
         <div align='right'>
         {$post['report_link']}{$post['delete_button']}{$post['edit_button']}<a href='{$ibforums->base_url}act=Post&amp;CODE=06&amp;f={$ibforums->input[f]}&amp;t={$ibforums->input[t]}&amp;p={$post['pid']}'><{P_QUOTE}></a>
       </div>
-      
+
       </td>
     </tr>
     <tr>
@@ -272,7 +272,7 @@ return <<<EOF
         {$author['member_joined']}<br /><br />
         {$author['warn_text']} {$author['warn_minus']}{$author['warn_img']}{$author['warn_add']}</span><br />
         <!--$ author[field_1]-->
-        <img src='{$ibforums->vars['img_url']}/spacer.gif' alt='' width='160' height='1' /><br /> 
+        <img src='{$ibforums->vars['img_url']}/spacer.gif' alt='' width='160' height='1' /><br />
       </td>
       <td width='100%' valign='top' class='{$post['post_css']}'>
         <!-- THE POST {$post['pid']} -->
@@ -284,15 +284,15 @@ return <<<EOF
     <tr>
       <td class='darkrow3' align='left'><b>{$post['ip_address']}</b></td>
       <td class='darkrow3' nowrap="nowrap" align='left'>
-      
+
         <!-- PM / EMAIL / WWW / MSGR -->
-      
+
         <div align='left' class='darkrow3' style='float:left;width:auto'>
         {$author['addresscard']}{$author['message_icon']}{$author['email_icon']}{$author['website_icon']}{$author['integ_icon']}{$author['icq_icon']}{$author['aol_icon']}{$author['yahoo_icon']}{$author['msn_icon']}
         </div>
-        
+
         <!-- REPORT / UP -->
-         
+
         <div align='right'>
          <a href='javascript:scroll(0,0);'><img src='{$ibforums->vars['img_url']}/p_up.gif' alt='Top' border='0' /></a>
         </div>
@@ -300,18 +300,18 @@ return <<<EOF
     </tr>
     </table>
     <div class='darkrow1' style='height:5px'><!-- --></div>
-    
+
 EOF;
 }
 
 function TableFooter($data) {
 global $ibforums;
 return <<<EOF
-      
+
       <!--IBF.TOPIC_ACTIVE-->
       <div class="activeuserstrip" align="center">&laquo; <a href='{$ibforums->base_url}showtopic={$data[TOPIC]['tid']}&amp;view=old'>{$ibforums->lang['t_old']}</a> &#0124; <strong><a href='{$ibforums->base_url}showforum={$data['FORUM']['id']}'>{$data['FORUM']['name']}</a></strong> &#0124; <a href='{$ibforums->base_url}showtopic={$data[TOPIC]['tid']}&amp;view=new'>{$ibforums->lang['t_new']}</a> &raquo;</div>
 </div>
- 
+
 <br />
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
@@ -395,10 +395,18 @@ EOF;
 
 function Show_attachments($data) {
 global $ibforums;
+if ($data['leechers'])
+	$data['leechers'] = sprintf(", leechers: %d", $data['leechers']);
+else
+	unset($data['leechers']);
+if ($data['seeders'])
+	$data['seeders'] = sprintf(", seeders: %d", $data['seeders']);
+else
+	unset($data['seeders']);
 return <<<EOF
 <br />
 <br />
-<strong><span class='edit'>{$ibforums->lang['attached_file']} ( {$ibforums->lang['attach_hits']}: {$data['hits']} )</span></strong>
+<strong><span class='edit'>{$ibforums->lang['attached_file']} ( {$ibforums->lang['attach_hits']}: {$data['hits']}{$data['leechers']}{$data['seeders']})</span></strong>
 <br />
 <a href='{$ibforums->base_url}act=Attach&amp;type=post&amp;id={$data['pid']}' title='{$ibforums->lang['attach_dl']}' target='_blank'><img src='{$ibforums->vars['mime_img']}/{$data['image']}' border='0' alt='{$ibforums->lang['attached_file']}' /></a>
 &nbsp;<a href='{$ibforums->base_url}act=Attach&amp;type=post&amp;id={$data['pid']}' title='{$ibforums->lang['attach_dl']}' target='_blank'>{$data['name']}</a>
