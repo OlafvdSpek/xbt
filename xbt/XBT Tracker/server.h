@@ -103,6 +103,7 @@ private:
 	int m_read_db_interval;
 	int m_write_db_interval;
 	int m_fid_end;
+	bool m_listen_check;
 	__int64 m_secret;
 	t_connections m_connections;
 	t_peer_links m_peer_links;

@@ -94,6 +94,10 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 		}
 		if (time(NULL) - m_read_config_time > m_read_config_interval)
 			read_config();
+		if (time(NULL) - m_clean_up_time > m_clean_up_interval)
+			clean_up();
+		if (time(NULL) - m_write_db_time > m_write_db_interval)
+			write_db();
 	}
 }
 
@@ -117,7 +121,9 @@ void Cserver::insert_peer(const Ctracker_input& v)
 		// peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
 
-		if (!peer.listening && time(NULL) - peer.mtime > 900)
+		if (!m_listen_check)
+			peer.listening = true;
+		else if (!peer.listening && time(NULL) - peer.mtime > 900)
 		{
 			Cpeer_link peer_link(v.m_ipa, v.m_port, this, v.m_info_hash, v.m_ipa);
 			if (peer_link)
@@ -181,10 +187,6 @@ Cbvalue Cserver::t_file::select_peers(const Ctracker_input& ti) const
 
 Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 {
-	if (time(NULL) - m_clean_up_time > m_clean_up_interval)
-		clean_up();
-	if (time(NULL) - m_write_db_time > m_write_db_interval)
-		write_db();
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
 	if (i == m_files.end())
 		return Cbvalue();
@@ -313,6 +315,7 @@ void Cserver::read_config()
 {
 	m_announce_interval = 1800;
 	m_clean_up_interval = 60;
+	m_listen_check = true;
 	m_read_config_interval = 300;
 	m_read_db_interval = 60;
 	m_write_db_interval = 60;
@@ -326,6 +329,8 @@ void Cserver::read_config()
 				continue;
 			if (!strcmp(row.f(0), "announce_interval"))
 				m_announce_interval = row.f_int(1);
+			else if (!strcmp(row.f(0), "listen_check"))
+				m_listen_check = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_config_interval"))
 				m_read_config_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_db_interval"))
@@ -386,6 +391,7 @@ string Cserver::debug(const Ctracker_input& ti) const
 	}
 	page += "</table><hr><table><tr><td>read config time<td>" + n(m_read_config_time) 
 		+ "<tr><td>clean up time<td>" + n(m_clean_up_time) 
+		+ "<tr><td>listen check<td>" + n(m_listen_check) 
 		+ "<tr><td>read db time<td>" + n(m_read_db_time) 
 		+ "<tr><td>write db time<td>" + n(m_write_db_time) 
 		+ "<tr><td>time<td>" + n(time(NULL)) + "</table>";

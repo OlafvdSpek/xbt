@@ -20,15 +20,12 @@ Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 
 __int64 Ctransaction::connection_id() const
 {
-	struct
-	{
-		__int64 secret;
-		int a;
-	} s;
-	s.secret = m_server.secret();
-	s.a = m_a.sin_addr.s_addr;
+	const int cb_s = 8 + sizeof(int);
+	char s[cb_s];
+	*reinterpret_cast<__int64*>(s) = m_server.secret();
+	*reinterpret_cast<int*>(s + 8) = m_a.sin_addr.s_addr;
 	char d[20];
-	compute_sha1(&s, sizeof(s), d);
+	compute_sha1(&s, cb_s, d);
 	return *reinterpret_cast<__int64*>(d);
 }
 
@@ -82,8 +79,9 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti)
 	ti.m_downloaded = uti.downloaded();
 	ti.m_event = static_cast<Ctracker_input::t_event>(uti.event());
 	ti.m_info_hash = uti.info_hash();
-	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
-		ti.m_ipa = m_a.sin_addr.s_addr;
+	ti.m_ipa = uti.ipa() && is_private_ipa(m_a.sin_addr.s_addr)
+		? uti.ipa()
+		: m_a.sin_addr.s_addr;
 	ti.m_left = uti.left();
 	ti.m_num_want = uti.num_want();
 	ti.m_peer_id = uti.peer_id();
