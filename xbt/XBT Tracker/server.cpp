@@ -610,7 +610,7 @@ void Cserver::read_db_files_sql()
 			{
 				if (row.size(0) != 20)
 					continue;
-				m_files.erase(string(row.f(0), 20));
+				m_files.erase(row.f(0));
 				q = "delete from xbt_files where fid = ?";
 				q.p(row.f_int(1));
 				q.execute();
@@ -628,9 +628,9 @@ void Cserver::read_db_files_sql()
 		for (Csql_row row; row = result.fetch_row(); )
 		{
 			m_fid_end = max(m_fid_end, static_cast<int>(row.f_int(2, 0)) + 1);
-			if (row.size(0) != 20 || m_files.find(string(row.f(0), 20)) != m_files.end())
+			if (row.size(0) != 20 || m_files.find(row.f(0)) != m_files.end())
 				continue;
-			t_file& file = m_files[string(row.f(0), 20)];
+			t_file& file = m_files[row.f(0)];
 			if (file.fid)
 				continue;
 			file.completed = row.f_int(1, 0);
@@ -681,10 +681,10 @@ void Cserver::read_db_users()
 		m_users.clear();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			t_user& user = m_users[row.f(*row.f(1) ? 1 : 0)];
+			t_user& user = m_users[row.f(row.size(1) ? 1 : 0)];
 			user.uid = row.f_int(0);
 			user.fid_end = row.f_int(4);
-			user.pass.assign(row.f(2), row.size(2));
+			user.pass.assign(row.f(2));
 			m_passes[row.f(3)] = &user;
 		}
 	}
