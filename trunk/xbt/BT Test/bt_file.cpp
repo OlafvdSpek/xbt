@@ -304,7 +304,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 				if (!*i && i->size())
 				{
 					string path = m_name + i->name();
-					for (int i = m_name.size(); i < path.size(); )
+					for (int i = 3; i < path.size(); )
 					{
 						int a = path.find_first_of("/\\", i);
 						if (a == string::npos)

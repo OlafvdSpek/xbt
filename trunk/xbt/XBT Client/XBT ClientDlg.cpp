@@ -54,6 +54,7 @@ enum
 	pc_remote_interested,
 	pc_host,
 	pc_port,
+	pc_end
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -74,15 +75,7 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 	if (SUCCEEDED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
 	{
 		strcat(path, "\\XBT");
-		m_dir = path;
-		m_completes_dir = path;
-		m_completes_dir += "\\Completes";
-		m_incompletes_dir = path;
-		m_incompletes_dir += "\\Incompletes";
-		m_torrents_dir = path;
-		m_torrents_dir += "\\Torrents";
-		CreateDirectory(path, NULL);
-		CreateDirectory(m_incompletes_dir, NULL);
+		set_dir(path);
 	}
 }
 
@@ -214,19 +207,20 @@ void CXBTClientDlg::open(const string& name)
 	if (!torrent.valid())
 		return;
 	char path[MAX_PATH];
-	strcpy(path, m_torrents_dir);
+	strcpy(path, m_dir);
 	if (*path)
 	{
-		CreateDirectory(m_torrents_dir, NULL);
+		strcat(path, "\\Torrents");
+		CreateDirectory(path, NULL);
 		strcat(path, "\\");
 		strcat(path, torrent.name().c_str());
 		strcat(path, ".torrent");
 		d.save(path);
 	}
-	strcpy(path, m_incompletes_dir);
+	strcpy(path, m_dir);
 	if (*path)
 	{
-		strcat(path, "\\");
+		strcat(path, "\\Incompletes\\");
 		strcat(path, torrent.name().c_str());
 	}
 	else
@@ -731,6 +725,7 @@ void CXBTClientDlg::OnPopupOptions()
 	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
+	data.files_location = m_dir;
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
 	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
 	data.seeding_ratio = AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio());
@@ -743,6 +738,7 @@ void CXBTClientDlg::OnPopupOptions()
 		return;
 	data = dlg.get();
 	m_server.admin_port(data.admin_port);
+	set_dir(data.files_location);
 	m_server.peer_port(data.peer_port);
 	if (!data.public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(data.public_ipa));
@@ -1121,5 +1117,12 @@ void CXBTClientDlg::insert_columns()
 	{
 		m_peers.InsertColumn(pc_host, "Host");
 		m_peers.InsertColumn(pc_port, "Port", LVCFMT_RIGHT);
+		m_peers.InsertColumn(pc_end, "");
 	}
+}
+
+void CXBTClientDlg::set_dir(const string& v)
+{
+	m_dir = v.c_str();
+	CreateDirectory(m_dir, NULL);
 }
