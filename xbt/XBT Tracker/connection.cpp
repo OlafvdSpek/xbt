@@ -173,7 +173,7 @@ void Cconnection::read(const string& v)
 	{
 	case 'a':
 		gzip = m_server->gzip_announce() && !ti.m_compact;
-		if (!ti.m_compact && !ti.m_no_peer_id && (ti.m_event != Ctracker_input::e_stopped || ti.m_num_want))
+		if (!ti.m_compact && !ti.m_no_peer_id && ti.m_event != Ctracker_input::e_stopped && ti.m_num_want)
 			s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
 		else if (ti.valid())
 		{
