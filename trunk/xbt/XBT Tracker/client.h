@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+class Cserver;
+
 class Cclient
 {
 public:
@@ -22,6 +24,7 @@ protected:
 	}
 
 	Csocket m_s;
+	Cserver* m_server;
 };
 
 #endif // !defined(AFX_CLIENT_H__2D721F56_3253_48C2_8EED_FE0181AD999A__INCLUDED_)
