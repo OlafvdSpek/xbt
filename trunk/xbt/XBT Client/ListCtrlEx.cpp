@@ -22,6 +22,12 @@ void CListCtrlEx::auto_size()
 		SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
 }
 
+void CListCtrlEx::DeleteAllColumns()
+{
+	while (GetHeaderCtrl()->GetItemCount())
+		DeleteColumn(0);
+}
+
 DWORD CListCtrlEx::GetItemData(int nItem) const
 {
 	return nItem == -1 ? -1 : CListCtrl::GetItemData(nItem);

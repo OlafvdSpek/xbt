@@ -35,7 +35,9 @@ enum
 	fc_left,
 	fc_size,
 	fc_total_downloaded,
+	fc_total_downloaded_rel,
 	fc_total_uploaded,
+	fc_total_uploaded_rel,
 	fc_down_rate,
 	fc_up_rate,
 	fc_leechers,
@@ -451,19 +453,19 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case fc_total_downloaded:
 		if (e.m_total_downloaded)
-		{
 			buffer = b2a(e.m_total_downloaded);
-			if (e.m_size)
-				buffer += " (" + n(e.m_total_downloaded * 100 / e.m_size) + " %)";
-		}
+		break;
+	case fc_total_downloaded_rel:
+		if (e.m_total_downloaded && e.m_size)
+			buffer = n(e.m_total_downloaded * 100 / e.m_size);
 		break;
 	case fc_total_uploaded:
 		if (e.m_total_uploaded)
-		{
 			buffer = b2a(e.m_total_uploaded);
-			if (e.m_size)
-				buffer += " (" + n(e.m_total_uploaded * 100 / e.m_size) + " %)";
-		}
+		break;
+	case fc_total_uploaded_rel:
+		if (e.m_total_uploaded && e.m_size)
+			buffer += n(e.m_total_uploaded * 100 / e.m_size);
 		break;
 	case fc_down_rate:
 		if (e.m_down_rate)
@@ -1589,15 +1591,19 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	case fc_hash:
 		return compare(a.m_info_hash, b.m_info_hash);
 	case fc_done:
-		return compare(b.m_left * 1000 / b.m_size, a.m_left * 1000 / a.m_size);
+		return compare(b.m_size ? b.m_left * 1000 / b.m_size : 0, a.m_size ? a.m_left * 1000 / a.m_size : 0);
 	case fc_left:
 		return compare(a.m_left, b.m_left);
 	case fc_size:
 		return compare(a.m_size, b.m_size);
 	case fc_total_downloaded:
 		return compare(b.m_total_downloaded, a.m_total_downloaded);
+	case fc_total_downloaded_rel:
+		return compare(b.m_size ? b.m_total_downloaded * 1000 / b.m_size : 0, a.m_size ? a.m_total_downloaded * 1000 / a.m_size : 0);
 	case fc_total_uploaded:
 		return compare(b.m_total_uploaded, a.m_total_uploaded);
+	case fc_total_uploaded_rel:
+		return compare(b.m_size ? b.m_total_uploaded * 1000 / b.m_size : 0, a.m_size ? a.m_total_uploaded * 1000 / a.m_size : 0);
 	case fc_down_rate:
 		return compare(b.m_down_rate, a.m_down_rate);
 	case fc_up_rate:
@@ -1838,7 +1844,9 @@ void CXBTClientDlg::insert_top_columns()
 	m_torrents_columns.push_back(fc_left);
 	m_torrents_columns.push_back(fc_size);
 	m_torrents_columns.push_back(fc_total_downloaded);
+	m_torrents_columns.push_back(fc_total_downloaded_rel);
 	m_torrents_columns.push_back(fc_total_uploaded);
+	m_torrents_columns.push_back(fc_total_uploaded_rel);
 	m_torrents_columns.push_back(fc_down_rate);
 	m_torrents_columns.push_back(fc_up_rate);
 	m_torrents_columns.push_back(fc_leechers);
@@ -1857,7 +1865,9 @@ void CXBTClientDlg::insert_top_columns()
 		"Left",
 		"Size",
 		"Downloaded",
+		"%",
 		"Uploaded",
+		"%",
 		"Down rate",
 		"Up rate",
 		"Leechers",
@@ -1881,11 +1891,12 @@ void CXBTClientDlg::insert_top_columns()
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 	};
-	while (m_files.GetHeaderCtrl()->GetItemCount())
-		m_files.DeleteColumn(0);
+	m_files.DeleteAllColumns();
 	for (t_columns::const_iterator i = m_torrents_columns.begin(); i != m_torrents_columns.end(); i++)
 		m_files.InsertColumn(99, torrents_columns_names[*i], torrents_columns_formats[*i]);
 }
@@ -2051,8 +2062,7 @@ void CXBTClientDlg::insert_bottom_columns()
 
 		LVCFMT_LEFT,
 	};
-	while (m_peers.GetHeaderCtrl()->GetItemCount())
-		m_peers.DeleteColumn(0);
+	m_peers.DeleteAllColumns();
 	for (t_columns::const_iterator i = m_peers_columns.begin(); i != m_peers_columns.end(); i++)
 		m_peers.InsertColumn(99, peers_columns_names[*i], peers_columns_formats[*i]);
 }
