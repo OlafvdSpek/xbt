@@ -1,5 +1,5 @@
 !define UPGRADEDLL_NOREGISTER
-!define VERSION "0.1.5"
+!define VERSION "0.1.6"
 !include "UpgradeDLL.nsh"
 
 Name "XBT Tracker ${VERSION}"
