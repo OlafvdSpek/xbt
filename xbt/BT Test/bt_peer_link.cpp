@@ -88,6 +88,8 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 					for (vector<int>::const_iterator i = sub_pieces.begin(); i != sub_pieces.end(); i++)
 						m_local_requests.push_back(t_local_request(m_f->mcb_piece * a + piece->mcb_sub_piece * *i, piece->cb_sub_piece(*i)));
 				}
+				else
+					interested(false);
 			}
 			if (m_local_requests.empty())
 				break;
