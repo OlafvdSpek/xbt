@@ -503,6 +503,19 @@ void Cserver::sub_file_priority(const string& file_id, const string& sub_file_id
 	}
 }
 
+void Cserver::torrent_seeding_ratio(const string &file_id, bool override, int v)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != file_id)
+			continue;
+		i->m_seeding_ratio = v;
+		i->m_seeding_ratio_override = override;
+		return;
+	}
+}
+
 string Cserver::get_url(const string& id)
 {
 	Clock l(m_cs);

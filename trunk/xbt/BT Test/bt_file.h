@@ -35,6 +35,7 @@ public:
 		s_unknown,
 	};
 
+	int seeding_ratio() const;
 	void state(t_state);
 	void announce();
 	void pause();
@@ -226,6 +227,9 @@ public:
 	int mc_seeders_total;
 	int mc_rejected_chunks;
 	int mc_rejected_pieces;
+	
+	int m_seeding_ratio;
+	bool m_seeding_ratio_override;
 
 	__int64 mcb_piece;
 	__int64 mcb_f;

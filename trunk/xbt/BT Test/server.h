@@ -31,6 +31,7 @@ public:
 		df_trackers = 8,
 	};
 
+	void torrent_seeding_ratio(const string& file_id, bool override, int v);
 	Cbvalue admin_request(const Cbvalue& s);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);

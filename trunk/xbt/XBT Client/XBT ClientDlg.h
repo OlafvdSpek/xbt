@@ -146,6 +146,8 @@ protected:
 	afx_msg void OnUpdatePopupStateStarted(CCmdUI* pCmdUI);
 	afx_msg void OnPopupStateStopped();
 	afx_msg void OnUpdatePopupStateStopped(CCmdUI* pCmdUI);
+	afx_msg void OnPopupTorrentOptions();
+	afx_msg void OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
@@ -254,6 +256,8 @@ private:
 		int session_started_at;
 		int completed_at;
 		int priority;
+		int seeding_ratio;
+		bool seeding_ratio_override;
 		Cbt_file::t_state state;
 		bool removed;
 	};

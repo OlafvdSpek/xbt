@@ -11,6 +11,7 @@
 #include "dlg_about.h"
 #include "dlg_make_torrent.h"
 #include "dlg_options.h"
+#include "dlg_torrent_options.h"
 #include "dlg_trackers.h"
 #include "resource.h"
 
@@ -231,8 +232,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_NORMAL, OnUpdatePopupTorrentPriorityNormal)
 	ON_COMMAND(ID_POPUP_VIEW_PIECES, OnPopupViewPieces)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_PIECES, OnUpdatePopupViewPieces)
-	ON_WM_SIZE()
-	ON_WM_INITMENU()
 	ON_COMMAND(ID_POPUP_STATE_PAUSED, OnPopupStatePaused)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_PAUSED, OnUpdatePopupStatePaused)
 	ON_COMMAND(ID_POPUP_STATE_QUEUED, OnPopupStateQueued)
@@ -241,6 +240,10 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_STARTED, OnUpdatePopupStateStarted)
 	ON_COMMAND(ID_POPUP_STATE_STOPPED, OnPopupStateStopped)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_STOPPED, OnUpdatePopupStateStopped)
+	ON_WM_SIZE()
+	ON_WM_INITMENU()
+	ON_COMMAND(ID_POPUP_TORRENT_OPTIONS, OnPopupTorrentOptions)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_OPTIONS, OnUpdatePopupTorrentOptions)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -991,6 +994,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.c_distributed_copies = sr.read_int(4);
 	f.c_distributed_copies_remainder = sr.read_int(4);
 	f.priority = sr.read_int(4);
+	f.seeding_ratio = sr.read_int(4);
+	f.seeding_ratio_override = sr.read_int(4);
 	f.removed = false;
 	{
 		int i = f.display_name.rfind('\\');
@@ -1339,6 +1344,26 @@ void CXBTClientDlg::OnPopupMakeTorrent()
 	Cdlg_make_torrent dlg;
 	if (IDOK == dlg.DoModal() && dlg.m_seed_after_making)
 		open(dlg.torrent_fname(), true);
+}
+
+void CXBTClientDlg::OnPopupTorrentOptions() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_SELECTED);
+	t_file& f = m_files_map.find(m_files.GetItemData(index))->second;
+	Cdlg_torrent_options dlg;
+	Cdlg_torrent_options::t_data data;
+	data.seeding_ratio = f.seeding_ratio;
+	data.seeding_ratio_override = f.seeding_ratio_override;
+	dlg.set(data);
+	if (IDOK != dlg.DoModal())
+		return;
+	data = dlg.get();
+	m_server.torrent_seeding_ratio(f.info_hash, data.seeding_ratio_override, data.seeding_ratio);
+}
+
+void CXBTClientDlg::OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
 }
 
 void CXBTClientDlg::OnPopupOptions()
