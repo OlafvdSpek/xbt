@@ -614,16 +614,15 @@ void Cserver::read_db_users()
 {
 	try
 	{
-		Csql_query q(m_database, "select uid, name, pass from xbt_users");
+		Csql_query q(m_database, "select uid, name, pass, torrent_pass from xbt_users");
 		Csql_result result = q.execute();
 		m_users.clear();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			if (row.size(2) != 20)
-				continue;
 			t_user& user = m_users[row.f(1)];
 			user.uid = row.f_int(0);
-			user.pass.assign(row.f(2), 20);
+			user.pass.assign(row.f(2), row.size(2));
+			m_passes[row.f(3)] = user.uid;
 		}
 	}
 	catch (Cxcc_error error)
@@ -925,6 +924,12 @@ int Cserver::get_user_id(int v) const
 {
 	t_ipas::const_iterator i = m_ipas.find(v);
 	return i == m_ipas.end() ? 0 : i->second;
+}
+
+int Cserver::get_user_id(const string& v) const
+{
+	t_passes::const_iterator i = m_passes.find(v);
+	return i == m_passes.end() ? 0 : i->second;
 }
 
 void Cserver::sig_handler(int v)
