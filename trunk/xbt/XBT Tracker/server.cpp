@@ -288,19 +288,30 @@ void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o
 {
 	typedef vector<t_peers::const_iterator> t_candidates;
 
-	t_candidates candidates;
-	{
-		for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
-		{
-			if ((ti.m_left || i->second.left) && i->second.listening)
-				candidates.push_back(i);
-		}		
-	}
 	o.complete(seeders);
 	o.incomplete(leechers);
+	t_candidates candidates;
+	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
+	{
+		if ((ti.m_left || i->second.left) && i->second.listening)
+			candidates.push_back(i);
+	}
 	int c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
-	for (t_candidates::const_iterator i = candidates.begin(); c-- && i != candidates.end(); i++)
-		o.peer((*i)->first, (*i)->second);
+	if (candidates.size() > c)
+	{
+		while (c--)
+		{
+			int i = rand() % candidates.size();
+			o.peer(candidates[i]->first, candidates[i]->second);
+			candidates[i] = candidates.back();
+			candidates.pop_back();
+		}
+	}
+	else
+	{
+		for (t_candidates::const_iterator i = candidates.begin(); i != candidates.end(); i++)
+			o.peer((*i)->first, (*i)->second);
+	}
 }
 
 Cbvalue Cserver::select_peers(const Ctracker_input& ti)
@@ -375,7 +386,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
-			if (i->second.leechers > 1 || i->second.seeders)
+			if (i->second.leechers || i->second.seeders)
 				files.d(i->first, i->second.scrape());
 		}
 	}
@@ -605,16 +616,16 @@ string Cserver::debug(const Ctracker_input& ti) const
 		if (i != m_files.end())
 			page += i->second.debug();
 	}
+	int t = time(NULL);
 	page += "</table><hr><table><tr><td>leechers<td>" + n(leechers)
 		+ "<tr><td>seeders<td>" + n(seeders)
 		+ "<tr><td>torrents<td>" + n(torrents)
 		+ "<tr>"
-		+ "<tr><td>read config time<td>" + n(m_read_config_time) 
-		+ "<tr><td>clean up time<td>" + n(m_clean_up_time) 
 		+ "<tr><td>listen check<td>" + n(m_listen_check) 
-		+ "<tr><td>read db time<td>" + n(m_read_db_time) 
-		+ "<tr><td>write db time<td>" + n(m_write_db_time) 
-		+ "<tr><td>time<td>" + n(time(NULL)) + "</table>";
+		+ "<tr><td>read config time<td>" + n(t - m_read_config_time) 
+		+ "<tr><td>clean up time<td>" + n(t - m_clean_up_time) 
+		+ "<tr><td>read db time<td>" + n(t - m_read_db_time) 
+		+ "<tr><td>write db time<td>" + n(t - m_write_db_time);
 	return page;
 }
 
