@@ -119,7 +119,9 @@ void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo)
 void Cdlg_make_torrent::insert(const string& name)
 {
 	struct stat b;
-	if (stat(name.c_str(), &b))
+	if (!stricmp(base_name(name).c_str(), "desktop.ini")
+		|| !stricmp(base_name(name).c_str(), "thumbs.db")
+		|| stat(name.c_str(), &b))
 		return;
 	if (b.st_mode & _S_IFDIR)
 	{
