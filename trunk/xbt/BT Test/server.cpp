@@ -252,29 +252,43 @@ int Cserver::run()
 			if (FD_ISSET(l, &fd_read_set))
 			{
 				sockaddr_in a;
+				while (1)
+				{
 				socklen_t cb_a = sizeof(sockaddr_in);
 				Csocket s = accept(l, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
-					alert(Calert(Calert::error, "Server", "accept failed: " + Csocket::error2a(WSAGetLastError())));
+				{
+					if (WSAGetLastError() != WSAEWOULDBLOCK)
+						alert(Calert(Calert::error, "Server", "accept failed: " + Csocket::error2a(WSAGetLastError())));
+					break;
+				}
 				else
 				{
 					if (s.blocking(false))
 						alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + Csocket::error2a(WSAGetLastError())));
 					m_links.push_back(Cbt_link(this, a, s));
 				}
+				}
 			}
 			if (FD_ISSET(la, &fd_read_set))
 			{
 				sockaddr_in a;
-				socklen_t cb_a = sizeof(sockaddr_in);
-				Csocket s = accept(la, reinterpret_cast<sockaddr*>(&a), &cb_a);
-				if (s == SOCKET_ERROR)
-					alert(Calert(Calert::error, "Server", "accept failed: " + Csocket::error2a(WSAGetLastError())));
-				else
+				while (1)
 				{
-					if (s.blocking(false))
-						alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + Csocket::error2a(WSAGetLastError())));
-					m_admins.push_back(Cbt_admin_link(this, a, s));
+					socklen_t cb_a = sizeof(sockaddr_in);
+					Csocket s = accept(la, reinterpret_cast<sockaddr*>(&a), &cb_a);
+					if (s == SOCKET_ERROR)
+					{
+						if (WSAGetLastError() != WSAEWOULDBLOCK)
+							alert(Calert(Calert::error, "Server", "accept failed: " + Csocket::error2a(WSAGetLastError())));
+						break;						
+					}
+					else
+					{
+						if (s.blocking(false))
+							alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + Csocket::error2a(WSAGetLastError())));
+						m_admins.push_back(Cbt_admin_link(this, a, s));
+					}
 				}
 			}
 			if (FD_ISSET(lt, &fd_read_set))
