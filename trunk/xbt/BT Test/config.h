@@ -13,6 +13,8 @@ class Cconfig
 {
 public:
 	Cconfig();
+	Cbvalue read() const;
+	const Cconfig& write(const Cbvalue&);
 
 	bool m_bind_before_connect;
 	bool m_end_mode;
