@@ -616,7 +616,7 @@ void Cbt_peer_link::write_peers()
 void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
 	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
-	m_f->write_data(m_f->mcb_piece * piece + offset, s, size);
+	m_f->write_data(m_f->mcb_piece * piece + offset, s, size, this);
 	m_downloaded += size;
 	m_down_counter.add(size);
 	m_f->m_downloaded += size;
@@ -633,7 +633,7 @@ void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, c
 		alert(Calert(Calert::warn, m_a, "Chunk " + n(offset >> 15) + ": invalid"));
 		return;
 	}
-	m_f->write_data(offset, s, size);
+	m_f->write_data(offset, s, size, this);
 	m_downloaded += size;
 	m_down_counter.add(size);
 	m_f->m_downloaded += size;
