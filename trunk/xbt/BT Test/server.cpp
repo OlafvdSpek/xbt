@@ -837,8 +837,10 @@ void Cserver::alert(const Calert& v)
 
 void Cserver::update_chokes()
 {
+	typedef map<Cbt_file*, pair<int, int> > t_files_limits;
 	typedef multimap<int, Cbt_peer_link*, less<int> > t_links0;
 	typedef vector<Cbt_peer_link*> t_links1;
+	t_files_limits files_limits;
 	t_links0 links0;
 	t_links1 links1;
 	t_links1 links2;
@@ -848,51 +850,36 @@ void Cserver::update_chokes()
 		{
 			if (j->m_state != 3)
 				continue;
+			j->choked(true);
 			if (i->state() != Cbt_file::s_running || !j->m_left)
-				j->choked(true);
+				;
 			else if (!m_config.m_upload_slots)
 				j->choked(false);
 			else if (j->m_down_counter.rate() > 256)
 				links0.insert(t_links0::value_type(j->m_down_counter.rate(), &*j));
 			else if (j->m_remote_interested)
 				(j->m_local_interested ? links1 : links2).push_back(&*j);
-			else
-				j->choked(true);
 		}
+		files_limits[&*i] = make_pair(i->m_upload_slots_min_override ? i->m_upload_slots_min : 0, i->m_upload_slots_max_override ? i->m_upload_slots_max : INT_MAX);
 	}
 	random_shuffle(links1.begin(), links1.end());
 	random_shuffle(links2.begin(), links2.end());
 	int slots_left = max(4, m_config.m_upload_slots);
-	for (t_links0::iterator i = links0.begin(); i != links0.end(); i++)
+	for (t_links0::iterator i = links0.begin(); slots_left && i != links0.end(); i++)
 	{
-		if (slots_left)
-		{
-			if (i->second->m_remote_interested)
-				slots_left--;
-			i->second->choked(false);
-		}
-		else
-			i->second->choked(true);
-	}
-	for (t_links1::const_iterator i = links1.begin(); i != links1.end(); i++)
-	{
-		if (slots_left)
-		{
+		if (i->second->m_remote_interested)
 			slots_left--;
-			(*i)->choked(false);
-		}
-		else
-			(*i)->choked(true);
+		i->second->choked(false);
 	}
-	for (t_links1::const_iterator i = links2.begin(); i != links2.end(); i++)
+	for (t_links1::const_iterator i = links1.begin(); slots_left && i != links1.end(); i++)
 	{
-		if (slots_left)
-		{
-			slots_left--;
-			(*i)->choked(false);
-		}
-		else
-			(*i)->choked(true);
+		slots_left--;
+		(*i)->choked(false);
+	}
+	for (t_links1::const_iterator i = links2.begin(); slots_left && i != links2.end(); i++)
+	{
+		slots_left--;
+		(*i)->choked(false);
 	}
 	m_update_chokes_time = time();
 }
