@@ -1548,8 +1548,10 @@ void CXBTClientDlg::OnUpdatePopupAnnounce(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnPopupTorrentOptions()
 {
-	int index = m_files.GetNextItem(-1, LVNI_SELECTED);
-	t_file& f = m_files_map.find(m_files.GetItemData(index))->second;
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_SELECTED));
+	if (id == -1)
+		return;
+	t_file& f = m_files_map.find(id)->second;
 	Cdlg_torrent_options dlg;
 	Cdlg_torrent_options::t_data data;
 	for (t_trackers::const_iterator i = f.m_trackers.begin(); i != f.m_trackers.end(); i++)
@@ -1579,7 +1581,10 @@ void CXBTClientDlg::OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	OnPopupExplore();
+	if (GetKeyState(VK_MENU) < 0)
+		OnPopupTorrentOptions();
+	else
+		OnPopupExplore();
 	*pResult = 0;
 }
 
