@@ -14,7 +14,7 @@ static char THIS_FILE[] = __FILE__;
 // Cdlg_scheduler dialog
 
 
-Cdlg_scheduler::Cdlg_scheduler(CWnd* pParent): 
+Cdlg_scheduler::Cdlg_scheduler(CWnd* pParent):
 	ETSLayoutDialog(Cdlg_scheduler::IDD, pParent, "Cdlg_scheduler")
 {
 	//{{AFX_DATA_INIT(Cdlg_scheduler)
@@ -45,7 +45,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_scheduler message handlers
 
-BOOL Cdlg_scheduler::OnInitDialog() 
+BOOL Cdlg_scheduler::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
@@ -68,19 +68,19 @@ BOOL Cdlg_scheduler::OnInitDialog()
 	return true;
 }
 
-void Cdlg_scheduler::OnInsert() 
+void Cdlg_scheduler::OnInsert()
 {
 }
 
-void Cdlg_scheduler::OnEdit() 
+void Cdlg_scheduler::OnEdit()
 {
 }
 
-void Cdlg_scheduler::OnDelete() 
+void Cdlg_scheduler::OnDelete()
 {
 }
 
-void Cdlg_scheduler::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_scheduler::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
@@ -91,7 +91,7 @@ void Cdlg_scheduler::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void Cdlg_scheduler::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_scheduler::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	OnEdit();
 	*pResult = 0;

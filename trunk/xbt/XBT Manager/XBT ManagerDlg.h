@@ -14,7 +14,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CXBTManagerDlg dialog
 
-class CXBTManagerDlg : public ETSLayoutDialog
+class CXBTManagerDlg: public ETSLayoutDialog
 {
 // Construction
 public:

@@ -14,7 +14,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_about dialog
 
-class Cdlg_about : public CDialog
+class Cdlg_about: public CDialog
 {
 // Construction
 public:

@@ -16,7 +16,7 @@
 
 class Cserver;
 
-class Cdlg_torrent : public ETSLayoutDialog
+class Cdlg_torrent: public ETSLayoutDialog
 {
 // Construction
 public:

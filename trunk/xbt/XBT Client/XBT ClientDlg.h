@@ -10,7 +10,7 @@
 #include "resource.h"
 #include "stream_reader.h"
 
-class CXBTClientDlg : public ETSLayoutDialog
+class CXBTClientDlg: public ETSLayoutDialog
 {
 public:
 	void set_torrent_state(Cbt_file::t_state);

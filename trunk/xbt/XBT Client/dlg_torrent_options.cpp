@@ -43,12 +43,12 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_torrent_options message handlers
 
-BOOL Cdlg_torrent_options::OnInitDialog() 
+BOOL Cdlg_torrent_options::OnInitDialog()
 {
 	m_seeding_ratio_value = m_data.seeding_ratio;
 	CDialog::OnInitDialog();
 	m_seeding_ratio_override.SetCheck(m_data.seeding_ratio_override);
-	update_controls();	
+	update_controls();
 	return true;
 }
 
@@ -57,12 +57,12 @@ void Cdlg_torrent_options::update_controls()
 	m_seeding_ratio.EnableWindow(m_seeding_ratio_override.GetState() & 3);
 }
 
-void Cdlg_torrent_options::OnSeedingRatioOverride() 
+void Cdlg_torrent_options::OnSeedingRatioOverride()
 {
 	update_controls();
 }
 
-void Cdlg_torrent_options::OnOK() 
+void Cdlg_torrent_options::OnOK()
 {
 	CDialog::OnOK();
 	m_data.seeding_ratio = m_seeding_ratio_value;

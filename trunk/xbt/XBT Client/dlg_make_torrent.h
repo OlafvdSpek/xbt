@@ -14,7 +14,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_make_torrent dialog
 
-class Cdlg_make_torrent : public ETSLayoutDialog
+class Cdlg_make_torrent: public ETSLayoutDialog
 {
 // Construction
 public:

@@ -14,7 +14,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_trackers dialog
 
-class Cdlg_trackers : public ETSLayoutDialog
+class Cdlg_trackers: public ETSLayoutDialog
 {
 // Construction
 public:

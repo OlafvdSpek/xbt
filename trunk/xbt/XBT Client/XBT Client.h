@@ -20,7 +20,7 @@
 // See XBT Client.cpp for the implementation of this class
 //
 
-class CXBTClientApp : public CWinApp
+class CXBTClientApp: public CWinApp
 {
 public:
 // Overrides

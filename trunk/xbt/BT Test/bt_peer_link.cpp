@@ -250,6 +250,8 @@ int Cbt_peer_link::recv()
 				alert(Calert::debug, "Peer: recv failed: " + Csocket::error2a(e));
 			return 1;
 		}
+		m_downloaded += r;
+		m_down_counter.add(r);
 		m_rtime = m_f->m_server->time();
 		m_read_b.cb_w(r);
 		m_f->m_downloaded_l5 += r;
@@ -385,6 +387,7 @@ void Cbt_peer_link::write_handshake()
 	m_left = m_f->size();
 	m_get_peers_stime = 0;
 	mc_local_requests_pending = 0;
+	mc_max_requests_pending = 1;
 	m_peers_stime = 0;
 	m_check_pieces_time = m_rtime = m_stime = m_f->m_server->time();
 }
@@ -613,14 +616,21 @@ void Cbt_peer_link::write_peers()
 void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
 	mc_local_requests_pending--;
-	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
-	m_f->m_downloaded += size;
-	m_f->m_down_counter.add(size);
-	m_f->m_total_downloaded += size;
-	if (m_f->write_data(m_f->mcb_piece * piece + offset, s, size, this))
+	for (t_local_requests::iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
+	{
+		if (i->offset != m_f->mcb_piece * piece + offset)
+			continue;
+		int t = m_f->m_server->time() - i->stime;
+		mc_max_requests_pending = t ? max(1, min(120 / t, 8)) : 8;
+		logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
+		m_f->m_downloaded += size;
+		m_f->m_down_counter.add(size);
+		m_f->m_total_downloaded += size;
+		m_local_requests.erase(i);
+		m_f->write_data(m_f->mcb_piece * piece + offset, s, size, this);
 		return;
-	m_downloaded += size;
-	m_down_counter.add(size);
+	}
+	alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b"));
 }
 
 void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes)
@@ -632,8 +642,6 @@ void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, c
 		return;
 	}
 	m_f->write_data(offset, s, size, this);
-	m_downloaded += size;
-	m_down_counter.add(size);
 	m_f->m_downloaded += size;
 	m_f->m_down_counter.add(size);
 	m_f->m_total_downloaded += size;
@@ -647,7 +655,7 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, true);
 		m_remote_choked = true;
 		// clear_local_requests();
-		m_local_requests.clear();
+		// m_local_requests.clear();
 		mc_local_requests_pending = 0;
 		break;
 	case bti_unchoke:
@@ -799,5 +807,5 @@ void Cbt_peer_link::check_pieces()
 
 int Cbt_peer_link::c_max_requests_pending() const
 {
-	return m_f->c_max_requests_pending();
+	return min(mc_max_requests_pending, m_f->c_max_requests_pending());
 }
