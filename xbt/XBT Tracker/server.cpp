@@ -355,7 +355,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
 		return;
 	t_file& file = m_files[v.m_info_hash];
-	if (user && user->fid_end && file.fid > user->fid_end)
+	if (v.m_left && user && user->fid_end && file.fid > user->fid_end)
 		return;
 	if (m_use_sql && user)
 	{
@@ -488,7 +488,7 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
 	if (i == m_files.end()) 
 		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent);
-	if (user && user->fid_end && i->second.fid > user->fid_end)
+	if (ti.m_left && user && user->fid_end && i->second.fid > user->fid_end)
 		return Cbvalue().d(bts_failure_reason, bts_wait_time);
 	if (ti.m_compact)
 	{
