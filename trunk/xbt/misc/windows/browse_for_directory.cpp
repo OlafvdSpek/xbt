@@ -7,7 +7,7 @@ int browse_for_directory(HWND hWnd, const string& title, string& directory)
 	ZeroMemory(&bi, sizeof(BROWSEINFO));
 	bi.hwndOwner = hWnd;
 	bi.lpszTitle = title.c_str();
-	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
+	bi.ulFlags = BIF_NEWDIALOGSTYLE | BIF_RETURNONLYFSDIRS;
 	ITEMIDLIST* idl = SHBrowseForFolder(&bi);
 	if (!idl)
 		return 1;
