@@ -55,6 +55,7 @@ int Cbt_file::info(const Cbvalue& info)
 		return 0;
 	m_info = info.read();
 	m_info_hash = compute_sha1(m_info);
+	m_merkle = info.d(bts_pieces).s().empty();
 	mcb_piece = info.d(bts_piece_length).i();
 	{
 		mcb_f = 0;
@@ -80,6 +81,25 @@ int Cbt_file::info(const Cbvalue& info)
 		|| mcb_piece < 16 << 10
 		|| mcb_piece > 16 << 20)
 		return 1;
+	if (m_merkle)
+	{
+		int c_pieces = 0;
+		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		{
+			if (i->merkle_hash().length() != 20)
+				return 1;
+			c_pieces += (i->size() + mcb_piece - 1) / mcb_piece;
+		}
+		m_pieces.resize(c_pieces);
+		Cbt_piece* piece = &m_pieces.front();
+		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		{
+			__int64 size = i->size();
+			while (size)
+				size -= piece++->mcb_d = min(size, mcb_piece);
+		}
+		return 0;
+	}
 	m_pieces.resize((mcb_f + mcb_piece - 1) / mcb_piece);
 	string piece_hashes = info.d(bts_pieces).s();
 	if (piece_hashes.length() != 20 * m_pieces.size())
