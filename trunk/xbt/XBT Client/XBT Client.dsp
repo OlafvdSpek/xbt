@@ -525,6 +525,10 @@ SOURCE=".\XBT ClientDlg.h"
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
+SOURCE=".\res\XBT Client B.ico"
+# End Source File
+# Begin Source File
+
 SOURCE=".\res\XBT Client.ico"
 # End Source File
 # Begin Source File

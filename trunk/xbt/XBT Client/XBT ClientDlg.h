@@ -30,6 +30,7 @@ public:
 	void sort_files();
 	int events_compare(int id_a, int id_b) const;
 	int files_compare(int id_a, int id_b) const;
+	int global_events_compare(int id_a, int id_b) const;
 	int peers_compare(int id_a, int id_b) const;
 	int pieces_compare(int id_a, int id_b) const;
 	int sub_files_compare(int id_a, int id_b) const;
