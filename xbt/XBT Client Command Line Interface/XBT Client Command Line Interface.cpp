@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../bt test/bt_file.h"
+#include "../BT Test/bt_file.h"
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "bvalue.h"
