@@ -188,7 +188,7 @@ int Cbt_file::open(const string& name)
 		m_left = 0;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->left(0);
-		m_hasher = new Cbt_hasher(m_validate);
+		m_hasher = new Cbt_hasher(true); // m_validate);
 		while (!m_validate && m_hasher->run(*this))
 			;
 	}
@@ -443,19 +443,16 @@ int Cbt_file::read_data(__int64 offset, byte* d, int cb_d)
 	byte* w = d;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
-		if (offset < i->size())
-		{
-			int cb_read = min(size, i->size() - offset);
-			if (i->read(offset, w, cb_read))
-				return 1;
-			size -= cb_read;
-			if (!size)
-				return 0;
-			offset = 0;
-			w += cb_read;
-		}
-		else
-			offset -= i->size();
+		if (offset >= i->offset() + i->size())
+			continue;
+		int cb_read = min(size, i->offset() + i->size() - offset);
+		if (i->read(offset - i->offset(), w, cb_read))
+			return 1;
+		size -= cb_read;
+		if (!size)
+			return 0;
+		offset += cb_read;
+		w += cb_read;
 	}
 	return 1;
 }
