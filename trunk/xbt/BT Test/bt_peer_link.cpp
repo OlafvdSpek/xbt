@@ -99,6 +99,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			if (m_local_requests.empty())
 				break;
 			const t_local_request& request = m_local_requests.front();
+			logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset, request.size);
 			if (m_f->m_merkle)
 				write_merkle_request(request.offset, 127);
 			else
@@ -641,6 +642,7 @@ void Cbt_peer_link::write_peers()
 
 void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
+	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, m_f->mcb_piece * piece + offset, size);
 	m_f->write_data(m_f->mcb_piece * piece + offset, s, size);
 	m_downloaded += size;
 	m_down_counter.add(size);
@@ -830,4 +832,9 @@ void Cbt_peer_link::clear_local_requests()
 	m_pieces.clear();
 	m_local_requests.clear();
 	mc_local_requests_pending = 0;
+}
+
+Cbt_logger& Cbt_peer_link::logger()
+{
+	return m_f->logger();
 }
