@@ -25,6 +25,7 @@ public:
 	enum { IDD = IDD_ABOUT };
 	CURLStatic	m_license;
 	CURLStatic	m_site;
+	CString	m_version;
 	//}}AFX_DATA
 
 
