@@ -1325,6 +1325,15 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 				inserted = true;
 			}
 			break;
+		case v_trackers:
+			while (m_peers.GetItemCount() < f.m_trackers.size())
+			{
+				m_peers.InsertItemData(m_peers.GetItemCount());
+				inserted = true;
+			}
+			while (m_peers.GetItemCount() > f.m_trackers.size())
+				m_peers.DeleteItem(m_peers.GetItemCount() - 1);
+			break;
 		}
 	}
 	{
