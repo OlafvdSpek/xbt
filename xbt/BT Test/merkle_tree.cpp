@@ -76,24 +76,18 @@ string Cmerkle_tree::get(int i, int c) const
 	return v;
 }
 
-bool Cmerkle_tree::test_and_set(int i, const string& v, const string& w)
+bool Cmerkle_tree::test(int i, const string& v, const string& w)
 {
 	assert(i >= 0);
 	assert(i < m_size);
 	int a = 0;
 	int b = m_size;
-	int i0 = i;
 	int z = 0;
 	string h = v;
 	while (1)
 	{
 		if (*d(a + i))
-		{
-			if (h != get0(a + i))
-				return false;
-			set(i0, v, w);
-			return true;
-		}
+			return h == get0(a + i);
 		if (b - a < 2 || z + 20 > w.size())
 			return false;
 		int j = i ^ 1;
@@ -177,6 +171,14 @@ void Cmerkle_tree::set(int i, const string& v, const string& w)
 		b += b - c + 1 >> 1;
 		i >>= 1;
 	}
+}
+
+bool Cmerkle_tree::test_and_set(int i, const string& v, const string& w)
+{
+	if (!test(i, v, w))
+		return false;
+	set(i, v, w);
+	return true;
 }
 
 string Cmerkle_tree::root() const
