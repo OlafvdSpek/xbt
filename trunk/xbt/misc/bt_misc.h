@@ -17,6 +17,7 @@ using namespace std;
 
 string b2a(__int64 v, const char* postfix = NULL);
 string backward_slashes(string v);
+string duration2a(int v);
 string escape_string(const string& v);
 string forward_slashes(string v);
 string get_env(const string& v);

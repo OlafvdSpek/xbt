@@ -226,6 +226,20 @@ string peer_id2a(const string& v)
 	return "Unknown";
 }
 
+string duration2a(int v)
+{
+	if (v < 120)
+		return n(v) + " s";
+	v /= 60;
+	if (v < 120)
+		return n(v) + " m";
+	v /= 60;
+	if (v < 48)
+		return n(v) + " h";
+	v /= 24;
+	return n(v) + " d";
+}
+
 string time2a(time_t v)
 {
 	const tm* date = localtime(&v);
