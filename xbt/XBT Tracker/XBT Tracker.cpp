@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
 	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
 		return cerr << "Unable to start WSA" << endl, 0;
 #endif
+	srand(time(NULL));
 	Cdatabase database;
 	Cxcc_error error;
 	Cstatic_config static_config;

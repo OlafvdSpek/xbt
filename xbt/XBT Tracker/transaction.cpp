@@ -6,6 +6,7 @@
 #include "transaction.h"
 
 #include "server.h"
+#include "sha1.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -15,6 +16,20 @@ Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 	m_server(server)
 {
 	m_s = s;
+}
+
+__int64 Ctransaction::connection_id() const
+{
+	struct
+	{
+		__int64 secret;
+		int a;
+	} s;
+	s.secret = m_server.secret();
+	s.a = m_a.sin_addr.s_addr;
+	char d[20];
+	compute_sha1(&s, sizeof(s), d);
+	return *reinterpret_cast<__int64*>(d);
 }
 
 void Ctransaction::recv()
@@ -53,12 +68,14 @@ void Ctransaction::send_connect(const t_udp_tracker_input_connect& uti)
 	t_udp_tracker_output_connect uto;
 	uto.action(uta_connect);
 	uto.transaction_id(uti.transaction_id());
-	uto.m_connection_id = rand();
+	uto.m_connection_id = connection_id();
 	send(&uto, sizeof(t_udp_tracker_output_connect));
 }
 
 void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti)
 {
+	if (uti.m_connection_id != connection_id())
+		return;
 	const int cb_b = 2 << 10;
 	char b[cb_b];
 	Ctracker_input ti;
@@ -101,6 +118,8 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti)
 
 void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti)
 {
+	if (uti.m_connection_id != connection_id())
+		return;
 	const int cb_b = 2 << 10;
 	char b[cb_b];
 	t_udp_tracker_output_scrape& uto = *reinterpret_cast<t_udp_tracker_output_scrape*>(b);

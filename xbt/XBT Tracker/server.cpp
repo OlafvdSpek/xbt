@@ -15,6 +15,9 @@ Cserver::Cserver(Cdatabase& database):
 	m_database(database)
 {
 	m_fid_end = 0;
+
+	for (int i = 0; i < 8; i++)
+		m_secret = m_secret << 8 ^ rand();
 }
 
 void Cserver::run(Csocket& lt, Csocket& lu)

@@ -16,6 +16,7 @@ class Cserver;
 class Ctransaction  
 {
 public:
+	__int64 connection_id() const;
 	void recv();
 	void send(const void* d, int cb_d);
 	void send_announce(const t_udp_tracker_input_announce&);

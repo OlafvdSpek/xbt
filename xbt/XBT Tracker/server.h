@@ -84,6 +84,11 @@ public:
 	{
 		return m_files;
 	}
+
+	__int64 secret() const
+	{
+		return m_secret;
+	}
 private:
 	typedef list<Cconnection> t_connections;
 	typedef list<Cpeer_link> t_peer_links;
@@ -98,6 +103,7 @@ private:
 	int m_read_db_interval;
 	int m_write_db_interval;
 	int m_fid_end;
+	__int64 m_secret;
 	t_connections m_connections;
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
