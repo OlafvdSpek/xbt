@@ -158,9 +158,10 @@ int SHA1Result( SHA1Context *context,
  *
  */
 int SHA1Input(    SHA1Context    *context,
-                  const uint8_t  *message_array,
+                  const void     *message_array0,
                   unsigned       length)
 {
+	const uint8_t *message_array = reinterpret_cast<const uint8_t *>(message_array0);
     if (!length)
     {
         return shaSuccess;
@@ -393,7 +394,7 @@ void compute_sha1(const void* s, int cb_s, void* d)
 {
 	SHA1Context context;
 	SHA1Reset(&context);
-	SHA1Input(&context, reinterpret_cast<const unsigned char*>(s), cb_s);
+	SHA1Input(&context, s, cb_s);
 	SHA1Result(&context, reinterpret_cast<unsigned char*>(d));
 }
 

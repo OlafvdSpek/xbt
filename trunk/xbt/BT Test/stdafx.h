@@ -13,6 +13,9 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma warning(disable: 4786)
 
+#define FD_SETSIZE 1024
+#define atoll _atoi64
+
 #include <cassert>
 #include <ctime>
 #include <fstream>
