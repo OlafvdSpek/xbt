@@ -34,6 +34,7 @@ public:
 		__int64 left;
 		string peer_id;
 		int port;
+		int uid;
 		__int64 uploaded;
 
 		bool listening;
@@ -76,7 +77,7 @@ public:
 
 	struct t_file
 	{
-		void clean_up(int t);
+		void clean_up(int t, Cserver&);
 		string debug() const;
 		void select_peers(const Ctracker_input&, Cannounce_output&) const;
 		Cbvalue scrape() const;
@@ -138,10 +139,10 @@ public:
 
 	int test_sql();
 	void accept(const Csocket& l);
-	const t_user* find_user_by_name(const string&) const;
-	const t_user* find_user_by_ipa(int) const;
-	const t_user* find_user_by_torrent_pass(const string&) const;
-	const t_user* find_user_by_uid(int) const;
+	t_user* find_user_by_name(const string&);
+	t_user* find_user_by_ipa(int);
+	t_user* find_user_by_torrent_pass(const string&);
+	t_user* find_user_by_uid(int);
 	void read_config();
 	void write_db_files();
 	void write_db_users();
@@ -150,7 +151,7 @@ public:
 	void read_db_ipas();
 	void read_db_users();
 	void clean_up();
-	void insert_peer(const Ctracker_input&, bool listen_check, bool udp, const t_user*);
+	void insert_peer(const Ctracker_input&, bool listen_check, bool udp, t_user*);
 	void update_peer(const string& file_id, int peer_id, bool listening);
 	string debug(const Ctracker_input&) const;
 	string statistics() const;
