@@ -82,6 +82,11 @@ public:
 			return m_merkle_tree;
 		}
 
+		const Cmerkle_tree& merkle_tree() const
+		{
+			return m_merkle_tree;
+		}
+
 		__int64 left() const
 		{
 			return m_left;
@@ -125,6 +130,7 @@ public:
 		{
 			m_f = -1;
 			m_merkle_hash = merkle_hash;
+			m_merkle_tree.resize(size + 0x3fff >> 14);
 			m_name = name;
 			m_priority = priority;
 			m_size = size;
