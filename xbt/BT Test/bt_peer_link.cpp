@@ -55,7 +55,15 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 				write_piece(a, b, request.size, d.data() + b);
 			m_remote_requests.erase(m_remote_requests.begin());
 		}
-		if (!m_remote_choked && !m_piece)
+		if (m_piece)
+		{
+			if (time(NULL) - m_piece_rtime > 120)
+			{
+				m_piece->m_peer = NULL;
+				m_piece = NULL;
+			}
+		}
+		else if (!m_remote_choked)
 		{
 			int a = m_f->next_invalid_piece(m_remote_pieces);
 			if (a >= 0)
@@ -67,6 +75,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 					if (m_piece->m_sub_pieces.empty() || !m_piece->m_sub_pieces[b])
 						write_request(a, m_piece->mcb_sub_piece * b, m_piece->cb_sub_piece(b));
 				}
+				m_piece_rtime = time(NULL);
 			}
 		}
 		FD_SET(m_s, fd_read_set);
