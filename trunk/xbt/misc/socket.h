@@ -17,6 +17,22 @@ using namespace std;
 #include <windows.h>
 
 typedef int socklen_t;
+#else
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
+#define closesocket close
+#define ioctlsocket ioctl
+#define WSAGetLastError() errno
+
+#define WSAECONNABORTED ECONNABORTED
+#define WSAECONNRESET ECONNRESET
+#define WSAEWOULDBLOCK EWOULDBLOCK
+
+typedef int SOCKET;
+
+const int INVALID_SOCKET = -1;
+const int SOCKET_ERROR = -1;
 #endif
 
 class Csocket_source
