@@ -225,10 +225,10 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));
 	start_server();
 	insert_columns(true);
-	m_files_sort_column = fc_name;
-	m_files_sort_reverse = false;
 	m_peers_sort_column = pc_client;
 	m_peers_sort_reverse = false;
+	m_torrents_sort_column = fc_name;
+	m_torrents_sort_reverse = false;
 	m_file = NULL;
 	register_tray();
 	RegisterHotKey(GetSafeHwnd(), 0, MOD_CONTROL | MOD_SHIFT, 'Q');
@@ -1464,11 +1464,11 @@ static int compare(const T& a, const T& b)
 
 int CXBTClientDlg::files_compare(int id_a, int id_b) const
 {
-	if (m_files_sort_reverse)
+	if (m_torrents_sort_reverse)
 		swap(id_a, id_b);
 	const t_file& a = m_files_map.find(id_a)->second;
 	const t_file& b = m_files_map.find(id_b)->second;
-	switch (m_files_sort_column)
+	switch (m_torrents_sort_column)
 	{
 	case fc_hash:
 		return compare(a.info_hash, b.info_hash);
@@ -1508,8 +1508,8 @@ static int CALLBACK files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
-	m_files_sort_reverse = m_torrents_columns[pNMListView->iSubItem] == m_files_sort_column && !m_files_sort_reverse;
-	m_files_sort_column = m_torrents_columns[pNMListView->iSubItem];
+	m_torrents_sort_reverse = m_torrents_columns[pNMListView->iSubItem] == m_torrents_sort_column && !m_torrents_sort_reverse;
+	m_torrents_sort_column = m_torrents_columns[pNMListView->iSubItem];
 	sort_files();
 	*pResult = 0;
 }
