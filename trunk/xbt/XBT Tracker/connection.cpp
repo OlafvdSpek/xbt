@@ -213,7 +213,7 @@ void Cconnection::read(const string& v)
 	else if (r != d.size())
 	{
 		m_write_b.resize(d.size() - r);
-		memcpy(m_write_b.begin(), d + r, d.size() - r);
+		memcpy(&m_write_b.front(), d + r, d.size() - r);
 		m_r = 0;
 	}
 }
