@@ -59,14 +59,18 @@
 		printf("<td align=right>%d", $result[fid]);
 		printf("<td>%s", bin2hex($result[info_hash]));
 		printf("<td align=right>%d", $result[leechers]);
-		printf("<td align=right>%d", $result[seeders]);
+		echo("<td align=right>");
+		if ($result[seeders])
+			printf("%d", $result[seeders]);
 		printf("<td align=right>%d", $result[announced_http]);
 		printf("<td align=right>%d", $result[announced_http_compact]);
 		printf("<td align=right>%d", $result[announced_http_no_peer_id]);
 		printf("<td align=right>%d", $result[announced_udp]);
 		printf("<td align=right>%d", $result[scraped_http]);
 		printf("<td align=right>%d", $result[scraped_udp]);
-		printf("<td align=right>%d", $result[completed]);
+		echo("<td align=right>");
+		if ($result[completed])
+			printf("%d", $result[completed]);
 		printf("<td align=right>%d", $result[started]);
 		printf("<td align=right>%d", $result[stopped]);
 		printf("<td>%s", gmdate("Y-m-d H:i:s", $result[mtime]));
