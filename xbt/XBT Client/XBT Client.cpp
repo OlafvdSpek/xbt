@@ -42,6 +42,7 @@ BOOL CXBTClientApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+	_setmaxstdio(2 << 10);
 	SetRegistryKey("XBT");
 	char path[MAX_PATH];
 	if (SUCCEEDED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
