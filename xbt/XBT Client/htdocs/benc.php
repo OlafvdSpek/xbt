@@ -124,12 +124,16 @@
 	{
 		if ($s[0] != 'i')
 			return;
-		$v = intval(substr($s, 1, 16));
+		$b = strpos($s, 'e', 1);
+		if ($b === false)
+			return;
+		$v = substr($s, 1, $b - 1);
 		$ss = 'i' . $v . 'e';
 		if ($v === '-0')
 			return;
 		if ($v[0] == '0' && strlen($v) != 1)
 			return;
+		$v = floatval($v);
 		return array(type => 'integer', value => $v, strlen => strlen($ss), string => $ss);
 	}
 
