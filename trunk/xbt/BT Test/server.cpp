@@ -13,7 +13,7 @@
 
 const char* g_pid_fname = "xbt_client_back_end.pid";
 static volatile bool g_sig_term = false;
-const static int g_state_version = 2;
+const static int g_state_version = 3;
 
 class Clock
 {
