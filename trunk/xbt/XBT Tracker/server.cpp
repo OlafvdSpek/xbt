@@ -144,7 +144,7 @@ int Cserver::run()
 	}
 #ifndef WIN32
 #if 1
-	if (m_daemon && daemon(true, false))
+	if (m_config.m_daemon && daemon(true, false))
 		cerr << "daemon failed" << endl;
 #else
 	switch (fork())
