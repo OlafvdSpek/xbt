@@ -784,7 +784,7 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	case sfc_name:
 		if (e.name.empty())
 		{
-			int i = m_file->name.find_last_of("/\\");
+			int i = m_file->name.rfind('\\');
 			m_buffer[m_buffer_w] = i == string::npos ? m_file->name : m_file->name.substr(i + 1);
 		}
 		else
@@ -935,7 +935,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	else
 		id = i->first;
 	t_file& f = m_files_map.find(id)->second;
-	f.display_name = f.name = sr.read_string();
+	f.display_name = f.name = backward_slashes(sr.read_string());
 	f.info_hash = info_hash;
 	f.trackers.clear();
 	for (int c_trackers = sr.read_int(4); c_trackers--; )
@@ -973,7 +973,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.priority = sr.read_int(4);
 	f.removed = false;
 	{
-		int i = f.display_name.find_last_of("/\\");
+		int i = f.display_name.rfind('\\');
 		if (i != string::npos)
 			f.display_name.erase(0, i + 1);
 	}
@@ -1196,7 +1196,7 @@ void CXBTClientDlg::OnPopupExplore()
 		ShellExecute(m_hWnd, "open", backward_slashes(m_server.completes_dir()).c_str(), NULL, NULL, SW_SHOW);
 		return;
 	}
-	string name = backward_slashes(m_files_map.find(id)->second.name);
+	string name = m_files_map.find(id)->second.name;
 	struct _stati64 b;
 	if (_stati64(name.c_str(), &b) || ~b.st_mode & S_IFDIR)
 	{
