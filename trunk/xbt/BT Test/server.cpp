@@ -29,13 +29,8 @@ public:
 		LeaveCriticalSection(m_cs);
 	}
 private:
-	Clock(const Clock&)
-	{
-	}
-
-	operator=(const Clock&)
-	{
-	}
+	Clock(const Clock&);
+	operator=(const Clock&);
 
 	CRITICAL_SECTION* m_cs;
 #else
