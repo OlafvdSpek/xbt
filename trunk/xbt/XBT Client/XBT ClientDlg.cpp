@@ -902,11 +902,11 @@ void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 	{
 		char name[MAX_PATH];
 		DragQueryFile(hDropInfo, i, name, MAX_PATH);
-		struct stat b;
-		if (stat(name, &b))
+		struct _stati64 b;
+		if (_stati64(name, &b))
 			continue;
 		if (b.st_mode & _S_IFDIR
-			|| b.st_size > 256 << 10)
+			|| b.st_size > 512 << 10)
 			names.insert(name);
 		else
 			open(name);
