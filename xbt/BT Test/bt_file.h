@@ -25,6 +25,18 @@ class Cserver;
 class Cbt_file  
 {
 public:
+	enum t_state
+	{
+		s_queued,
+		s_hashing,
+		s_running,
+		s_paused,
+		s_stopped,
+	};
+
+	void announce();
+	void pause();
+	void unpause();
 	int c_max_requests_pending() const;
 	bool end_mode() const;
 	bool begin_mode() const;
@@ -65,6 +77,11 @@ public:
 	int info(const Cbvalue&);
 	Cbt_file();
 	~Cbt_file();
+
+	t_state state() const
+	{
+		return m_state;
+	}
 
 	struct t_sub_file
 	{
@@ -201,10 +218,11 @@ public:
 	Cbt_hasher* m_hasher;
 	bool m_end_mode;
 	bool m_merkle;
-	bool m_run;
 	bool m_validate;
 	Cbt_logger* m_logger;
 	Cserver* m_server;
+private:
+	t_state m_state;
 };
 
 #endif // !defined(AFX_BT_FILE_H__E64A5C96_20E5_4C90_8267_F9BC96F99888__INCLUDED_)

@@ -161,7 +161,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				}
 				m_remote_requests.pop_front();
 			}
-			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < c_max_requests_pending())
+			while (m_local_interested && m_f->state() == Cbt_file::s_running && !m_remote_choked && mc_local_requests_pending < c_max_requests_pending())
 			{
 				int a = m_f->next_invalid_piece(*this);
 				if (a < 0)
