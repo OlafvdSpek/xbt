@@ -1642,9 +1642,9 @@ void CXBTClientDlg::stop_server()
 }
 
 template <class T>
-static int compare(const T& a, const T& b)
+static int compare(const T& a, const T& b, int c = 0)
 {
-	return a < b ? -1 : a != b;
+	return a < b ? -1 : a == b ? c : 1;
 }
 
 int CXBTClientDlg::files_compare(int id_a, int id_b) const
@@ -1782,13 +1782,13 @@ int CXBTClientDlg::pieces_compare(int id_a, int id_b) const
 	case pic_index:
 		return compare(id_a, id_b);
 	case pic_c_chunks:
-		return compare(b.c_chunks_valid, a.c_chunks_valid);
+		return compare(b.c_chunks_valid, a.c_chunks_valid, compare(a.rank, b.rank));
 	case pic_c_peers:
-		return compare(a.c_peers, b.c_peers);
+		return compare(a.c_peers, b.c_peers, compare(a.rank, b.rank));
 	case pic_priority:
-		return compare(a.priority, b.priority);
+		return compare(a.priority, b.priority, compare(a.rank, b.rank));
 	case pic_valid:
-		return compare(b.valid, a.valid);
+		return compare(a.valid, b.valid, compare(a.rank, b.rank));
 	case pic_rank:
 		return compare(a.rank, b.rank);
 	}
