@@ -253,7 +253,7 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 {
 	Clock l(m_cs);
 	Cbt_file f;
-	if (f.info(info, true))
+	if (f.torrent(info))
 		return 1;
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
