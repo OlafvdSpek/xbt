@@ -171,7 +171,10 @@ void Cserver::run()
 			FD_SET(*i, &fd_read_set);
 			n = max(n, static_cast<SOCKET>(*i));
 		}
-		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, NULL) == SOCKET_ERROR)
+		timeval tv;
+		tv.tv_sec = 1;
+		tv.tv_usec = 0;
+		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
 			cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 		else 
 		{
@@ -755,4 +758,9 @@ void Cserver::sig_handler(int v)
 		g_sig_term = true;
 		break;
 	}
+}
+
+void Cserver::term()
+{
+	g_sig_term = true;
 }
