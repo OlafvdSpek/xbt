@@ -140,7 +140,7 @@ SOURCE=.\dlg_options.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\misc\ETSLayout.cpp
+SOURCE=..\misc\windows\ETSLayout.cpp
 # End Source File
 # Begin Source File
 
