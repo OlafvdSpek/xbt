@@ -103,6 +103,23 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 
 void Cserver::insert_peer(const Ctracker_input& v)
 {
+	if (m_log)
+	{
+		Csql_query q(m_database);
+		q.write("(%d, %d, %d, %s, %s, %d, %d, %d, %d)");
+		q.p(ntohl(v.m_ipa));
+		q.p(ntohs(v.m_port));
+		q.p(v.m_event);
+		q.pe(v.m_info_hash);
+		q.pe(v.m_peer_id);
+		q.p(v.m_downloaded);
+		q.p(v.m_left);
+		q.p(v.m_uploaded);
+		q.p(time(NULL));
+		if (!m_announce_log_buffer.empty())
+			m_announce_log_buffer += ", ";
+		m_announce_log_buffer += q.read();
+	}
 	if (time(NULL) - m_read_db_time > m_read_db_interval)
 		read_db();
 	t_file& file = m_files[v.m_info_hash];
@@ -229,6 +246,20 @@ Cbvalue Cserver::t_file::scrape() const
 
 Cbvalue Cserver::scrape(const Ctracker_input& ti)
 {
+	if (m_log)
+	{
+		Csql_query q(m_database);
+		q.write("(%d, %s, %d)");
+		q.p(ntohl(ti.m_ipa));
+		if (ti.m_info_hash.empty())
+			q.p("NULL");
+		else
+			q.pe(ti.m_info_hash);
+		q.p(time(NULL));
+		if (!m_scrape_log_buffer.empty())
+			m_scrape_log_buffer += ", ";
+		m_scrape_log_buffer += q.read();
+	}
 	Cbvalue v;
 	Cbvalue files(Cbvalue::vt_dictionary);
 	if (ti.m_info_hash.empty())
@@ -304,6 +335,16 @@ void Cserver::write_db()
 			q.execute();
 			file.dirty = false;
 		}
+		if (!m_announce_log_buffer.empty())
+		{
+			m_database.query("insert delayed into xbt_announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, mtime) values " + m_announce_log_buffer);
+			m_announce_log_buffer.erase();
+		}
+		if (!m_scrape_log_buffer.empty())
+		{
+			m_database.query("insert delayed into xbt_scrape_log (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
+			m_scrape_log_buffer.erase();
+		}
 	}
 	catch (Cxcc_error error)
 	{
@@ -316,12 +357,13 @@ void Cserver::read_config()
 	m_announce_interval = 1800;
 	m_clean_up_interval = 60;
 	m_listen_check = true;
+	m_log = false;
 	m_read_config_interval = 300;
 	m_read_db_interval = 60;
 	m_write_db_interval = 60;
 	try
 	{
-		Csql_result result = m_database.query("select name, value from xbt_config");
+		Csql_result result = m_database.query("select name, value from xbt_config where value is not null");
 		Csql_row row;
 		while (row = result.fetch_row())
 		{
@@ -331,6 +373,8 @@ void Cserver::read_config()
 				m_announce_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "listen_check"))
 				m_listen_check = row.f_int(1);
+			else if (!strcmp(row.f(0), "log"))
+				m_log = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_config_interval"))
 				m_read_config_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_db_interval"))

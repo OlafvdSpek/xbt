@@ -104,11 +104,14 @@ private:
 	int m_write_db_interval;
 	int m_fid_end;
 	bool m_listen_check;
+	bool m_log;
 	__int64 m_secret;
 	t_connections m_connections;
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
 	t_files m_files;
+	string m_announce_log_buffer;
+	string m_scrape_log_buffer;
 };
 
 #endif // !defined(AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_)
