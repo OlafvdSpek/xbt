@@ -159,7 +159,7 @@ Cbvalue Cserver::t_file::scrape() const
 {
 	Cbvalue v;
 	v.d(bts_complete, seeders);
-	// file.d(bts_downloaded, completed);
+	v.d(bts_downloaded, completed);
 	v.d(bts_incomplete, leechers);
 	return v;
 }
@@ -278,7 +278,7 @@ void Cserver::write_db()
 			Csql_query q(m_database);
 			if (!file.fid)
 			{
-				q.write("insert into xbt_files (info_hash) values (%s)");
+				q.write("insert into xbt_files (info_hash, ctime) values (%s, NULL)");
 				q.pe(i->first);
 				q.execute();
 				file.fid = m_database.insert_id();
