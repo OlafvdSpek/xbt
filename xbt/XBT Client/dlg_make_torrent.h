@@ -14,6 +14,7 @@ class Cdlg_make_torrent : public ETSLayoutDialog
 {
 // Construction
 public:
+	void post_insert();
 	void auto_size();
 	int compare(int id_a, int id_b) const;
 	void insert(const string& name);

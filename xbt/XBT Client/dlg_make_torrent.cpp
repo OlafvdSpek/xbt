@@ -86,6 +86,10 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 	m_list.InsertColumn(2, "");
 	m_sort_column = 0;
 	m_sort_reverse = false;
+
+	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
+		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
+	post_insert();
 	
 	return true;
 }
@@ -107,13 +111,7 @@ void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo)
 		insert(name);
 	}
 	ETSLayoutDialog::OnDropFiles(hDropInfo);
-	if (m_map.size() == 1)
-	{
-		m_name = base_name(m_map.begin()->second.name).c_str();
-		UpdateData(false);
-	}
-	auto_size();
-	sort();
+	post_insert();
 }
 
 void Cdlg_make_torrent::insert(const string& name)
@@ -128,7 +126,8 @@ void Cdlg_make_torrent::insert(const string& name)
 		if (m_map.empty())
 		{
 			m_name = base_name(name).c_str();
-			UpdateData(false);
+			if (GetSafeHwnd())
+				UpdateData(false);
 		}
 		WIN32_FIND_DATA finddata;
 		HANDLE findhandle = FindFirstFile((name + "\\*").c_str(), &finddata);
@@ -150,8 +149,20 @@ void Cdlg_make_torrent::insert(const string& name)
 	t_map_entry& e = m_map[id];
 	e.name = name;
 	e.size = b.st_size;
-	m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), id);
-	m_save.EnableWindow(m_map.size() < 256);
+	if (GetSafeHwnd())
+		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), id);
+}
+
+void Cdlg_make_torrent::post_insert()
+{
+	if (m_map.size() == 1)
+	{
+		m_name = base_name(m_map.begin()->second.name).c_str();
+		UpdateData(false);
+	}
+	auto_size();
+	sort();
+	m_save.EnableWindow(!m_map.empty() && m_map.size() < 256);
 }
 
 void Cdlg_make_torrent::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -287,3 +298,4 @@ void Cdlg_make_torrent::sort()
 {
 	m_list.SortItems(::compare, reinterpret_cast<DWORD>(this));	
 }
+

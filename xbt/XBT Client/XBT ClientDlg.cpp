@@ -5,6 +5,7 @@
 #include "XBT Client.h"
 #include "XBT ClientDlg.h"
 
+#include <sys/stat.h>
 #include "bt_misc.h"
 #include "bt_torrent.h"
 #include "dlg_about.h"
@@ -855,15 +856,31 @@ void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::OnDropFiles(HDROP hDropInfo) 
 {
+	typedef set<string> t_names;
+
 	int c_files = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
+	t_names names;
 	
 	for (int i = 0; i < c_files; i++)
 	{
 		char name[MAX_PATH];
 		DragQueryFile(hDropInfo, i, name, MAX_PATH);
-		open(name);
+		struct stat b;
+		if (stat(name, &b))
+			continue;
+		if (b.st_mode & _S_IFDIR
+			|| b.st_size > 256 << 10)
+			names.insert(name);
+		else
+			open(name);
 	}
 	ETSLayoutDialog::OnDropFiles(hDropInfo);
+	if (names.empty())
+		return;
+	Cdlg_make_torrent dlg;
+	for (t_names::const_iterator i = names.begin(); i != names.end(); i++)
+		dlg.insert(*i);
+	dlg.DoModal();
 }
 
 BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg) 
