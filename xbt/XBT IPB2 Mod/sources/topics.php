@@ -2,7 +2,7 @@
 
 /*
 +--------------------------------------------------------------------------
-|   Invision Power Board v2.0.0
+|   Invision Power Board v2.0.3
 |   =============================================
 |   by Matthew Mecham
 |   (c) 2001 - 2004 Invision Power Services, Inc.
@@ -59,6 +59,7 @@ class topics {
     var $first          = "";
     var $qpids          = "";
     var $custom_fields  = "";
+    var $last_read_tid  = "";
 
     /*-------------------------------------------------------------------------*/
 	//
@@ -189,16 +190,17 @@ class topics {
 
 				$last_time = $last_time ? $last_time : $ibforums->input['last_visit'];
 
-				$DB->simple_construct( array( 'select' => 'pid, post_date',
+				$DB->simple_construct( array( 'select' => 'MIN(pid) as pid',
 											  'from'   => 'posts',
-											  'where'  => "queued <> 1 AND topic_id=".$this->topic['tid']." AND post_date > ".intval($last_time),
-											  'order'  => 'post_date',
+											  'where'  => "queued=0 AND topic_id=".$this->topic['tid']." AND post_date > ".intval($last_time),
 											  'limit'  => array( 0,1 )
 									)      );
 
 				$DB->simple_exec();
 
-				if ( $post = $DB->fetch_row() )
+				$post = $DB->fetch_row();
+
+				if ( $post['pid'] )
 				{
 					$pid = "&#entry".$post['pid'];
 
@@ -276,11 +278,11 @@ class topics {
 
 		if ( ! $ibforums->input['b'] )
 		{
-			if ( $this->topic['topic_firstpost'] == 0 )
+			if ( $this->topic['topic_firstpost'] < 1 )
 			{
-				//-----------------------------------------
+				//--------------------------------------
 				// No first topic set - old topic, update
-				//-----------------------------------------
+				//--------------------------------------
 
 				$DB->simple_construct( array (
 												'select' => 'pid',
@@ -294,23 +296,37 @@ class topics {
 
 				if ( ! $post['pid'] )
 				{
-					$post['pid'] = -1;
+					//-----------------------------------------
+					// Get first post info
+					//-----------------------------------------
+
+					$DB->simple_construct( array( 'select' => 'pid',
+												  'from'   => 'posts',
+												  'where'  => "topic_id={$this->topic['tid']}",
+												  'order'  => 'pid ASC',
+												  'limit'  => array(0,1) ) );
+					$DB->simple_exec();
+
+					$first_post  = $DB->fetch_row();
+					$post['pid'] = $first_post['pid'];
 				}
 
-				$DB->simple_construct( array (
-												'update' => 'topics',
-												'set'    => 'topic_firstpost='.$post['pid'],
-												'where'  => 'tid='.$this->topic['tid']
-									 )       );
+				if ( $post['pid'] )
+				{
+					$DB->simple_construct( array (
+													'update' => 'topics',
+													'set'    => 'topic_firstpost='.$post['pid'],
+													'where'  => 'tid='.$this->topic['tid']
+										 )       );
 
-				$DB->simple_exec();
+					$DB->simple_exec();
+				}
 
-				//-----------------------------------------
+				//--------------------------------------
 				// Reload "fixed" topic
-				//-----------------------------------------
+				//--------------------------------------
 
 				$std->boink_it($ibforums->base_url."showtopic=".$this->topic['tid']."&b=1&st={$ibforums->input['st']}&p={$ibforums->input['p']}"."&#entry".$ibforums->input['p']);
-
 			}
 		}
 
@@ -348,6 +364,12 @@ class topics {
 				$this->topic['to_button_linearpl'] = $this->html->toutline_mode_choice_off( "{$ibforums->base_url}showtopic={$this->topic['tid']}&amp;mode=linearplus".$linear_pid, $ibforums->lang['tom_linear'] );
 			}
 		}
+
+		//-----------------------------------------
+		// Remove potential [attachmentid= tag in title
+		//-----------------------------------------
+
+		$this->topic['title'] = str_replace( '[attachmentid=', '&#91;attachmentid=', $this->topic['title'] );
 
 		//-----------------------------------------
 		// Load and run lib
@@ -417,13 +439,14 @@ class topics {
 			// ACTIVE USERS
 			//-----------------------------------------
 
+			$ar_time = time();
 			$cached = array();
 			$active = array( 'guests' => 0, 'anon' => 0, 'members' => 0, 'names' => "");
-			$rows   = array( 0 => array( 'login_type'   => substr($ibforums->member['login_anonymous'],0, 1),
-										 'running_time' => time(),
-										 'member_id'    => $ibforums->member['id'],
-										 'member_name'  => $ibforums->member['name'],
-										 'member_group' => $ibforums->member['mgroup'] ) );
+			$rows   = array( $ar_time => array( 'login_type'   => substr($ibforums->member['login_anonymous'],0, 1),
+												'running_time' => $ar_time,
+												'member_id'    => $ibforums->member['id'],
+												'member_name'  => $ibforums->member['name'],
+												'member_group' => $ibforums->member['mgroup'] ) );
 
 			//-----------------------------------------
 			// FETCH...
@@ -431,8 +454,10 @@ class topics {
 
 			while ($r = $DB->fetch_row() )
 			{
-				$rows[] = $r;
+				$rows[ $r['running_time'].'.'.$r['id'] ] = $r;
 			}
+
+			krsort( $rows );
 
 			//-----------------------------------------
 			// PRINT...
@@ -509,7 +534,9 @@ class topics {
 			$this->output = str_replace( "<!--IBF.MOD_PANEL_NO_MOD-->", $this->moderation_panel(), $this->output );
 		}
 
+		//-----------------------------------------
 		// Enable quick reply box?
+		//-----------------------------------------
 
 		if (   ( $this->forum['quick_reply'] == 1 )
 		   and ( $std->check_perms( $this->forum['reply_perms']) == TRUE )
@@ -560,6 +587,7 @@ class topics {
 		global $DB, $forums, $std, $ibforums;
 
 		$final_attachments = array();
+
 		if ( count( $attach_pids ) )
 		{
 			$DB->query(sprintf("select * from ibf_attachments left join xbt_files on bt_info_hash = info_hash where %s in (%s)", $type, implode(',', $attach_pids)));
@@ -767,31 +795,44 @@ class topics {
 		}
 
 		//-----------------------------------------
+		// Highlight...
+		//-----------------------------------------
 
 		if ($ibforums->input['hl'])
 		{
-			$keywords = str_replace( "+", " ", urldecode($ibforums->input['hl']) );
+			$ibforums->input['hl'] = urldecode($ibforums->input['hl']);
+			$loosematch = strstr( $ibforums->input['hl'], '*' ) ? 1 : 0;
+			$keywords   = str_replace( '*', '', str_replace( "+", " ", str_replace( '-', '', trim($ibforums->input['hl']) ) ) );
+			$word_array = array();
+			$endmatch1  = "";
+			$endmatch2  = "(.)";
 
 			if ( preg_match("/,(and|or),/i", $keywords) )
 			{
 				while ( preg_match("/,(and|or),/i", $keywords, $match) )
 				{
 					$word_array = explode( ",".$match[1].",", $keywords );
-
-					if (is_array($word_array))
-					{
-						foreach ($word_array as $keywords)
-						{
-							$row['post'] = preg_replace( "/(^|\s|;)(".preg_quote($keywords, '/').")(\s|,|\.|!|<br|&|$)/is", "\\1<span class='searchlite'>\\2</span>\\3", $row['post'] );
-						}
-					}
 				}
 			}
 			else
 			{
-				while( preg_match( "/(^|\s|;)(".preg_quote($keywords, '/').")(\s|,|\.|!|<br|&|$)/i", $row['post'] ) )
+				$word_array[] = $keywords;
+			}
+
+			if ( ! $loosematch )
+			{
+				$endmatch1 = "(\s|,|\.|!|<br|&|$)";
+				$endmatch2 = "(\<|\s|,|\.|!|<br|&|$)";
+			}
+
+			if (is_array($word_array))
+			{
+				foreach ($word_array as $keywords)
 				{
-					$row['post'] = preg_replace( "/(^|\s|;)(".preg_quote($keywords, '/').")(\s|,|\.|!|<br|&|$)/is", "\\1<span class='searchlite'>\\2</span>\\3", $row['post'] );
+					while( preg_match( "/(^|\s|;)(".preg_quote($keywords, '/')."){$endmatch1}/i", $row['post'] ) )
+				   {
+					   $row['post'] = preg_replace( "/(^|\s|;|\>)(".preg_quote($keywords, '/')."){$endmatch2}/is", "\\1<span class='searchlite'>\\2</span>\\3", $row['post'] );
+				   }
 				}
 			}
 		}
@@ -1700,10 +1741,9 @@ class topics {
 			$st = ($pages - 1) * $ibforums->vars['display_max_posts'];
 		}
 
-		$DB->simple_construct( array( 'select' => 'pid',
+		$DB->simple_construct( array( 'select' => 'MAX(pid) as pid',
         							  'from'   => 'posts',
-        							  'where'  => "queued <> 1 AND topic_id=".$this->topic['tid'],
-        							  'order'  => 'pid DESC',
+        							  'where'  => "queued=0 AND topic_id=".$this->topic['tid'],
         							  'limit'  => array( 0,1 )
         					 )      );
 
@@ -1944,6 +1984,7 @@ class topics {
         $DB->simple_construct( array( 'update' => 'topics',
 									  'set'    => 'views=views+1',
 									  'where'  => "tid=".$this->topic['tid'],
+									  'lowpro' => 1,
 							)      );
 
 		$DB->simple_shutdown_exec();
@@ -1952,7 +1993,7 @@ class topics {
         // Update the topic read cookie / counters
         //-----------------------------------------
 
-        if ( $ibforums->member['id'] )
+        if ( ( $ibforums->member['id'] ) and ( $ibforums->input['view'] == "" ) )
         {
 			$this->read_array[$this->topic['tid']] = time();
 
