@@ -66,10 +66,7 @@ BOOL CListCtrlEx::PreTranslateMessage(MSG* pMsg)
 			case 'A':
 				if (GetStyle() & LVS_SINGLESEL)
 					break;
-				{
-					for (int i = 0; i < GetItemCount(); i++)
-						SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
-				}
+				select_all();
 				return true;
 			case VK_ADD:
 				auto_size();
@@ -78,4 +75,10 @@ BOOL CListCtrlEx::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 	return CListCtrl::PreTranslateMessage(pMsg);
+}
+
+void CListCtrlEx::select_all()
+{
+	for (int i = 0; i < GetItemCount(); i++)
+		SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
 }

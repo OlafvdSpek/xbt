@@ -152,6 +152,7 @@ protected:
 	afx_msg void OnUpdateEditCopyUrl(CCmdUI* pCmdUI);
 	afx_msg void OnEditPasteUrl();
 	afx_msg void OnFileNew();
+	afx_msg void OnEditSelectAll();
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);

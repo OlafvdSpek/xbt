@@ -515,7 +515,8 @@ BEGIN
         MENUITEM "&New...\tCtrl+N",             ID_FILE_NEW
         MENUITEM "&Open...\tInsert",            ID_FILE_OPEN
         MENUITEM "&Close\tDelete",              ID_FILE_CLOSE
-        MENUITEM "E&xit",                       ID_FILE_EXIT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT
     END
     POPUP "&Edit"
     BEGIN
@@ -527,6 +528,8 @@ BEGIN
             MENUITEM "URL\tCtrl+C",                 ID_EDIT_COPY_URL
         END
         MENUITEM "&Paste URL\tCtrl+V",          ID_EDIT_PASTE_URL
+        MENUITEM SEPARATOR
+        MENUITEM "Select All\tCtrl+A",          ID_EDIT_SELECT_ALL
     END
     POPUP "&Help"
     BEGIN
