@@ -235,6 +235,19 @@ void Cbt_file::close()
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		i->close();
 	m_state = s_stopped;
+	
+	if (m_trackers.empty())
+		return;
+	Cbt_tracker_url m_url = m_trackers.front();
+	if (!m_url.valid() || m_url.m_protocol != Cbt_tracker_url::tp_http)
+		return;
+	int h = Csocket::get_host(m_url.m_host);
+	if (h == INADDR_NONE)
+		return;
+	m_tracker.event(Cbt_tracker_link::e_stopped);
+	m_server->http_request(h, htons(m_url.m_port), m_tracker.http_request(*this), NULL);
+	m_downloaded = 0;
+	m_uploaded = 0;
 }
 
 void Cbt_file::erase()
