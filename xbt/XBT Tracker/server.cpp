@@ -111,10 +111,10 @@ int Cserver::run()
 		for (Cconfig::t_listen_ports::const_iterator i = m_config.m_listen_ports.begin(); i != m_config.m_listen_ports.end(); i++)
 		{
 			Csocket l;
-			if (l.open(SOCK_STREAM) == INVALID_SOCKET)			
+			if (l.open(SOCK_STREAM) == INVALID_SOCKET)
 				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-				l.bind(*j, htons(*i)))			
+				l.bind(*j, htons(*i)))
 				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l.listen())
 				cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
@@ -194,7 +194,7 @@ int Cserver::run()
 		int r = m_epoll.wait(events, c_events, 1000);
 		if (r == -1)
 			cerr << "epoll_wait failed: " << errno << endl;
-		else 
+		else
 		{
 			int prev_time = m_time;
 			m_time = ::time(NULL);
@@ -237,7 +237,7 @@ int Cserver::run()
 				int z = i->pre_select(&fd_write_set, &fd_except_set);
 				n = max(n, z);
 			}
-		}		
+		}
 		for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 		{
 			FD_SET(i->s(), &fd_read_set);
@@ -253,7 +253,7 @@ int Cserver::run()
 		tv.tv_usec = 0;
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
 			cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-		else 
+		else
 		{
 			m_time = ::time(NULL);
 			for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
@@ -365,7 +365,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	{
 		__int64 downloaded = 0;
 		__int64 uploaded = 0;
-		if (i != file.peers.end() 
+		if (i != file.peers.end()
 			&& i->second.peer_id == v.m_peer_id
 			&& v.m_downloaded >= i->second.downloaded
 			&& v.m_uploaded >= i->second.uploaded)
@@ -481,7 +481,7 @@ void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o
 Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 {
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
-	if (i == m_files.end()) 
+	if (i == m_files.end())
 		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent);
 	if (ti.m_left && user && user->fid_end && i->second.fid > user->fid_end)
 		return Cbvalue().d(bts_failure_reason, bts_wait_time);
@@ -620,7 +620,7 @@ void Cserver::read_db_files_sql()
 		if (m_files.empty())
 			m_database.query("update xbt_files set leechers = 0, seeders = 0");
 		else if (m_config.m_auto_register)
-			return;			
+			return;
 		q = "select info_hash, completed, fid, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp"
 			" from xbt_files where fid >= ?";
 		q.p(m_fid_end);
@@ -790,7 +790,7 @@ void Cserver::write_db_users()
 		m_files_users_updates_buffer.erase(m_files_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into xbt_files_users (announced, completed, downloaded, uploaded, info_hash, uid) values " 
+			m_database.query("insert into xbt_files_users (announced, completed, downloaded, uploaded, info_hash, uid) values "
 				+ m_files_users_updates_buffer
 				+ " on duplicate key update announced = announced + values(announced), completed = completed + values(completed), downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
 		}
@@ -804,7 +804,7 @@ void Cserver::write_db_users()
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into xbt_users (downloaded, uploaded, uid) values " 
+			m_database.query("insert into xbt_users (downloaded, uploaded, uid) values "
 				+ m_users_updates_buffer
 				+ " on duplicate key update downloaded = downloaded + values(downloaded), uploaded = uploaded + values(uploaded)");
 		}
@@ -890,19 +890,19 @@ string Cserver::debug(const Ctracker_input& ti) const
 			leechers += i->second.leechers;
 			seeders += i->second.seeders;
 			torrents++;
-			page += "<tr><td align=right>" + n(i->second.fid) 
+			page += "<tr><td align=right>" + n(i->second.fid)
 				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
 				+ "<td>" + (i->second.dirty ? '*' : ' ')
-				+ "<td align=right>" + n(i->second.leechers) 
-				+ "<td align=right>" + n(i->second.seeders) 
-				+ "<td align=right>" + n(i->second.announced_http) 
-				+ "<td align=right>" + n(i->second.announced_http_compact) 
-				+ "<td align=right>" + n(i->second.announced_http_no_peer_id) 
-				+ "<td align=right>" + n(i->second.announced_udp) 
-				+ "<td align=right>" + n(i->second.scraped_http) 
-				+ "<td align=right>" + n(i->second.scraped_udp) 
-				+ "<td align=right>" + n(i->second.completed) 
-				+ "<td align=right>" + n(i->second.started) 
+				+ "<td align=right>" + n(i->second.leechers)
+				+ "<td align=right>" + n(i->second.seeders)
+				+ "<td align=right>" + n(i->second.announced_http)
+				+ "<td align=right>" + n(i->second.announced_http_compact)
+				+ "<td align=right>" + n(i->second.announced_http_no_peer_id)
+				+ "<td align=right>" + n(i->second.announced_udp)
+				+ "<td align=right>" + n(i->second.scraped_http)
+				+ "<td align=right>" + n(i->second.scraped_udp)
+				+ "<td align=right>" + n(i->second.completed)
+				+ "<td align=right>" + n(i->second.started)
 				+ "<td align=right>" + n(i->second.stopped);
 		}
 	}
@@ -937,8 +937,11 @@ string Cserver::statistics() const
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
 		+ "<tr><td>torrents<td align=right>" + n(torrents)
 		+ "<tr><td>"
-		+ "<tr><td>auto register<td align=right>" + n(m_config.m_auto_register) 
-		+ "<tr><td>listen check<td align=right>" + n(m_config.m_listen_check) 
+		+ "<tr><td>anonymous connect<td align=right>" + n(m_config.m_anonymous_connect)
+		+ "<tr><td>anonymous announce<td align=right>" + n(m_config.m_anonymous_announce)
+		+ "<tr><td>anonymous scrape<td align=right>" + n(m_config.m_anonymous_scrape)
+		+ "<tr><td>auto register<td align=right>" + n(m_config.m_auto_register)
+		+ "<tr><td>listen check<td align=right>" + n(m_config.m_listen_check)
 		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_config.m_read_config_interval)
 		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_config.m_clean_up_interval)
 		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_config.m_read_db_interval);
