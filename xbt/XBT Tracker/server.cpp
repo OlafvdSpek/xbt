@@ -446,8 +446,7 @@ void Cserver::read_db_files()
 			" from xbt_files where fid >= %s");
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
-		Csql_row row;
-		while (row = result.fetch_row())
+		for (Csql_row row; row = result.fetch_row(); )
 		{
 			if (row.size(0) != 20)
 				continue;
@@ -480,8 +479,7 @@ void Cserver::read_db_users()
 		q.write("select uid, name, pass from xbt_users");
 		Csql_result result = q.execute();
 		m_users.clear();
-		Csql_row row;
-		while (row = result.fetch_row())
+		for (Csql_row row; row = result.fetch_row(); )
 		{
 			if (row.size(2) != 20)
 				continue;
@@ -570,8 +568,7 @@ void Cserver::read_config()
 	try
 	{
 		Csql_result result = m_database.query("select name, value from xbt_config where value is not null");
-		Csql_row row;
-		while (row = result.fetch_row())
+		for (Csql_row row; row = result.fetch_row(); )
 		{
 			if (!strcmp(row.f(0), "announce_interval"))
 				m_announce_interval = row.f_int(1);
