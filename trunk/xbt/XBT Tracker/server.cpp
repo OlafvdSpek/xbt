@@ -573,6 +573,12 @@ void Cserver::write_db()
 		{
 			buffer.erase(buffer.size() - 1);
 			m_database.query("insert into xbt_files_updates (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " + buffer);
+			m_database.query("update xbt_files f, xbt_files_updates fu"
+				" set f.leechers = fu.leechers, f.seeders = fu.seeders, f.completed = fu.completed, f.started = fu.started, f.stopped = fu.stopped,"
+				"  f.announced_http = fu.announced_http, f.announced_http_compact = fu.announced_http_compact, f.announced_http_no_peer_id = fu.announced_http_no_peer_id,"
+				"  f.announced_udp = fu.announced_udp, f.scraped_http = fu.scraped_http, f.scraped_udp = fu.scraped_udp"
+				" where f.fid = fu.fid");
+			m_database.query("delete from xbt_files_updates");
 		}
 	}
 	catch (Cxcc_error error)
