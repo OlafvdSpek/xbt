@@ -220,6 +220,7 @@ class post_functions extends Post {
 		$this->post['attach_file'] = $this->upload['attach_file'];
 		$this->post['bt_info_hash'] = $this->upload['bt_info_hash'];
 		$this->post['bt_size']     = $this->upload['bt_size'];
+		$this->post['bt_tracker']  = $this->upload['bt_tracker'];
 		$this->post['new_topic']   = 1;
 
 		//-------------------------------------------------

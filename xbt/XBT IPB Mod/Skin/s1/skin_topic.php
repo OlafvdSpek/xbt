@@ -417,10 +417,18 @@ if ($data['seeders'])
 	$data['seeders'] = sprintf(", %d seeder%s", $data['seeders'], $data['seeders'] == 1 ? "" : "s");
 else
 	unset($data['seeders']);
+if (0 && $data['bt_info_hash'])
+	$data['bt_info_hash'] = sprintf(", %s", bin2hex($data['bt_info_hash']));
+else
+	unset($data['bt_info_hash']);
+if (1 && $data['bt_tracker'])
+	$data['bt_tracker'] = sprintf(", %s", htmlentities($data['bt_tracker']));
+else
+	unset($data['bt_tracker']);
 return <<<EOF
 <br />
 <br />
-<strong><span class='edit'>{$ibforums->lang['attached_file']} ( {$ibforums->lang['attach_hits']}: {$data['hits']}{$data['bt_size']}{$data['leechers']}{$data['seeders']})</span></strong>
+<strong><span class='edit'>{$ibforums->lang['attached_file']} ( {$ibforums->lang['attach_hits']}: {$data['hits']}{$data['bt_size']}{$data['leechers']}{$data['seeders']}{$data['bt_info_hash']}{$data['bt_tracker']})</span></strong>
 <br />
 <a href='{$ibforums->base_url}act=Attach&amp;type=post&amp;id={$data['pid']}' title='{$ibforums->lang['attach_dl']}' target='_blank'><img src='{$ibforums->vars['mime_img']}/{$data['image']}' border='0' alt='{$ibforums->lang['attached_file']}' /></a>
 &nbsp;<a href='{$ibforums->base_url}act=Attach&amp;type=post&amp;id={$data['pid']}' title='{$ibforums->lang['attach_dl']}' target='_blank'>{$data['name']}</a>
