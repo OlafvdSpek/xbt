@@ -667,6 +667,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 	m_completed_at = r.read_int(4);
 	m_started_at = r.read_int(4);
 	m_priority = static_cast<char>(r.read_int(1));
+	m_run = r.read_int(4);
 	int c_pieces = r.read_int(4);
 	for (int i = 0; i < c_pieces; i++)
 		m_pieces[i].load_state(r);
@@ -684,7 +685,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + m_sub_files.size() + 8 * m_old_peers.size() + 49;
+	int c = m_info.size() + m_name.size() + m_sub_files.size() + 8 * m_old_peers.size() + 53;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
@@ -705,6 +706,7 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	w.write_int(4, m_completed_at);
 	w.write_int(4, m_started_at);
 	w.write_int(1, m_priority);
+	w.write_int(4, m_run);
 	w.write_int(4, m_pieces.size());
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 		i->save_state(w);
