@@ -135,7 +135,9 @@ int Cconnection::send()
 
 void Cconnection::read(const string& v)
 {
+#ifndef NDEBUG
 	cout << v << endl;
+#endif
 	{
 		static ofstream f("xbt_tracker_raw.log");
 		f << time(NULL) << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << endl;
