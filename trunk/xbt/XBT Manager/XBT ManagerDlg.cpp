@@ -58,10 +58,10 @@ END_MESSAGE_MAP()
 
 BOOL CXBTManagerDlg::OnInitDialog()
 {
-	ETSLayoutDialog::OnInitDialog();
-
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
+
+	ETSLayoutDialog::OnInitDialog();
 
 	m_list.SetExtendedStyle(m_list.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_list.InsertColumn(0, "Name");
