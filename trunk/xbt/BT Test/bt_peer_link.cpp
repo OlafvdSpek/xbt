@@ -85,7 +85,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				}
 				return 0;
 			}
-			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(e)));
+			if (m_f->m_server->log_peer_connect_failures())
+				alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(e)));
 			return 1;
 		}
 	case 3:
@@ -267,7 +268,8 @@ int Cbt_peer_link::recv()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert(Calert::debug, m_a, "Peer: recv failed: " + Csocket::error2a(e)));
+			if (m_f->m_server->log_peer_recv_failures())
+				alert(Calert(Calert::debug, m_a, "Peer: recv failed: " + Csocket::error2a(e)));
 			return 1;
 		}
 		m_rtime = time(NULL);
@@ -290,7 +292,8 @@ int Cbt_peer_link::send()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert(Calert::debug, m_a, "Peer: send failed: " + Csocket::error2a(e)));
+			if (m_f->m_server->log_peer_send_failures())
+				alert(Calert(Calert::debug, m_a, "Peer: send failed: " + Csocket::error2a(e)));
 			return 1;
 		}
 		else if (!r)

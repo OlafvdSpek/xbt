@@ -115,6 +115,21 @@ public:
 		m_end_mode = v;
 	}
 	
+	bool log_peer_connect_failures() const
+	{
+		return m_log_peer_connect_failures;
+	}
+
+	bool log_peer_recv_failures() const
+	{
+		return m_log_peer_recv_failures;
+	}
+
+	bool log_peer_send_failures() const
+	{
+		return m_log_peer_send_failures;
+	}
+
 	Cbt_logger& logger()
 	{
 		return m_logger;
@@ -179,6 +194,9 @@ private:
 	bool m_bind_before_connect;
 	string m_dir;
 	bool m_end_mode;
+	bool m_log_peer_connect_failures;
+	bool m_log_peer_recv_failures;
+	bool m_log_peer_send_failures;
 	int m_new_admin_port;
 	int m_new_peer_port;
 	int m_new_tracker_port;
