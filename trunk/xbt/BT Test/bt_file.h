@@ -80,7 +80,7 @@ public:
 
 	typedef map<int, int> t_new_peers;
 	typedef vector<t_sub_file> t_sub_files;
-	typedef vector<Cbt_peer_link> t_peers;
+	typedef list<Cbt_peer_link> t_peers;
 	typedef vector<Cbt_piece> t_pieces;
 	typedef vector<string> t_trackers;
 
