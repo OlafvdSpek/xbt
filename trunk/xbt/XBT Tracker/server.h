@@ -139,7 +139,7 @@ public:
 	void read_db_ipas();
 	void read_db_users();
 	void clean_up();
-	void insert_peer(const Ctracker_input&, bool listen_check, bool udp, int uid);
+	void insert_peer(const Ctracker_input&, bool listen_check, bool udp, const t_user*);
 	void update_peer(const string& file_id, int peer_id, bool listening);
 	string debug(const Ctracker_input&) const;
 	string statistics() const;
