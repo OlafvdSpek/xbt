@@ -17,6 +17,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+const char* list_fname = "xbt manager list.txt";
+
 /////////////////////////////////////////////////////////////////////////////
 // CXBTManagerDlg dialog
 
@@ -47,6 +49,7 @@ BEGIN_MESSAGE_MAP(CXBTManagerDlg, ETSLayoutDialog)
 	ON_WM_SIZE()
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST, OnDblclkList)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_LIST, OnColumnclickList)
+	ON_NOTIFY(LVN_KEYDOWN, IDC_LIST, OnKeydownList)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -71,7 +74,7 @@ BOOL CXBTManagerDlg::OnInitDialog()
 		;
 	UpdateLayout();
 
-	load("c:/temp/xbt manager list.txt");
+	load(list_fname);
 	sort(0);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -151,7 +154,7 @@ void CXBTManagerDlg::insert(const string& name)
 	e.seeders = -1;
 	m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), m_map.rbegin()->first);
 	auto_resize();
-	save("c:/temp/xbt manager list.txt");	
+	save(list_fname);	
 }
 
 void CXBTManagerDlg::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -257,4 +260,23 @@ void CXBTManagerDlg::sort(int column)
 {
 	m_sort_column = column;
 	m_list.SortItems(::compare, reinterpret_cast<DWORD>(this));
+}
+
+void CXBTManagerDlg::OnKeydownList(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	LV_KEYDOWN* pLVKeyDow = (LV_KEYDOWN*)pNMHDR;
+	switch (pLVKeyDow->wVKey)
+	{
+	case VK_DELETE:
+		{
+			for (int i; (i = m_list.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED)) != -1; )
+			{
+				m_map.erase(m_list.GetItemData(i));
+				m_list.DeleteItem(i);
+			}
+			save(list_fname);
+		}
+		break;
+	}
+	*pResult = 0;
 }

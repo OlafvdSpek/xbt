@@ -50,6 +50,7 @@ protected:
 	afx_msg void OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult);
 	virtual void OnOK();
 	afx_msg void OnColumnclickList(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnKeydownList(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
