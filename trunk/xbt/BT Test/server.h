@@ -49,7 +49,7 @@ public:
 	string trackers_fname() const;
 	Cvirtual_binary save_state(bool intermediate);
 	void load_state(const Cvirtual_binary&);
-	int close(const string& id);
+	int close(const string& id, bool erase = false);
 	int announce(const string& id);
 	int start_file(const string& id);
 	int stop_file(const string& id);
