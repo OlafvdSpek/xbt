@@ -89,6 +89,7 @@ void CXBTClientDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
+	ON_MESSAGE(WM_HOTKEY, OnHotKey)
 	ON_WM_CONTEXTMENU()
 	//{{AFX_MSG_MAP(CXBTClientDlg)
 	ON_WM_PAINT()
@@ -170,6 +171,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_file = NULL;
 	auto_size();
 	register_tray();
+	RegisterHotKey(GetSafeHwnd(), 0, MOD_CONTROL | MOD_SHIFT, 'Q');
 	SetTimer(0, 1000, NULL);
 	SetTimer(1, 60000, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -1007,7 +1009,7 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		{	
 			switch (lParam)
 			{
-			case WM_LBUTTONDBLCLK:
+			case WM_LBUTTONUP:
 				m_initial_hide = false;
 				ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
 				if (IsWindowVisible())
@@ -1231,4 +1233,13 @@ void CXBTClientDlg::set_dir(const string& v)
 void CXBTClientDlg::lower_process_priority(bool v)
 {
 	SetPriorityClass(GetCurrentProcess(), v ? BELOW_NORMAL_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS);
+}
+
+long CXBTClientDlg::OnHotKey(WPARAM, LPARAM)
+{
+	m_initial_hide = false;
+	ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
+	if (IsWindowVisible())
+		SetForegroundWindow();
+	return 0;
 }
