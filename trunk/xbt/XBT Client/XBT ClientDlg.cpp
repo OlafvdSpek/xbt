@@ -223,8 +223,6 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));	
 	start_server();
-	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	m_peers.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	insert_columns(true);
 	m_files_sort_column = fc_name;
 	m_files_sort_reverse = false;

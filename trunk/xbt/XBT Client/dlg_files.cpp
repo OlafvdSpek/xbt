@@ -70,7 +70,6 @@ BOOL Cdlg_files::OnInitDialog()
 		;
 	UpdateLayout();
 
-	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_files.InsertColumn(0, "Name");
 	m_files.InsertColumn(1, "%", LVCFMT_RIGHT);
 	m_files.InsertColumn(2, "Left", LVCFMT_RIGHT);

@@ -64,7 +64,6 @@ BOOL Cdlg_trackers::OnInitDialog()
 		;
 	UpdateLayout();
 
-	m_list.SetExtendedStyle(m_list.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_list.InsertColumn(0, "Tracker");
 	m_list.InsertColumn(1, "User");
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
