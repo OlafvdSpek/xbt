@@ -161,7 +161,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			}
 			if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 600)
 				clear_local_requests();
-			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < 8)
+			int c_max_requests_pending = m_f->end_mode() ? 1 : 8;
+			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < c_max_requests_pending)
 			{
 				int a = m_f->next_invalid_piece(*this);
 				if (a < 0)
@@ -173,7 +174,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				if (m_pieces.empty())
 					m_piece_rtime = time(NULL);
 				m_pieces.insert(piece);
-				for (int b; mc_local_requests_pending < 8 && (b = piece->next_invalid_sub_piece(this)) != -1; )
+				for (int b; mc_local_requests_pending < c_max_requests_pending && (b = piece->next_invalid_sub_piece(this)) != -1; )
 				{
 					t_local_request request(m_f->mcb_piece * a + piece->cb_sub_piece() * b, piece->cb_sub_piece(b));
 					logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
