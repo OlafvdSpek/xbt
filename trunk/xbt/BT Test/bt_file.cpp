@@ -236,7 +236,7 @@ void Cbt_file::close()
 		i->close();
 	m_state = s_stopped;
 	
-	if (m_trackers.empty())
+	if (!m_server->send_stop_event() || m_trackers.empty())
 		return;
 	Cbt_tracker_url m_url = m_trackers.front();
 	if (!m_url.valid() || m_url.m_protocol != Cbt_tracker_url::tp_http)
