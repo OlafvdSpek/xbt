@@ -10,12 +10,6 @@
 #include "sha1.h"
 #include "stream_int.h"
 
-template <class T>
-static T read(const char* r, const char* r_end)
-{
-	return read_int(sizeof(T), r);
-}
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -95,7 +89,7 @@ void Ctransaction::recv()
 		}
 		if (r < uti_size)
 			return;
-		switch (read<__int32>(b + uti_action, b + r))
+		switch (read_int(4, b + uti_action, b + r))
 		{
 		case uta_connect:
 			if (r >= utic_size)
@@ -120,14 +114,14 @@ void Ctransaction::send_connect(const char* r, const char* r_end)
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_connect);
-	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	write_int(8, d + utoc_connection_id, connection_id());
 	send(d, utoc_size);
 }
 
 void Ctransaction::send_announce(const char* r, const char* r_end)
 {
-	if (read<__int64>(r + uti_connection_id, r_end) != connection_id())
+	if (read_int(8, r + uti_connection_id, r_end) != connection_id())
 		return;
 	const Cserver::t_user* user = authenticate(r, r_end);
 	if (!m_server.anonymous_announce() && !user)
@@ -136,17 +130,17 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 		return;
 	}
 	Ctracker_input ti;
-	ti.m_downloaded = read<__int64>(r + utia_downloaded, r_end);
-	ti.m_event = static_cast<Ctracker_input::t_event>(read<__int32>(r + utia_event, r_end));
+	ti.m_downloaded = read_int(8, r + utia_downloaded, r_end);
+	ti.m_event = static_cast<Ctracker_input::t_event>(read_int(4, r + utia_event, r_end));
 	ti.m_info_hash.assign(r + utia_info_hash, 20);
-	ti.m_ipa = read<__int32>(r + utia_ipa, r_end) && is_private_ipa(m_a.sin_addr.s_addr)
-		? htonl(read<__int32>(r + utia_ipa, r_end))
+	ti.m_ipa = read_int(4, r + utia_ipa, r_end) && is_private_ipa(m_a.sin_addr.s_addr)
+		? htonl(read_int(4, r + utia_ipa, r_end))
 		: m_a.sin_addr.s_addr;
-	ti.m_left = read<__int64>(r + utia_left, r_end);
-	ti.m_num_want = read<__int32>(r + utia_num_want, r_end);
+	ti.m_left = read_int(8, r + utia_left, r_end);
+	ti.m_num_want = read_int(4, r + utia_num_want, r_end);
 	ti.m_peer_id.assign(r + utia_peer_id, 20);
-	ti.m_port = htons(read<__int16>(r + utia_port, r_end));
-	ti.m_uploaded = read<__int64>(r + utia_uploaded, r_end);
+	ti.m_port = htons(read_int(2, r + utia_port, r_end));
+	ti.m_uploaded = read_int(8, r + utia_uploaded, r_end);
 	m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user ? user->uid : 0);
 	const Cserver::t_file* file = m_server.file(ti.m_info_hash);
 	if (!file)
@@ -157,7 +151,7 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_announce);
-	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	write_int(4, d + utoa_interval, m_server.announce_interval());
 	write_int(4, d + utoa_leechers, file->leechers);
 	write_int(4, d + utoa_seeders, file->seeders);
@@ -169,7 +163,7 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 
 void Ctransaction::send_scrape(const char* r, const char* r_end)
 {
-	if (read<__int64>(r + uti_connection_id, r_end) != connection_id())
+	if (read_int(8, r + uti_connection_id, r_end) != connection_id())
 		return;
 	if (!m_server.anonymous_scrape() && !authenticate(r, r_end))
 	{
@@ -179,7 +173,7 @@ void Ctransaction::send_scrape(const char* r, const char* r_end)
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_scrape);
-	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	char* w = d + utos_size;
 	for (; r + 20 <= r_end && w + 12 <= d + cb_d; r += 20)
 	{
@@ -205,7 +199,7 @@ void Ctransaction::send_error(const char* r, const char* r_end, const string& ms
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_error);
-	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	memcpy(d + utoe_size, msg.c_str(), msg.length());
 	send(d, utoe_size + msg.length());
 }

@@ -17,12 +17,6 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
-template <class T>
-static T read(const char* r, const char* r_end)
-{
-	return read_int(sizeof(T), r);
-}
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -50,7 +44,7 @@ void Cudp_tracker::recv(Csocket& s)
 			return;
 		if (r < uti_size)
 			continue;
-		switch (read<__int32>(b + uti_action, b + r))
+		switch (read_int(4, b + uti_action, b + r))
 		{
 		case uta_connect:
 			if (r >= utic_size)
@@ -84,33 +78,33 @@ void Cudp_tracker::send_connect(Csocket& s, sockaddr_in& a, const char* r, const
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_connect);
-	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	write_int(8, d + utoc_connection_id, connection_id(a));
 	send(s, a, d, utoc_size);
 }
 
 void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, const char* r_end)
 {
-	if (read<__int64>(r + uti_connection_id, r_end) != connection_id(a))
+	if (read_int(8, r + uti_connection_id, r_end) != connection_id(a))
 		return;
 	t_file& file = m_files[string(r + utia_info_hash, 20)];
-	int ipa = read<__int32>(r + utia_ipa, r_end) && is_private_ipa(a.sin_addr.s_addr)
-		? htonl(read<__int32>(r + utia_ipa, r_end))
+	int ipa = read_int(4, r + utia_ipa, r_end) && is_private_ipa(a.sin_addr.s_addr)
+		? htonl(read_int(4, r + utia_ipa, r_end))
 		: a.sin_addr.s_addr;
 	t_peers::iterator i = file.peers.find(ipa);
 	if (i != file.peers.end())
 		(i->second.left ? file.leechers : file.seeders)--;
-	if (read<__int32>(r + utia_event, r_end) == bti_stopped)
+	if (read_int(4, r + utia_event, r_end) == bti_stopped)
 		file.peers.erase(ipa);
 	else
 	{
 		t_peer& peer = file.peers[ipa];
-		peer.left = read<__int64>(r + utia_left, r_end);
-		peer.port = htons(read<__int16>(r + utia_port, r_end));
+		peer.left = read_int(8, r + utia_left, r_end);
+		peer.port = htons(read_int(2, r + utia_port, r_end));
 		(peer.left ? file.leechers : file.seeders)++;
 		peer.mtime = time(NULL);
 	}
-	switch (read<__int32>(r + utia_event, r_end))
+	switch (read_int(4, r + utia_event, r_end))
 	{
 	case bti_completed:
 		file.completed++;
@@ -125,7 +119,7 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_announce);
-	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	write_int(4, d + utoa_interval, m_announce_interval);
 	write_int(4, d + utoa_leechers, file.leechers);
 	write_int(4, d + utoa_seeders, file.seeders);
@@ -136,10 +130,10 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 	t_candidates candidates;
 	for (t_peers::const_iterator i = file.peers.begin(); i != file.peers.end(); i++)
 	{
-		if (read<__int64>(r + utia_left, r_end) || i->second.left)
+		if (read_int(8, r + utia_left, r_end) || i->second.left)
 			candidates.push_back(i);
 	}
-	int c = read<__int32>(r + utia_num_want, r_end) < 0 ? 100 : min(read<__int32>(r + utia_num_want, r_end), 200);
+	int c = read_int(4, r + utia_num_want, r_end) < 0 ? 100 : min(read_int(4, r + utia_num_want, r_end), 200);
 	if (candidates.size() > c)	
 	{
 		while (c--)
@@ -164,12 +158,12 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 
 void Cudp_tracker::send_scrape(Csocket& s, sockaddr_in& a, const char* r, const char* r_end)
 {
-	if (read<__int64>(r + uti_connection_id, r_end) != connection_id(a))
+	if (read_int(8, r + uti_connection_id, r_end) != connection_id(a))
 		return;
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_scrape);
-	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	char* w = d + utos_size;
 	for (; r + 20 <= r_end && w + 12 <= d + cb_d; r += 20)
 	{
@@ -195,7 +189,7 @@ void Cudp_tracker::send_error(Csocket& s, sockaddr_in& a, const char* r, const c
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_error);
-	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	memcpy(d + utoe_size, msg.c_str(), msg.length());
 	send(s, a, d, utoe_size + msg.length());
 }
