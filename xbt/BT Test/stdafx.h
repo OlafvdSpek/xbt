@@ -28,6 +28,7 @@ using namespace std;
 #ifdef WIN32
 #define FD_SETSIZE 1024
 
+#include <io.h>
 #include <windows.h>
 
 #define atoll _atoi64
@@ -37,13 +38,26 @@ using namespace std;
 #else
 #include <netinet/in.h>
 #include <sys/ioctl.h>
+#include <sys/select.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <cstdio>
 #include <errno.h>
 #include <signal.h>
 #include <unistd.h>
 
+#define _O_BINARY 0
+#define _O_CREAT O_CREAT
+#define _O_RDONLY O_RDONLY
+#define _O_RDWR O_RDWR
+#define _S_IREAD S_IREAD
+#define _S_IWRITE S_IWRITE
+#define _close close
+#define _lseeki64 lseek
+#define _open open
+#define _read read
+#define _write write
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
@@ -51,6 +65,16 @@ typedef char __int8;
 typedef short __int16;
 typedef int __int32;
 typedef long long __int64;
+
+inline __int64 max(__int64 a, __int64 b)
+{
+	return a > b ? a : b;
+}
+
+inline __int64 min(__int64 a, __int64 b)
+{
+	return a < b ? a : b;
+}
 #endif
 #include "bt_misc.h"
 #include "bvalue.h"

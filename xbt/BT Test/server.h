@@ -173,7 +173,11 @@ private:
 	int m_upload_rate;
 	int m_upload_slots;
 
+#ifdef WIN32
 	CRITICAL_SECTION m_cs;
+#else
+	int m_cs;
+#endif
 };
 
 ostream& operator<<(ostream&, const Cserver&);
