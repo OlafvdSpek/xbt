@@ -52,11 +52,11 @@ public:
 
 Cserver::Cserver()
 {
-	m_admin_port = m_new_admin_port = 6879;
-	m_peer_port = m_new_peer_port = 6881;
+	m_admin_port = m_config.m_admin_port;
+	m_peer_port = m_config.m_peer_port;
 	m_run = false;
 	m_time = ::time(NULL);
-	m_tracker_port = m_new_tracker_port = 2710;
+	m_tracker_port = m_config.m_tracker_port;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time();
 	m_update_states_time = 0;
@@ -92,12 +92,12 @@ static string new_peer_id()
 
 void Cserver::admin_port(int v)
 {
-	m_new_admin_port = max(0, v);
+	m_config.m_admin_port = max(0, v);
 }
 
 void Cserver::peer_port(int v)
 {
-	m_new_peer_port = max(0, v);
+	m_config.m_peer_port = max(0, v);
 }
 
 void Cserver::public_ipa(int v)
@@ -112,7 +112,7 @@ void Cserver::seeding_ratio(int v)
 
 void Cserver::tracker_port(int v)
 {
-	m_new_tracker_port = max(0, v);
+	m_config.m_tracker_port = max(0, v);
 }
 
 void Cserver::upload_rate(int v)
@@ -127,9 +127,9 @@ void Cserver::upload_slots(int v)
 
 int Cserver::run()
 {
-	m_admin_port = m_new_admin_port;
-	m_peer_port = m_new_peer_port;
-	m_tracker_port = m_new_tracker_port;
+	m_admin_port = m_config.m_admin_port;
+	m_peer_port = m_config.m_peer_port;
+	m_tracker_port = m_config.m_tracker_port;
 	Csocket l, la, lt;
 	if (l.open(SOCK_STREAM) == INVALID_SOCKET
 		|| la.open(SOCK_STREAM) == INVALID_SOCKET
@@ -164,36 +164,36 @@ int Cserver::run()
 	for (m_run = true; !g_sig_term && m_run; )
 	{
 		lock();
-		if (m_new_admin_port != m_admin_port)
+		if (m_config.m_admin_port != m_admin_port)
 		{
 			Csocket s;
 			if (s.open(SOCK_STREAM) != INVALID_SOCKET
-				&& !s.bind(htonl(INADDR_LOOPBACK), htons(m_new_admin_port))
+				&& !s.bind(htonl(INADDR_LOOPBACK), htons(m_config.m_admin_port))
 				&& !s.listen())
 			{
 				la = s;
-				m_admin_port = m_new_admin_port;
+				m_admin_port = m_config.m_admin_port;
 			}
 		}
-		if (m_new_peer_port != m_peer_port)
+		if (m_config.m_peer_port != m_peer_port)
 		{
 			Csocket s;
 			if (s.open(SOCK_STREAM) != INVALID_SOCKET
-				&& !s.bind(htonl(INADDR_ANY), htons(m_new_peer_port))
+				&& !s.bind(htonl(INADDR_ANY), htons(m_config.m_peer_port))
 				&& !s.listen())
 			{
 				l = s;
-				m_peer_port = m_new_peer_port;
+				m_peer_port = m_config.m_peer_port;
 			}
 		}
-		if (m_new_tracker_port != m_tracker_port)
+		if (m_config.m_tracker_port != m_tracker_port)
 		{
 			Csocket s;
 			if (s.open(SOCK_DGRAM) != INVALID_SOCKET
-				&& !s.bind(htonl(INADDR_ANY), htons(m_new_tracker_port)))
+				&& !s.bind(htonl(INADDR_ANY), htons(m_config.m_tracker_port)))
 			{
 				lt = s;
-				m_tracker_port = m_new_tracker_port;
+				m_tracker_port = m_config.m_tracker_port;
 			}
 		}
 		update_send_quotas();

@@ -11,7 +11,7 @@
 
 #include "virtual_binary.h"
 
-class Cring_buffer  
+class Cring_buffer
 {
 public:
 	void combine();

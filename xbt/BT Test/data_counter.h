@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cdata_counter  
+class Cdata_counter
 {
 public:
 	int rate() const;

@@ -15,7 +15,7 @@
 
 class Cbt_file;
 
-class Cbt_tracker_link  
+class Cbt_tracker_link
 {
 public:
 	enum t_event

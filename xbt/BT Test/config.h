@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cconfig  
+class Cconfig
 {
 public:
 	Cconfig();
@@ -20,10 +20,13 @@ public:
 	bool m_log_peer_connection_closures;
 	bool m_log_peer_recv_failures;
 	bool m_log_peer_send_failures;
+	int m_admin_port;
 	int m_peer_limit;
+	int m_peer_port;
 	int m_public_ipa;
 	int m_seeding_ratio;
 	int m_torrent_limit;
+	int m_tracker_port;
 	int m_upload_rate;
 	int m_upload_slots;
 	string m_completes_dir;

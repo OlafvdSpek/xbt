@@ -11,6 +11,7 @@
 
 Cconfig::Cconfig()
 {
+	m_admin_port = 6879;
 	m_bind_before_connect = false;
 	m_completes_dir = "Completes";
 	m_end_mode = false;
@@ -21,10 +22,12 @@ Cconfig::Cconfig()
 	m_log_peer_recv_failures = false;
 	m_log_peer_send_failures = true;
 	m_peer_limit = 0;
+	m_peer_port = 6881;
 	m_public_ipa = 0;
 	m_seeding_ratio = 0;
 	m_torrent_limit = 0;
 	m_torrents_dir = "Torrents";
+	m_tracker_port = 2710;
 	m_upload_rate = 0;
 	m_upload_slots = 8;
 }

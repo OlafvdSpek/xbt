@@ -11,7 +11,7 @@
 
 #include "socket.h"
 
-class Cudp_tracker  
+class Cudp_tracker
 {
 public:
 	void recv(Csocket& s);

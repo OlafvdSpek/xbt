@@ -11,7 +11,7 @@
 
 #include "bt_file.h"
 
-class Cbt_hasher  
+class Cbt_hasher
 {
 public:
 	bool run(Cbt_file&);
