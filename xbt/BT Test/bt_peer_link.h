@@ -29,14 +29,18 @@ public:
 	void dump(Cstream_writer&) const;
 	ostream& dump(ostream&) const;
 	void write_piece(int, int, int, const void*);
+	void write_merkle_piece(__int64 offset, int size, const void* s, const string& hashes);
 	void write_have(int);
 	int read_handshake(const char* r);
 	void read_message(const char* s, const char* s_end);
 	void read_info(const char* r, const char* r_end);
 	void write_keepalive();
 	void read_piece(int, int, int, const char*);
+	void read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes);
 	void write_handshake();
 	void write_request(int, int, int);
+	void write_merkle_cancel(__int64 offset);
+	void write_merkle_request(__int64 offset, int c_hashes);
 	void write_cancel(int, int, int);
 	void write_get_info(int);
 	void write_info(int);
@@ -50,6 +54,8 @@ public:
 	void remote_requests(int, int, int);
 	void remote_has(int);
 	void remote_cancels(int, int, int);
+	void remote_merkle_cancels(__int64 offset);
+	void remote_merkle_requests(__int64 offset, int c_hashes);
 	void send();
 	void recv();
 	void write(const Cvirtual_binary&);
@@ -88,6 +94,7 @@ public:
 
 	struct t_remote_request
 	{
+		int c_hashes;
 		__int64 offset;
 		int size;
 
@@ -95,8 +102,9 @@ public:
 		{
 		}
 
-		t_remote_request(__int64 _offset, int _size)
+		t_remote_request(__int64 _offset, int _size, int _c_hashes)
 		{
+			c_hashes = _c_hashes;
 			offset = _offset;
 			size = _size;
 		}
