@@ -133,7 +133,7 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About XBT Client"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Version: 0.4.0",IDC_STATIC,7,7,44,8
+    LTEXT           "Version: 0.4.1",IDC_STATIC,7,7,44,8
     LTEXT           "Site: http://xbtt.sourceforge.net/",IDC_SITE,7,20,104,8
     LTEXT           "Author: Olaf van der Spek",IDC_STATIC,7,33,83,8
     LTEXT           "License: GPL",IDC_LICENSE,7,46,44,8
