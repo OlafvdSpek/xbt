@@ -175,7 +175,9 @@ void Cconnection::read(const string& v)
 		gzip = m_server->gzip_announce() && !ti.m_compact;
 		if (ti.valid())
 		{
-			int uid = m_server->get_user_id(ntohl(ti.m_ipa));
+			int uid = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->get_user_id(v.substr(7, 32)) : 0;
+			if (!uid)
+				uid = m_server->get_user_id(ntohl(ti.m_ipa));
 			if (!m_server->anonymous_announce() && !uid)
 				s = Cbvalue().d(bts_failure_reason, bts_unregistered_ipa).read();
 			else
