@@ -20,6 +20,12 @@ enum
 	bti_request,
 	bti_piece,
 	bti_cancel,
+
+	bti_get_peers,
+	bti_peers,
+
+	bti_get_status = 0x80,
+	bti_status,
 };
 
 const string bts_announce = "announce";
