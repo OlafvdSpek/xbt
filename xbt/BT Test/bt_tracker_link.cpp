@@ -29,6 +29,7 @@ enum
 Cbt_tracker_link::Cbt_tracker_link()
 {
 	m_announce_time = 0;
+	m_event = e_none;
 	m_state = 0;
 }
 
@@ -144,9 +145,21 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				<< "&port=" << f.m_local_port
 				<< "&uploaded=" << static_cast<unsigned>(f.m_uploaded)
 				<< "&downloaded=" << static_cast<unsigned>(f.m_downloaded)
-				<< "&left=" << static_cast<unsigned>(f.left())
-				// << "&event=" << uri_encode("started") 
-				<< " HTTP/1.0" << endl
+				<< "&left=" << static_cast<unsigned>(f.m_left);
+			switch (m_event)
+			{
+			case e_completed:
+				os << "&event=completed";
+				break;
+			case e_started:
+				os << "&event=started";
+				break;
+			case e_stopped:
+				os << "&event=stopped";
+				break;
+			}
+			m_event = e_none;			
+			os << " HTTP/1.0" << endl
 				<< "accept-encoding: gzip" << endl
 				<< "host: " << m_host << ':' << m_port << endl
 				<< endl;
@@ -196,9 +209,10 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					memcpy(uti.m_info_hash, f.m_info_hash.c_str(), 20);
 					memcpy(uti.m_peer_id, f.m_peer_id.c_str(), 20);
 					uti.downloaded(f.m_downloaded);
-					uti.left(f.left());
+					uti.left(f.m_left);
 					uti.uploaded(f.m_uploaded);
-					uti.event(0);
+					uti.event(m_event);
+					m_event = e_none;
 					uti.ipa(0);
 					uti.num_want(-1);
 					uti.port(f.m_local_port);
@@ -303,3 +317,24 @@ void Cbt_tracker_link::close()
 	m_s.close();
 	m_state = 0;
 }
+
+ostream& Cbt_tracker_link::dump(ostream& os) const
+{
+	return os;
+}
+
+ostream& operator<<(ostream& os, const Cbt_tracker_link& v)
+{
+	return v.dump(os);
+}
+
+int Cbt_tracker_link::pre_dump() const
+{
+	int size = 0;
+	return size;
+}
+
+void Cbt_tracker_link::dump(Cstream_writer& w) const
+{
+}
+
