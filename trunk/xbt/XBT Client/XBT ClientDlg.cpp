@@ -248,11 +248,12 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_EDIT_COPY_URL, OnEditCopyUrl)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY_URL, OnUpdateEditCopyUrl)
 	ON_COMMAND(ID_EDIT_PASTE_URL, OnEditPasteUrl)
+	ON_COMMAND(ID_FILE_NEW, OnFileNew)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
 	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
 	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
-	ON_COMMAND(ID_FILE_NEW, OnFileNew)
+	ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -2676,6 +2677,11 @@ void CXBTClientDlg::OnEditPasteUrl()
 	if (p)
 		open_url(reinterpret_cast<char*>(p));
 	CloseClipboard();
+}
+
+void CXBTClientDlg::OnEditSelectAll() 
+{
+	m_files.select_all();
 }
 
 void CXBTClientDlg::OnHelpAbout() 

@@ -15,6 +15,7 @@ public:
 	virtual void PreSubclassWindow();
 	//}}AFX_VIRTUAL
 public:
+	void select_all();
 	DWORD GetItemData(int nItem) const;
 	void auto_size();
 protected:
