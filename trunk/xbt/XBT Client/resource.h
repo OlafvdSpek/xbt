@@ -62,6 +62,9 @@
 #define IDC_LOAD_TRACKERS               1040
 #define IDC_BIND_BEFORE_CONNECT         1041
 #define IDC_EXCLUDE                     1042
+#define IDC_COMPLETES_DIRECTORY_BROWSE  1043
+#define IDC_INCOMPLETES_DIRECTORY_BROWSE 1044
+#define IDC_TORRENTS_DIRECTORY_BROWSE   1045
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -107,7 +110,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32813
-#define _APS_NEXT_CONTROL_VALUE         1043
+#define _APS_NEXT_CONTROL_VALUE         1044
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

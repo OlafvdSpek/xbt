@@ -79,7 +79,9 @@ protected:
 
 	// Generated message map functions
 	//{{AFX_MSG(Cdlg_options)
-		// NOTE: the ClassWizard will add member functions here
+	afx_msg void OnCompletesDirectoryBrowse();
+	afx_msg void OnIncompletesDirectoryBrowse();
+	afx_msg void OnTorrentsDirectoryBrowse();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
