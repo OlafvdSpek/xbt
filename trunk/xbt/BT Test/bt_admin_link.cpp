@@ -38,18 +38,12 @@ int Cbt_admin_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 	return m_s;
 }
 
-void Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
+int Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
 	if (m_read_b.cb_w() && FD_ISSET(m_s, fd_read_set))
 	{
-		recv();
-#if 0
-		stringstream str;
-		str << "HTTP/1.0 200\r\ncontent-type: text/html\r\n\r\n"
-			<< *m_server;
-		m_write_b.write(str.str().c_str(), min(str.str().size(), m_write_b.size()));
-		m_close = true;
-#endif
+		if (recv())
+			return 1;
 		while (1)
 		{
 			while (m_read_b.cb_r() >= 4)
@@ -70,68 +64,49 @@ void Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_s
 				break;
 			m_read_b.combine();
 		}
-		if (m_s == INVALID_SOCKET)
-			return;
 	}
-	if (m_write_b.cb_r() && FD_ISSET(m_s, fd_write_set))
-		send();
+	if (m_write_b.cb_r() && FD_ISSET(m_s, fd_write_set) && send())
+		return 1;
 	if (0 && time(NULL) - m_ctime > 60)
-		close();
+		return 1;
+	return m_close;
 }
 
-void Cbt_admin_link::recv()
+int Cbt_admin_link::recv()
 {
 	for (int r; r = m_s.recv(m_read_b.w(), m_read_b.cb_w()); )
 	{
 		if (r == SOCKET_ERROR)
 		{
 			int e = WSAGetLastError();
-			switch (e)
-			{
-			case WSAECONNABORTED:
-			case WSAECONNRESET:
-				alert(Calert(Calert::debug, m_a, "Admin: connection aborted/reset"));
-				close();
-			case WSAEWOULDBLOCK:
-				break;
-			default:
-				alert(Calert(Calert::debug, m_a, "Admin: recv failed:" + n(e)));
-				close();
-			}
-			return;
+			if (e == WSAEWOULDBLOCK)
+				return 0;
+			alert(Calert(Calert::debug, m_a, "Admin: recv failed: " + Csocket::error2a(e)));
+			return 1;
 		}
 		m_read_b.cb_w(r);
 		m_mtime = time(NULL);
 	}
-	close();
+	m_close = true;
+	return 0;
 }
 
-void Cbt_admin_link::send()
+int Cbt_admin_link::send()
 {
 	for (int r; r = m_s.send(m_write_b.r(), m_write_b.cb_r()); )
 	{
 		if (r == SOCKET_ERROR)
 		{
 			int e = WSAGetLastError();
-			switch (e)
-			{
-			case WSAECONNABORTED:
-			case WSAECONNRESET:
-				alert(Calert(Calert::debug, m_a, "Admin: connection aborted/reset"));
-				close();
-			case WSAEWOULDBLOCK:
-				break;
-			default:
-				alert(Calert(Calert::debug, m_a, "Admin: send failed"));
-				close();
-			}
-			return;
+			if (e == WSAEWOULDBLOCK)
+				return 0;
+			alert(Calert(Calert::debug, m_a, "Admin: send failed: " + Csocket::error2a(e)));
+			return 1;
 		}
 		m_write_b.cb_r(r);
 		m_mtime = time(NULL);
 	}
-	if (m_close)
-		close();
+	return m_close;
 }
 
 void Cbt_admin_link::close()

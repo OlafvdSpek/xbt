@@ -344,16 +344,14 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 {
 	for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); )
 	{
-		i->post_select(fd_read_set, fd_write_set, fd_except_set);
-		if (*i)
+		if (!i->post_select(fd_read_set, fd_write_set, fd_except_set) && *i)
 			i++;
 		else
 			i = m_admins.erase(i);
 	}
 	for (t_links::iterator i = m_links.begin(); i != m_links.end(); )
 	{
-		i->post_select(fd_read_set, fd_write_set, fd_except_set);
-		if (*i)
+		if (!i->post_select(fd_read_set, fd_write_set, fd_except_set) && *i)
 			i++;
 		else
 			i = m_links.erase(i);

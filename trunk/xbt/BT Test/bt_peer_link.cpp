@@ -264,7 +264,7 @@ int Cbt_peer_link::recv()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert(Calert::debug, m_a, "Peer: recv failed:" + Csocket::error2a(e)));
+			alert(Calert(Calert::debug, m_a, "Peer: recv failed: " + Csocket::error2a(e)));
 			return 1;
 		}
 		m_rtime = time(NULL);
@@ -287,7 +287,7 @@ int Cbt_peer_link::send()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert(Calert::debug, m_a, "Peer: send failed:" + Csocket::error2a(e)));
+			alert(Calert(Calert::debug, m_a, "Peer: send failed: " + Csocket::error2a(e)));
 			return 1;
 		}
 		else if (!r)
