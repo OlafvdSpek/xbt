@@ -98,8 +98,7 @@ BEGIN
 END
 
 IDD_TRACKERS DIALOG DISCARDABLE  0, 0, 282, 95
-STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
-    WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Trackers"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -177,6 +176,21 @@ BEGIN
     LTEXT           "%",IDC_STATIC,202,7,8,8
 END
 
+IDD_SCHEDULER DIALOG DISCARDABLE  0, 0, 282, 95
+STYLE DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Scheduler"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | 
+                    WS_BORDER | WS_TABSTOP,7,7,268,63
+    PUSHBUTTON      "Insert...",IDC_INSERT,9,75,50,14
+    PUSHBUTTON      "Edit...",IDC_EDIT,65,74,50,14
+    PUSHBUTTON      "Delete",IDC_DELETE,120,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,173,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,225,74,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -244,6 +258,14 @@ BEGIN
         RIGHTMARGIN, 210
         TOPMARGIN, 7
         BOTTOMMARGIN, 38
+    END
+
+    IDD_SCHEDULER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -318,6 +340,7 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
+        MENUITEM "Scheduler...",                ID_POPUP_SCHEDULER
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
         MENUITEM "About",                       ID_POPUP_ABOUT
@@ -351,6 +374,7 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
+        MENUITEM "Scheduler...",                ID_POPUP_SCHEDULER
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
         MENUITEM "About",                       ID_POPUP_ABOUT
@@ -376,6 +400,7 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
+        MENUITEM "Scheduler...",                ID_POPUP_SCHEDULER
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
         MENUITEM "About",                       ID_POPUP_ABOUT

@@ -171,7 +171,7 @@ void Cdlg_files::OnIncreasePriority()
 
 void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_map_entry& e = m_map.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)

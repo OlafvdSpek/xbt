@@ -148,6 +148,7 @@ protected:
 	afx_msg void OnUpdatePopupStateStopped(CCmdUI* pCmdUI);
 	afx_msg void OnPopupTorrentOptions();
 	afx_msg void OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI);
+	afx_msg void OnPopupScheduler();
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);

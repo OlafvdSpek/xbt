@@ -16,6 +16,7 @@
 #define IDD_ABOUT                       136
 #define IDD_MAKE_TORRENT                137
 #define IDD_TORRENT_OPTIONS             138
+#define IDD_SCHEDULER                   139
 #define IDC_FILES                       1000
 #define IDC_PEERS                       1002
 #define IDC_ADMIN_PORT                  1002
@@ -111,13 +112,14 @@
 #define ID_POPUP_STATE_STARTED          32815
 #define ID_POPUP_STATE_PAUSED           32816
 #define ID_POPUP_STATE_STOPPED          32817
+#define ID_POPUP_SCHEDULER              32818
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        139
-#define _APS_NEXT_COMMAND_VALUE         32818
+#define _APS_NEXT_RESOURCE_VALUE        140
+#define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
