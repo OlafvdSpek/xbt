@@ -31,6 +31,7 @@ enum
 };
 
 const string bts_announce = "announce";
+const string bts_announce_list = "announce-list";
 const string bts_complete = "complete";
 const string bts_downloaded = "downloaded";
 const string bts_failure_reason = "failure reason";
