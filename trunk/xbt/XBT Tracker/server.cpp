@@ -748,11 +748,10 @@ void Cserver::write_db_files()
 		{
 			buffer.erase(buffer.size() - 1);
 			m_database.query("insert into xbt_files_updates (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " + buffer);
-			m_database.query("update xbt_files f, xbt_files_updates fu"
+			m_database.query("update xbt_files f inner join xbt_files_updates fu using (fid)"
 				" set f.leechers = fu.leechers, f.seeders = fu.seeders, f.completed = fu.completed, f.started = fu.started, f.stopped = fu.stopped,"
 				"  f.announced_http = fu.announced_http, f.announced_http_compact = fu.announced_http_compact, f.announced_http_no_peer_id = fu.announced_http_no_peer_id,"
-				"  f.announced_udp = fu.announced_udp, f.scraped_http = fu.scraped_http, f.scraped_udp = fu.scraped_udp"
-				" where f.fid = fu.fid");
+				"  f.announced_udp = fu.announced_udp, f.scraped_http = fu.scraped_http, f.scraped_udp = fu.scraped_udp");
 			m_database.query("delete from xbt_files_updates");
 		}
 	}
@@ -797,9 +796,8 @@ void Cserver::write_db_users()
 		{
 			m_database.query("insert into xbt_files_users_updates (announced, completed, downloaded, uploaded, info_hash, uid) values " + m_files_users_updates_buffer);
 			m_database.query("insert ignore into xbt_files_users (info_hash, uid) select info_hash, uid from xbt_files_users_updates");
-			m_database.query("update xbt_files_users fu, xbt_files_users_updates fuu"
-				" set fu.announced = fu.announced + fuu.announced, fu.completed = fu.completed + fuu.completed, fu.downloaded = fu.downloaded + fuu.downloaded, fu.uploaded = fu.uploaded + fuu.uploaded"
-				" where fu.info_hash = fuu.info_hash and fu.uid = fuu.uid");
+			m_database.query("update xbt_files_users fu inner join xbt_files_users_updates fuu using (info_hash, uid)"
+				" set fu.announced = fu.announced + fuu.announced, fu.completed = fu.completed + fuu.completed, fu.downloaded = fu.downloaded + fuu.downloaded, fu.uploaded = fu.uploaded + fuu.uploaded");
 			m_database.query("delete from xbt_files_users_updates");
 		}
 		catch (Cxcc_error)
@@ -814,9 +812,8 @@ void Cserver::write_db_users()
 		{
 			m_database.query("insert into xbt_users_updates (downloaded, uploaded, uid) values " + m_users_updates_buffer);
 			m_database.query("insert ignore into xbt_users (uid) select uid from xbt_users_updates");
-			m_database.query("update xbt_users u, xbt_users_updates uu"
-				" set u.downloaded = u.downloaded + uu.downloaded, u.uploaded = u.uploaded + uu.uploaded"
-				" where u.uid = uu.uid");
+			m_database.query("update xbt_users u inner join xbt_users_updates uu using (uid)"
+				" set u.downloaded = u.downloaded + uu.downloaded, u.uploaded = u.uploaded + uu.uploaded");
 			m_database.query("delete from xbt_users_updates");
 		}
 		catch (Cxcc_error)
