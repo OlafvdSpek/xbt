@@ -16,10 +16,8 @@ class Cbt_piece
 public:
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;
-	void clear();
 	void write(int offset, const char* s, int cb_s);
 	Cbt_piece();
-	~Cbt_piece();
 
 	typedef vector<bool> t_sub_pieces;
 	
@@ -27,6 +25,7 @@ public:
 	int mcb_d;
 	char m_hash[20];
 	Cbt_peer_link* m_peer;
+	int mc_peers;
 	t_sub_pieces m_sub_pieces;
 	int mc_sub_pieces_left;
 	int mcb_sub_piece;

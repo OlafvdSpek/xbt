@@ -14,6 +14,7 @@
 
 Cbt_peer_link::Cbt_peer_link()
 {
+	m_f = NULL;
 	m_piece = NULL;
 	m_state = 1;
 }
@@ -27,9 +28,9 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 	switch (m_state)
 	{
 	case 1:
-		if ((m_s.open(SOCK_STREAM)) == INVALID_SOCKET)
+		if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
 		{
-			m_state = -1;
+			close();
 			return 0;
 		}
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
@@ -91,7 +92,7 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 	switch (m_state)
 	{
 	case 2:
-		if (FD_ISSET(m_s, fd_except_set) || time(NULL) - m_piece_rtime > 15)
+		if (FD_ISSET(m_s, fd_except_set))
 		{
 			close();
 			return;
@@ -193,7 +194,6 @@ void Cbt_peer_link::recv()
 			return;
 		}
 		m_rtime = time(NULL);
-		ofstream((static_cast<string>("d:/temp/xbt/") + inet_ntoa(m_a.sin_addr)).c_str(), ios::app | ios::binary).write(m_read_b.w(), r);
 		m_read_b.cb_w(r);
 	}
 	close();
@@ -232,7 +232,7 @@ void Cbt_peer_link::send()
 
 void Cbt_peer_link::remote_has(int v)
 {
-	if (v < m_f->m_pieces.size())
+	if (v >= 0 && v < m_f->m_pieces.size())
 		m_remote_pieces[v] = true;
 }
 
