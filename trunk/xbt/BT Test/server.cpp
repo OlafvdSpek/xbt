@@ -218,6 +218,28 @@ ostream& operator<<(ostream& os, const Cserver& v)
 	return v.dump(os);
 }
 
+int Cserver::pre_file_dump(const string& id) const
+{
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash == id)
+			return i->pre_dump(true);
+	};
+	return 0;
+}
+
+void Cserver::file_dump(Cstream_writer& w, const string& id) const
+{
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash == id)
+		{
+			i->dump(w, true);
+			return;
+		}
+	}
+}
+
 int Cserver::pre_dump() const
 {
 	int size = 4;
@@ -250,6 +272,16 @@ void Cserver::lock()
 void Cserver::unlock()
 {
 	LeaveCriticalSection(&m_cs);
+}
+
+Cvirtual_binary Cserver::get_file_status(const string& id)
+{
+	Clock l(m_cs);
+	Cvirtual_binary d;
+	Cstream_writer w(d.write_start(pre_file_dump(id)));
+	file_dump(w, id);
+	assert(w.w() == d.data_end());
+	return d;
 }
 
 Cvirtual_binary Cserver::get_status()
@@ -350,7 +382,7 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	int cb_d = 4;
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-			cb_d = i->pre_save_state(intermediate);
+			cb_d += i->pre_save_state(intermediate);
 	}
 	Cstream_writer w(d.write_start(cb_d));
 	w.write_int32(m_files.size());
