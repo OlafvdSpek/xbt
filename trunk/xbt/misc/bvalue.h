@@ -53,8 +53,10 @@ public:
 	void d(const string& v, const Cbvalue& w);
 	void l(const Cbvalue& v);
 	int pre_read() const;
+	int read(char* d) const;
 	int read(void* d) const;
 	Cvirtual_binary read() const;
+	int write(const char* s, int cb_s);
 	int write(const void* s, int cb_s);
 	int write(const Cvirtual_binary&);
 	Cbvalue(int v = 0);
@@ -73,9 +75,6 @@ private:
 		t_map* m_map;
 	};
 
-
-	int read(char* d) const;
-	int write(const char* s, int cb_s);
 	int write(const char*& s, const char* s_end);
 };
 
