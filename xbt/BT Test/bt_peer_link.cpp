@@ -37,7 +37,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			close();
 			return 0;
 		}
-		if (1)
+		if (m_f->m_server->bind_before_connect())
 		{
 			int v = true;
 			if (!setsockopt(m_s, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)))

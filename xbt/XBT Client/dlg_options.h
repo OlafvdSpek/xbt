@@ -21,6 +21,7 @@ public:
 	{
 		int admin_port;
 		bool ask_for_location;
+		bool bind_before_connect;
 		bool end_mode;
 		string files_location;
 		bool lower_process_priority;
@@ -58,6 +59,7 @@ public:
 	BOOL	m_end_mode;
 	BOOL	m_lower_process_priority;
 	int		m_peer_limit;
+	BOOL	m_bind_before_connect;
 	//}}AFX_DATA
 
 

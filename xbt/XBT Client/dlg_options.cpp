@@ -33,6 +33,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_end_mode = FALSE;
 	m_lower_process_priority = FALSE;
 	m_peer_limit = 0;
+	m_bind_before_connect = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -59,6 +60,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_END_MODE, m_end_mode);
 	DDX_Check(pDX, IDC_LOWER_PROCESS_PRIORITY, m_lower_process_priority);
 	DDX_Text(pDX, IDC_PEER_LIMIT, m_peer_limit);
+	DDX_Check(pDX, IDC_BIND_BEFORE_CONNECT, m_bind_before_connect);
 	//}}AFX_DATA_MAP
 }
 
@@ -77,6 +79,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	t_data v;
 	v.admin_port = m_admin_port;
 	v.ask_for_location = m_ask_for_location;
+	v.bind_before_connect = m_bind_before_connect;
 	v.end_mode = m_end_mode;
 	v.files_location = m_files_location;
 	v.lower_process_priority = m_lower_process_priority;
@@ -97,6 +100,7 @@ void Cdlg_options::set(const t_data& v)
 {
 	m_admin_port = v.admin_port;
 	m_ask_for_location = v.ask_for_location;
+	m_bind_before_connect = v.bind_before_connect;
 	m_end_mode = v.end_mode;
 	m_files_location = v.files_location.c_str();
 	m_lower_process_priority = v.lower_process_priority;
