@@ -114,6 +114,7 @@ public:
 
 	typedef map<string, t_file> t_files;
 	typedef map<int, int> t_ipas;
+	typedef map<string, int> t_passes;
 
 	struct t_user
 	{
@@ -126,6 +127,7 @@ public:
 	void accept(const Csocket& l);
 	const t_user* find_user(const string&) const;
 	int get_user_id(int) const;
+	int get_user_id(const string&) const;	
 	void read_config();
 	void write_db_files();
 	void write_db_users();
@@ -244,6 +246,7 @@ private:
 	Cepoll m_epoll;
 	t_files m_files;
 	t_ipas m_ipas;
+	t_passes m_passes;
 	t_users m_users;
 	string m_announce_log_buffer;
 	string m_scrape_log_buffer;
