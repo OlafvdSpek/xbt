@@ -536,6 +536,8 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 		}
 	}
 	v.d(bts_files, files);
+	if (m_scrape_interval)
+		v.d(bts_flags, Cbvalue().d(bts_min_request_interval, m_scrape_interval));
 	return v;
 }
 
@@ -760,6 +762,7 @@ void Cserver::read_config()
 	m_read_config_interval = 300;
 	m_read_db_interval = 60;
 	m_redirect_url.erase();
+	m_scrape_interval = 0;
 	m_update_files_method = 0;
 	m_write_db_interval = 60;
 	try
@@ -803,6 +806,8 @@ void Cserver::read_config()
 				m_read_db_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "redirect_url"))
 				m_redirect_url = row.f(1);
+			if (!strcmp(row.f(0), "scrape_interval"))
+				m_scrape_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "update_files_method"))
 				m_update_files_method = row.f_int(1);
 			else if (!strcmp(row.f(0), "write_db_interval"))
