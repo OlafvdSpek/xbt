@@ -1629,10 +1629,11 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 			ShowWindow(SW_HIDE);
 			return true;
 		case VK_RETURN:
+			TranslateAccelerator(m_hWnd, m_hAccel, pMsg);
 			return true;
 		}
 	}
-	return pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST && TranslateAccelerator(m_hWnd, m_hAccel, pMsg)
+	return TranslateAccelerator(m_hWnd, m_hAccel, pMsg)
 		|| ETSLayoutDialog::PreTranslateMessage(pMsg);
 }
 
