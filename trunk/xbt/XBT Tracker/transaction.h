@@ -19,7 +19,7 @@ struct t_udp_tracker_input_scrape;
 class Ctransaction  
 {
 public:
-	const Cserver::t_user* authenticate(const void* s, const char* a, const char* s_end) const;
+	const Cserver::t_user* authenticate(const void* s, const char* s_end) const;
 	__int64 connection_id() const;
 	void recv();
 	void send(const void* d, int cb_d);
