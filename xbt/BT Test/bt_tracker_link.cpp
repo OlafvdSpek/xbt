@@ -94,8 +94,16 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		default:
 			return 0;
 		}
-		if (m_s.connect(Csocket::get_host(m_host), htons(m_port)) && WSAGetLastError() != WSAEWOULDBLOCK)
-			return 0;
+		{
+			int h = atoi(m_host.c_str()) ? inet_addr(m_host.c_str()) : Csocket::get_host(m_host);
+			if (h == INADDR_NONE)
+			{
+				f.alert(Calert(Calert::error, "Tracker: gethostbyname failed"));
+				return 0;
+			}
+			if (m_s.connect(h, htons(m_port)) && WSAGetLastError() != WSAEWOULDBLOCK)
+				return 0;
+		}
 		if (m_protocol == tp_udp)
 		{
 			t_udp_tracker_input_connect uti;
