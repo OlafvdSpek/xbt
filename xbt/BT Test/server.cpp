@@ -64,7 +64,7 @@ Cserver::~Cserver()
 static string new_peer_id()
 {
 	string v;
-	v = "XBT010--";
+	v = "XBT011--";
 	v.resize(20);
 	for (int i = 8; i < v.size(); i++)
 		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
