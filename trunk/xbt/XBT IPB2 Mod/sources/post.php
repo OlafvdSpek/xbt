@@ -1576,7 +1576,7 @@ class post {
 				$torrent = bdec_file($upload->saved_upload_name, 1 << 20);
 				if (!isset($torrent))
 					return $attach_data;
-				$attach_data['bt_info_hash'] = pack('H*', sha1($torrent['value']['info']['string']));
+				$attach_data['bt_info_hash'] = addslashes(pack('H*', sha1($torrent['value']['info']['string'])));
 				$attach_data['bt_name'] = $torrent['value']['info']['value']['name']['value'];
 				$piece_count = $torrent['value']['info']['value']['pieces']['strlen'] / 20;
 				$piece_length = $torrent['value']['info']['value']['piece length']['value'];
