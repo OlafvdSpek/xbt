@@ -72,6 +72,7 @@ const string bts_port = "port";
 const string bts_priority = "priority";
 const string bts_seeding_ratio = "seeding ratio";
 const string bts_set_options = "set options";
+const string bts_set_priority = "set priority";
 const string bts_size = "size";
 const string bts_start_torrent = "start torrent";
 const string bts_state = "state";
