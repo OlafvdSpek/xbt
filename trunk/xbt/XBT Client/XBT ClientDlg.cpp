@@ -79,6 +79,7 @@ enum
 	pc_end,
 
 	sfc_name,
+	sfc_extension,
 	sfc_done,
 	sfc_left,
 	sfc_size,
@@ -403,6 +404,12 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 void CXBTClientDlg::open_url(const string& v)
 {
 	m_server.open_url(v);
+}
+
+static string get_extension(const string& v)
+{
+	int i = v.rfind('.');
+	return i == string::npos ? "" : v.substr(i + 1);
 }
 
 static string priority2a(int v)
@@ -854,6 +861,9 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		}
 		else
 			buffer = e.m_name;
+		break;
+	case sfc_extension:
+		buffer = get_extension(e.m_name);
 		break;
 	case sfc_done:
 		if (e.m_size)
@@ -1720,6 +1730,8 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 	{
 	case sfc_name:
 		return compare(a.m_name, b.m_name);
+	case sfc_extension:
+		return compare(get_extension(a.m_name), get_extension(b.m_name), compare(a.m_name, b.m_name));
 	case sfc_done:
 		return compare(b.m_left * 1000 / b.m_size, a.m_left * 1000 / a.m_size);
 	case sfc_left:
@@ -1881,6 +1893,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		break;
 	case v_files:
 		m_peers_columns.push_back(sfc_name);
+		m_peers_columns.push_back(sfc_extension);
 		m_peers_columns.push_back(sfc_done);
 		m_peers_columns.push_back(sfc_left);
 		m_peers_columns.push_back(sfc_size);
@@ -1957,6 +1970,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		"Client",
 		"",
 		"Name",
+		"Extension",
 		"%",
 		"Left",
 		"Size",
@@ -2005,6 +2019,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 
+		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
