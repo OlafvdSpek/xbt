@@ -125,7 +125,7 @@ SOURCE=.\ring_buffer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\sha1.cpp
+SOURCE=..\misc\sha1.cpp
 # End Source File
 # Begin Source File
 
@@ -166,10 +166,6 @@ SOURCE=.\bt_pl_write_data.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\bt_strings.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\bt_tracker_link.h
 # End Source File
 # Begin Source File
@@ -183,10 +179,6 @@ SOURCE=.\data_counter.h
 # Begin Source File
 
 SOURCE=.\ring_buffer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\sha1.h
 # End Source File
 # Begin Source File
 
