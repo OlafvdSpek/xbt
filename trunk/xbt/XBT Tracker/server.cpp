@@ -336,7 +336,7 @@ void Cserver::accept(const Csocket& l)
 	}
 }
 
-void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, const t_user* user)
+string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, t_user* user)
 {
 	if (m_use_sql && m_config.m_log_announce)
 	{
@@ -354,13 +354,19 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		m_announce_log_buffer += q.read();
 	}
 	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
-		return;
+		return bts_unregistered_torrent;
 	t_file& file = m_files[v.m_info_hash];
 	if (v.m_left && user && user->fid_end && file.fid > user->fid_end)
-		return;
+		return bts_wait_time;
 	t_peers::iterator i = file.peers.find(v.m_ipa);
 	if (i != file.peers.end())
+	{
 		(i->second.left ? file.leechers : file.seeders)--;
+		if (i->second.uid && find_user_by_uid(i->second.uid))
+			find_user_by_uid(i->second.uid)->torrents--;
+	}
+	else if (user && user->torrents_limit && user->torrents >= user->torrents_limit)
+		return bts_torrents_limit_reached;
 	if (m_use_sql && user)
 	{
 		__int64 downloaded = 0;
@@ -398,12 +404,15 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		peer.left = v.m_left;
 		peer.peer_id = v.m_peer_id;
 		peer.port = v.m_port;
+		peer.uid = user->uid;
 		peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
+		if (user)
+			user->torrents++;
 
 		if (!m_config.m_listen_check || !listen_check)
 			peer.listening = true;
-		else if (!peer.listening && time() - peer.mtime > 900)
+		else if (!peer.listening && time() - peer.mtime > 7200)
 		{
 			Cpeer_link peer_link(v.m_ipa, v.m_port, this, v.m_info_hash, v.m_ipa);
 			if (peer_link.s() != INVALID_SOCKET)
@@ -447,6 +456,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		m_stats.announced_http++;
 	}
 	file.dirty = true;
+	return "";
 }
 
 void Cserver::update_peer(const string& file_id, int peer_id, bool listening)
@@ -494,9 +504,7 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 {
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
 	if (i == m_files.end())
-		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent);
-	if (ti.m_left && user && user->fid_end && i->second.fid > user->fid_end)
-		return Cbvalue().d(bts_failure_reason, bts_wait_time);
+		return Cbvalue();
 	if (ti.m_compact)
 	{
 		Cannounce_output_http_compact o;
@@ -511,13 +519,15 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 	return o.v();
 }
 
-void Cserver::t_file::clean_up(int t)
+void Cserver::t_file::clean_up(int t, Cserver& server)
 {
 	for (t_peers::iterator i = peers.begin(); i != peers.end(); )
 	{
 		if (i->second.mtime < t)
 		{
 			(i->second.left ? leechers : seeders)--;
+			if (i->second.uid && server.find_user_by_uid(i->second.uid))
+				server.find_user_by_uid(i->second.uid)->torrents--;
 			peers.erase(i++);
 			dirty = true;
 		}
@@ -529,7 +539,7 @@ void Cserver::t_file::clean_up(int t)
 void Cserver::clean_up()
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->second.clean_up(time() - static_cast<int>(1.5 * m_config.m_announce_interval));
+		i->second.clean_up(time() - static_cast<int>(1.5 * m_config.m_announce_interval), *this);
 	m_clean_up_time = time();
 }
 
@@ -1031,27 +1041,27 @@ string Cserver::statistics() const
 	return page;
 }
 
-const Cserver::t_user* Cserver::find_user_by_name(const string& v) const
+Cserver::t_user* Cserver::find_user_by_name(const string& v)
 {
 	t_users_names::const_iterator i = m_users_names.find(v);
 	return i == m_users_names.end() ? NULL : i->second;
 }
 
-const Cserver::t_user* Cserver::find_user_by_ipa(int v) const
+Cserver::t_user* Cserver::find_user_by_ipa(int v)
 {
 	t_ipas::const_iterator i = m_ipas.find(v);
 	return i == m_ipas.end() ? NULL : find_user_by_uid(i->second);
 }
 
-const Cserver::t_user* Cserver::find_user_by_torrent_pass(const string& v) const
+Cserver::t_user* Cserver::find_user_by_torrent_pass(const string& v)
 {
 	t_users_torrent_passes::const_iterator i = m_users_torrent_passes.find(v);
 	return i == m_users_torrent_passes.end() ? NULL : i->second;
 }
 
-const Cserver::t_user* Cserver::find_user_by_uid(int v) const
+Cserver::t_user* Cserver::find_user_by_uid(int v)
 {
-	t_users::const_iterator i = m_users.find(v);
+	t_users::iterator i = m_users.find(v);
 	return i == m_users.end() ? NULL : &i->second;
 }
 

@@ -141,18 +141,15 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 	ti.m_peer_id.assign(r + utia_peer_id, 20);
 	ti.m_port = htons(read_int(2, r + utia_port, r_end));
 	ti.m_uploaded = read_int(8, r + utia_uploaded, r_end);
-	m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user);
+	string error = m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user);
+	if (!error.empty())
+	{
+		send_error(r, r_end, error);
+		return;
+	}
 	const Cserver::t_file* file = m_server.file(ti.m_info_hash);
 	if (!file)
-	{
-		send_error(r, r_end, bts_unregistered_torrent);
 		return;
-	}
-	if (user && user->fid_end && file->fid > user->fid_end)
-	{
-		send_error(r, r_end, bts_wait_time);
-		return;
-	}
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_announce);
