@@ -44,6 +44,7 @@ using namespace std;
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
+typedef int __int32;
 typedef long long __int64;
 #endif
 #include "bvalue.h"
