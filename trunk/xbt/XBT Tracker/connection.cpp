@@ -198,8 +198,8 @@ void Cconnection::read(const string& v)
 			gzip = false;
 	}
 	const char* h = gzip
-		? "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n"
-		: "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\n";
+		? "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Encoding: gzip\r\n\r\n"
+		: "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n";
 	Cvirtual_binary d;
 	memcpy(d.write_start(strlen(h) + s.size()), h, strlen(h));
 	s.read(d.data_edit() + strlen(h));
