@@ -685,7 +685,7 @@ void Cserver::read_db_users()
 		m_users.clear();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			t_user& user = m_users[row.f(1)];
+			t_user& user = m_users[row.f(*row.f(1) ? 1 : 0)];
 			user.uid = row.f_int(0);
 			user.fid_end = row.f_int(4);
 			user.pass.assign(row.f(2), row.size(2));
@@ -799,7 +799,7 @@ void Cserver::write_db_users()
 			m_database.query("insert ignore into xbt_files_users (info_hash, uid) select info_hash, uid from xbt_files_users_updates");
 			m_database.query("update xbt_files_users fu, xbt_files_users_updates fuu"
 				" set fu.announced = fu.announced + fuu.announced, fu.completed = fu.completed + fuu.completed, fu.downloaded = fu.downloaded + fuu.downloaded, fu.uploaded = fu.uploaded + fuu.uploaded"
-				" where fu.uid = fuu.uid");
+				" where fu.info_hash = fuu.info_hash and fu.uid = fuu.uid");
 			m_database.query("delete from xbt_files_users_updates");
 		}
 		catch (Cxcc_error)
