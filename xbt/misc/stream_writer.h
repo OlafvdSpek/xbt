@@ -39,6 +39,12 @@ public:
 		*reinterpret_cast<__int64*>(write(8)) = v;
 	}
 
+	void write_data(const Cvirtual_binary& v)
+	{
+		write_int32(v.size());
+		v.read(write(v.size()));
+	}
+
 	void write_string(const string& v)
 	{
 		write_int32(v.length());
