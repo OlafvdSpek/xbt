@@ -2808,7 +2808,7 @@ void CXBTClientDlg::OnFileExit()
 
 void CXBTClientDlg::OnEditCopyAnnounceUrl() 
 {
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_SELECTED));
 	if (id == -1)
 		return;
 	const t_file& file = m_files_map.find(id)->second;
@@ -2818,31 +2818,31 @@ void CXBTClientDlg::OnEditCopyAnnounceUrl()
 
 void CXBTClientDlg::OnUpdateEditCopyAnnounceUrl(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+	pCmdUI->Enable(m_files.GetSelectedCount() == 1);
 }
 
 void CXBTClientDlg::OnEditCopyHash() 
 {
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_SELECTED));
 	if (id != -1)
 		set_clipboard(hex_encode(m_files_map.find(id)->second.m_info_hash));
 }
 
 void CXBTClientDlg::OnUpdateEditCopyHash(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+	pCmdUI->Enable(m_files.GetSelectedCount() == 1);
 }
 
 void CXBTClientDlg::OnEditCopyUrl() 
 {
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_SELECTED));
 	if (id != -1)
 		set_clipboard(m_server.get_url(m_files_map.find(id)->second.m_info_hash));
 }
 
 void CXBTClientDlg::OnUpdateEditCopyUrl(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+	pCmdUI->Enable(m_files.GetSelectedCount() == 1);
 }
 
 void CXBTClientDlg::OnEditPasteUrl()
