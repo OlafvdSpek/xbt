@@ -92,7 +92,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 				close(f);
 				return 0;
 			}
-			if (m_s.connect(h, htons(m_url.m_port)) && WSAGetLastError() != WSAEWOULDBLOCK)
+			if (m_s.connect(h, htons(m_url.m_port)) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
 				return 0;
 			in_addr a;
 			a.s_addr = h;
