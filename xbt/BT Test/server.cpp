@@ -67,6 +67,7 @@ Cserver::Cserver()
 	m_public_ipa = 0;
 	m_run = false;
 	m_seeding_ratio = 0;
+	m_torrent_limit = 0;
 	m_torrents_dir = "Torrents";
 	m_tracker_port = m_new_tracker_port = 2710;
 	m_update_chokes_time = 0;

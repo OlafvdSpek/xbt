@@ -163,6 +163,16 @@ public:
 		return m_seeding_ratio;
 	}
 
+	int torrent_limit() const
+	{
+		return m_torrent_limit;
+	}
+
+	void torrent_limit(int v)
+	{
+		m_torrent_limit = v;
+	}
+	
 	const Cbt_tracker_accounts& tracker_accounts()
 	{
 		return m_tracker_accounts;
@@ -213,6 +223,7 @@ private:
 	bool m_run;
 	int m_save_state_time;
 	int m_seeding_ratio;
+	int m_torrent_limit;
 	string m_torrents_dir;
 	int m_tracker_port;
 	int m_update_chokes_time;

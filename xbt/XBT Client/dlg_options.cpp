@@ -38,6 +38,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_completes_dir = _T("");
 	m_incompletes_dir = _T("");
 	m_torrents_dir = _T("");
+	m_torrent_limit = 0;
 	//}}AFX_DATA_INIT
 }
 
@@ -67,6 +68,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_COMPLETES_DIRECTORY, m_completes_dir);
 	DDX_Text(pDX, IDC_INCOMPLETES_DIRECTORY, m_incompletes_dir);
 	DDX_Text(pDX, IDC_TORRENTS_DIRECTORY, m_torrents_dir);
+	DDX_Text(pDX, IDC_TORRENT_LIMIT, m_torrent_limit);
 	//}}AFX_DATA_MAP
 }
 
@@ -99,6 +101,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.show_advanced_columns = m_show_advanced_columns;
 	v.show_tray_icon = m_show_tray_icon;
 	v.start_minimized = m_start_minimized;
+	v.torrent_limit = m_torrent_limit;
 	v.torrents_dir = m_torrents_dir;
 	v.tracker_port = m_tracker_port;
 	v.upload_rate = m_upload_rate << 10;
@@ -122,6 +125,7 @@ void Cdlg_options::set(const t_data& v)
 	m_show_advanced_columns = v.show_advanced_columns;
 	m_show_tray_icon = v.show_tray_icon;
 	m_start_minimized = v.start_minimized;
+	m_torrent_limit = v.torrent_limit;
 	m_torrents_dir = backward_slashes(v.torrents_dir).c_str();
 	m_tracker_port = v.tracker_port;
 	m_upload_rate = v.upload_rate >> 10;

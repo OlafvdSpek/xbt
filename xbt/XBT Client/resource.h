@@ -23,6 +23,7 @@
 #define IDC_UPLOAD_RATE                 1004
 #define IDC_TRACKER_PORT                1005
 #define IDC_PEER_LIMIT                  1007
+#define IDC_TORRENT_LIMIT               1008
 #define IDC_PUBLIC_IPA                  1010
 #define IDC_UPLOAD_SLOTS                1012
 #define IDC_DECREASE_PRIORITY           1013
@@ -110,7 +111,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32813
-#define _APS_NEXT_CONTROL_VALUE         1044
+#define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif
