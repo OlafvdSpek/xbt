@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "xif_value.h"
 
-#include <minmax.h>
 #include <zlib.h>
 
 template <class T>
