@@ -443,9 +443,10 @@ void Cbt_peer_link::write_get_peers()
 void Cbt_peer_link::write_peers()
 {
 	Cvirtual_binary d;
-	byte* w = d.write_start(5 + 6 * m_f->m_peers.size());
+	byte* w = d.write_start(9 + 6 * m_f->m_peers.size());
 	w = write(w, d.size() - 4);
 	*w++ = bti_peers;
+	w = write(w, m_f->m_local_port);
 	for (Cbt_file::t_peers::const_iterator i = m_f->m_peers.begin(); i != m_f->m_peers.end(); i++)
 	{
 		*reinterpret_cast<__int32*>(w) = i->m_a.sin_addr.s_addr;

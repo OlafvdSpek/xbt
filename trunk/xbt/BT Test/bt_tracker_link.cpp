@@ -167,7 +167,10 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				m_state = 2;
 		}
 		else if (FD_ISSET(m_s, fd_except_set))
+		{
+			f.alert(Calert(Calert::error, "Tracker: HTTP: connect failed"));
 			close();
+		}
 		break;
 	case 2:
 		if (FD_ISSET(m_s, fd_read_set))
@@ -177,7 +180,10 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				if (r == SOCKET_ERROR)
 				{
 					if (WSAGetLastError() != WSAEWOULDBLOCK)
+					{
+						f.alert(Calert(Calert::error, "Tracker: HTTP: recv failed"));
 						close();
+					}
 					return;
 				}
 				m_w += r;
