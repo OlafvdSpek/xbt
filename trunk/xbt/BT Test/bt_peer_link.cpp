@@ -60,7 +60,12 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			const t_remote_request& request = m_remote_requests.front();
 			Cvirtual_binary d;
 			if (!m_f->read_data(request.offset, d.write_start(request.size), request.size))
-				write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size, d);
+			{
+				if (m_f->m_merkle)
+					write_merkle_piece(request.offset, request.size, d, m_f->get_hashes(request.offset, request.c_hashes));
+				else
+					write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size, d);
+			}
 			m_remote_requests.pop_front();
 		}
 		if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 120)
@@ -94,7 +99,10 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			if (m_local_requests.empty())
 				break;
 			const t_local_request& request = m_local_requests.front();
-			write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
+			if (m_f->m_merkle)
+				write_merkle_request(request.offset, 127);
+			else
+				write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 			m_local_requests.pop_front();
 		}
 		if (!m_read_b.size() || m_read_b.cb_w())
@@ -321,7 +329,15 @@ void Cbt_peer_link::remote_requests(int piece, int offset, int size)
 	if (piece < 0 || piece >= m_f->c_pieces() || offset < 0 || size < 0 || size > min(m_f->m_pieces[piece].mcb_d, 1 << 17) 
 		|| m_remote_requests.size() >= 256 || !m_f->m_pieces[piece].m_valid || m_local_choked)
 		return;
-	m_remote_requests.push_back(t_remote_request(m_f->mcb_piece * piece + offset, size));
+	m_remote_requests.push_back(t_remote_request(m_f->mcb_piece * piece + offset, size, 0));
+}
+
+void Cbt_peer_link::remote_merkle_requests(__int64 offset, int c_hashes)
+{
+	int piece = offset / m_f->mcb_piece;
+	if (offset < 0 || m_remote_requests.size() >= 256 || piece >= m_pieces.size() || !m_f->m_pieces[piece].m_valid || m_local_choked)
+		return;
+	m_remote_requests.push_back(t_remote_request(offset, min(m_f->m_pieces[piece].mcb_d - offset % m_f->mcb_piece, 32 << 10), c_hashes));
 }
 
 void Cbt_peer_link::remote_cancels(int piece, int offset, int size)
@@ -329,6 +345,17 @@ void Cbt_peer_link::remote_cancels(int piece, int offset, int size)
 	for (t_remote_requests::iterator i = m_remote_requests.begin(); i != m_remote_requests.end(); i++)
 	{
 		if (i->offset != m_f->mcb_piece * piece + offset)
+			continue;
+		m_remote_requests.erase(i);
+		return;
+	}
+}
+
+void Cbt_peer_link::remote_merkle_cancels(__int64 offset)
+{
+	for (t_remote_requests::iterator i = m_remote_requests.begin(); i != m_remote_requests.end(); i++)
+	{
+		if (i->offset != offset)
 			continue;
 		m_remote_requests.erase(i);
 		return;
@@ -440,6 +467,22 @@ void Cbt_peer_link::write_piece(int piece, int offset, int size, const void* s)
 	write(d);
 }
 
+void Cbt_peer_link::write_merkle_piece(__int64 offset, int size, const void* s, const string& hashes)
+{
+	Cvirtual_binary d;
+	byte* w = d.write_start(10 + size + hashes.size());
+	w = write(w, d.size() - 4);
+	*w++ = bti_piece;
+	w = write(w, offset >> 15);
+	*w++ = hashes.size() / 20;
+	memcpy(w, s, size);
+	w += size;
+	memcpy(w, hashes.c_str(), hashes.size());
+	w += hashes.size();
+	assert(w == d.data_end());
+	write(d);
+}
+
 void Cbt_peer_link::choked(bool v)
 {
 	if (m_local_choked == v)
@@ -479,6 +522,18 @@ void Cbt_peer_link::write_request(int piece, int offset, int size)
 	mc_local_requests_pending++;
 }
 
+void Cbt_peer_link::write_merkle_request(__int64 offset, int c_hashes)
+{
+	Cvirtual_binary d;
+	byte* w = d.write_start(10);
+	w = write(w, d.size() - 4);
+	*w++ = bti_request;
+	w = write(w, offset >> 15);
+	*w++ = c_hashes;
+	write(d);
+	mc_local_requests_pending++;
+}
+
 void Cbt_peer_link::write_cancel(int piece, int offset, int size)
 {
 	Cvirtual_binary d;
@@ -488,6 +543,16 @@ void Cbt_peer_link::write_cancel(int piece, int offset, int size)
 	w = write(w, piece);
 	w = write(w, offset);
 	w = write(w, size);
+	write(d);
+}
+
+void Cbt_peer_link::write_merkle_cancel(__int64 offset)
+{
+	Cvirtual_binary d;
+	byte* w = d.write_start(9);
+	w = write(w, d.size() - 4);
+	*w++ = bti_cancel;
+	w = write(w, offset >> 15);
 	write(d);
 }
 
@@ -565,6 +630,23 @@ void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	m_piece_rtime = time(NULL);
 }
 
+void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes)
+{
+	mc_local_requests_pending--;
+	if (!m_f->test_and_set_hashes(offset, Cmerkle_tree::compute_root(s, s + size), hashes))
+	{
+		alert(Calert(Calert::warn, m_a, "Chunk " + n(offset >> 15) + ": invalid"));
+		return;
+	}
+	m_f->write_data(offset, s, size);
+	m_downloaded += size;
+	m_down_counter.add(size);
+	m_f->m_downloaded += size;
+	m_f->m_down_counter.add(size);
+	m_f->m_total_downloaded += size;
+	m_piece_rtime = time(NULL);
+}
+
 void Cbt_peer_link::read_message(const char* r, const char* r_end)
 {
 	switch (*r++)
@@ -599,14 +681,31 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		}
 		break;
 	case bti_request:
-		if (r_end - r >= 12)
+		if (m_f->m_merkle)
+		{
+			if (r_end - r >= 5)
+			{
+				const __int32* a = reinterpret_cast<const __int32*>(r);
+				remote_merkle_requests(static_cast<__int64>(ntohl(a[0])) << 15, r[4]);
+			}
+		}
+		else if (r_end - r >= 12)
 		{
 			const __int32* a = reinterpret_cast<const __int32*>(r);
 			remote_requests(ntohl(a[0]), ntohl(a[1]), ntohl(a[2]));
 		}
 		break;
 	case bti_piece:
-		if (r_end - r >= 8)
+		if (m_f->m_merkle)
+		{
+			if (r_end - r >= 5 && r[4] >= 0 && r_end - r >= 20 * r[4] + 5)
+			{
+				const __int32* a = reinterpret_cast<const __int32*>(r);
+				r += 5;
+				read_merkle_piece(static_cast<__int64>(ntohl(a[0])) << 15, r_end - r - 20 * r[-1], r, string(r_end - 20 * r[-1], 20 * r[-1]));
+			}
+		}
+		else if (r_end - r >= 8)
 		{
 			const __int32* a = reinterpret_cast<const __int32*>(r);
 			r += 8;

@@ -397,7 +397,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 			return;
 		Cvirtual_binary d;
 		read_data(a * mcb_piece, d.write_start(piece.mcb_d), piece.mcb_d);
-		if (memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
+		if (!m_merkle && memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
 		{
 			alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
 			return;
