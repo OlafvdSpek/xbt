@@ -70,7 +70,7 @@ void Ctracker_input::set(const string& name, const string& value)
 			m_num_want = atoi(value.c_str());
 		break;
 	case 'p':
-		if (name == "peer_id" )
+		if (name == "peer_id" && value.length() == 20)
 			m_peer_id = value;
 		else if (name == "port")
 			m_port = htons(atoi(value.c_str()));

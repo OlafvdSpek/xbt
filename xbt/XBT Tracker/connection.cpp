@@ -173,19 +173,22 @@ void Cconnection::read(const string& v)
 	{
 	case 'a':
 		gzip = m_server->gzip_announce() && !ti.m_compact;
-		if (!ti.m_compact && !ti.m_no_peer_id && ti.m_event != Ctracker_input::e_stopped && ti.m_num_want)
-			s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
-		else if (ti.valid())
+		if (ti.valid())
 		{
-			const Cserver::t_user* user = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->find_user_by_torrent_pass(v.substr(7, 32)) : NULL;
-			if (!user)
-				user = m_server->find_user_by_ipa(ntohl(ti.m_ipa));
-			if (!m_server->anonymous_announce() && !user)
-				s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
+			if (!ti.m_compact && !ti.m_no_peer_id && ti.m_event != Ctracker_input::e_stopped && ti.m_num_want && !ti.m_info_hash.empty())
+				s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
 			else
 			{
-				m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
-				s = m_server->select_peers(ti, user).read();
+				const Cserver::t_user* user = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->find_user_by_torrent_pass(v.substr(7, 32)) : NULL;
+				if (!user)
+					user = m_server->find_user_by_ipa(ntohl(ti.m_ipa));
+				if (!m_server->anonymous_announce() && !user)
+					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
+				else
+				{
+					m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
+					s = m_server->select_peers(ti, user).read();
+				}
 			}
 		}
 		break;
