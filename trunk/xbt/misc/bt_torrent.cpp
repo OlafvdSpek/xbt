@@ -79,7 +79,7 @@ bool Cbt_torrent::valid() const
 {
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
-		if (i->size() < 1)
+		if (i->size() < 0)
 			return false;
 	}
 	return !announce().empty()

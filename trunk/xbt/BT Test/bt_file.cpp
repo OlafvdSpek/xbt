@@ -72,7 +72,7 @@ int Cbt_file::info(const Cbvalue& info)
 					name += '/' + i->s();
 			}
 			__int64 size = i->d(bts_length).i();
-			if (name.empty() || size < 1)
+			if (name.empty() || size < 0)
 				return 1;
 			mcb_f += size;
 			m_sub_files.push_back(t_sub_file(i->d(bts_merkle_hash).s(), name, offset, 0, size));
