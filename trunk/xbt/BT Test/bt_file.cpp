@@ -88,7 +88,7 @@ int Cbt_file::info(const Cbvalue& info)
 		const byte* r_end = m_info.data_end();
 		while (r < r_end)
 		{
-			compute_sha1(r, min(r_end - r, 4096), w);
+			Csha1(r, min(r_end - r, 4096)).read(w);
 			r += 4096;
 			w += 20;
 		}
