@@ -1,5 +1,5 @@
 !define UPGRADEDLL_NOREGISTER
-!define VERSION "0.1.4"
+!define VERSION "0.1.5"
 !include "UpgradeDLL.nsh"
 
 Name "XBT Tracker ${VERSION}"
@@ -14,6 +14,9 @@ Section "Install"
 	SetOutPath "$INSTDIR"
 	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
+	Delete "$INSTDIR\XBT Tracker.exe"
+	Delete "$INSTDIR\XBT Tracker Old.exe"
+	Rename "$INSTDIR\XBT Tracker.exe" "$INSTDIR\XBT Tracker Old.exe"
 	File release\*.exe
 	File xbt_tracker.conf.default
 	File xbt_tracker.sql
