@@ -115,6 +115,7 @@ void Cbt_file::t_sub_file::close()
 
 void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 {
+	w.write_int64(left());
 	w.write_string(name());
 	w.write_int32(priority());
 	w.write_int64(size());
@@ -128,7 +129,7 @@ bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 
 int Cbt_file::t_sub_file::pre_dump() const
 {
-	return name().size() + 16;
+	return name().size() + 24;
 }
 
 int Cbt_file::t_sub_file::read(__int64 offset, void* s, int cb_s)
@@ -163,6 +164,8 @@ int Cbt_file::open(const string& name, bool validate)
 	{
 		Cvirtual_binary d;
 		m_left = 0;
+		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+			i->left(0);
 		for (int i = 0; i < m_pieces.size(); i++)
 		{
 			Cbt_piece& piece = m_pieces[i];
