@@ -179,6 +179,7 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 	m_initial_hide = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
 #endif
 	m_server_thread = NULL;
+	update_global_details();
 }
 
 void CXBTClientDlg::DoDataExchange(CDataExchange* pDX)
@@ -713,8 +714,6 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	if (!m_file)
-		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	string& buffer = m_peers.get_buffer();
 	const char* row_names[] =
@@ -737,43 +736,37 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		switch (pDispInfo->item.iItem)
 		{
 		case gdr_downloaded:
-			buffer = b2a(m_file->m_downloaded, "b");
-			if (m_file->m_total_downloaded != m_file->m_downloaded)
-				buffer += " / " + b2a(m_file->m_total_downloaded, "b");
-			if (m_file->m_size)
-				buffer += " (" + n(m_file->m_total_downloaded * 100 / m_file->m_size) + " %)";
+			buffer = b2a(m_global_details.m_downloaded, "b");
+			if (m_global_details.m_downloaded_total != m_global_details.m_downloaded)
+				buffer += " / " + b2a(m_global_details.m_downloaded_total, "b");
+			if (m_global_details.m_size)
+				buffer += " (" + n(m_global_details.m_downloaded_total * 100 / m_global_details.m_size) + " %)";
 			break;
 		case gdr_files:
-			buffer = n(m_file->m_sub_files.size());
+			buffer = n(m_global_details.mc_files);
 			break;
 		case gdr_leechers:
-			buffer = n(m_file->mc_leechers);
-			if (m_file->mc_leechers_total)
-				buffer += " / " + n(m_file->mc_leechers_total);
+			buffer = n(m_global_details.mc_leechers);
 			break;
 		case gdr_left:
-			if (m_file->m_left)
-				buffer = b2a(m_file->m_left, "b");
+			if (m_global_details.m_left)
+				buffer = b2a(m_global_details.m_left, "b");
 			break;
 		case gdr_peers:
-			buffer = n(m_file->mc_leechers + m_file->mc_seeders);
-			if (m_file->mc_leechers_total + m_file->mc_seeders_total)
-				buffer += " / " + n(m_file->mc_leechers_total + m_file->mc_seeders_total);
+			buffer = n(m_global_details.mc_leechers + m_global_details.mc_seeders);
 			break;
 		case gdr_seeders:
-			buffer = n(m_file->mc_seeders);
-			if (m_file->mc_seeders_total)
-				buffer += " / " + n(m_file->mc_seeders_total);
+			buffer = n(m_global_details.mc_seeders);
 			break;
 		case gdr_size:
-			buffer = b2a(m_file->m_size, "b");
+			buffer = b2a(m_global_details.m_size, "b");
 			break;
 		case gdr_uploaded:
-			buffer = b2a(m_file->m_uploaded, "b");
-			if (m_file->m_total_uploaded != m_file->m_uploaded)
-				buffer += " / " + b2a(m_file->m_total_uploaded, "b");
-			if (m_file->m_size)
-				buffer += " (" + n(m_file->m_total_uploaded * 100 / m_file->m_size) + " %)";
+			buffer = b2a(m_global_details.m_uploaded, "b");
+			if (m_global_details.m_uploaded_total != m_global_details.m_uploaded)
+				buffer += " / " + b2a(m_global_details.m_uploaded_total, "b");
+			if (m_global_details.m_size)
+				buffer += " (" + n(m_global_details.m_uploaded_total * 100 / m_global_details.m_size) + " %)";
 			break;
 		}
 		break;
@@ -1164,6 +1157,7 @@ void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
 				i++;
 		}
 	}
+	update_global_details();
 }
 
 void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
@@ -1617,24 +1611,9 @@ void CXBTClientDlg::unregister_tray()
 
 void CXBTClientDlg::update_tray()
 {
-	__int64 left = 0;
-	__int64 size = 0;
-	int down_rate = 0;
-	int up_rate = 0;
-	int leechers = 0;
-	int seeders = 0;
-	for (t_files::const_iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
-	{
-		left += i->second.m_left;
-		size += i->second.m_size;
-		down_rate += i->second.m_down_rate;
-		up_rate += i->second.m_up_rate;
-		leechers += i->second.mc_leechers;
-		seeders += i->second.mc_seeders;
-	}
 	char b[256];
-	if (size)
-		sprintf(b, "%d %%, %s left, %s down, %s up, %d leechers, %d seeders - ", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), b2a(down_rate).c_str(), b2a(up_rate).c_str(), leechers, seeders);
+	if (m_global_details.m_size)
+		sprintf(b, "%d %%, %s left, %s down, %s up, %d leechers, %d seeders - ", static_cast<int>((m_global_details.m_size - m_global_details.m_left) * 100 / m_global_details.m_size), b2a(m_global_details.m_left).c_str(), b2a(m_global_details.m_down_rate).c_str(), b2a(m_global_details.m_up_rate).c_str(), m_global_details.mc_leechers, m_global_details.mc_seeders);
 	else
 		*b = 0;
 	strcat(b, "XBT Client ");
@@ -1647,8 +1626,8 @@ void CXBTClientDlg::update_tray()
 	nid.hWnd = GetSafeHwnd();
 	nid.uID = 0;
 	nid.uFlags = NIF_TIP;
-	if (size)
-		sprintf(nid.szTip, "%d %%, %s left, %d leechers, %d seeders - XBT Client", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders);
+	if (m_global_details.m_size)
+		sprintf(nid.szTip, "%d %%, %s left, %d leechers, %d seeders - XBT Client", static_cast<int>((m_global_details.m_size - m_global_details.m_left) * 100 / m_global_details.m_size), b2a(m_global_details.m_left).c_str(), m_global_details.mc_leechers, m_global_details.mc_seeders);
 	else
 		strcpy(nid.szTip, "XBT Client");
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
@@ -3042,4 +3021,33 @@ BOOL CXBTClientDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
 		return true;
 	}
 	return ETSLayoutDialog::OnCopyData(pWnd, pCopyDataStruct);
+}
+
+void CXBTClientDlg::update_global_details()
+{
+	m_global_details.m_down_rate = 0;
+	m_global_details.m_downloaded = 0;
+	m_global_details.m_downloaded_total = 0;
+	m_global_details.m_left = 0;
+	m_global_details.m_size = 0;
+	m_global_details.m_up_rate = 0;
+	m_global_details.m_uploaded = 0;
+	m_global_details.m_uploaded_total = 0;
+	m_global_details.mc_files = 0;
+	m_global_details.mc_leechers = 0;
+	m_global_details.mc_seeders = 0;
+	for (t_files::const_iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
+	{
+		m_global_details.m_down_rate += i->second.m_down_rate;
+		m_global_details.m_downloaded += i->second.m_downloaded;
+		m_global_details.m_downloaded_total += i->second.m_total_downloaded;
+		m_global_details.m_left += i->second.m_left;
+		m_global_details.m_size += i->second.m_size;
+		m_global_details.m_up_rate += i->second.m_up_rate;
+		m_global_details.m_uploaded += i->second.m_uploaded;
+		m_global_details.m_uploaded_total += i->second.m_total_uploaded;
+		m_global_details.mc_files += i->second.m_sub_files.size();
+		m_global_details.mc_leechers += i->second.mc_leechers;
+		m_global_details.mc_seeders += i->second.mc_seeders;
+	}
 }

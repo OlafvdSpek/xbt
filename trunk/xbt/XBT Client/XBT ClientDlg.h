@@ -13,6 +13,7 @@
 class CXBTClientDlg: public ETSLayoutDialog
 {
 public:
+	void update_global_details();
 	void set_torrent_state(Cbt_file::t_state);
 	Cbt_file::t_state get_torrent_state();
 	void set_bottom_view(int v);
@@ -244,6 +245,21 @@ private:
 		bool m_removed;
 	};
 
+	struct t_global_details
+	{
+		__int64 m_downloaded;
+		__int64 m_downloaded_total;
+		__int64 m_left;
+		__int64 m_size;
+		__int64 m_uploaded;
+		__int64 m_uploaded_total;
+		int m_down_rate;
+		int m_up_rate;
+		int mc_files;
+		int mc_leechers;
+		int mc_seeders;
+	};
+
 	typedef vector<int> t_columns;
 	typedef map<int, t_file> t_files;
 
@@ -259,6 +275,7 @@ private:
 	t_events m_events;
 	t_file* m_file;
 	t_files m_files_map;
+	t_global_details m_global_details;
 	CString m_reg_key;
 	Cserver m_server;
 	CWinThread* m_server_thread;
