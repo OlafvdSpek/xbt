@@ -79,6 +79,7 @@ public:
 	void public_ipa(int);
 	void run_scheduler();
 	void seeding_ratio(int);
+	void send_stop_event(bool);
 	void set_profiles(const Cxif_key&);
 	void set_scheduler(const Cxif_key&);
 	void set_trackers(const Cvirtual_binary& d);
@@ -190,6 +191,11 @@ public:
 	int seeding_ratio() const
 	{
 		return m_config.m_seeding_ratio;
+	}
+
+	bool send_stop_event() const
+	{
+		return m_config.m_send_stop_event;
 	}
 
 	int time() const
