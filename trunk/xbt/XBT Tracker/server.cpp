@@ -690,7 +690,7 @@ void Cserver::read_db_users()
 	{
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
 			i->second.marked = true;
-		Csql_query q(m_database, "select uid, name, pass, torrent_pass, fid_end from xbt_users");
+		Csql_query q(m_database, "select uid, name, pass, torrent_pass, fid_end, torrents_limit from xbt_users");
 		Csql_result result = q.execute();
 		m_users_names.clear();
 		m_users_torrent_passes.clear();
@@ -701,6 +701,7 @@ void Cserver::read_db_users()
 			user.uid = row.f_int(0);
 			user.fid_end = row.f_int(4);
 			user.pass.assign(row.f(2));
+			user.torrents_limit = row.f_int(5);
 			if (row.size(1))
 				m_users_names[row.f(1)] = &user;
 			if (row.size(3))
@@ -1087,7 +1088,7 @@ int Cserver::test_sql()
 		m_database.query("select info_hash, uid, announced, completed, downloaded, uploaded from xbt_files_users where 0 = 1");
 		m_database.query("select ipa, uid, mtime from xbt_ipas where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from xbt_scrape_log where 0 = 1");
-		m_database.query("select uid, name, pass, fid_end, torrent_pass, downloaded, uploaded from xbt_users where 0 = 1");
+		m_database.query("select uid, name, pass, fid_end, torrents_limit, torrent_pass, downloaded, uploaded from xbt_users where 0 = 1");
 		return 0;
 	}
 	catch (Cxcc_error)

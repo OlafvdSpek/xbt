@@ -100,6 +100,7 @@ int main(int argc, char* argv[])
 	WSADATA wsadata;
 	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
 		return cerr << "Unable to start WSA" << endl, 1;
+#ifdef NDEBUG
 	SERVICE_TABLE_ENTRY st[] = 
 	{
 		{ "", nt_service_main },
@@ -110,6 +111,7 @@ int main(int argc, char* argv[])
 	if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED
 		&& GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)		
 		return 1;
+#endif
 #endif
 	return main1();
 }

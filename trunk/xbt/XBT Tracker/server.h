@@ -119,9 +119,16 @@ public:
 
 	struct t_user
 	{
+		t_user()
+		{
+			torrents = 0;
+		}
+
 		bool marked;
 		int uid;
 		int fid_end;
+		int torrents;
+		int torrents_limit;
 		string pass;
 	};
 
