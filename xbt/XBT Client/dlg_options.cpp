@@ -71,7 +71,9 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(Cdlg_options, CDialog)
 	//{{AFX_MSG_MAP(Cdlg_options)
-		// NOTE: the ClassWizard will add message map macros here
+	ON_BN_CLICKED(IDC_COMPLETES_DIRECTORY_BROWSE, OnCompletesDirectoryBrowse)
+	ON_BN_CLICKED(IDC_INCOMPLETES_DIRECTORY_BROWSE, OnIncompletesDirectoryBrowse)
+	ON_BN_CLICKED(IDC_TORRENTS_DIRECTORY_BROWSE, OnTorrentsDirectoryBrowse)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -122,4 +124,16 @@ void Cdlg_options::set(const t_data& v)
 	m_tracker_port = v.tracker_port;
 	m_upload_rate = v.upload_rate >> 10;
 	m_upload_slots = v.upload_slots;
+}
+
+void Cdlg_options::OnCompletesDirectoryBrowse() 
+{
+}
+
+void Cdlg_options::OnIncompletesDirectoryBrowse() 
+{
+}
+
+void Cdlg_options::OnTorrentsDirectoryBrowse() 
+{
 }
