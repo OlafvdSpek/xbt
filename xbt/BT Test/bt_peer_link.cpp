@@ -626,10 +626,12 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		read_info(r, r_end);
 		break;
 	case bti_get_peers:
+		alert(Calert(Calert::debug, m_a, "Peer: get_peers"));
 		if (r_end - r >= 2 && time(NULL) - m_peers_stime > 300)
 			write_peers();
 		break;
 	case bti_peers:
+		alert(Calert(Calert::debug, m_a, "Peer: " + n((r_end - r - 2) / 6) + " peers"));
 		if (r_end - r >= 2 && time(NULL) - m_get_peers_stime < 60)
 		{
 			for (r += 2; r + 6 <= r_end; r += 6)
