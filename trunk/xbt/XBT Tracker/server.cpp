@@ -83,7 +83,7 @@ private:
 	Cbvalue m_peers;
 };
 
-Cserver::Cserver(Cdatabase& database):
+Cserver::Cserver(Cdatabase& database, bool use_sql):
 	m_database(database)
 {
 	m_fid_end = 0;
@@ -91,6 +91,7 @@ Cserver::Cserver(Cdatabase& database):
 	for (int i = 0; i < 8; i++)
 		m_secret = m_secret << 8 ^ rand();
 	m_time = ::time(NULL);
+	m_use_sql = use_sql;
 }
 
 int Cserver::run()
@@ -332,7 +333,7 @@ void Cserver::accept(const Csocket& l)
 
 void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, int uid)
 {
-	if (m_config.m_log_announce)
+	if (m_use_sql && m_config.m_log_announce)
 	{
 		Csql_query q(m_database, "(?,?,?,?,?,?,?,?,?,?),");
 		q.p(ntohl(v.m_ipa));
@@ -356,7 +357,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	if (v.m_event == Ctracker_input::e_stopped)
 	{
 		file.peers.erase(v.m_ipa);
-		if (uid && (v.m_downloaded || v.m_uploaded))
+		if (m_use_sql && uid && (v.m_downloaded || v.m_uploaded))
 		{
 			Csql_query q(m_database, "(?,?,?),");
 			q.p(v.m_downloaded);
@@ -504,7 +505,7 @@ Cbvalue Cserver::t_file::scrape() const
 
 Cbvalue Cserver::scrape(const Ctracker_input& ti)
 {
-	if (m_config.m_log_scrape)
+	if (m_use_sql && m_config.m_log_scrape)
 	{
 		Csql_query q(m_database, "(?,?,?),");
 		q.p(ntohl(ti.m_ipa));
@@ -544,6 +545,33 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 void Cserver::read_db_files()
 {
 	m_read_db_files_time = time();
+	if (m_use_sql)
+		read_db_files_sql();
+	else if (!m_config.m_auto_register)
+	{
+		set<string> new_files;
+		ifstream is("xbt_files.txt");
+		string s;
+		while (getline(is, s))
+		{
+			s = hex_decode(s);
+			if (s.size() != 20)
+				continue;
+			m_files[s];
+			new_files.insert(s);
+		}
+		for (t_files::iterator i = m_files.begin(); i != m_files.end(); )
+		{
+			if (new_files.find(i->first) == new_files.end())
+				m_files.erase(i++);
+			else
+				i++;
+		}
+	}
+}
+
+void Cserver::read_db_files_sql()
+{
 	try
 	{
 		Csql_query q(m_database);
@@ -598,6 +626,8 @@ void Cserver::read_db_files()
 
 void Cserver::read_db_ipas()
 {
+	if (!m_use_sql)
+		return;
 	try
 	{
 		Csql_query q(m_database, "select ipa, uid from xbt_ipas");
@@ -614,6 +644,8 @@ void Cserver::read_db_ipas()
 
 void Cserver::read_db_users()
 {
+	if (!m_use_sql)
+		return;
 	try
 	{
 		Csql_query q(m_database, "select uid, name, pass, torrent_pass from xbt_users");
@@ -635,6 +667,8 @@ void Cserver::read_db_users()
 
 void Cserver::write_db_files()
 {
+	if (!m_use_sql)
+		return;
 	try
 	{
 		string buffer;
@@ -721,6 +755,8 @@ void Cserver::write_db_files()
 
 void Cserver::write_db_users()
 {
+	if (!m_use_sql)
+		return;
 	if (!m_users_updates_buffer.empty())
 	{
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
@@ -743,16 +779,36 @@ void Cserver::write_db_users()
 
 void Cserver::read_config()
 {
-	try
+	if (m_use_sql)
 	{
-		Csql_result result = m_database.query("select name, value from xbt_config where value is not null");
-		Cconfig config;
-		for (Csql_row row; row = result.fetch_row(); )
-			config.set(row.f(0), row.f(1));
-		m_config = config;
+		try
+		{
+			Csql_result result = m_database.query("select name, value from xbt_config where value is not null");
+			Cconfig config;
+			for (Csql_row row; row = result.fetch_row(); )
+				config.set(row.f(0), row.f(1));
+			m_config = config;
+		}
+		catch (Cxcc_error)
+		{
+		}
 	}
-	catch (Cxcc_error)
+	else
 	{
+		ifstream is("xbt_tracker.conf");
+		if (is)
+		{
+			Cconfig config;
+			string s;
+			while (getline(is, s))
+			{
+				int i = s.find('=');
+				if (i == string::npos)
+					continue;
+				config.set(s.substr(0, i), s.substr(i + 1));
+			}
+			m_config = config;
+		}
 	}
 	if (m_config.m_listen_ipas.empty())
 		m_config.m_listen_ipas.insert(htonl(INADDR_ANY));

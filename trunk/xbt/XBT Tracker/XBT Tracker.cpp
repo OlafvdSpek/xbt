@@ -26,9 +26,10 @@ int main1()
 #else
 		cerr << error.message() << endl;
 #endif	
-	if (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true))
+	if (static_config.mysql_host != "-"
+		&& (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true)))
 		cerr << error.message() << endl;
-	return Cserver(database).run();
+	return Cserver(database, static_config.mysql_host != "-").run();
 }
 
 #ifdef WIN32

@@ -133,6 +133,7 @@ public:
 	void write_db_files();
 	void write_db_users();
 	void read_db_files();
+	void read_db_files_sql();
 	void read_db_ipas();
 	void read_db_users();
 	void clean_up();
@@ -144,7 +145,7 @@ public:
 	Cbvalue scrape(const Ctracker_input&);
 	int run();
 	static void term();
-	Cserver(Cdatabase&);
+	Cserver(Cdatabase&, bool use_sql);
 
 	int announce_interval() const
 	{
@@ -210,6 +211,7 @@ private:
 	static void sig_handler(int v);
 
 	Cconfig m_config;
+	bool m_use_sql;
 	int m_clean_up_time;
 	int m_read_config_time;
 	int m_read_db_files_time;
