@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "alerts.h"
+#include "bt_logger.h"
 #include "bt_pl_write_data.h"
 #include "data_counter.h"
 #include "ring_buffer.h"
@@ -22,6 +23,7 @@ class Cbt_piece;
 class Cbt_peer_link  
 {
 public:
+	Cbt_logger& logger();
 	void clear_local_requests();
 	int cb_write_buffer() const;
 	void alert(const Calert&);

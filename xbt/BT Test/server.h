@@ -12,6 +12,7 @@
 #include "bt_admin_link.h"
 #include "bt_file.h"
 #include "bt_link.h"
+#include "bt_logger.h"
 #include "bt_tracker_account.h"
 #include "bt_tracker_link.h"
 #include "stream_writer.h"
@@ -114,6 +115,11 @@ public:
 		m_end_mode = v;
 	}
 	
+	Cbt_logger& logger()
+	{
+		return m_logger;
+	}
+
 	int peer_limit() const
 	{
 		return m_peer_limit;
@@ -165,6 +171,7 @@ private:
 	Calerts m_alerts;
 	t_files m_files;
 	t_links m_links;
+	Cbt_logger m_logger;
 	Cbt_tracker_accounts m_tracker_accounts;
 	Cudp_tracker m_udp_tracker;
 
