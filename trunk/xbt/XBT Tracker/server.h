@@ -185,6 +185,7 @@ public:
 	}
 private:
 	typedef list<Cconnection> t_connections;
+	typedef set<int> t_listen_ipas;
 	typedef set<int> t_listen_ports;
 	typedef list<Cpeer_link> t_peer_links;
 	typedef vector<Csocket> t_sockets;
@@ -200,7 +201,6 @@ private:
 	int m_read_db_interval;
 	int m_write_db_interval;
 	int m_fid_end;
-	int m_listen_ipa;
 	bool m_anonymous_connect;
 	bool m_anonymous_announce;
 	bool m_anonymous_scrape;
@@ -214,6 +214,7 @@ private:
 	bool m_log_scrape;
 	__int64 m_secret;
 	t_connections m_connections;
+	t_listen_ipas m_listen_ipas;
 	t_listen_ports m_listen_ports;
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
