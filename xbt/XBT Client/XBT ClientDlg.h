@@ -152,6 +152,8 @@ protected:
 	afx_msg void OnPopupProfiles();
 	virtual void OnCancel();
 	afx_msg void OnActivateApp(BOOL bActive, HTASK hTask);
+	afx_msg void OnFileExit();
+	afx_msg void OnHelpAbout();
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
