@@ -19,6 +19,7 @@ string b2a(__int64 v, const char* postfix = NULL);
 string error2a(int v);
 string escape_string(const string& v);
 bool is_private_ipa(int a);
+int merkle_tree_size(int v);
 string n(__int64 v);
 string hex_decode(const string&);
 string hex_encode(int l, int v);

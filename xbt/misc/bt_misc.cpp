@@ -259,3 +259,16 @@ string error2a(int v)
 	}
 	return n(v);
 }
+
+int merkle_tree_size(int v)
+{
+	int r = 0;
+	while (v > 1)
+	{
+		r += v++;
+		v >>= 1;
+	}
+	if (v == 1)
+		r++;
+	return r;
+}
