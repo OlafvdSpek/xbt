@@ -216,7 +216,7 @@ string peer_id2a(const string& v)
 		break;
 	case 'e':
 		if (v[1] == 'x' && v[2] == 'b' && v[3] == 'c')
-			return peer_id2a("BitComet", v, 4);
+			return "BitComet - " + hex_encode(v.substr(4));
 	}
 	return hex_encode(v);
 }
