@@ -20,7 +20,7 @@ public:
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	Cconnection();
-	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a);
+	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a, bool log_access);
 
 	operator bool() const
 	{
@@ -39,6 +39,7 @@ private:
 	t_read_b m_write_b;
 	int m_r;
 	int m_w;
+	bool m_log_access;
 };
 
 #endif // !defined(AFX_CONNECTION_H__CB2C61F4_A0ED_4996_9CFE_D6694BE24CC9__INCLUDED_)

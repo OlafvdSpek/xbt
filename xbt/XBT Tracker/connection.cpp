@@ -198,10 +198,11 @@ void Cconnection::read(const string& v)
 	}
 	if (gzip && s)
 	{
-		static ofstream f("xbt_tracker_gzip.log");
-		f << time(NULL) << '\t' << v[5] << '\t' << s.size() << '\t';
 		Cvirtual_binary s2 = xcc_z::gzip(s);
-		f << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << endl;
+#ifndef NDEBUG
+		static ofstream f("xbt_tracker_gzip.log");
+		f << time(NULL) << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << endl;
+#endif
 		if (s2.size() + 24 < s.size())
 		{
 			h += "Content-Encoding: gzip\r\n";

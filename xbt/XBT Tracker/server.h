@@ -213,6 +213,7 @@ private:
 	bool m_gzip_debug;
 	bool m_gzip_scrape;
 	bool m_listen_check;
+	bool m_log_access;
 	bool m_log_announce;
 	bool m_log_scrape;
 	__int64 m_secret;
