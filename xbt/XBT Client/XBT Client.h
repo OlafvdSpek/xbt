@@ -13,6 +13,7 @@
 #endif
 
 #include "resource.h"		// main symbols
+#include "../bt test/server.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CXBTClientApp:
@@ -22,6 +23,7 @@
 class CXBTClientApp : public CWinApp
 {
 public:
+	static unsigned int backend_thread(void* p);
 	CXBTClientApp();
 
 // Overrides
@@ -36,6 +38,8 @@ public:
 	//{{AFX_MSG(CXBTClientApp)
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+private:
+	Cserver m_server;
 };
 
 
