@@ -42,6 +42,22 @@ CREATE TABLE xbt_files
   UNIQUE KEY (info_hash(20))
 );
 
+CREATE TABLE xbt_files_updates
+(
+  fid int NOT NULL,
+  leechers int NOT NULL,
+  seeders int NOT NULL,
+  completed int NOT NULL,
+  started int NOT NULL,
+  stopped int NOT NULL,
+  announced_http int NOT NULL,
+  announced_http_compact int NOT NULL,
+  announced_http_no_peer_id int NOT NULL,
+  announced_udp int NOT NULL,
+  scraped_http int NOT NULL,
+  scraped_udp int NOT NULL
+);
+
 CREATE TABLE xbt_scrape_log
 (
   id int NOT NULL auto_increment,
