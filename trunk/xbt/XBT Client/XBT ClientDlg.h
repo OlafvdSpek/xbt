@@ -90,6 +90,7 @@ protected:
 	afx_msg void OnPopupAnnounce();
 	afx_msg void OnPopupExploreTracker();
 	afx_msg void OnPopupAbout();
+	afx_msg void OnPopupMakeTorrent();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

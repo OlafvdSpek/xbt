@@ -9,6 +9,7 @@
 #include "bt_torrent.h"
 #include "dlg_about.h"
 #include "dlg_files.h"
+#include "dlg_make_torrent.h"
 #include "dlg_options.h"
 #include "dlg_torrent.h"
 #include "dlg_trackers.h"
@@ -119,6 +120,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
 	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
 	ON_COMMAND(ID_POPUP_ABOUT, OnPopupAbout)
+	ON_COMMAND(ID_POPUP_MAKE_TORRENT, OnPopupMakeTorrent)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -745,6 +747,11 @@ void CXBTClientDlg::OnPopupFiles()
 	dlg.DoModal();
 }
 
+void CXBTClientDlg::OnPopupMakeTorrent() 
+{
+	Cdlg_make_torrent().DoModal();	
+}
+
 void CXBTClientDlg::OnPopupOptions() 
 {
 	Cdlg_options dlg(this);
@@ -1174,3 +1181,4 @@ void CXBTClientDlg::set_dir(const string& v)
 		m_dir = v.c_str();
 	CreateDirectory(m_dir, NULL);
 }
+

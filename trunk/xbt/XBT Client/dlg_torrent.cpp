@@ -60,8 +60,7 @@ BOOL Cdlg_torrent::OnInitDialog()
 	m_alerts.InsertColumn(3, "Message");
 	load_data();
 	SetTimer(0, 15000, NULL);
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+	return true;
 }
 
 void Cdlg_torrent::load_data()

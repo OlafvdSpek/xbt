@@ -18,7 +18,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 Cdlg_trackers::Cdlg_trackers(CWnd* pParent):
-	ETSLayoutDialog(Cdlg_trackers::IDD, pParent, "Cdlg_torrent")
+	ETSLayoutDialog(Cdlg_trackers::IDD, pParent, "Cdlg_trackers")
 {
 	//{{AFX_DATA_INIT(Cdlg_trackers)
 		// NOTE: the ClassWizard will add member initialization here
