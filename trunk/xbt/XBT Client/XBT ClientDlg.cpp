@@ -26,6 +26,22 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+	char path[MAX_PATH];
+	if (SUCCEEDED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
+	{
+		strcat(path, "\\XBT");
+		m_completes_dir = path;
+		m_completes_dir += "\\Completes";
+		m_incompletes_dir = path;
+		m_incompletes_dir += "\\Incompletes";
+		m_torrents_dir = path;
+		m_torrents_dir += "\\Torrents";
+		CreateDirectory(path, NULL);
+		CreateDirectory(m_completes_dir, NULL);
+		CreateDirectory(m_incompletes_dir, NULL);
+		CreateDirectory(m_torrents_dir, NULL);
+	}
 }
 
 void CXBTClientDlg::DoDataExchange(CDataExchange* pDX)
@@ -52,6 +68,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_CLOSE, OnUpdatePopupClose)
 	ON_COMMAND(ID_POPUP_OPTIONS, OnPopupOptions)
 	ON_WM_DROPFILES()
+	ON_COMMAND(ID_POPUP_EXIT, OnPopupExit)
+	ON_COMMAND(ID_POPUP_EXPLORE, OnPopupExplore)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -141,13 +159,34 @@ void CXBTClientDlg::open(const string& name)
 	Cbt_torrent torrent(d);
 	if (!torrent.valid())
 		return;
-	CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
-	if (IDOK != dlg.DoModal())
-		return;
+	char path[MAX_PATH];
+	strcpy(path, m_torrents_dir);
+	if (*path)
+	{
+		strcat(path, "\\");
+		strcat(path, torrent.name().c_str());
+		strcat(path, ".torrent");
+		d.save(path);
+	}
+	strcpy(path, m_incompletes_dir);
+	if (*path)
+	{
+		strcat(path, "\\");
+		strcat(path, torrent.name().c_str());
+	}
+	else
+	{
+		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
+		if (path)
+			dlg.m_ofn.lpstrInitialDir = path;
+		if (IDOK != dlg.DoModal())
+			return;
+		strcpy(path, dlg.GetPathName());
+	}
 	if (!torrent.files().front().name().empty())
-		CreateDirectory(dlg.GetPathName(), NULL);
+		CreateDirectory(path, NULL);
 	CWaitCursor wc;
-	m_server->open(d, static_cast<string>(dlg.GetPathName()));
+	m_server->open(d, path);
 }
 
 void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -369,6 +408,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	}
 	t_file& f = m_files_map.find(id)->second;
 	f.info_hash = info_hash;
+	f.name = sr.read_string();
 	f.downloaded = sr.read_int64();
 	f.left = sr.read_int64();
 	f.size = sr.read_int64();
@@ -527,6 +567,11 @@ void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
 	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, pWndPopupOwner);
 }
 
+void CXBTClientDlg::OnPopupExplore() 
+{
+	ShellExecute(m_hWnd, "open", m_incompletes_dir, NULL, NULL, SW_SHOW);
+}
+
 void CXBTClientDlg::OnPopupOpen() 
 {
 	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
@@ -551,6 +596,11 @@ void CXBTClientDlg::OnPopupOptions()
 	Cdlg_options dlg;
 	if (IDOK != dlg.DoModal())
 		return;	
+}
+
+void CXBTClientDlg::OnPopupExit() 
+{
+	EndDialog(IDCANCEL);
 }
 
 void CXBTClientDlg::OnDropFiles(HDROP hDropInfo) 

@@ -60,6 +60,8 @@ protected:
 	afx_msg void OnUpdatePopupClose(CCmdUI* pCmdUI);
 	afx_msg void OnPopupOptions();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+	afx_msg void OnPopupExit();
+	afx_msg void OnPopupExplore();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -110,6 +112,9 @@ private:
 	t_file* m_file;
 	t_files m_files_map;
 	Cserver* m_server;
+	CString m_completes_dir;
+	CString m_incompletes_dir;
+	CString m_torrents_dir;
 };
 
 //{{AFX_INSERT_LOCATION}}

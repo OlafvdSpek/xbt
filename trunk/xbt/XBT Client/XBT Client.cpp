@@ -17,7 +17,6 @@ static char THIS_FILE[] = __FILE__;
 BEGIN_MESSAGE_MAP(CXBTClientApp, CWinApp)
 	//{{AFX_MSG_MAP(CXBTClientApp)
 	//}}AFX_MSG
-	ON_COMMAND(ID_HELP, CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
