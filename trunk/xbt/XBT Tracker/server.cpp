@@ -716,6 +716,7 @@ string Cserver::debug(const Ctracker_input& ti) const
 	int t = time(NULL);
 	page += "<table><tr><td>leechers<td>" + n(leechers)
 		+ "<tr><td>seeders<td>" + n(seeders)
+		+ "<tr><td>peers<td>" + n(leechers + seeders)
 		+ "<tr><td>torrents<td>" + n(torrents)
 		+ "<tr><td>"
 		+ "<tr><td>listen check<td>" + n(m_listen_check) 
