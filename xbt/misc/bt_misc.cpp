@@ -199,7 +199,7 @@ string peer_id2a(const string& v)
 			return peer_id2a("BitTornado ", v, 1);
 		case 'X':
 			if (v[1] == 'B' && v[2] == 'T')
-				return peer_id2a("XBT Client ", v, 3);
+				return peer_id2a("XBT Client ", v, 3) + (v.find_first_not_of("0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz", 8) == string::npos ? "" : " (fake)");
 			break;
 		}
 	}
