@@ -147,7 +147,11 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 		if (m_state == 3)
 		{
 			if (time(NULL) - m_check_pieces_time > (m_f->end_mode() ? 5 : 30))
+			{
 				check_pieces();
+				if (!m_local_interested && m_f->next_invalid_piece(*this) != -1)
+					interested(true);
+			}
 			if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
 			{
 				const t_remote_request& request = m_remote_requests.front();
@@ -182,19 +186,11 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 				}					
 			}
-			if (m_write_b.empty())
+			if (m_write_b.empty() && time(NULL) - m_stime > 120)
 			{
-				if (!m_local_interested && time(NULL) - m_stime > 30 && m_f->next_invalid_piece(*this) != -1)
-				{
-					write_haves();
-					interested(true);
-				}
-				else if (time(NULL) - m_stime > 120)
-				{
-					write_haves();
-					if (m_write_b.empty())
-						write_keepalive();
-				}
+				write_haves();
+				if (m_write_b.empty())
+					write_keepalive();
 			}
 			else
 				write_haves();
