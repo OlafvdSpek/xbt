@@ -74,7 +74,7 @@ public:
 	string debug(const Ctracker_input&) const;
 	Cbvalue select_peers(const Ctracker_input&);
 	Cbvalue scrape(const Ctracker_input&);
-	void run(Csocket& lt, Csocket& lu);
+	void run();
 	Cserver(Cdatabase&);
 
 	int announce_interval() const
@@ -93,7 +93,9 @@ public:
 	}
 private:
 	typedef list<Cconnection> t_connections;
+	typedef set<int> t_listen_ports;
 	typedef list<Cpeer_link> t_peer_links;
+	typedef vector<Csocket> t_sockets;
 
 	int m_clean_up_time;
 	int m_read_config_time;
@@ -106,10 +108,12 @@ private:
 	int m_write_db_interval;
 	int m_fid_end;
 	bool m_auto_register;
+	bool m_daemon;
 	bool m_listen_check;
 	bool m_log;
 	__int64 m_secret;
 	t_connections m_connections;
+	t_listen_ports m_listen_ports;
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
 	t_files m_files;
