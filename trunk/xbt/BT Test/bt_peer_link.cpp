@@ -128,18 +128,7 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 				if (m_read_b.cb_r() < sizeof(t_bt_handshake))
 					break;
 				{
-					const t_bt_handshake& m = *reinterpret_cast<const t_bt_handshake*>(m_read_b.r());
-					if (m.cb_name != 19
-						|| memcmp(m.name, "BitTorrent protocol", 19)
-						|| m.info_hash() != m_f->m_info_hash)
-					{
-						alert(Calert(Calert::warn, "Peer: handshake failed"));
-						close();
-						return;
-					}
-					m_get_info_extension = m.reserved[7] & 1;
-					m_get_peers_extension = m.reserved[7] & 2;
-					m_remote_peer_id = m.peer_id();
+					read_handshake(*reinterpret_cast<const t_bt_handshake*>(m_read_b.r()));
 					m_read_b.cb_r(sizeof(t_bt_handshake));
 				}
 			case 4:
@@ -265,12 +254,21 @@ void Cbt_peer_link::send()
 		}
 		else if (!r)
 			return;
+		if (d.m_vb.size() > 5 && d.m_s[4] == bti_piece)
+		{
+			m_uploaded += r;
+			m_up_counter.add(r);
+			m_f->m_uploaded += r;
+			m_f->m_up_counter.add(r);
+			m_f->m_total_uploaded += r;
+		}
 		m_send_quota -= r;
 		m_stime = time(NULL);
 		d.m_r += r;
 		if (d.m_r == d.m_s_end)
 			m_write_b.pop_front();
 	}
+	assert(!m_send_quota);
 }
 
 void Cbt_peer_link::remote_has(int v)
@@ -308,6 +306,21 @@ byte* Cbt_peer_link::write(byte* w, int v)
 {
 	*reinterpret_cast<__int32*>(w) = htonl(v);
 	return w + 4;
+}
+
+void Cbt_peer_link::read_handshake(const t_bt_handshake& h)
+{
+	if (h.cb_name != 19
+		|| memcmp(h.name, "BitTorrent protocol", 19)
+		|| h.info_hash() != m_f->m_info_hash)
+	{
+		alert(Calert(Calert::warn, "Peer: handshake failed"));
+		close();
+		return;
+	}
+	m_get_info_extension = h.reserved[7] & 1;
+	m_get_peers_extension = h.reserved[7] & 2;
+	m_remote_peer_id = h.peer_id();
 }
 
 void Cbt_peer_link::write_handshake()
@@ -388,11 +401,6 @@ void Cbt_peer_link::write_piece(int piece, int offset, int size, const void* s)
 	w = write(w, offset);
 	memcpy(w, s, size);
 	write(d);
-	m_uploaded += size;
-	m_up_counter.add(size);
-	m_f->m_uploaded += size;
-	m_f->m_up_counter.add(size);
-	m_f->m_total_uploaded += size;
 }
 
 void Cbt_peer_link::choked(bool v)
