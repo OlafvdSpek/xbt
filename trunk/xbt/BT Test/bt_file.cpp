@@ -224,7 +224,7 @@ bool Cbt_file::hash()
 
 void Cbt_file::close()
 {
-	if (state() != s_hashing && state() != s_running)
+	if (state() != s_hashing && state() != s_paused && state() != s_running)
 		return;
 	m_validate = m_hasher;
 	delete m_hasher;
