@@ -6,6 +6,7 @@
 #include "connection.h"
 
 #include "bt_misc.h"
+#include "bt_strings.h"
 #include "server.h"
 #include "xcc_z.h"
 
@@ -174,8 +175,14 @@ void Cconnection::read(const string& v)
 		gzip = m_server->gzip_announce() && !ti.m_compact;
 		if (ti.valid())
 		{
-			m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, 0);
-			s = m_server->select_peers(ti).read();
+			int uid = m_server->get_user_id(ntohl(ti.m_ipa));
+			if (!m_server->anonymous_announce() && !uid)
+				s = Cbvalue().d(bts_failure_reason, bts_unregistered_ipa).read();
+			else
+			{
+				m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, uid);
+				s = m_server->select_peers(ti).read();
+			}
 		}
 		break;
 	case 'd':
