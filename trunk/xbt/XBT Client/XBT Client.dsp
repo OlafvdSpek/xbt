@@ -236,6 +236,10 @@ SOURCE=.\ListCtrlEx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ListCtrlEx1.cpp
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\merkle_tree.cpp"
 # End Source File
 # Begin Source File
@@ -462,6 +466,10 @@ SOURCE="..\BT Test\http_response_handler.h"
 # Begin Source File
 
 SOURCE=.\ListCtrlEx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ListCtrlEx1.h
 # End Source File
 # Begin Source File
 
