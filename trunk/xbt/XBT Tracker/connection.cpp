@@ -160,6 +160,8 @@ void Cconnection::read(const string& v)
 	}
 	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
 		ti.m_ipa = m_a.sin_addr.s_addr;
+	string h = "HTTP/1.0 200 OK\r\n"
+		"Content-Type: text/html; charset=us-ascii\r\n";
 	Cvirtual_binary s;
 	bool gzip = true;
 	switch (v.length() >= 5 ? v[5] : 0) 
@@ -183,6 +185,14 @@ void Cconnection::read(const string& v)
 		gzip = m_server->gzip_scrape() && ti.m_info_hash.empty();
 		s = m_server->scrape(ti).read();
 		break;
+	default:
+		if (m_server->redirect_url().empty())
+			h = "HTTP/1.0 404 Not Found\r\n";
+		else
+		{
+			h = "HTTP/1.0 302 Found\r\n"
+				"Location: " + m_server->redirect_url() + "\r\n";
+		}
 	}
 	if (!s)
 		gzip = false;
@@ -197,12 +207,12 @@ void Cconnection::read(const string& v)
 		else
 			gzip = false;
 	}
-	const char* h = gzip
-		? "HTTP/1.0 200 OK\r\nContent-Type: text/html; charset=us-ascii\r\nContent-Encoding: gzip\r\n\r\n"
-		: "HTTP/1.0 200 OK\r\nContent-Type: text/html; charset=us-ascii\r\n\r\n";
+	if (gzip)
+		h += "Content-Encoding: gzip\r\n";
+	h += "\r\n";
 	Cvirtual_binary d;
-	memcpy(d.write_start(strlen(h) + s.size()), h, strlen(h));
-	s.read(d.data_edit() + strlen(h));
+	memcpy(d.write_start(h.size() + s.size()), h.c_str(), h.size());
+	s.read(d.data_edit() + h.size());
 	int r = m_s.send(d, d.size());
 	if (r == SOCKET_ERROR)
 		cerr << "send failed: " << WSAGetLastError() << endl;

@@ -174,6 +174,11 @@ public:
 		return m_gzip_scrape;
 	}
 
+	const string& redirect_url() const
+	{
+		return m_redirect_url;
+	}
+
 	__int64 secret() const
 	{
 		return m_secret;
@@ -215,6 +220,7 @@ private:
 	t_users m_users;
 	string m_announce_log_buffer;
 	string m_scrape_log_buffer;
+	string m_redirect_url;
 };
 
 #endif // !defined(AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_)
