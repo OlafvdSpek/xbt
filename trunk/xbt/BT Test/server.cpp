@@ -5,6 +5,9 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include "bt_strings.h"
+#include "stream_reader.h"
+
 class Clock
 {
 public:
@@ -70,6 +73,7 @@ void Cserver::run()
 		cerr << "listen failed" << endl;
 	else
 	{
+		load_state(Cvirtual_binary(m_dir + "/state.bin"));
 #ifndef WIN32
 		if (daemon(true, false))
 			cerr << "daemon failed" << endl;
@@ -175,6 +179,7 @@ void Cserver::run()
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 			i->close();
 	}
+	save_state().save(m_dir + "/state.bin");
 }
 
 void Cserver::stop()
@@ -247,14 +252,14 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 {
 	Clock l(m_cs);
 	Cbt_file f;
-	if (f.info(info))
+	if (f.info(info, true))
 		return 1;
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
 		if (i->m_info_hash == f.m_info_hash)
 			return 2;
 	}
-	if (f.open(name))
+	if (f.open(name, true))
 		return 3;
 	f.m_local_port = peer_port();
 	f.m_peer_id = new_peer_id();
@@ -274,4 +279,38 @@ int Cserver::close(const string& id)
 		return 0;
 	}
 	return 1;
+}
+
+void Cserver::load_state(const Cvirtual_binary& d)
+{
+	if (d.size() < 4)
+		return;
+	Cstream_reader r(d);
+	for (int c_files = r.read_int32(); c_files--; )
+	{
+		Cbt_file f;
+		f.load_state(r);
+		if (f.open(f.m_name, false))
+			continue;
+		f.m_local_port = peer_port();
+		f.m_peer_id = new_peer_id();
+		m_files.push_front(f);
+	}
+	assert(r.r() == d.data_end());
+}
+
+Cvirtual_binary Cserver::save_state()
+{
+	Cvirtual_binary d;
+	int cb_d = 4;
+	{
+		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+			cb_d = i->pre_save_state();
+	}
+	Cstream_writer w(d.write_start(cb_d));
+	w.write_int32(m_files.size());
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		i->save_state(w);
+	assert(w.w() == d.data_end());
+	return d;
 }
