@@ -297,20 +297,12 @@ int Cbt_file::c_pieces() const
 
 int Cbt_file::c_invalid_pieces() const
 {
-	int r = 0;
-	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
-		r += !i->m_valid;
-	assert((m_left + mcb_piece - 1) / mcb_piece == r);
-	return r;
+	return (m_left + mcb_piece - 1) / mcb_piece;
 }
 
 int Cbt_file::c_valid_pieces() const
 {
-	int r = 0;
-	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
-		r += i->m_valid;
-	assert((mcb_f - m_left + mcb_piece - 1) / mcb_piece == r);
-	return r;
+	return (mcb_f - m_left + mcb_piece - 1) / mcb_piece;
 }
 
 void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
