@@ -115,20 +115,22 @@ public:
 
 	typedef map<string, t_file> t_files;
 	typedef map<int, int> t_ipas;
-	typedef map<string, int> t_passes;
 
 	struct t_user
 	{
 		int uid;
+		int fid_end;
 		string pass;
 	};
 
+	typedef map<string, t_user*> t_passes;
 	typedef map<string, t_user> t_users;
 
 	void accept(const Csocket& l);
-	const t_user* find_user(const string&) const;
-	int get_user_id(int) const;
-	int get_user_id(const string&) const;	
+	const t_user* find_user_by_name(const string&) const;
+	const t_user* find_user_by_ipa(int) const;
+	const t_user* find_user_by_torrent_pass(const string&) const;
+	const t_user* find_user_by_uid(int) const;
 	void read_config();
 	void write_db_files();
 	void write_db_users();

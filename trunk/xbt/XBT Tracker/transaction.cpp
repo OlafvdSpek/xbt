@@ -51,7 +51,7 @@ const Cserver::t_user* Ctransaction::authenticate(const void* s0, const char* s_
 		return NULL;
 	string name(s_end - 16, 8);
 	int i = name.find('\0');
-	const Cserver::t_user* user = m_server.find_user(i == string::npos ? name : name.substr(0, i));
+	const Cserver::t_user* user = m_server.find_user_by_name(i == string::npos ? name : name.substr(0, i));
 	if (!user)
 		return NULL;
 	Csha1 sha1;

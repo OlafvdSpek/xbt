@@ -177,14 +177,14 @@ void Cconnection::read(const string& v)
 			s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
 		else if (ti.valid())
 		{
-			int uid = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->get_user_id(v.substr(7, 32)) : 0;
-			if (!uid)
-				uid = m_server->get_user_id(ntohl(ti.m_ipa));
-			if (!m_server->anonymous_announce() && !uid)
+			const Cserver::t_user* user = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->find_user_by_torrent_pass(v.substr(7, 32)) : NULL;
+			if (!user)
+				user = m_server->find_user_by_ipa(ntohl(ti.m_ipa));
+			if (!m_server->anonymous_announce() && !user)
 				s = Cbvalue().d(bts_failure_reason, bts_unregistered_ipa).read();
 			else
 			{
-				m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, uid);
+				m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user->uid);
 				s = m_server->select_peers(ti).read();
 			}
 		}
