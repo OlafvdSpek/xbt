@@ -149,6 +149,8 @@ private:
 	CWinThread* m_server_thread;
 	int m_files_sort_column;
 	int m_peers_sort_column;
+	bool m_files_sort_reverse;
+	bool m_peers_sort_reverse;
 };
 
 //{{AFX_INSERT_LOCATION}}
