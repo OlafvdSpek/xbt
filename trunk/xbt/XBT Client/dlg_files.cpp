@@ -69,6 +69,7 @@ BOOL Cdlg_files::OnInitDialog()
 	m_files.InsertColumn(2, "Left", LVCFMT_RIGHT);
 	m_files.InsertColumn(3, "Size", LVCFMT_RIGHT);
 	m_files.InsertColumn(4, "Priority");
+	m_files.InsertColumn(5, "Hash");
 	m_sort_column = 0;
 	m_sort_reverse = false;
 	load_data();
