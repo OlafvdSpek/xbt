@@ -9,8 +9,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <vector>
 #include "virtual_binary.h"
 #include "xif_value.h"
+
+using namespace std;
 
 class Cxif_key_r
 {

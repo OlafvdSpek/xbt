@@ -232,7 +232,7 @@ Cvirtual_binary Cxif_key::vdata(bool fast) const
 	{
 		t_xif_header_fast& header = *reinterpret_cast<t_xif_header_fast*>(d.write_start(sizeof(t_xif_header_fast) + size + external_size));
 		header.id = file_id;
-		header.version = file_version_new;		
+		header.version = file_version_fast;
 		header.size_uncompressed = 0;
 		header.size_compressed = size;
 		header.size_external = external_size;
