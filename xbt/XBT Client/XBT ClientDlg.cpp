@@ -282,7 +282,7 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_file& e = m_files_map.find(pDispInfo->item.lParam)->second;
-	switch (pDispInfo->item.iSubItem)
+	switch (m_torrents_columns[pDispInfo->item.iSubItem])
 	{
 	case fc_hash:
 		m_buffer[m_buffer_w] = hex_encode(e.info_hash);
@@ -356,7 +356,7 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	m_buffer[++m_buffer_w &= 3].erase();
 	const t_peer& e = m_file->peers.find(pDispInfo->item.lParam)->second;
-	switch (pDispInfo->item.iSubItem)
+	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case pc_host:
 		m_buffer[m_buffer_w] = inet_ntoa(e.host);
@@ -1249,41 +1249,111 @@ void CXBTClientDlg::sort_peers()
 
 void CXBTClientDlg::insert_columns()
 {
-	while (m_files.GetHeaderCtrl()->GetItemCount())
-		m_files.DeleteColumn(0);
-	m_files.InsertColumn(fc_name, "Name");
-	m_files.InsertColumn(fc_done, "%", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_left, "Left", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_size, "Size", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_total_downloaded, "Downloaded", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_total_uploaded, "Uploaded", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_down_rate, "Down rate", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_up_rate, "Up rate", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_leechers, "Leechers", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_seeders, "Seeders", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_state, "State");
-	if (m_show_advanced_columns)
-		m_files.InsertColumn(fc_hash, "Hash");
-	while (m_peers.GetHeaderCtrl()->GetItemCount())
-		m_peers.DeleteColumn(0);
-	m_peers.InsertColumn(pc_peer_id, "Peer ID");
-	m_peers.InsertColumn(pc_done, "%", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_left, "Left", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_downloaded, "Downloaded", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_uploaded, "Uploaded", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_down_rate, "Down rate", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_up_rate, "Up rate", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_link_direction, "D");
-	m_peers.InsertColumn(pc_local_choked, "L");
-	m_peers.InsertColumn(pc_local_interested, "L");
-	m_peers.InsertColumn(pc_remote_choked, "R");
-	m_peers.InsertColumn(pc_remote_interested, "R");
+	m_torrents_columns.clear();
+	m_peers_columns.clear();
+	m_torrents_columns.push_back(fc_name);
+	m_torrents_columns.push_back(fc_done);
+	m_torrents_columns.push_back(fc_left);
+	m_torrents_columns.push_back(fc_size);
+	m_torrents_columns.push_back(fc_total_downloaded);
+	m_torrents_columns.push_back(fc_total_uploaded);
+	m_torrents_columns.push_back(fc_down_rate);
+	m_torrents_columns.push_back(fc_up_rate);
+	m_torrents_columns.push_back(fc_leechers);
+	m_torrents_columns.push_back(fc_seeders);
+	m_torrents_columns.push_back(fc_state);
+	m_peers_columns.push_back(pc_peer_id);
+	m_peers_columns.push_back(pc_done);
+	m_peers_columns.push_back(pc_left);
+	m_peers_columns.push_back(pc_downloaded);
+	m_peers_columns.push_back(pc_uploaded);
+	m_peers_columns.push_back(pc_down_rate);
+	m_peers_columns.push_back(pc_up_rate);
+	m_peers_columns.push_back(pc_link_direction);
+	m_peers_columns.push_back(pc_local_choked);
+	m_peers_columns.push_back(pc_local_interested);
+	m_peers_columns.push_back(pc_remote_choked);
+	m_peers_columns.push_back(pc_remote_interested);
 	if (m_show_advanced_columns)
 	{
-		m_peers.InsertColumn(pc_host, "Host");
-		m_peers.InsertColumn(pc_port, "Port", LVCFMT_RIGHT);
-		m_peers.InsertColumn(pc_end, "");
+		m_torrents_columns.push_back(fc_hash);
+		m_peers_columns.push_back(pc_host);
+		m_peers_columns.push_back(pc_port);
+		m_peers_columns.push_back(pc_end);
 	}
+	const char* torrents_columns_names[] =
+	{
+		"Name",
+		"%",
+		"Left",
+		"Size",
+		"Downloaded",
+		"Uploaded",
+		"Down rate",
+		"Up rate",
+		"Leechers",
+		"Seeders",
+		"State",
+		"Hash"
+	};
+	const int torrents_columns_formats[] =
+	{
+		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+	};
+	while (m_files.GetHeaderCtrl()->GetItemCount())
+		m_files.DeleteColumn(0);
+	for (t_columns::const_iterator i = m_torrents_columns.begin(); i != m_torrents_columns.end(); i++)
+		m_files.InsertColumn(99, torrents_columns_names[*i], torrents_columns_formats[*i]);
+	const char* peers_columns_names[] =
+	{
+		"Peer ID",
+		"%",
+		"Left",
+		"Downloaded",
+		"Uploaded",
+		"Down rate",
+		"Up rate",
+		"D",
+		"L",
+		"L",
+		"R",
+		"R",
+		"Host",
+		"Port",
+		""
+	};
+	const int peers_columns_formats[] =
+	{
+		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
+	};
+	while (m_peers.GetHeaderCtrl()->GetItemCount())
+		m_peers.DeleteColumn(0);
+	for (t_columns::const_iterator i = m_peers_columns.begin(); i != m_peers_columns.end(); i++)
+		m_peers.InsertColumn(99, peers_columns_names[*i], peers_columns_formats[*i]);
 }
 
 void CXBTClientDlg::set_dir(const string& v)
