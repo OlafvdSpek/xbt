@@ -37,11 +37,10 @@ Csocket_source* Csocket_source::attach()
 
 void Csocket_source::detach()
 {
-	if (this && !--mc_references)
-	{
-		closesocket(m_s);
-		delete this;
-	}
+	if (!this || --mc_references)
+		return;
+	closesocket(m_s);
+	delete this;
 }
 
 Csocket::Csocket(SOCKET s)

@@ -337,7 +337,9 @@ private:
 };
 
 #ifdef _MSC_VER
-#pragma pack(pop, 1)
+#pragma pack(pop)
+#else
+#pragma pack(4)
 #endif
 
 #endif // !defined(AFX_BT_MISC_H__C8A447CF_4F41_429E_9437_55453B6A85D8__INCLUDED_)
