@@ -404,7 +404,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		offset += cb_write;
 		r += cb_write;
 	}
-	if (piece.mc_sub_pieces_left)
+	if (piece.c_sub_pieces_left())
 		return;
 	Cvirtual_binary d;
 	read_data(a * mcb_piece, d.write_start(piece.size()), piece.size());
@@ -566,8 +566,8 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 		c_distributed_copies = min(c_distributed_copies, i->mc_peers + i->m_valid);
 		if (!i->m_sub_pieces.empty())
 		{
-			c_invalid_chunks += i->mc_sub_pieces_left;
-			c_valid_chunks += i->c_sub_pieces() - i->mc_sub_pieces_left;
+			c_invalid_chunks += i->c_sub_pieces_left();
+			c_valid_chunks += i->c_sub_pieces() - i->c_sub_pieces_left();
 		}
 	}
 	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
