@@ -18,14 +18,19 @@
 class Cserver  
 {
 public:
+	void admin_port(int);
+	void peer_port(int);
 	string state_fname() const;
 	Cvirtual_binary save_state(bool intermediate);
 	void load_state(const Cvirtual_binary&);
 	int close(const string& id);
+	int start_file(const string& id);
+	int stop_file(const string& id);
 	int open(const Cvirtual_binary& info, const string& name);
 	Cvirtual_binary get_status();
 	void unlock();
 	void lock();
+
 	typedef list<Cbt_admin_link> t_admins;
 	typedef list<Cbt_file> t_files;
 	typedef list<Cbt_link> t_links;
@@ -34,7 +39,7 @@ public:
 	void dump(Cstream_writer&) const;
 	ostream& dump(ostream&) const;
 	void insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a, const Csocket& s);
-	void run();
+	int run();
 	void stop();
 	Cserver();
 	~Cserver();
