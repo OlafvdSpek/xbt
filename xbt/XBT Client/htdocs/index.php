@@ -1,4 +1,6 @@
 <?php
+	ob_start('ob_gzhandler');
+
 	require_once('common.php');
 	require_once('templates.php');
 

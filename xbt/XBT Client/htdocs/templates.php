@@ -71,7 +71,7 @@
 
 	function template_torrent($v)
 	{
-		$d = "\n";
+		$d = '';
 		$d .= '<tr>';
 		$d .= sprintf('<td><input type=checkbox name="%s">', urlencode($v['info_hash']['value']));
 		$d .= sprintf('<td align=left>%s', htmlspecialchars(strip_name($v['name']['value'])));
