@@ -22,9 +22,8 @@ public:
 
 	byte* write(int size)
 	{
-		byte* v = w();
-		skip(size);
-		return v;
+		m_w += size;
+		return m_w - size;
 	}
 
 	void write_int(int cb, __int64 v)
@@ -42,11 +41,6 @@ public:
 	{
 		write_int(4, v.length());
 		memcpy(write(v.length()), v.c_str(), v.length());
-	}
-
-	void skip(int o)
-	{
-		m_w += o;
 	}
 
 	Cstream_writer()
