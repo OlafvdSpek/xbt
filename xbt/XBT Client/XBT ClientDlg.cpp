@@ -459,7 +459,7 @@ void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
 			i->second.removed = true;
 	}
 	{
-		int c_files = sr.read_int32();
+		int c_files = sr.read_int(4);
 		for (int i = 0; i < c_files; i++)
 			read_file_dump(sr);
 	}
@@ -508,23 +508,23 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.info_hash = info_hash;
 	f.name = sr.read_string();
 	f.trackers.clear();
-	for (int c_trackers = sr.read_int32(); c_trackers--; )
+	for (int c_trackers = sr.read_int(4); c_trackers--; )
 		f.trackers.push_back(sr.read_string());
-	f.downloaded = sr.read_int64();
-	f.left = sr.read_int64();
-	f.size = sr.read_int64();
-	f.uploaded = sr.read_int64();
-	f.total_downloaded = sr.read_int64();
-	f.total_uploaded = sr.read_int64();
-	f.down_rate = sr.read_int32();
-	f.up_rate = sr.read_int32();
-	f.c_leechers = sr.read_int32();
-	f.c_seeders = sr.read_int32();
-	f.c_leechers_total = sr.read_int32();
-	f.c_seeders_total = sr.read_int32();
+	f.downloaded = sr.read_int(8);
+	f.left = sr.read_int(8);
+	f.size = sr.read_int(8);
+	f.uploaded = sr.read_int(8);
+	f.total_downloaded = sr.read_int(8);
+	f.total_uploaded = sr.read_int(8);
+	f.down_rate = sr.read_int(4);
+	f.up_rate = sr.read_int(4);
+	f.c_leechers = sr.read_int(4);
+	f.c_seeders = sr.read_int(4);
+	f.c_leechers_total = sr.read_int(4);
+	f.c_seeders_total = sr.read_int(4);
 	f.hashing = false;
 	f.running = false;
-	switch (sr.read_int32())
+	switch (sr.read_int(4))
 	{
 	case 1:
 		f.running = true;
@@ -544,12 +544,12 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 			i->second.removed = true;
 	}
 	{
-		int c_peers = sr.read_int32();
+		int c_peers = sr.read_int(4);
 		while (c_peers--)
 			read_peer_dump(f, sr);
 	}
-	sr.read_int32();
-	sr.read_int32();
+	sr.read_int(4);
+	sr.read_int(4);
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); )
 		{
@@ -581,19 +581,19 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 {
 	bool inserted = false;
 	t_peer p;
-	p.host.s_addr = htonl(sr.read_int32());
-	p.port = htons(sr.read_int32());
+	p.host.s_addr = htonl(sr.read_int(4));
+	p.port = htons(sr.read_int(4));
 	p.peer_id = sr.read_string();
-	p.downloaded = sr.read_int64();
-	p.left = sr.read_int64();
-	p.uploaded = sr.read_int64();
-	p.down_rate = sr.read_int32();
-	p.up_rate = sr.read_int32();
-	p.local_link = sr.read_int8();
-	p.local_choked = sr.read_int8();
-	p.local_interested = sr.read_int8();
-	p.remote_choked = sr.read_int8();
-	p.remote_interested = sr.read_int8();
+	p.downloaded = sr.read_int(8);
+	p.left = sr.read_int(8);
+	p.uploaded = sr.read_int(8);
+	p.down_rate = sr.read_int(4);
+	p.up_rate = sr.read_int(4);
+	p.local_link = sr.read_int(1);
+	p.local_choked = sr.read_int(1);
+	p.local_interested = sr.read_int(1);
+	p.remote_choked = sr.read_int(1);
+	p.remote_interested = sr.read_int(1);
 	if (p.peer_id.empty())
 		return;
 	t_peers::iterator i;
@@ -850,7 +850,7 @@ void CXBTClientDlg::OnPopupTrackers()
 {
 	Cdlg_trackers dlg(this);
 	Cstream_reader r(m_server.get_trackers());
-	for (int count = r.read_int32(); count--; )
+	for (int count = r.read_int(4); count--; )
 	{
 		Cdlg_trackers::t_tracker e;
 		e.m_tracker = r.read_string();
@@ -865,7 +865,7 @@ void CXBTClientDlg::OnPopupTrackers()
 		cb_d += i->second.m_tracker.size() + i->second.m_user.size() + i->second.m_pass.size() + 12;
 	Cvirtual_binary d;
 	Cstream_writer w(d.write_start(cb_d));
-	w.write_int32(dlg.trackers().size());
+	w.write_int(4, dlg.trackers().size());
 	for (Cdlg_trackers::t_trackers::const_iterator i = dlg.trackers().begin(); i != dlg.trackers().end(); i++)
 	{
 		w.write_string(i->second.m_tracker);

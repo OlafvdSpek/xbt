@@ -91,30 +91,30 @@ void Cdlg_files::load_data()
 	string info_hash = sr.read_string();
 	info_hash = info_hash;
 	m_name = sr.read_string();
-	sr.read_int32();
-	__int64 downloaded = sr.read_int64();
-	__int64 left = sr.read_int64();
-	__int64 size = sr.read_int64();
-	__int64 uploaded = sr.read_int64();
-	__int64 total_downloaded = sr.read_int64();
-	__int64 total_uploaded = sr.read_int64();
-	int down_rate = sr.read_int32();
-	int up_rate = sr.read_int32();
-	int c_leechers = sr.read_int32();
-	int c_seeders = sr.read_int32();
-	sr.read_int32();
-	sr.read_int32();
-	bool run = sr.read_int32();
-	sr.read_int32();
-	sr.read_int32();
-	int c_files = sr.read_int32();
+	sr.read_int(4);
+	__int64 downloaded = sr.read_int(8);
+	__int64 left = sr.read_int(8);
+	__int64 size = sr.read_int(8);
+	__int64 uploaded = sr.read_int(8);
+	__int64 total_downloaded = sr.read_int(8);
+	__int64 total_uploaded = sr.read_int(8);
+	int down_rate = sr.read_int(4);
+	int up_rate = sr.read_int(4);
+	int c_leechers = sr.read_int(4);
+	int c_seeders = sr.read_int(4);
+	sr.read_int(4);
+	sr.read_int(4);
+	bool run = sr.read_int(4);
+	sr.read_int(4);
+	sr.read_int(4);
+	int c_files = sr.read_int(4);
 	for (int i = 0; i < c_files; i++)
 	{
 		t_map_entry& e = m_map[i];
-		e.left = sr.read_int64();
+		e.left = sr.read_int(8);
 		e.name = sr.read_string();
-		e.priority = sr.read_int32();
-		e.size = sr.read_int64();
+		e.priority = sr.read_int(4);
+		e.size = sr.read_int(8);
 		e.hash = sr.read_string();
 	}
 	if (m_files.GetItemCount())
