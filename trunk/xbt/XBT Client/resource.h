@@ -47,6 +47,7 @@
 #define IDC_USE_MERKLE                  1033
 #define IDC_TRACKERS                    1034
 #define IDC_TRACKERS_STATIC             1035
+#define IDC_END_MODE                    1036
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -70,7 +71,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1036
+#define _APS_NEXT_CONTROL_VALUE         1037
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

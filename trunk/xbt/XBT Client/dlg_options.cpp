@@ -31,6 +31,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_start_minimized = FALSE;
 	m_ask_for_location = FALSE;
 	m_tracker_port = 0;
+	m_end_mode = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -54,6 +55,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_ASK_FOR_LOCATION, m_ask_for_location);
 	DDX_Text(pDX, IDC_TRACKER_PORT, m_tracker_port);
 	DDV_MinMaxInt(pDX, m_tracker_port, 0, 65535);
+	DDX_Check(pDX, IDC_END_MODE, m_end_mode);
 	//}}AFX_DATA_MAP
 }
 
@@ -72,6 +74,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	t_data v;
 	v.admin_port = m_admin_port;
 	v.ask_for_location = m_ask_for_location;
+	v.end_mode = m_end_mode;
 	v.files_location = m_files_location;
 	v.peer_port = m_peer_port;
 	v.public_ipa = m_public_ipa;
@@ -89,6 +92,7 @@ void Cdlg_options::set(const t_data& v)
 {
 	m_admin_port = v.admin_port;
 	m_ask_for_location = v.ask_for_location;
+	m_end_mode = v.end_mode;
 	m_files_location = v.files_location.c_str();
 	m_peer_port = v.peer_port;
 	m_public_ipa = v.public_ipa.c_str();

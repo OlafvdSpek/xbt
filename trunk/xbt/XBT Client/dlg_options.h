@@ -18,6 +18,7 @@ public:
 	{
 		int admin_port;
 		bool ask_for_location;
+		bool end_mode;
 		string files_location;
 		int peer_port;
 		string public_ipa;
@@ -49,6 +50,7 @@ public:
 	BOOL	m_start_minimized;
 	BOOL	m_ask_for_location;
 	int		m_tracker_port;
+	BOOL	m_end_mode;
 	//}}AFX_DATA
 
 
