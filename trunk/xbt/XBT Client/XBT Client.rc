@@ -39,7 +39,7 @@ BEGIN
                     LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,65,114,50
 END
 
-IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 254
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 294
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 8, "MS Sans Serif"
@@ -50,41 +50,45 @@ BEGIN
                     ES_NUMBER
     EDITTEXT        IDC_SEEDING_RATIO,7,97,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
-    EDITTEXT        IDC_FILES_LOCATION,7,115,277,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_TRACKER_PORT,7,133,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+    EDITTEXT        IDC_COMPLETES_DIRECTORY,7,115,277,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_INCOMPLETES_DIRECTORY,7,133,277,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TORRENTS_DIRECTORY,7,151,277,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TRACKER_PORT,7,169,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
-    EDITTEXT        IDC_PEER_LIMIT,7,152,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+    EDITTEXT        IDC_PEER_LIMIT,7,187,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
     CONTROL         "Ask for location",IDC_ASK_FOR_LOCATION,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,171,65,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,205,65,10
     CONTROL         "Bind before connect",IDC_BIND_BEFORE_CONNECT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,182,80,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,217,80,10
     CONTROL         "End mode",IDC_END_MODE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,193,48,10
+                    WS_TABSTOP,7,229,48,10
     CONTROL         "Lower process priority",IDC_LOWER_PROCESS_PRIORITY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,204,84,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,241,84,10
     CONTROL         "Show tray icon",IDC_SHOW_TRAY_ICON,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,215,63,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,253,63,10
     CONTROL         "Show advanced columns",IDC_SHOW_ADVANCED_COLUMNS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,226,96,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,265,96,10
     CONTROL         "Start minimzed",IDC_START_MINIMIZED,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,237,61,10
-    DEFPUSHBUTTON   "OK",IDOK,250,233,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,306,233,50,14
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,277,61,10
+    DEFPUSHBUTTON   "OK",IDOK,250,273,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,306,273,50,14
     EDITTEXT        IDC_ADMIN_PORT,7,7,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
     EDITTEXT        IDC_PEER_PORT,7,25,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_NUMBER
     EDITTEXT        IDC_PUBLIC_IPA,7,43,277,14,ES_AUTOHSCROLL
     LTEXT           "Admin port",IDC_STATIC,288,7,34,8
-    LTEXT           "Peer port",IDC_STATIC,288,26,30,8
+    LTEXT           "Peer port",IDC_STATIC,288,25,30,8
+    LTEXT           "Public IP address",IDC_STATIC,288,43,56,8
     LTEXT           "Upload rate (kbyte/s)",IDC_STATIC,288,61,68,8
-    LTEXT           "Public IP address",IDC_STATIC,288,44,56,8
     LTEXT           "Upload slots",IDC_STATIC,288,79,40,8
     LTEXT           "Seeding ratio",IDC_STATIC,288,97,42,8
-    LTEXT           "Files location",IDC_STATIC,288,115,42,8
-    LTEXT           "Tracker port",IDC_STATIC,288,133,40,8
-    LTEXT           "Peer limit",IDC_STATIC,288,152,29,8
+    LTEXT           "Completes directory",IDC_STATIC,288,115,62,8
+    LTEXT           "Incompletes directory",IDC_STATIC,288,133,68,8
+    LTEXT           "Torrents directory",IDC_STATIC,288,151,56,8
+    LTEXT           "Tracker port",IDC_STATIC,288,169,40,8
+    LTEXT           "Peer limit",IDC_STATIC,288,187,29,8
 END
 
 IDD_TRACKERS DIALOG DISCARDABLE  0, 0, 282, 95
@@ -174,18 +178,8 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 356
-        VERTGUIDE, 284
-        VERTGUIDE, 288
         TOPMARGIN, 7
-        BOTTOMMARGIN, 247
-        HORZGUIDE, 26
-        HORZGUIDE, 44
-        HORZGUIDE, 61
-        HORZGUIDE, 79
-        HORZGUIDE, 97
-        HORZGUIDE, 115
-        HORZGUIDE, 133
-        HORZGUIDE, 152
+        BOTTOMMARGIN, 287
     END
 
     IDD_TRACKERS, DIALOG
