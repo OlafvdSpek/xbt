@@ -551,12 +551,14 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	f.m_server = this;
 	if (f.torrent(info))
 		return 1;
+	mkpath(torrents_dir());
+	info.save(torrents_dir() + '/' + f.m_name + ".torrent");
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
 		if (i->m_info_hash == f.m_info_hash)
 			return 2;
 	}
-	if (f.open(name.empty() ? incompletes_dir() + '\\' + f.m_name : name))
+	if (f.open(name.empty() ? incompletes_dir() + '/' + f.m_name : name))
 		return 3;
 	f.m_peer_id = new_peer_id();
 	m_files.push_front(f);
