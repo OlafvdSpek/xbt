@@ -3,8 +3,8 @@
 	{
 		for ($l = 0; $v < -9999 || $v > 9999; $l++)
 			$v /= 1024;
-		$a = array('', 'k', 'm', 'g', 't', 'p');
-		return sprintf('%d %s', $v, $a[$l]);
+		$a = array('', ' k', ' m', ' g', ' t', ' p');
+		return sprintf('%d%s', $v, $a[$l]);
 	}
 
 	function priority2a($v)
@@ -128,6 +128,28 @@
 		$d .= '<tr>';
 		$d .= '<td><input type=file name=file>';
 		$d .= '<td><input type=submit value="Open">';
+		$d .= '</table>';
+		$d .= '</form>';
+		$d .= '</center>';
+		return $d;
+	}
+
+	function template_options($v)
+	{
+		$d = '';
+		$d .= '<hr>';
+		$d .= '<center>';
+		$d .= '<form action="?" method=post>';
+		$d .= '<table>';
+		$d .= '<caption>Options</caption>';
+		$d .= '<th align=left>Name';
+		$d .= '<th align=left>Value';
+		$d .= sprintf('<tr><td align=left>Admin Port<td align=right>%d', $v['admin port']['value']);
+		$d .= sprintf('<tr><td align=left>Peer Port<td align=right>%d', $v['peer port']['value']);
+		$d .= sprintf('<tr><td align=left>Tracker Port<td align=right>%d', $v['tracker port']['value']);
+		$d .= sprintf('<tr><td align=left>Upload Rate<td align=right>%s', b2a($v['upload rate']['value']));
+		$d .= sprintf('<tr><td align=left>Upload Slots<td align=right>%d', $v['upload slots']['value']);
+		$d .= sprintf('<tr><td align=left>Seeding Ratio<td align=right>%d', $v['seeding ratio']['value']);
 		$d .= '</table>';
 		$d .= '</form>';
 		$d .= '</center>';
