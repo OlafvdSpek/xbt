@@ -621,7 +621,7 @@ void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 		if (i->offset != m_f->mcb_piece * piece + offset)
 			continue;
 		int t = m_f->m_server->time() - i->stime;
-		mc_max_requests_pending = t ? max(1, min(120 / t, 8)) : 8;
+		mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
 		logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
 		m_f->m_downloaded += size;
 		m_f->m_down_counter.add(size);
@@ -657,6 +657,7 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		// clear_local_requests();
 		// m_local_requests.clear();
 		mc_local_requests_pending = 0;
+		mc_max_requests_pending = min(mc_max_requests_pending, 2);
 		break;
 	case bti_unchoke:
 		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, false);
