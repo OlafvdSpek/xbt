@@ -44,6 +44,7 @@ public_members                  =>  "members",
 
 replies					=>	"Replies",
 board_stats					=>	"Board Statistics",
+tracker_stats				=>	"Tracker Statistics",
 
 guests					=>	"guests",
 posts					=>	"posts",

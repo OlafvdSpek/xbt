@@ -111,6 +111,19 @@ return <<<EOF
 EOF;
 }
 
+function ShowTrackerStats($text) {
+global $ibforums;
+return <<<EOF
+		   <tr>
+		     <td class='pformstrip' colspan='2'>{$ibforums->lang['tracker_stats']}</td>
+		   </tr>
+		   <tr>
+			 <td class='row2' width='5%' valign='middle'><{F_STATS}></td>
+			 <td class='row4' width="95%" align='left'>$text<br /></td>
+		   </tr>
+EOF;
+}
+
 function birthdays($birthusers="", $total="", $birth_lang="") {
 global $ibforums;
 return <<<EOF
@@ -156,14 +169,14 @@ return <<<EOF
 EOF;
 }
 
-          
+
 function CatHeader_Expanded($Data) {
 global $ibforums;
 return <<<EOF
 	<div class="tableborder">
 	  <div class='maintitle' align='left'><{CAT_IMG}>&nbsp;<a href="{$ibforums->base_url}c={$Data['id']}">{$Data['name']}</a></div>
       <table width="100%" border="0" cellspacing="1" cellpadding="4">
-        <tr> 
+        <tr>
           <th align="center" width="2%" class='titlemedium'><img src="{$ibforums->vars['img_url']}/spacer.gif" alt="" width="28" height="1" /></th>
           <th align="left" width="59%" class='titlemedium'>{$ibforums->lang['cat_name']}</th>
           <th align="center" width="7%" class='titlemedium'>{$ibforums->lang['topics']}</th>
@@ -181,7 +194,7 @@ return <<<EOF
     <br />
 	<div class="tableborder">
 	  <table width="100%" border="0" cellspacing="1" cellpadding="4">
-	  <tr> 
+	  <tr>
 		<td align="center" class='titlemedium'><img src="{$ibforums->vars['img_url']}/spacer.gif" alt="" width="28" height="1" /></td>
 		<th align='left' width="59%" class='titlemedium'>{$ibforums->lang['cat_name']}</th>
 		<th align="center" width="7%" class='titlemedium'>{$ibforums->lang['topics']}</th>
@@ -194,7 +207,7 @@ EOF;
 function end_this_cat() {
 global $ibforums;
 return <<<EOF
-         <tr> 
+         <tr>
           <td class='darkrow2' colspan="5">&nbsp;</td>
         </tr>
       </table>
@@ -206,7 +219,7 @@ EOF;
 function end_all_cats() {
 global $ibforums;
 return <<<EOF
-	
+
 EOF;
 }
 
@@ -257,7 +270,7 @@ EOF;
 function ForumRow($info) {
 global $ibforums;
 return <<<EOF
-        <tr> 
+        <tr>
           <td class="row4" align="center">{$info['img_new_post']}</td>
           <td class="row4"><b><a href="{$ibforums->base_url}showforum={$info['id']}">{$info['name']}</a></b><br /><span class='desc'>{$info['description']}<br />{$info['moderator']}</span></td>
           <td class="row2" align="center">{$info['topics']}</td>
@@ -271,7 +284,7 @@ function forum_redirect_row($info) {
 global $ibforums;
 return <<<EOF
     <!-- Forum {$info['id']} entry -->
-        <tr> 
+        <tr>
           <td class="row4" align="center"><{BR_REDIRECT}></td>
           <td class="row4"><b><a href="{$ibforums->base_url}showforum={$info['id']}" {$info['redirect_target']}>{$info['name']}</a></b><br /><span class='desc'>{$info['description']}</span></td>
           <td class="row2" align="center">-</td>
