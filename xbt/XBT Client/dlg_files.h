@@ -8,6 +8,7 @@
 // dlg_files.h : header file
 //
 
+#include "ListCtrlEx.h"
 #include "resource.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -21,14 +22,13 @@ class Cdlg_files : public ETSLayoutDialog
 public:
 	int compare(int id_a, int id_b) const;
 	void sort();
-	void auto_size();
 	void load_data();
 	Cdlg_files(CWnd* pParent, Cserver& server, const string& info_hash);   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(Cdlg_files)
 	enum { IDD = IDD_FILES };
-	CListCtrl	m_files;
+	CListCtrlEx	m_files;
 	//}}AFX_DATA
 
 
@@ -45,7 +45,6 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(Cdlg_files)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnDecreasePriority();
 	afx_msg void OnIncreasePriority();

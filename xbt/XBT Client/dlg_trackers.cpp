@@ -69,7 +69,7 @@ BOOL Cdlg_trackers::OnInitDialog()
 	m_list.InsertColumn(1, "User");
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
-	auto_size();
+	m_list.auto_size();
 	return true;
 }
 
@@ -83,7 +83,7 @@ void Cdlg_trackers::OnInsert()
 	e.m_user = dlg.m_user;
 	e.m_pass = dlg.m_pass;
 	insert(e);
-	auto_size();
+	m_list.auto_size();
 }
 
 void Cdlg_trackers::OnEdit() 
@@ -141,19 +141,6 @@ void Cdlg_trackers::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
 	*pResult = 0;
-}
-
-void Cdlg_trackers::auto_size()
-{
-	for (int i = 0; i < m_list.GetHeaderCtrl()->GetItemCount(); i++)
-		m_list.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
-}
-
-void Cdlg_trackers::OnSize(UINT nType, int cx, int cy) 
-{
-	ETSLayoutDialog::OnSize(nType, cx, cy);
-	if (m_list.GetSafeHwnd())
-		auto_size();
 }
 
 void Cdlg_trackers::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult) 

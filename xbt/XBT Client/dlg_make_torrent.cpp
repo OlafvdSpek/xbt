@@ -180,7 +180,7 @@ void Cdlg_make_torrent::post_insert()
 		m_name = base_name(m_map.begin()->second.name).c_str();
 		UpdateData(false);
 	}
-	auto_size();
+	m_list.auto_size();
 	sort();
 	m_save.EnableWindow(!m_map.empty() && m_map.size() < 256);
 }
@@ -201,19 +201,6 @@ void Cdlg_make_torrent::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
 	*pResult = 0;
-}
-
-void Cdlg_make_torrent::auto_size()
-{
-	for (int i = 0; i < m_list.GetHeaderCtrl()->GetItemCount(); i++)
-		m_list.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
-}
-
-void Cdlg_make_torrent::OnSize(UINT nType, int cx, int cy) 
-{
-	ETSLayoutDialog::OnSize(nType, cx, cy);
-	if (m_list.GetSafeHwnd())
-		auto_size();	
 }
 
 static Cvirtual_binary gzip(const Cvirtual_binary& s)

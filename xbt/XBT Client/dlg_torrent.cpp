@@ -104,20 +104,7 @@ void Cdlg_torrent::load_data()
 		m_alerts.SetItemText(index, 2, source.c_str());
 		m_alerts.SetItemText(index, 3, message.c_str());
 	}
-	auto_size();
-}
-
-void Cdlg_torrent::auto_size()
-{
-	for (int i = 0; i < m_alerts.GetHeaderCtrl()->GetItemCount(); i++)
-		m_alerts.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
-}
-
-void Cdlg_torrent::OnSize(UINT nType, int cx, int cy) 
-{
-	ETSLayoutDialog::OnSize(nType, cx, cy);
-	if (m_alerts.GetSafeHwnd())
-		auto_size();
+	m_alerts.auto_size();
 }
 
 void Cdlg_torrent::OnTimer(UINT nIDEvent) 

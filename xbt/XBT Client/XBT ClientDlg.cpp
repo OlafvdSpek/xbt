@@ -686,20 +686,8 @@ void CXBTClientDlg::OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::auto_size()
 {
-	auto_size_files();
-	auto_size_peers();
-}
-
-void CXBTClientDlg::auto_size_files()
-{
-	for (int i = 0; i < m_files.GetHeaderCtrl()->GetItemCount(); i++)
-		m_files.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
-}
-
-void CXBTClientDlg::auto_size_peers()
-{
-	for (int i = 0; i < m_peers.GetHeaderCtrl()->GetItemCount(); i++)
-		m_peers.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
+	m_files.auto_size();
+	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnSize(UINT nType, int cx, int cy) 
@@ -707,8 +695,6 @@ void CXBTClientDlg::OnSize(UINT nType, int cx, int cy)
 	ETSLayoutDialog::OnSize(nType, cx, cy);
 	if (nType == SIZE_MINIMIZED && m_show_tray_icon)
 		ShowWindow(SW_HIDE);
-	else if (m_files.GetSafeHwnd())
-		auto_size();
 }
 
 void CXBTClientDlg::fill_peers()
@@ -738,7 +724,7 @@ void CXBTClientDlg::fill_peers()
 		break;
 	}
 	sort_peers();
-	auto_size_peers();
+	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -923,7 +909,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		}
 	}
 	if (inserted)
-		auto_size_files();
+		m_files.auto_size();
 	if (!m_file)
 	{
 		m_file = &f;
@@ -971,7 +957,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	p.removed = false;
 	f.peers.find(id)->second = p;
 	if (inserted)
-		auto_size_peers();
+		m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnTimer(UINT nIDEvent) 
@@ -1634,7 +1620,7 @@ void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
 	m_peers_sort_column = m_peers_columns[pNMListView->iSubItem];
-	sort_peers();	
+	sort_peers();
 	*pResult = 0;
 }
 
@@ -1907,7 +1893,7 @@ void CXBTClientDlg::OnPopupViewDetails()
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-	auto_size_peers();
+	m_peers.auto_size();
 }	
 
 void CXBTClientDlg::OnPopupViewEvents() 
@@ -1916,7 +1902,7 @@ void CXBTClientDlg::OnPopupViewEvents()
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-	auto_size_peers();
+	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnPopupViewFiles() 
@@ -1925,7 +1911,7 @@ void CXBTClientDlg::OnPopupViewFiles()
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-	auto_size_peers();
+	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnPopupViewPeers() 
@@ -1934,7 +1920,7 @@ void CXBTClientDlg::OnPopupViewPeers()
 	m_peers_sort_column = pc_client;
 	insert_bottom_columns();
 	fill_peers();
-	auto_size_peers();
+	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnPopupViewTrackers() 
@@ -1943,7 +1929,7 @@ void CXBTClientDlg::OnPopupViewTrackers()
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-	auto_size_peers();
+	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult)

@@ -8,6 +8,7 @@
 // dlg_torrent.h : header file
 //
 
+#include "ListCtrlEx.h"
 #include "resource.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -19,14 +20,13 @@ class Cdlg_torrent : public ETSLayoutDialog
 {
 // Construction
 public:
-	void auto_size();
 	void load_data();
 	Cdlg_torrent(CWnd* pParent, Cserver& server, const string& info_hash);   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(Cdlg_torrent)
 	enum { IDD = IDD_TORRENT };
-	CListCtrl	m_alerts;
+	CListCtrlEx	m_alerts;
 	//}}AFX_DATA
 
 
@@ -43,7 +43,6 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(Cdlg_torrent)
 	virtual BOOL OnInitDialog();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnTimer(UINT nIDEvent);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
