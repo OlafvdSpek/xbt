@@ -209,8 +209,6 @@ bool Cbt_file::hash()
 	delete m_hasher;
 	m_hasher = NULL;
 	m_validate = false;
-	alert(Calert(Calert::debug, "Torrent: " + n(c_valid_pieces()) + '/' + n(m_pieces.size())));
-	alert(Calert(Calert::debug, "Torrent: " + n(mcb_piece >> 10) + " kb/piece"));
 	return false;
 }
 
