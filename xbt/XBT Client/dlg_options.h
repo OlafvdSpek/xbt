@@ -22,7 +22,6 @@ public:
 		int admin_port;
 		bool ask_for_location;
 		bool bind_before_connect;
-		bool end_mode;
 		bool hide_on_deactivate;
 		string completes_dir;
 		string incompletes_dir;
@@ -60,7 +59,6 @@ public:
 	BOOL	m_start_minimized;
 	BOOL	m_ask_for_location;
 	int		m_tracker_port;
-	BOOL	m_end_mode;
 	BOOL	m_lower_process_priority;
 	int		m_peer_limit;
 	BOOL	m_bind_before_connect;

@@ -19,6 +19,7 @@ class Cdlg_torrent_options: public CDialog
 public:
 	struct t_data
 	{
+		bool end_mode;
 		int seeding_ratio;
 		bool seeding_ratio_override;
 		int upload_slots_min;
@@ -43,6 +44,7 @@ public:
 	int		m_seeding_ratio_value;
 	int		m_upload_slots_max_value;
 	int		m_upload_slots_min_value;
+	BOOL	m_end_mode;
 	//}}AFX_DATA
 
 

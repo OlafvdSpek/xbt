@@ -31,7 +31,6 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_start_minimized = FALSE;
 	m_ask_for_location = FALSE;
 	m_tracker_port = 0;
-	m_end_mode = FALSE;
 	m_lower_process_priority = FALSE;
 	m_peer_limit = 0;
 	m_bind_before_connect = FALSE;
@@ -63,7 +62,6 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_ASK_FOR_LOCATION, m_ask_for_location);
 	DDX_Text(pDX, IDC_TRACKER_PORT, m_tracker_port);
 	DDV_MinMaxInt(pDX, m_tracker_port, 0, 65535);
-	DDX_Check(pDX, IDC_END_MODE, m_end_mode);
 	DDX_Check(pDX, IDC_LOWER_PROCESS_PRIORITY, m_lower_process_priority);
 	DDX_Text(pDX, IDC_PEER_LIMIT, m_peer_limit);
 	DDX_Check(pDX, IDC_BIND_BEFORE_CONNECT, m_bind_before_connect);
@@ -95,7 +93,6 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.ask_for_location = m_ask_for_location;
 	v.bind_before_connect = m_bind_before_connect;
 	v.completes_dir = m_completes_dir;
-	v.end_mode = m_end_mode;
 	v.hide_on_deactivate = m_hide_on_deactivate;
 	v.incompletes_dir = m_incompletes_dir;
 	v.lower_process_priority = m_lower_process_priority;
@@ -121,7 +118,6 @@ void Cdlg_options::set(const t_data& v)
 	m_ask_for_location = v.ask_for_location;
 	m_bind_before_connect = v.bind_before_connect;
 	m_completes_dir = backward_slashes(v.completes_dir).c_str();
-	m_end_mode = v.end_mode;
 	m_hide_on_deactivate = v.hide_on_deactivate;
 	m_incompletes_dir = backward_slashes(v.incompletes_dir).c_str();
 	m_lower_process_priority = v.lower_process_priority;
