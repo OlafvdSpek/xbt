@@ -25,6 +25,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+const extern UINT g_are_you_me_message_id = RegisterWindowMessage("XBT Client Are You Me Message");
 const static UINT g_taskbar_created_message_id = RegisterWindowMessage("TaskbarCreated");
 const static UINT g_tray_message_id = RegisterWindowMessage("XBT Client Tray Message");
 
@@ -168,10 +169,14 @@ void CXBTClientDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
+	ON_REGISTERED_MESSAGE(g_are_you_me_message_id, OnAreYouMe)
+	ON_REGISTERED_MESSAGE(g_taskbar_created_message_id, OnTaskbarCreated)
+	ON_REGISTERED_MESSAGE(g_tray_message_id, OnTray)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_FILES, OnCustomdrawFiles)
 	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PEERS, OnCustomdrawPeers)
 	ON_WM_CONTEXTMENU()
+	ON_WM_SYSCOMMAND()
 	//{{AFX_MSG_MAP(CXBTClientDlg)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -236,6 +241,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_TORRENT_OPTIONS, OnPopupTorrentOptions)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_OPTIONS, OnUpdatePopupTorrentOptions)
 	ON_WM_ACTIVATEAPP()
+	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
+	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
 	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
 	ON_COMMAND(ID_FILE_CLOSE, OnFileClose)
 	ON_UPDATE_COMMAND_UI(ID_FILE_CLOSE, OnUpdateFileClose)
@@ -255,11 +262,10 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB, OnSelchangeTab)
 	ON_COMMAND(ID_FILE_DELETE, OnFileDelete)
 	ON_UPDATE_COMMAND_UI(ID_FILE_DELETE, OnUpdateFileDelete)
+	ON_COMMAND(ID_HELP_HOME_PAGE, OnHelpHomePage)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
-	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
-	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
-	ON_COMMAND(ID_HELP_HOME_PAGE, OnHelpHomePage)
+	ON_WM_SYSCOMMAND()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1507,33 +1513,6 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
-	case WM_SYSCOMMAND:
-		switch (wParam)
-		{
-		case SC_MINIMIZE:
-			if (!m_show_tray_icon)
-				break;
-			ShowWindow(SW_HIDE);
-			return true;
-		}
-		break;
-	default:
-		if (message == g_taskbar_created_message_id)
-			register_tray();
-		else if (message == g_tray_message_id)
-		{
-			switch (lParam)
-			{
-			case WM_LBUTTONUP:
-				ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOW);
-				if (IsWindowVisible())
-					SetForegroundWindow();
-				return 0;
-			case WM_RBUTTONUP:
-				OnTrayMenu();
-				return 0;
-			}
-		}
 	}
 	return ETSLayoutDialog::WindowProc(message, wParam, lParam);
 }
@@ -2765,4 +2744,44 @@ void CXBTClientDlg::OnSelchangeTab(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	set_bottom_view(m_tab.GetCurSel());
 	*pResult = 0;
+}
+
+long CXBTClientDlg::OnAreYouMe(WPARAM, LPARAM)
+{
+	return g_are_you_me_message_id;
+}
+
+long CXBTClientDlg::OnTaskbarCreated(WPARAM, LPARAM)
+{
+	register_tray();
+	return 0;
+}
+
+long CXBTClientDlg::OnTray(WPARAM, LPARAM lParam)
+{
+	switch (lParam)
+	{
+	case WM_LBUTTONUP:
+		ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOW);
+		if (IsWindowVisible())
+			SetForegroundWindow();
+		return 0;
+	case WM_RBUTTONUP:
+		OnTrayMenu();
+		return 0;
+	}
+	return 0;
+}
+
+void CXBTClientDlg::OnSysCommand(UINT nID, LPARAM lParam) 
+{
+	switch (nID)
+	{
+	case SC_MINIMIZE:
+		if (!m_show_tray_icon)
+			break;
+		ShowWindow(SW_HIDE);
+		return;
+	}
+	ETSLayoutDialog::OnSysCommand(nID, lParam);
 }
