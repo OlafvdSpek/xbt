@@ -171,7 +171,8 @@ int Cserver::run()
 	fd_set fd_read_set;
 	fd_set fd_write_set;
 	fd_set fd_except_set;
-	for (m_run = true; !g_sig_term && m_run; )
+	bool stopping = false;
+	for (m_run = true; !stopping || !m_http_links.empty(); )
 	{
 		lock();
 		if (m_config.m_admin_port != m_admin_port)
@@ -299,6 +300,18 @@ int Cserver::run()
 		if (FD_ISSET(lt, &fd_read_set))
 			m_udp_tracker.recv(lt);
 		post_select(&fd_read_set, &fd_write_set, &fd_except_set);
+		if (stopping)
+		{
+			unlock();
+			continue;
+		}
+		if (g_sig_term || !m_run)
+		{
+			stopping = true;
+			save_state(false).save(state_fname());
+			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+				i->close();
+		}
 		if (time() - m_update_chokes_time > 10)
 			update_chokes();
 		else if (time() - m_update_states_time > 15)
@@ -312,9 +325,6 @@ int Cserver::run()
 		unlock();
 	}
 	config().read().read().save(options_fname());
-	save_state(false).save(state_fname());
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->close();
 	unlink(g_pid_fname);
 	return 0;
 }
