@@ -759,6 +759,8 @@ void Cserver::read_config()
 				config.m_anonymous_announce = row.f_int(1);
 			else if (!strcmp(row.f(0), "anonymous_scrape"))
 				config.m_anonymous_scrape = row.f_int(1);
+			else if (!strcmp(row.f(0), "clean_up_interval"))
+				config.m_clean_up_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "daemon"))
 				config.m_daemon = row.f_int(1);
 			else if (!strcmp(row.f(0), "gzip_announce"))
@@ -769,7 +771,7 @@ void Cserver::read_config()
 				config.m_gzip_scrape = row.f_int(1);
 			else if (!strcmp(row.f(0), "listen_check"))
 				config.m_listen_check = row.f_int(1);
-			else if (!strcmp(row.f(0), "listen_ipa"))
+			else if (!strcmp(row.f(0), "listen_ipa") && strcmp(row.f(1), "*"))
 				config.m_listen_ipas.insert(inet_addr(row.f(1)));
 			else if (!strcmp(row.f(0), "listen_port"))
 				config.m_listen_ports.insert(row.f_int(1));
