@@ -619,7 +619,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, c_distributed_copies);
 	w.write_int(4, c_distributed_copies_remainder);
 	w.write_int(4, m_priority);
-	w.write_int(4, m_seeding_ratio);
+	w.write_int(4, seeding_ratio());
 	w.write_int(4, m_seeding_ratio_override);
 	if (flags & Cserver::df_peers)
 	{
