@@ -119,6 +119,7 @@ public:
 
 	struct t_user
 	{
+		bool marked;
 		int uid;
 		int fid_end;
 		string pass;

@@ -688,14 +688,16 @@ void Cserver::read_db_users()
 		return;
 	try
 	{
+		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
+			i->second.marked = true;
 		Csql_query q(m_database, "select uid, name, pass, torrent_pass, fid_end from xbt_users");
 		Csql_result result = q.execute();
-		m_users.clear();
 		m_users_names.clear();
 		m_users_torrent_passes.clear();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
 			t_user& user = m_users[row.f_int(0)];
+			user.marked = false;
 			user.uid = row.f_int(0);
 			user.fid_end = row.f_int(4);
 			user.pass.assign(row.f(2));
@@ -703,6 +705,13 @@ void Cserver::read_db_users()
 				m_users_names[row.f(1)] = &user;
 			if (row.size(3))
 				m_users_torrent_passes[row.f(3)] = &user;
+		}
+		for (t_users::iterator i = m_users.begin(); i != m_users.end(); )
+		{
+			if (i->second.marked)
+				m_users.erase(i++);
+			else
+				i++;
 		}
 	}
 	catch (Cxcc_error)
