@@ -9,6 +9,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <string>
+#include "sha1.h"
+#include "virtual_binary.h"
+
+using namespace std;
+
 string escape_string(const string& v);
 bool is_private_ipa(int a);
 string n(int v);
@@ -16,6 +22,18 @@ string hex_encode(int l, int v);
 string hex_encode(const string& v);
 string uri_decode(const string& v);
 string uri_encode(const string& v);
+
+inline void compute_sha1(const Cvirtual_binary& s, void* d)
+{
+	compute_sha1(s, s.size(), d);
+}
+
+inline string compute_sha1(const Cvirtual_binary& s)
+{
+	char d[20];
+	compute_sha1(s, d);
+	return string(d, 20);
+}
 
 inline __int64 htonll(__int64 v)
 {
