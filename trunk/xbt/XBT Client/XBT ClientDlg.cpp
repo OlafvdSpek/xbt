@@ -627,7 +627,8 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 		update_tray();
 		break;
 	case 1:
-		if (!m_show_tray_icon)
+		if (IsWindowVisible()
+			|| !m_show_tray_icon)
 			break;
 		read_server_dump(Cstream_reader(m_server.get_status(0)));
 		update_tray();
