@@ -393,7 +393,7 @@ void compute_sha1(const void* s, int cb_s, void* d)
 {
 	SHA1Context context;
 	SHA1Reset(&context);
-	SHA1Input(&context, reinterpret_cast<const unsigned __int8*>(s), cb_s);
-	SHA1Result(&context, reinterpret_cast<unsigned __int8*>(d));
+	SHA1Input(&context, reinterpret_cast<const unsigned char*>(s), cb_s);
+	SHA1Result(&context, reinterpret_cast<unsigned char*>(d));
 }
 
