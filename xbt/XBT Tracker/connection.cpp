@@ -128,10 +128,10 @@ void Cconnection::read(const string& v)
 	}
 	if (announce)
 		m_server->insert_peer(ti);
-	Cvirtual_binary d = (announce ? m_server->select_peers(ti.m_info_hash) : m_server->scrape(ti)).read();
+	Cbvalue s = announce ? m_server->select_peers(ti.m_info_hash) : m_server->scrape(ti);
 	const char* h = "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\n";
-	if (m_s.send(h, strlen(h)) != strlen(h))
-		cerr << "send failed" << endl;
-	else if (m_s.send(d, d.size()) != d.size())
+	Cvirtual_binary d;
+	s.read(strcpy(reinterpret_cast<char*>(d.write_start(strlen(h) + s.pre_read())), h) + strlen(h));
+	if (m_s.send(d, d.size()) != d.size())
 		cerr << "send failed" << endl;
 }
