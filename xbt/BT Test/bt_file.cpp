@@ -20,8 +20,10 @@
 Cbt_file::Cbt_file()
 {
 	m_downloaded = 0;
+	m_downloaded_l5 = 0;
 	m_left = -1;
 	m_uploaded = 0;
+	m_uploaded_l5 = 0;
 	m_total_downloaded = 0;
 	m_total_uploaded = 0;
 	mc_leechers_total = 0;
@@ -513,47 +515,9 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	return invalid_pieces.empty() ? -1 : invalid_pieces[rand() % invalid_pieces.size()];
 }
 
-ostream& Cbt_file::dump(ostream& os) const
-{
-	os << "<table>"
-		<< "<tr><td align=right>invalid pieces:<td align=right>" << c_invalid_pieces() << "<td align=right>" << b2a(mcb_piece * c_invalid_pieces(), "b")
-		<< "<tr><td align=right>valid pieces:<td align=right>" << c_valid_pieces() << "<td align=right>" << b2a(mcb_piece * c_valid_pieces(), "b")
-		<< "<tr><td align=right>downloaded:<td align=right>" << b2a(m_downloaded, "b") << "<td align=right>" << b2a(m_down_counter.rate(), "b/s") << "<td align=right>";
-	int t = time_remaining();
-	if (t != -1)
-	{
-		if (t / 3600)
-			os << t / 3600 << " h ";
-		os << (t % 3600) / 60 << " m " << t % 60 << " s";
-	}
-	os << "<tr><td align=right>uploaded:<td align=right>" << b2a(m_uploaded, "b") << "<td align=right>" << b2a(m_up_counter.rate(), "b/s")
-		<< "</table>"
-		<< "<hr>"
-		<< "<table><tr><th><th><th>D<th>U<th><th colspan=2>L<th colspan=2>R";
-	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
-		os << *i;
-	os << "</table>";
-	if (0)
-	{
-		os << "<hr><table>";
-		for (int i = 0; i < m_pieces.size(); i++)
-		{
-			if (m_pieces[i].mc_peers)
-				os << "<tr><td align=right>" << i << "<td align=right>" << m_pieces[i].mc_peers;
-		}
-		os << "</table>";
-	}
-	return os;
-}
-
-ostream& operator<<(ostream& os, const Cbt_file& v)
-{
-	return v.dump(os);
-}
-
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 136;
+	int size = m_info_hash.length() + m_name.length() + 152;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -602,9 +566,11 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 		}
 	}
 	w.write_int(8, m_downloaded);
+	w.write_int(8, m_downloaded_l5);
 	w.write_int(8, m_left);
 	w.write_int(8, size());
 	w.write_int(8, m_uploaded);
+	w.write_int(8, m_uploaded_l5);
 	w.write_int(8, m_total_downloaded);
 	w.write_int(8, m_total_uploaded);
 	w.write_int(4, m_down_counter.rate());

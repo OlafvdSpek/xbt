@@ -270,6 +270,7 @@ int Cbt_peer_link::recv()
 		}
 		m_rtime = time(NULL);
 		m_read_b.cb_w(r);
+		m_f->m_downloaded_l5 += r;
 	}
 	if (!m_read_b.cb_w())
 		return 0;
@@ -308,6 +309,7 @@ int Cbt_peer_link::send()
 		d.m_r += r;
 		if (d.m_r == d.m_s_end)
 			m_write_b.pop_front();
+		m_f->m_uploaded_l5 += r;
 	}
 	return 0;
 }

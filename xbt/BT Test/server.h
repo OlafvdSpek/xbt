@@ -73,7 +73,6 @@ public:
 	void file_dump(Cstream_writer&, const string& id, int flags) const;
 	int pre_dump(int flags) const;
 	void dump(Cstream_writer&, int flags) const;
-	ostream& dump(ostream&) const;
 	void insert_peer(const char* r, const sockaddr_in& a, const Csocket& s);
 	int run();
 	void stop();
@@ -225,7 +224,5 @@ private:
 	int m_cs;
 #endif
 };
-
-ostream& operator<<(ostream&, const Cserver&);
 
 #endif // !defined(AFX_SERVER_H__4D905E0B_7206_44A7_B536_848E7E677429__INCLUDED_)
