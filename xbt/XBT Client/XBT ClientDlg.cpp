@@ -479,19 +479,19 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		switch (e.m_state)
 		{
 		case Cbt_file::s_queued:
-			m_buffer[m_buffer_w] = 'Q';
+			m_buffer[m_buffer_w] = "Queued";
 			break;
 		case Cbt_file::s_hashing:
-			m_buffer[m_buffer_w] = 'H';
+			m_buffer[m_buffer_w] = "Hashing";
 			break;
 		case Cbt_file::s_running:
-			m_buffer[m_buffer_w] = 'R';
+			m_buffer[m_buffer_w] = "Running";
 			break;
 		case Cbt_file::s_paused:
-			m_buffer[m_buffer_w] = 'P';
+			m_buffer[m_buffer_w] = "Paused";
 			break;
 		case Cbt_file::s_stopped:
-			m_buffer[m_buffer_w] = 'S';
+			m_buffer[m_buffer_w] = "Stopped";
 			break;
 		}
 		break;
