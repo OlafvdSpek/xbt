@@ -1,0 +1,396 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_XBTCLIENT_DIALOG DIALOGEX 0, 0, 128, 122
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
+    WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
+CAPTION "XBT Client"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,114,50
+    CONTROL         "List1",IDC_PEERS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | 
+                    WS_TABSTOP,7,65,114,50
+END
+
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 242
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_ADMIN_PORT,7,7,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_PEER_PORT,7,25,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_PUBLIC_IPA,7,43,277,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_UPLOAD_RATE,7,61,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_UPLOAD_SLOTS,7,79,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_SEEDING_RATIO,7,97,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FILES_LOCATION,7,115,277,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TRACKER_PORT,7,133,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_PEER_LIMIT,7,152,277,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "Ask for location",IDC_ASK_FOR_LOCATION,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,171,65,10
+    CONTROL         "End mode",IDC_END_MODE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,182,48,10
+    CONTROL         "Lower process priority",IDC_LOWER_PROCESS_PRIORITY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,193,84,10
+    CONTROL         "Show tray icon",IDC_SHOW_TRAY_ICON,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,204,63,10
+    CONTROL         "Show advanced columns",IDC_SHOW_ADVANCED_COLUMNS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,215,96,10
+    CONTROL         "Start minimzed",IDC_START_MINIMIZED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,226,61,10
+    DEFPUSHBUTTON   "OK",IDOK,250,221,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,306,221,50,14
+    LTEXT           "Admin port",IDC_STATIC,288,7,34,8
+    LTEXT           "Peer port",IDC_STATIC,288,26,30,8
+    LTEXT           "Upload rate (kbyte/s)",IDC_STATIC,288,61,68,8
+    LTEXT           "Public IP address",IDC_STATIC,288,44,56,8
+    LTEXT           "Upload slots",IDC_STATIC,288,79,40,8
+    LTEXT           "Seeding ratio",IDC_STATIC,288,97,42,8
+    LTEXT           "Files location",IDC_STATIC,288,115,42,8
+    LTEXT           "Tracker port",IDC_STATIC,288,133,40,8
+    LTEXT           "Peer limit",IDC_STATIC,288,152,29,8
+END
+
+IDD_TORRENT DIALOG DISCARDABLE  0, 0, 186, 46
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Alerts"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List2",IDC_ALERTS,"SysListView32",LVS_REPORT | 
+                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,8,172,31
+END
+
+IDD_FILES DIALOG DISCARDABLE  0, 0, 186, 113
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Files"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List2",IDC_FILES,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,172,76
+    PUSHBUTTON      "&Explore",IDC_EXPLORE,7,92,28,14
+    DEFPUSHBUTTON   "&Open",IDC_OPEN,35,92,22,14
+    PUSHBUTTON      "&Decrease priority",IDC_DECREASE_PRIORITY,63,92,58,14
+    PUSHBUTTON      "&Increase priority",IDC_INCREASE_PRIORITY,125,92,54,14
+END
+
+IDD_TRACKERS DIALOG DISCARDABLE  0, 0, 282, 95
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Trackers"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | 
+                    WS_BORDER | WS_TABSTOP,7,7,268,63
+    PUSHBUTTON      "Insert...",IDC_INSERT,9,75,50,14
+    PUSHBUTTON      "Edit...",IDC_EDIT,65,74,50,14
+    PUSHBUTTON      "Delete",IDC_DELETE,120,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,173,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,225,74,50,14
+END
+
+IDD_TRACKER DIALOG DISCARDABLE  0, 0, 119, 82
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Tracker"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_TRACKER,48,7,64,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USER,48,23,64,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PASS,48,41,64,14,ES_PASSWORD | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,7,61,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,62,61,50,14
+    LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,7,37,8
+    LTEXT           "User name:",IDC_USER_STATIC,7,23,37,8
+    LTEXT           "Password:",IDC_PASS_STATIC,7,41,37,8
+END
+
+IDD_ABOUT DIALOG DISCARDABLE  0, 0, 118, 62
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About XBT Client"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Version: 0.1.9",IDC_STATIC,7,7,44,8
+    LTEXT           "Site: http://xbtt.sourceforge.net/",IDC_SITE,7,20,104,8
+    LTEXT           "Author: Olaf van der Spek",IDC_STATIC,7,33,83,8
+    LTEXT           "License: GPL",IDC_LICENSE,7,46,44,8
+END
+
+IDD_MAKE_TORRENT DIALOGEX 0, 0, 186, 175
+STYLE DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "Make torrent"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_NAME,42,7,137,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TRACKER,42,26,137,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TRACKERS,42,45,137,55,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,103,172,50
+    LTEXT           "Trackers:",IDC_TRACKERS_STATIC,7,38,31,8
+    PUSHBUTTON      "Save...",IDC_SAVE,129,154,50,14,WS_DISABLED
+    LTEXT           "Name:",IDC_NAME_STATIC,7,7,31,8
+    CONTROL         "Use &Merkle Tree",IDC_USE_MERKLE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,158,69,10
+    LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,23,31,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_XBTCLIENT_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 121
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 115
+    END
+
+    IDD_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 356
+        VERTGUIDE, 284
+        VERTGUIDE, 288
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 235
+        HORZGUIDE, 26
+        HORZGUIDE, 44
+        HORZGUIDE, 61
+        HORZGUIDE, 79
+        HORZGUIDE, 97
+        HORZGUIDE, 115
+        HORZGUIDE, 133
+        HORZGUIDE, 152
+    END
+
+    IDD_TORRENT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 39
+    END
+
+    IDD_FILES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 106
+    END
+
+    IDD_TRACKERS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 275
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_TRACKER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 112
+        VERTGUIDE, 48
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 75
+        HORZGUIDE, 23
+        HORZGUIDE, 41
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 111
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_MAKE_TORRENT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        VERTGUIDE, 42
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 168
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDP_SOCKETS_INIT_FAILED "Windows sockets initialization failed."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Dutch (Netherlands) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NLD)
+#ifdef _WIN32
+LANGUAGE LANG_DUTCH, SUBLANG_DUTCH
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\XBT Client.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\XBT Client.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+CG_IDR_POPUP_XBTCLIENT_DLG MENU DISCARDABLE 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        POPUP "&Torrent"
+        BEGIN
+            MENUITEM "Explore",                     ID_POPUP_EXPLORE
+            MENUITEM "Explore tracker",             ID_POPUP_EXPLORE_TRACKER
+            MENUITEM "Files...",                    ID_POPUP_FILES
+            MENUITEM SEPARATOR
+            MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
+            MENUITEM "Start",                       ID_POPUP_START
+            MENUITEM "Stop",                        ID_POPUP_STOP
+            MENUITEM SEPARATOR
+            MENUITEM "Open...",                     ID_POPUP_OPEN
+            MENUITEM "&Close",                      ID_POPUP_CLOSE
+            MENUITEM "Delete",                      ID_POPUP_TORRENT_DELETE
+            MENUITEM "Copy URL",                    ID_POPUP_COPY
+            MENUITEM "Paste URL",                   ID_POPUP_PASTE
+            MENUITEM "Make...",                     ID_POPUP_MAKE_TORRENT
+            MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Options...",                  ID_POPUP_OPTIONS
+        MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
+        MENUITEM "About",                       ID_POPUP_ABOUT
+    END
+END
+
+#endif    // Dutch (Netherlands) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\XBT Client.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

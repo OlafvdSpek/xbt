@@ -1,0 +1,39 @@
+[TOP]
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE ipbsource
+[
+	<!-- CUSTOM IPB INLINE DOCTYPE -->
+	<!ELEMENT ipbsource (topic+) >
+	<!ELEMENT topic     (title,lastposter,starter,forum,date) >
+	<!ATTLIST topic id	     CDATA #REQUIRED >
+	
+	<!ELEMENT title		   (#PCDATA) >
+	
+	<!ELEMENT lastposter   (#PCDATA) >
+	<!ATTLIST lastposter id  CDATA #REQUIRED >
+	
+	<!ELEMENT starter      (#PCDATA) >
+	<!ATTLIST starter    id  CDATA #REQUIRED >
+	
+	<!ELEMENT forum		   (#PCDATA) >
+	<!ATTLIST forum id  	 CDATA #REQUIRED >
+	
+	<!ELEMENT date		   (#PCDATA) >
+	<!ATTLIST date timestamp CDATA #REQUIRED >
+]>
+<ipbsource>
+[/TOP]
+
+[ROW]
+	<topic id="{topic_id}">
+		<title>{topic_title}</title>
+		<lastposter id="{last_poster_id}">{last_post_name}</lastposter>
+		<starter id="{starter_id}">{starter_name}</starter>
+		<forum id="{forum_id}">{forum_title}</forum>
+		<date timestamp="{timestamp}">{last_post_time}</date>
+	</topic>
+[/ROW]
+
+[BOTTOM]
+</ipbsource>
+[/BOTTOM]
