@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "bt_tracker_url.h"
 #include "socket.h"
 #include "stream_writer.h"
 
@@ -29,7 +30,7 @@ public:
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	ostream& dump(ostream&) const;
-	void close();
+	void close(Cbt_file&);
 	int read(Cbt_file& f, const Cvirtual_binary&);
 	int pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
@@ -38,10 +39,7 @@ public:
 
 	Cvirtual_binary m_d;
 	byte* m_w;
-	int m_protocol;
-	string m_host;
-	int m_port;
-	string m_path;
+	Cbt_tracker_url m_url;
 	Csocket m_s;
 	int m_state;
 	int m_announce_time;
@@ -51,6 +49,7 @@ private:
 	int m_announce_send;
 	int mc_attempts;
 	int m_connect_send;
+	int m_current_tracker;
 	int m_event;
 };
 

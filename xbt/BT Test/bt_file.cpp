@@ -26,7 +26,14 @@ Cbt_file::~Cbt_file()
 
 int Cbt_file::torrent(const Cbvalue& v)
 {
-	m_trackers.push_back(v.d(bts_announce).s());
+	const Cbvalue::t_list& trackers = v.d(bts_announce_list).l();
+	for (Cbvalue::t_list::const_iterator i = trackers.begin(); i != trackers.end(); i++)
+	{
+		for (Cbvalue::t_list::const_iterator j = i->l().begin(); j != i->l().end(); j++)
+			m_trackers.push_back(j->s());		
+	}
+	if (m_trackers.empty())
+		m_trackers.push_back(v.d(bts_announce).s());
 	return info(v.d(bts_info));
 }
 
