@@ -498,7 +498,7 @@ void Cserver::read_db_files()
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			m_fid_end = max(m_fid_end, row.f_int(2, 0) + 1);
+			m_fid_end = max(m_fid_end, static_cast<int>(row.f_int(2, 0)) + 1);
 			if (row.size(0) != 20 || m_files.find(string(row.f(0), 20)) != m_files.end())
 				continue;
 			t_file& file = m_files[string(row.f(0), 20)];
