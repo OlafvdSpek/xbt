@@ -24,8 +24,6 @@ public:
 	Cbt_tracker_link();
 	~Cbt_tracker_link();
 
-	typedef vector<sockaddr_in> t_peers;
-
 	Cvirtual_binary m_d;
 	byte* m_w;
 	Cbt_file* m_f;
@@ -33,9 +31,10 @@ public:
 	string m_host;
 	int m_port;
 	string m_path;
-	t_peers m_peers;
 	Csocket m_s;
 	int m_state;
+	int m_announce_time;
+private:
 };
 
 #endif // !defined(AFX_BT_TRACKER_LINK_H__19566F35_0475_4CE0_BF87_19345BBD0E42__INCLUDED_)
