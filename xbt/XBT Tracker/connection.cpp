@@ -168,7 +168,7 @@ void Cconnection::read(const string& v)
 		"Content-Type: text/html; charset=us-ascii\r\n";
 	Cvirtual_binary s;
 	bool gzip = true;
-	switch (5 < v.length() ? v[5] : 0) 
+	switch (v.length() >= 6 ? v[5] : 0) 
 	{
 	case 'a':
 		gzip = m_server->gzip_announce() && !ti.m_compact;
@@ -186,8 +186,18 @@ void Cconnection::read(const string& v)
 		}
 		break;
 	case 's':
-		gzip = m_server->gzip_scrape() && ti.m_info_hash.empty();
-		s = m_server->scrape(ti).read();
+		if (v.length() >= 7 && v[6] == 't')
+		{
+			gzip = m_server->gzip_debug();
+			ti.m_compact = true;
+			string v = m_server->debug(ti);
+			s = Cvirtual_binary(v.c_str(), v.length());
+		}
+		else
+		{
+			gzip = m_server->gzip_scrape() && ti.m_info_hash.empty();
+			s = m_server->scrape(ti).read();
+		}
 		break;
 	default:
 		if (m_server->redirect_url().empty())
