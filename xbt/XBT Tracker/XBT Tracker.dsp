@@ -99,6 +99,10 @@ SOURCE=.\client.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\config.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\connection.cpp
 # End Source File
 # Begin Source File
@@ -189,6 +193,10 @@ SOURCE=..\misc\bvalue.h
 # Begin Source File
 
 SOURCE=.\client.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\config.h
 # End Source File
 # Begin Source File
 

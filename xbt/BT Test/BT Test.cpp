@@ -67,6 +67,8 @@ int main(int argc, char* argv[])
 			cout << "Service " << g_service_name << " has been uninstalled." << endl;
 			return 0;
 		}
+		else
+			return 1;
 	}
 	WSADATA wsadata;
 	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
