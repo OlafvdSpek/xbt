@@ -326,6 +326,14 @@ void Cbt_file::insert_peer(int h, int p)
 
 void Cbt_file::insert_peer(const char* r, const sockaddr_in& a, const Csocket& s)
 {
+	switch (state())
+	{
+	case s_running:
+	case s_paused:
+		break;
+	default:
+		return;
+	}
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
 		if (i->m_a.sin_addr.s_addr == a.sin_addr.s_addr)
