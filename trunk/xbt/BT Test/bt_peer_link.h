@@ -24,7 +24,7 @@ class Cbt_peer_link
 public:
 	void clear_local_requests();
 	void update_interested();
-	int cb_write_buffer();
+	int cb_write_buffer() const;
 	void alert(const Calert&);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
@@ -37,7 +37,7 @@ public:
 	void write_handshake();
 	void write_request(int, int, int);
 	void write_cancel(int, int, int);
-	void write_get_info();
+	void write_get_info(int);
 	void write_info(int);
 	void write_get_peers();
 	void write_peers();

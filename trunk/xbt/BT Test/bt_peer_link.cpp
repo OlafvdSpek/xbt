@@ -202,11 +202,11 @@ void Cbt_peer_link::write(const void* s, int cb_s)
 	m_write_b.push_back(Cbt_pl_write_data(reinterpret_cast<const char*>(s), cb_s));
 }
 
-int Cbt_peer_link::cb_write_buffer()
+int Cbt_peer_link::cb_write_buffer() const
 {
 	int cb = 0;
 	for (t_write_buffer::const_iterator i = m_write_b.begin(); i != m_write_b.end(); i++)
-		cb += i->m_s_end - i->m_s;
+		cb += i->m_s_end - i->m_r;
 	return cb;
 }
 
@@ -444,21 +444,22 @@ void Cbt_peer_link::write_cancel(int piece, int offset, int size)
 	write(d);
 }
 
-void Cbt_peer_link::write_get_info()
+void Cbt_peer_link::write_get_info(int i)
 {
 	Cvirtual_binary d;
-	byte* w = d.write_start(5);
+	byte* w = d.write_start(9);
 	w = write(w, d.size() - 4);
 	*w++ = bti_get_info;
+	w = write(w, i);
 	write(d);
 }
 
 void Cbt_peer_link::write_info(int i)
 {
-	if (i < 0 || 4096 * i >= m_f->m_info.size())
+	if (i < -1 || 4096 * i >= m_f->m_info.size())
 		return;
 	Cvirtual_binary d;
-	if (i)
+	if (i != -1)
 	{
 		int cb = min(m_f->m_info.size() - 4096 * i, 4096);
 		byte* w = d.write_start(5 + cb);
@@ -606,6 +607,8 @@ ostream& Cbt_peer_link::dump(ostream& os) const
 		<< "<td>" << (m_remote_choked ? 'C' : ' ') 
 		<< "<td>" << (m_remote_interested ? 'I' : ' ')
 		<< "<td align=right>" << m_read_b.cb_read()
+		<< "<td align=right>" << cb_write_buffer()
+		<< "<td align=right>" << (m_write_b.empty() ? 0 : m_write_b.front().m_s_end - m_write_b.front().m_r)
 		<< "<td align=right>" << m_write_b.size()
 		<< "<td align=right>" << m_remote_requests.size()
 		<< "<td align=right>" << time(NULL) - m_piece_rtime

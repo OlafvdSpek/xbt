@@ -145,14 +145,19 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			strstream os;
 			os << "GET " << m_path 
 				<< "?info_hash=" << uri_encode(f.m_info_hash) 
-				<< "&compact=1"
-				<< "&no_peer_id=1"
 				<< "&peer_id=" << uri_encode(f.m_peer_id) 
-				// << "&ip=" << uri_encode("62.163.33.227")
 				<< "&port=" << f.m_local_port
-				<< "&uploaded=" << static_cast<unsigned>(f.m_uploaded)
-				<< "&downloaded=" << static_cast<unsigned>(f.m_downloaded)
-				<< "&left=" << static_cast<unsigned>(f.m_left);
+				<< "&downloaded=" << n(f.m_downloaded)
+				<< "&left=" << n(f.m_left)
+				<< "&uploaded=" << n(f.m_uploaded)
+				<< "&compact=1"
+				<< "&no_peer_id=1";
+			if (f.m_local_ipa)
+			{
+				in_addr a;
+				a.s_addr = f.m_local_ipa;
+				os << "&ip=" << inet_ntoa(a);
+			}
 			switch (m_event)
 			{
 			case e_completed:
@@ -226,7 +231,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					uti.uploaded(f.m_uploaded);
 					uti.event(m_event);
 					m_event = e_none;
-					uti.ipa(0);
+					uti.ipa(f.m_local_ipa);
 					uti.num_want(-1);
 					uti.port(htons(f.m_local_port));
 					if (m_s.send(&uti, sizeof(t_udp_tracker_input_announce)) != sizeof(t_udp_tracker_input_announce))
