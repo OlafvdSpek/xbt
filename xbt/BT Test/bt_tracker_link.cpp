@@ -76,6 +76,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		if (m_url.m_protocol == Cbt_tracker_url::tp_udp)
 		{
 			t_udp_tracker_input_connect uti;
+			uti.m_connection_id = htonll(0x41727101980);
 			uti.action(uta_connect);
 			uti.transaction_id(m_transaction_id = rand());
 			if (m_s.send(&uti, sizeof(t_udp_tracker_input_connect)) != sizeof(t_udp_tracker_input_connect))
