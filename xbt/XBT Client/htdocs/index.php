@@ -38,8 +38,8 @@
 		switch ($_REQUEST['a'])
 		{
 		case 'set_options':
-			send_string($s, sprintf('d6:action%d:%s9:peer porti%de13:seeding ratioi%de12:tracker porti%de11:upload ratei%de12:upload slotsi%dee',
-				strlen($action), $action, $_REQUEST['peer_port'], $_REQUEST['seeding_ratio'], $_REQUEST['tracker_port'], $_REQUEST['upload_rate'] << 10, $_REQUEST['upload_slots']));
+			send_string($s, sprintf('d6:action%d:%s10:peer limiti%de9:peer porti%de13:seeding ratioi%de13:torrent limiti%de12:tracker porti%de11:upload ratei%de12:upload slotsi%dee',
+				strlen($action), $action, $_REQUEST['peer_limit'], $_REQUEST['peer_port'], $_REQUEST['seeding_ratio'], $_REQUEST['torrent_limit'], $_REQUEST['tracker_port'], $_REQUEST['upload_rate'] << 10, $_REQUEST['upload_slots']));
 			break;
 		default:
 			foreach ($_REQUEST as $name => $value)
