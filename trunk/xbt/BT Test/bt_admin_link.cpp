@@ -26,7 +26,7 @@ Cbt_admin_link::Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csoc
 	m_ctime = m_mtime = m_server->time();
 
 	m_read_b.size(512 << 10);
-	m_write_b.size(64 << 10);
+	m_write_b.size(512 << 10);
 }
 
 int Cbt_admin_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
@@ -130,6 +130,8 @@ void Cbt_admin_link::read_message(const char* r, const char* r_end)
 			if (v.write(r, r_end - r))
 				break;
 			Cvirtual_binary d1 = m_server->admin_request(v).read();
+			if (m_write_b.cb_write() < 5 + d1.size())
+				break;
 			byte d0[5];
 			*reinterpret_cast<__int32*>(d0) = htonl(d1.size() + 1);
 			d0[4] = bti_bvalue;
@@ -140,6 +142,7 @@ void Cbt_admin_link::read_message(const char* r, const char* r_end)
 	}
 }
 
-void Cbt_admin_link::alert(Calert::t_level, const string&)
+void Cbt_admin_link::alert(Calert::t_level level, const string& message)
 {
+	m_server->alert(Calert(level, message));
 }
