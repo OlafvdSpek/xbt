@@ -32,18 +32,6 @@ using namespace std;
 #include "/vc/xf2/misc/virtual_binary.h"
 #include "sha1.h"
 
-inline void compute_sha1(const Cvirtual_binary& s, void* d)
-{
-	compute_sha1(s, s.size(), d);
-}
-
-inline string compute_sha1(const Cvirtual_binary& s)
-{
-	char d[20];
-	compute_sha1(s, d);
-	return string(d, 20);
-}
-
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 

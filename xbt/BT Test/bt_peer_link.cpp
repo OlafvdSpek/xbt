@@ -6,7 +6,7 @@
 #include "bt_peer_link.h"
 
 #include "bt_file.h"
-#include "../misc/bt_strings.h"
+#include "bt_strings.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
