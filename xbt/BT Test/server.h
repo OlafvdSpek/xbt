@@ -21,6 +21,7 @@ public:
 
 	void dump(ostream& os);
 	void run();
+	void stop();
 	Cserver();
 	~Cserver();
 
@@ -39,6 +40,7 @@ private:
 
 	int m_admin_port;
 	int m_peer_port;
+	bool m_run;
 };
 
 #endif // !defined(AFX_SERVER_H__4D905E0B_7206_44A7_B536_848E7E677429__INCLUDED_)

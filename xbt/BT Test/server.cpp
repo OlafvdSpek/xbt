@@ -45,10 +45,12 @@ void Cserver::run()
 	{
 		m_files.push_back(Cbt_file());
 		Cbt_file& f = m_files.front();
-		if (f.info(Cvirtual_binary("//hwima/f$/archives/bt/old/when.vivid.girls.do.orgies.xxx-spice[1].torrent")))
+		f.m_local_port = peer_port();
+		if (f.info(Cvirtual_binary("d:/temp/test.torrent")))
 			return;
-		if (f.open("c:/temp/xbt/")) // "d:/temp/kz/special forces 2003.avi"))
+		if (f.open("d:/temp/xbt/f.bin"))
 			return;
+		f.m_local_port = peer_port();
 		f.m_peer_id = new_peer_id();
 #ifndef WIN32
 		if (daemon(true, false))
@@ -58,7 +60,7 @@ void Cserver::run()
 		fd_set fd_read_set;
 		fd_set fd_write_set;
 		fd_set fd_except_set;
-		while (1)
+		for (m_run = true; m_run; )
 		{
 			FD_ZERO(&fd_read_set);
 			FD_ZERO(&fd_write_set);
@@ -88,55 +90,57 @@ void Cserver::run()
 				cerr << "select failed: " << WSAGetLastError() << endl;
 				break;
 			}
-			else
+			if (FD_ISSET(l, &fd_read_set) && !m_files.empty())
 			{
-				if (FD_ISSET(l, &fd_read_set) && !m_files.empty())
+				sockaddr_in a;
+				socklen_t cb_a = sizeof(sockaddr_in);
+				Csocket s = accept(l, reinterpret_cast<sockaddr*>(&a), &cb_a);
+				if (s == SOCKET_ERROR)
+					cerr << "accept failed: " << WSAGetLastError() << endl;
+				else
 				{
-					sockaddr_in a;
-					socklen_t cb_a = sizeof(sockaddr_in);
-					Csocket s = accept(l, reinterpret_cast<sockaddr*>(&a), &cb_a);
-					if (s == SOCKET_ERROR)
-						cerr << "accept failed: " << WSAGetLastError() << endl;
+					if (s.blocking(false))
+						cerr << "ioctlsocket failed" << endl;
+					m_files.front().insert_peer(a, s);
+				}
+			}
+			if (FD_ISSET(la, &fd_read_set))
+			{
+				sockaddr_in a;
+				socklen_t cb_a = sizeof(sockaddr_in);
+				Csocket s = accept(la, reinterpret_cast<sockaddr*>(&a), &cb_a);
+				if (s == SOCKET_ERROR)
+					cerr << "accept failed: " << WSAGetLastError() << endl;
+				else
+				{
+					if (s.blocking(false))
+						cerr << "ioctlsocket failed" << endl;
+					m_admins.push_back(Cbt_admin_link(this, a, s));
+				}
+			}
+			{
+				for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); )
+				{
+					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
+					if (i->s() == INVALID_SOCKET)
+						i = m_admins.erase(i);
 					else
-					{
-						if (s.blocking(false))
-							cerr << "ioctlsocket failed" << endl;
-						m_files.front().insert_peer(a, s);
-					}
+						i++;
 				}
-				if (FD_ISSET(la, &fd_read_set))
-				{
-					sockaddr_in a;
-					socklen_t cb_a = sizeof(sockaddr_in);
-					Csocket s = accept(la, reinterpret_cast<sockaddr*>(&a), &cb_a);
-					if (s == SOCKET_ERROR)
-						cerr << "accept failed: " << WSAGetLastError() << endl;
-					else
-					{
-						if (s.blocking(false))
-							cerr << "ioctlsocket failed" << endl;
-						m_admins.push_back(Cbt_admin_link(this, a, s));
-					}
-				}
-				{
-					for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); )
-					{
-						i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-						if (i->s() == INVALID_SOCKET)
-							i = m_admins.erase(i);
-						else
-							i++;
-					}
-				}
-				{
-					for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-						i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-				}
+			}
+			{
+				for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 			}
 		}
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 			i->close();
 	}
+}
+
+void Cserver::stop()
+{
+	m_run = false;
 }
 
 void Cserver::dump(ostream& os)
