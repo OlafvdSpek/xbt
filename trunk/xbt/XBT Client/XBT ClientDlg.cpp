@@ -22,6 +22,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+const static UINT g_taskbar_created_message_id = RegisterWindowMessage("TaskbarCreated");
 const static UINT g_tray_message_id = RegisterWindowMessage("XBT Client Tray Message");
 
 enum
@@ -1606,7 +1607,9 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	default:
-		if (message == g_tray_message_id)
+		if (message == g_taskbar_created_message_id)
+			register_tray();
+		else if (message == g_tray_message_id)
 		{
 			switch (lParam)
 			{
