@@ -181,7 +181,7 @@ void Cconnection::read(const string& v)
 			if (!user)
 				user = m_server->find_user_by_ipa(ntohl(ti.m_ipa));
 			if (!m_server->anonymous_announce() && !user)
-				s = Cbvalue().d(bts_failure_reason, bts_unregistered_ipa).read();
+				s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 			else
 			{
 				m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);

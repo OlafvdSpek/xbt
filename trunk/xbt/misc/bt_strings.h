@@ -92,6 +92,7 @@ const string bts_total_uploaded = "total uploaded";
 const string bts_tracker_port = "tracker port";
 const string bts_unregistered_ipa = "unregistered IP address";
 const string bts_unregistered_torrent = "unregistered torrent";
+const string bts_unregistered_torrent_pass = "unregistered torrent pass";
 const string bts_unsupported_tracker_protocol = "unsupported tracker protocol, please upgrade your client";
 const string bts_up_rate = "up rate";
 const string bts_upload_rate = "upload rate";
