@@ -103,8 +103,8 @@ CAPTION "Trackers"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | 
-                    WS_BORDER | WS_TABSTOP,7,7,268,63
+                    LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,268,63
     PUSHBUTTON      "&Insert...",IDC_INSERT,9,75,50,14
     PUSHBUTTON      "&Edit...",IDC_EDIT,65,74,50,14
     PUSHBUTTON      "&Delete",IDC_DELETE,120,74,50,14
