@@ -448,11 +448,11 @@ void Cserver::load_profile(const Cxif_key& v)
 
 void Cserver::load_profile(const Cprofile& v)
 {
-	m_config.m_seeding_ratio = v.seeding_ratio_enable ? v.seeding_ratio : 0;
-	m_config.m_upload_rate = v.upload_rate_enable ? v.upload_rate : 0;
-	m_config.m_upload_slots = v.upload_slots_enable ? v.upload_slots : 0;
-	m_config.m_peer_limit = v.peer_limit_enable ? v.peer_limit : 0;
-	m_config.m_torrent_limit = v.torrent_limit_enable ? v.torrent_limit : 0;
+	seeding_ratio(v.seeding_ratio_enable ? v.seeding_ratio : 0);
+	upload_rate(v.upload_rate_enable ? v.upload_rate : 0);
+	upload_slots(v.upload_slots_enable ? v.upload_slots : 0);
+	peer_limit(v.peer_limit_enable ? v.peer_limit : 0);
+	torrent_limit(v.torrent_limit_enable ? v.torrent_limit : 0);
 }
 
 Cxif_key Cserver::get_profiles()
@@ -575,7 +575,7 @@ void Cserver::torrent_seeding_ratio(const string &file_id, bool override, int v)
 	{
 		if (i->m_info_hash != file_id)
 			continue;
-		i->m_seeding_ratio = v;
+		i->m_seeding_ratio = max(100, v);
 		i->m_seeding_ratio_override = override;
 		return;
 	}
