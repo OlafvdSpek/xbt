@@ -154,6 +154,7 @@ int Cserver::run()
 		m_peer_port++;
 	while (tracker_port() < 0x10000 && lt.bind(htonl(INADDR_ANY), htons(tracker_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_tracker_port++;
+	mkpath(local_app_data_dir());
 	if (l.listen()
 		|| la.listen())
 		return alert(Calert(Calert::emerg, "Server", "listen failed" + Csocket::error2a(WSAGetLastError()))), 1;

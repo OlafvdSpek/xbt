@@ -382,18 +382,9 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 		if (!*i && i->size())
 		{
 			string path = m_name + i->name();
-			for (int i = 3; i < path.size(); )
-			{
-				int a = path.find_first_of("/\\", i);
-				if (a == string::npos)
-					break;
-#ifdef WIN32
-				CreateDirectory(path.substr(0, a).c_str(), NULL);
-#else
-				mkdir(path.substr(0, a).c_str(), 0777);
-#endif
-				i = a + 1;
-			}
+			int a = path.find_last_of("/\\");
+			if (a != string::npos)
+				mkpath(path.substr(0, a));
 			if (i->open(m_name, O_CREAT | O_RDWR))
 			{
 				char b = 0;
@@ -455,11 +446,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->close();
 		string new_name = m_server->completes_dir() + m_name.substr(m_server->incompletes_dir().size());
-#ifdef WIN32
-		CreateDirectory(m_server->completes_dir().c_str(), NULL);
-#else
-		mkdir(m_server->completes_dir().c_str(), 0777);
-#endif
+		mkpath(m_server->completes_dir());
 		if (!rename(m_name.c_str(), new_name.c_str()))
 			m_name = new_name;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
