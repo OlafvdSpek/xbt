@@ -49,6 +49,7 @@ const string bts_info = "info";
 const string bts_interval = "interval";
 const string bts_ipa = "ip";
 const string bts_length = "length";
+const string bts_merkle_hash = "merkle hash";
 const string bts_name = "name";
 const string bts_path = "path";
 const string bts_peer_id = "peer id";

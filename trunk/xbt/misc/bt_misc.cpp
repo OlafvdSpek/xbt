@@ -5,6 +5,8 @@
 #include "stdafx.h"
 #include "bt_misc.h"
 
+#include "socket.h"
+
 string escape_string(const string& v)
 {
 	string w;
