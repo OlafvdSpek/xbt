@@ -34,9 +34,6 @@ SectionEnd
 Section "Uninstall"
 	SetShellVarContext all
 	Delete "$SMPROGRAMS\XBT Client.lnk"
-	DeleteRegKey HKCR ".torrent"
-	DeleteRegKey HKCR "MIME\Database\Content Type\application/x-bittorrent"
-	DeleteRegKey HKCR "bittorrent"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client"
 	RMDir /r "$INSTDIR"
 	RMDir "$PROGRAMFILES\XBT"
