@@ -3,20 +3,27 @@
 <?
 	mysql_connect("localhost", "xbt", "pass");
 	mysql_select_db("xbt");
-	$results = mysql_query("select sum(leechers) as leechers, sum(seeders) as seeders, sum(leechers or seeders) as torrents from xbt_files");
+	$results = mysql_query("select sum(announced) announced, sum(scraped) scraped, sum(completed) completed, sum(started) started, sum(stopped) stopped, sum(leechers) leechers, sum(seeders) seeders, sum(leechers or seeders) torrents from xbt_files");
 	$result = mysql_fetch_assoc($results);
 	$result[peers] = $result[leechers] + $result[seeders];
-	if (!$result[peers])
-		return;
 	echo("<table>");
+	printf("<tr><th>announced<td align=right>%d<td>", $result[announced]);
+	printf("<tr><th>scraped<td align=right>%d<td>", $result[scraped]);
+	printf("<tr><th>completed<td align=right>%d<td>", $result[completed]);
+	printf("<tr><th>started<td align=right>%d<td>", $result[started]);
+	printf("<tr><th>stopped<td align=right>%d<td>", $result[stopped]);
 	printf("<tr><th>peers<td align=right>%d<td align=right>100 %%", $result[peers]);
-	printf("<tr><th>leechers<td align=right>%d<td align=right>%d %%", $result[leechers], $result[leechers] * 100 / $result[peers]);
-	printf("<tr><th>seeders<td align=right>%d<td align=right>%d %%", $result[seeders], $result[seeders] * 100 / $result[peers]);
+	printf("<tr><th>leechers<td align=right>%d<td align=right>", $result[leechers]);
+	if ($result[peers])
+		printf("%d %%", $result[leechers] * 100 / $result[peers]);
+	printf("<tr><th>seeders<td align=right>%d<td align=right>", $result[seeders]);
+	if ($result[peers])
+		printf("%d %%", $result[seeders] * 100 / $result[peers]);
 	printf("<tr><th>torrents<td align=right>%d<td>", $result[torrents]);
 	printf("<tr><th>time<td align=right colspan=2>%s", gmdate("Y-m-d H:i:s"));
 	echo("</table>");
 	echo("<hr>");
-	$results = mysql_query("select *, unix_timestamp(mtime) as mtime, unix_timestamp(ctime) as ctime from xbt_files where leechers or seeders order by mtime desc");
+	$results = mysql_query("select *, unix_timestamp(mtime) mtime, unix_timestamp(ctime) ctime from xbt_files where leechers or seeders order by ctime desc");
 	echo("<table>");
 	echo("<tr>");
 	echo("<th>fid");
