@@ -80,8 +80,7 @@ BOOL Cdlg_files::OnInitDialog()
 	m_sort_reverse = false;
 	load_data();
 	SetTimer(0, 15000, NULL);
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+	return true;
 }
 
 void Cdlg_files::load_data()
