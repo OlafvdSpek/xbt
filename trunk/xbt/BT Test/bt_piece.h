@@ -27,6 +27,11 @@ public:
 	void write(int offset, const char* s, int cb_s);
 	Cbt_piece();
 
+	int c_sub_pieces_left() const
+	{
+		return mc_sub_pieces_left;
+	}
+
 	int size() const
 	{
 		return m_size;
@@ -39,11 +44,11 @@ public:
 	t_peers m_peers;
 	int mc_peers;
 	t_sub_pieces m_sub_pieces;
-	int mc_sub_pieces_left;
 	int mcb_sub_piece;
 	bool m_valid;
 	char m_priority;
 private:
+	int mc_sub_pieces_left;
 	int m_size;
 };
 
