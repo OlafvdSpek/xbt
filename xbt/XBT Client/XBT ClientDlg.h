@@ -14,6 +14,7 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 public:
 	void set_bottom_view(int v);
+	int get_priority();
 	void set_priority(int v);
 	void set_clipboard(const string&);
 	void lower_process_priority(bool);
@@ -124,6 +125,12 @@ protected:
 	afx_msg void OnUpdatePopupStop(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupAnnounce(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupExploreTracker(CCmdUI* pCmdUI);
+	afx_msg void OnPopupUploadRateLimit();
+	afx_msg void OnUpdatePopupUploadRateLimit(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupPriorityExclude(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupPriorityHigh(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupPriorityLow(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatePopupPriorityNormal(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);

@@ -198,8 +198,14 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_START, OnUpdatePopupStart)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_STOP, OnUpdatePopupStop)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_ANNOUNCE, OnUpdatePopupAnnounce)
-	ON_WM_INITMENU()
 	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE_TRACKER, OnUpdatePopupExploreTracker)
+	ON_COMMAND(ID_POPUP_UPLOAD_RATE_LIMIT, OnPopupUploadRateLimit)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_UPLOAD_RATE_LIMIT, OnUpdatePopupUploadRateLimit)
+	ON_WM_INITMENU()
+	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_EXCLUDE, OnUpdatePopupPriorityExclude)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_HIGH, OnUpdatePopupPriorityHigh)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_LOW, OnUpdatePopupPriorityLow)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_NORMAL, OnUpdatePopupPriorityNormal)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1558,7 +1564,7 @@ int CXBTClientDlg::events_compare(int id_a, int id_b) const
 {
 	if (!m_file)
 		return 0;
-	if (m_peers_sort_reverse)
+	if (m_events_sort_reverse)
 		swap(id_a, id_b);
 	const t_event& a = m_file->events[id_a];
 	const t_event& b = m_file->events[id_b];
@@ -1624,7 +1630,7 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 {
 	if (!m_file)
 		return 0;
-	if (m_peers_sort_reverse)
+	if (m_files_sort_reverse)
 		swap(id_a, id_b);
 	const t_sub_file& a = m_file->sub_files[id_a];
 	const t_sub_file& b = m_file->sub_files[id_b];
@@ -2035,6 +2041,66 @@ void CXBTClientDlg::OnPopupPriorityExclude()
 	set_priority(-10);
 }
 
+void CXBTClientDlg::OnUpdatePopupPriorityHigh(CCmdUI* pCmdUI) 
+{
+	if (m_bottom_view == v_files && m_file)
+	{
+		pCmdUI->Enable(m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
+		pCmdUI->SetCheck(get_priority() == 1);
+		return;
+	}
+	pCmdUI->Enable(false);
+}
+
+void CXBTClientDlg::OnUpdatePopupPriorityNormal(CCmdUI* pCmdUI) 
+{
+	if (m_bottom_view == v_files && m_file)
+	{
+		pCmdUI->Enable(m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
+		pCmdUI->SetCheck(get_priority() == 0);
+		return;
+	}
+	pCmdUI->Enable(false);
+}
+
+void CXBTClientDlg::OnUpdatePopupPriorityLow(CCmdUI* pCmdUI) 
+{
+	if (m_bottom_view == v_files && m_file)
+	{
+		pCmdUI->Enable(m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
+		pCmdUI->SetCheck(get_priority() == -1);
+		return;
+	}
+	pCmdUI->Enable(false);
+}
+
+void CXBTClientDlg::OnUpdatePopupPriorityExclude(CCmdUI* pCmdUI) 
+{
+	if (m_bottom_view == v_files && m_file)
+	{
+		pCmdUI->Enable(m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
+		pCmdUI->SetCheck(get_priority() == -10);
+		return;
+	}
+	pCmdUI->Enable(false);
+}
+
+int CXBTClientDlg::get_priority()
+{
+	if (m_bottom_view != v_files || !m_file)
+		return 2;
+	int v = 2;
+	for (int index = -1; (index = m_peers.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_sub_file& e = m_file->sub_files[m_peers.GetItemData(index)];
+		if (v == 2)
+			v = e.priority;
+		else if (e.priority != v)
+			return 2;
+	}
+	return v;
+}
+
 void CXBTClientDlg::set_priority(int v)
 {
 	if (m_bottom_view != v_files || !m_file)
@@ -2123,4 +2189,15 @@ void CXBTClientDlg::OnUpdatePopupViewPeers(CCmdUI* pCmdUI)
 void CXBTClientDlg::OnUpdatePopupViewTrackers(CCmdUI* pCmdUI) 
 {
 	pCmdUI->SetRadio(m_bottom_view == v_trackers);
+}
+
+void CXBTClientDlg::OnPopupUploadRateLimit() 
+{
+	m_server.upload_rate(m_server.upload_rate() ? 0 : AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
+}
+
+void CXBTClientDlg::OnUpdatePopupUploadRateLimit(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
+	pCmdUI->SetCheck(m_server.upload_rate());
 }
