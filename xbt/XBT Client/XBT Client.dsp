@@ -187,6 +187,18 @@ SOURCE=".\XBT ClientDlg.cpp"
 
 SOURCE=..\misc\xcc_z.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\misc\xif_key.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\xif_key_r.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\xif_value.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
