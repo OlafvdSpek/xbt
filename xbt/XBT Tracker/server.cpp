@@ -227,9 +227,7 @@ void Cserver::run()
 			write_db();
 	}
 	write_db();
-#ifndef WIN32
 	unlink(g_pid_fname);
-#endif
 }
 
 void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, int uid)
