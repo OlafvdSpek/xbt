@@ -72,5 +72,6 @@ int CXBTClientApp::ExitInstance()
 {
 	m_server.stop();
 	WaitForSingleObject(m_server_thread->m_hThread, INFINITE);	
+	delete m_server_thread;
 	return CWinApp::ExitInstance();
 }

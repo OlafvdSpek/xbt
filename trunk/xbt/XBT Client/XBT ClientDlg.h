@@ -59,6 +59,7 @@ protected:
 	afx_msg void OnPopupClose();
 	afx_msg void OnUpdatePopupClose(CCmdUI* pCmdUI);
 	afx_msg void OnPopupOptions();
+	afx_msg void OnDropFiles(HDROP hDropInfo);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

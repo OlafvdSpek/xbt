@@ -51,6 +51,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_CLOSE, OnPopupClose)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_CLOSE, OnUpdatePopupClose)
 	ON_COMMAND(ID_POPUP_OPTIONS, OnPopupOptions)
+	ON_WM_DROPFILES()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -138,9 +139,13 @@ void CXBTClientDlg::open(const string& name)
 {
 	Cvirtual_binary d(name);
 	Cbt_torrent torrent(d);
+	if (!torrent.valid())
+		return;
 	CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
 	if (IDOK != dlg.DoModal())
 		return;
+	if (!torrent.files().front().name().empty())
+		CreateDirectory(dlg.GetPathName(), NULL);
 	CWaitCursor wc;
 	m_server->open(d, static_cast<string>(dlg.GetPathName()));
 }
@@ -550,4 +555,17 @@ void CXBTClientDlg::OnPopupOptions()
 	Cdlg_options dlg;
 	if (IDOK != dlg.DoModal())
 		return;	
+}
+
+void CXBTClientDlg::OnDropFiles(HDROP hDropInfo) 
+{
+	int c_files = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
+	
+	for (int i = 0; i < c_files; i++)
+	{
+		char name[MAX_PATH];
+		DragQueryFile(hDropInfo, i, name, MAX_PATH);
+		open(name);
+	}
+	ETSLayoutDialog::OnDropFiles(hDropInfo);
 }
