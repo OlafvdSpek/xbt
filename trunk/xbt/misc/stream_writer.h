@@ -26,12 +26,12 @@ public:
 
 	void write_int8(int v)
 	{
-		*reinterpret_cast<__int8*>(write(1)) = v;
+		*reinterpret_cast<char*>(write(1)) = v;
 	}
 
 	void write_int32(int v)
 	{
-		*reinterpret_cast<__int32*>(write(4)) = v;
+		*reinterpret_cast<int*>(write(4)) = v;
 	}
 
 	void write_int64(__int64 v)
