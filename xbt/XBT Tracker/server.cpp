@@ -262,8 +262,8 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 	if (i == m_files.end())
 		return Cbvalue();
 	Cbvalue v;
-	v.d(bts_c_leechers, i->second.leechers);
-	v.d(bts_c_seeders, i->second.seeders);
+	v.d(bts_complete, i->second.seeders);
+	v.d(bts_incomplete, i->second.leechers);
 	v.d(bts_interval, m_announce_interval);
 	v.d(bts_peers, i->second.select_peers(ti));	
 	return v;

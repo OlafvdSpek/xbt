@@ -32,8 +32,6 @@ enum
 
 const string bts_announce = "announce";
 const string bts_announce_list = "announce-list";
-const string bts_c_leechers = "c_leechers";
-const string bts_c_seeders = "c_seeders";
 const string bts_complete = "complete";
 const string bts_downloaded = "downloaded";
 const string bts_failure_reason = "failure reason";
