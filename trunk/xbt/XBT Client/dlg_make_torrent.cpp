@@ -247,7 +247,7 @@ void Cdlg_make_torrent::OnSave()
 	AfxGetApp()->WriteProfileString(m_strRegStore, "tracker", m_tracker);
 	AfxGetApp()->WriteProfileString(m_strRegStore, "trackers", m_trackers);
 	AfxGetApp()->WriteProfileInt(m_strRegStore, "use_merkle", m_use_merkle);
-	int cb_piece = 512 << 10;
+	int cb_piece = 1 << 20;
 	if (!m_use_merkle)
 	{
 		__int64 cb_total = 0;
