@@ -1899,6 +1899,8 @@ void CXBTClientDlg::set_clipboard(const string& v)
 
 void CXBTClientDlg::set_bottom_view(int v)
 {
+	if (v == m_bottom_view)
+		return;
 	m_peers.DeleteAllItems();
 	m_bottom_view = v;
 	m_peers_sort_column = -1;
