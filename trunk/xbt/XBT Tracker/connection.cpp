@@ -116,10 +116,6 @@ void Cconnection::read(const string& v)
 			a = d + 1;
 		}
 	}
-	bool announce = !strnicmp(v.c_str(), "get /a", 6);
-	bool scrape = !strnicmp(v.c_str(), "get /s", 6);
-	if (announce ? !ti.valid() : !scrape)
-		return;
 	ti.m_ipa = m_a.sin_addr.s_addr;
 	{
 		static ofstream f("xbt_tracker.log");
@@ -127,12 +123,31 @@ void Cconnection::read(const string& v)
 			 << '\t'<< ti.m_event << '\t' << ti.m_downloaded << '\t' << ti.m_uploaded << '\t' << ti.m_left 
 			 << '\t'<< hex_encode(ti.m_info_hash) << '\t' << hex_encode(ti.m_peer_id) << endl;
 	}
-	if (announce)
-		m_server->insert_peer(ti);
-	Cvirtual_binary s = xcc_z::gzip((announce ? m_server->select_peers(ti) : m_server->scrape(ti)).read());
+	Cvirtual_binary s;
+	switch (v.length() >= 5 ? v[5] : 0) 
+	{
+	case 'a':
+		if (ti.valid())
+		{
+			m_server->insert_peer(ti);
+			s = m_server->select_peers(ti).read();
+		}
+		break;
+	case 'd':
+		{
+			string v = m_server->debug(ti);
+			s = Cvirtual_binary(v.c_str(), v.length());
+		}
+		break;
+	case 's':
+		s = m_server->scrape(ti).read();
+		break;
+	}
+	s = xcc_z::gzip(s);
 	const char* h = "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Encoding: gzip\r\n\r\n";
 	Cvirtual_binary d;
-	s.read(strcpy(reinterpret_cast<char*>(d.write_start(strlen(h) + s.size())), h) + strlen(h));
+	memcpy(d.write_start(strlen(h) + s.size()), h, strlen(h));
+	s.read(d.data_edit() + strlen(h));
 	if (m_s.send(d, d.size()) != d.size())
 		cerr << "send failed" << endl;
 }

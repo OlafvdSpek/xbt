@@ -40,6 +40,7 @@ public:
 	struct t_file
 	{
 		void clean_up(int announce_interval);
+		string debug() const;
 		Cbvalue select_peers(const Ctracker_input& ti) const;
 		Cbvalue scrape() const;
 
@@ -67,6 +68,7 @@ public:
 	void clean_up();
 	void insert_peer(const Ctracker_input&);
 	void update_peer(const string& file_id, int peer_id, bool listening);
+	string debug(const Ctracker_input&) const;
 	Cbvalue select_peers(const Ctracker_input&);
 	Cbvalue scrape(const Ctracker_input&);
 	void run(Csocket& lt, Csocket& lu);

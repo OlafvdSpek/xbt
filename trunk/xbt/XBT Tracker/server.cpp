@@ -116,7 +116,7 @@ void Cserver::insert_peer(const Ctracker_input& v)
 
 		if (!peer.listening && time(NULL) - peer.mtime > 900)
 		{
-			Cpeer_link peer_link(ntohl(v.m_ipa), v.m_port, this, v.m_info_hash, v.m_ipa);
+			Cpeer_link peer_link(v.m_ipa, htons(v.m_port), this, v.m_info_hash, v.m_ipa);
 			if (peer_link)
 				m_peer_links.push_front(peer_link);
 		}
@@ -436,4 +436,48 @@ void Cserver::read_config()
 	{
 	}
 	m_read_config_time = time(NULL);
+}
+
+string Cserver::t_file::debug() const
+{
+	string page;
+	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
+	{
+		page += "<tr><td>" + n(i->first)
+			+ "<td>" + n(i->second.port)
+			+ "<td>" + n(i->second.listening)
+			+ "<td>" + n(i->second.left)
+			+ "<td>" + n(i->second.mtime)
+			+ "<td>" + hex_encode(i->second.peer_id);
+	}
+	return page;
+}
+
+string Cserver::debug(const Ctracker_input& ti) const
+{
+	string page;
+	page += "<table>";
+	if (ti.m_info_hash.empty())
+	{
+		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		{
+			page += "<tr><td>" + n(i->second.fid) 
+				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
+				+ "<td>" + (i->second.dirty ? 'd' : ' ')
+				+ "<td>" + n(i->second.peers.size()) 
+				+ "<td>" + n(i->second.leechers) 
+				+ "<td>" + n(i->second.seeders) 
+				+ "<td>" + n(i->second.completed) 
+				+ "<td>" + n(i->second.started) 
+				+ "<td>" + n(i->second.stopped);
+		}
+	}
+	else
+	{
+		t_files::const_iterator i = m_files.find(ti.m_info_hash);
+		if (i != m_files.end())
+			page += i->second.debug();
+	}
+	page += "</table>";
+	return page;
 }
