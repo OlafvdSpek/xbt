@@ -21,16 +21,9 @@ Cbt_torrent::Cbt_torrent()
 {
 }
 
-Cbt_torrent::Cbt_torrent(const Cvirtual_binary& v)
+Cbt_torrent::Cbt_torrent(const Cbvalue& v)
 {
 	write(v);
-}
-
-int Cbt_torrent::write(const Cvirtual_binary& v)
-{
-	Cbvalue a;
-	a.write(v);
-	return write(a);
 }
 
 int Cbt_torrent::write(const Cbvalue& v)
