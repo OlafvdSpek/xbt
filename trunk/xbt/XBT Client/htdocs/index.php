@@ -112,11 +112,13 @@
 	foreach ($v['value']['files']['value'] as $info_hash => $file)
 	{
 		$rows .= template_torrent(array_merge($file['value'], array('info_hash' => array('value' => $info_hash))));
+		if ($info_hash == $_REQUEST['torrent'])
+			$torrent_events .= template_torrent_events($file['value']['events']['value']);
 	}
 	$torrents = template_torrents(array('rows' => $rows));
 	send_string($s, 'd6:action11:get optionse');
 	$v = recv_string($s);
 	$v = bdec($v);
 	$options = template_options($v['value']);
-	echo(template_page(array('options' => $options, 'torrents' => $torrents)));
+	echo(template_page(array('options' => $options, 'torrent_events' => $torrent_events, 'torrents' => $torrents)));
 ?>
