@@ -21,6 +21,7 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 {
 	clean_up();
 	read_db();
+	write_db();
 	fd_set fd_read_set;
 	while (1)
 	{
@@ -111,7 +112,7 @@ Cbvalue Cserver::select_peers(const string& info_hash)
 {
 	if (time(NULL) - m_clean_up_time > m_clean_up_interval)
 		clean_up();
-	else if (time(NULL) - m_write_db_time > m_write_db_interval)
+	if (time(NULL) - m_write_db_time > m_write_db_interval)
 		write_db();
 	t_files::const_iterator i = m_files.find(info_hash);
 	if (i == m_files.end())
@@ -156,12 +157,6 @@ void Cserver::t_file::clean_up(int announce_interval)
 
 Cbvalue Cserver::t_file::scrape() const
 {
-	int leechers = 0;
-	int seeders = 0;
-	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
-		(i->second.left ? leechers : seeders)++;
-	assert(leechers == this->leechers);
-	assert(seeders == this->seeders);
 	Cbvalue v;
 	v.d(bts_complete, seeders);
 	// file.d(bts_downloaded, completed);
