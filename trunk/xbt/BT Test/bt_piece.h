@@ -17,8 +17,6 @@ class Cbt_sub_piece
 public:
 	typedef map<Cbt_peer_link*, int> t_peers;
 
-	void erase_peers(Cbt_piece* piece);
-
 	t_peers m_peers;
 
 	Cbt_sub_piece()
@@ -48,6 +46,7 @@ public:
 	
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;
+	bool check_peer(Cbt_peer_link*);
 	void erase_peer(Cbt_peer_link*);
 	int next_invalid_sub_piece(Cbt_peer_link*);
 	void load_state(Cstream_reader&);

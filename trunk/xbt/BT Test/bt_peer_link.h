@@ -23,6 +23,7 @@ class Cbt_piece;
 class Cbt_peer_link  
 {
 public:
+	void check_pieces();
 	Cbt_logger& logger();
 	void clear_local_requests();
 	int cb_write_buffer() const;
@@ -130,6 +131,7 @@ public:
 	t_pieces m_pieces;
 	int m_rtime;
 	int m_stime;
+	int m_check_pieces_time;
 	int m_send_quota;
 
 	bool m_local_link;
@@ -147,7 +149,6 @@ public:
 	__int64 m_uploaded;
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
-	int m_piece_rtime;
 	int m_get_peers_stime;
 	int m_peers_stime;
 	bool m_get_info_extension;

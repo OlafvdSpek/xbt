@@ -146,6 +146,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			return 1;
 		if (m_state == 3)
 		{
+			if (time(NULL) - m_check_pieces_time > 60)
+				check_pieces();
 			if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
 			{
 				const t_remote_request& request = m_remote_requests.front();
@@ -159,8 +161,6 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				}
 				m_remote_requests.pop_front();
 			}
-			if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 600)
-				clear_local_requests();
 			int c_max_requests_pending = m_f->end_mode() ? 1 : 8;
 			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < c_max_requests_pending)
 			{
@@ -170,13 +170,11 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 					interested(false);
 					break;
 				}
-				Cbt_piece* piece = &m_f->m_pieces[a];
-				if (m_pieces.empty())
-					m_piece_rtime = time(NULL);
-				m_pieces.insert(piece);
-				for (int b; mc_local_requests_pending < c_max_requests_pending && (b = piece->next_invalid_sub_piece(this)) != -1; )
+				Cbt_piece& piece = m_f->m_pieces[a];
+				m_pieces.insert(&piece);
+				for (int b; mc_local_requests_pending < c_max_requests_pending && (b = piece.next_invalid_sub_piece(this)) != -1; )
 				{
-					t_local_request request(m_f->mcb_piece * a + piece->cb_sub_piece() * b, piece->cb_sub_piece(b));
+					t_local_request request(m_f->mcb_piece * a + piece.cb_sub_piece() * b, piece.cb_sub_piece(b));
 					logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 					if (m_f->m_merkle)
 						write_merkle_request(request.offset, 127);
@@ -391,7 +389,7 @@ void Cbt_peer_link::write_handshake()
 	m_get_peers_stime = 0;
 	mc_local_requests_pending = 0;
 	m_peers_stime = 0;
-	m_piece_rtime = m_rtime = m_stime = time(NULL);
+	m_check_pieces_time = m_rtime = m_stime = time(NULL);
 }
 
 void Cbt_peer_link::write_keepalive()
@@ -625,7 +623,6 @@ void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	m_f->m_down_counter.add(size);
 	m_f->m_total_downloaded += size;
 	mc_local_requests_pending--;
-	m_piece_rtime = time(NULL);
 }
 
 void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes)
@@ -642,7 +639,6 @@ void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, c
 	m_f->m_downloaded += size;
 	m_f->m_down_counter.add(size);
 	m_f->m_total_downloaded += size;
-	m_piece_rtime = time(NULL);
 }
 
 void Cbt_peer_link::read_message(const char* r, const char* r_end)
@@ -746,7 +742,7 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 
 int Cbt_peer_link::pre_dump() const
 {
-	int size = m_remote_peer_id.length() + 57;
+	int size = m_remote_peer_id.length() + 61;
 	return size;
 }
 
@@ -767,6 +763,7 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(1, m_remote_choked);
 	w.write_int(1, m_remote_interested);
 	w.write_int(4, m_remote_requests.size());
+	w.write_int(4, m_pieces.size());
 }
 
 void Cbt_peer_link::alert(const Calert& v)
@@ -786,4 +783,16 @@ void Cbt_peer_link::clear_local_requests()
 Cbt_logger& Cbt_peer_link::logger()
 {
 	return m_f->logger();
+}
+
+void Cbt_peer_link::check_pieces()
+{
+	for (t_pieces::iterator i = m_pieces.begin(); i != m_pieces.end(); )
+	{
+		if ((*i)->check_peer(this))
+			i++;
+		else
+			i = m_pieces.erase(i);
+	}
+	m_check_pieces_time = time(NULL);
 }
