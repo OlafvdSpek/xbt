@@ -20,8 +20,35 @@ Cserver::Cserver(Cdatabase& database):
 		m_secret = m_secret << 8 ^ rand();
 }
 
-void Cserver::run(Csocket& lt, Csocket& lu)
+void Cserver::run()
 {
+	read_config();
+	t_sockets lt, lu;
+	for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
+	{
+		Csocket l0, l1;
+		if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
+			cerr << "socket failed: " << WSAGetLastError() << endl;
+		else if (l0.bind(htonl(INADDR_ANY), htons(*i)))			
+			cerr << "bind failed: " << WSAGetLastError() << endl;
+		else if (l0.listen())
+			cerr << "listen failed: " << WSAGetLastError() << endl;
+		else
+			lt.push_back(l0);
+		if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
+			cerr << "socket failed: " << WSAGetLastError() << endl;
+		else if (l1.bind(htonl(INADDR_ANY), htons(*i)))
+			cerr << "bind failed: " << WSAGetLastError() << endl;
+		else
+			lu.push_back(l1);
+	}
+	if (lt.empty() && lu.empty())
+		return;
+#ifndef WIN32
+	if (m_daemon && daemon(true, false))
+		cerr << "daemon failed" << endl;
+	ofstream("xbt_tracker.pid") << getpid() << endl;
+#endif
 	clean_up();
 	read_db();
 	write_db();
@@ -33,11 +60,11 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 		FD_ZERO(&fd_read_set);
 		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
-		int n = max(static_cast<SOCKET>(lt), static_cast<SOCKET>(lu));
+		int n = 0;
 		{
 			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); i++)
 			{
-				int z = i->pre_select(&fd_read_set);
+				int z = i->pre_select(&fd_read_set, &fd_write_set);
 				n = max(n, z);
 			}
 		}
@@ -47,34 +74,46 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 				int z = i->pre_select(&fd_write_set, &fd_except_set);
 				n = max(n, z);
 			}
+		}		
+		for (t_sockets::iterator i = lt.begin(); i != lt.end(); i++)
+		{
+			FD_SET(*i, &fd_read_set);
+			n = max(n, *i);
 		}
-		FD_SET(lt, &fd_read_set);
-		FD_SET(lu, &fd_read_set);
+		for (t_sockets::iterator i = lu.begin(); i != lu.end(); i++)
+		{
+			FD_SET(*i, &fd_read_set);
+			n = max(n, *i);
+		}
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, NULL) == SOCKET_ERROR)
 			cerr << "select failed: " << WSAGetLastError() << endl;
 		else 
 		{
-			if (FD_ISSET(lt, &fd_read_set))
+			for (t_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 			{
+				if (!FD_ISSET(*i, &fd_read_set))
+					continue;
 				sockaddr_in a;
 				socklen_t cb_a = sizeof(sockaddr_in);
-				SOCKET s = accept(lt, reinterpret_cast<sockaddr*>(&a), &cb_a);
+				Csocket s = accept(*i, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
 					cerr << "accept failed: " << WSAGetLastError() << endl;
 				else
 				{
-					unsigned long p = true;
-					if (ioctlsocket(s, FIONBIO, &p))
+					if (s.blocking(false))
 						cerr << "ioctlsocket failed: " << WSAGetLastError() << endl;
 					m_connections.push_front(Cconnection(this, s, a));
 				}
 			}
-			if (FD_ISSET(lu, &fd_read_set))
-				Ctransaction(*this, lu).recv();
+			for (t_sockets::iterator i = lu.begin(); i != lu.end(); i++)
+			{
+				if (FD_ISSET(*i, &fd_read_set))
+					Ctransaction(*this, *i).recv();
+			}
 			{
 				for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
 				{
-					i->post_select(&fd_read_set);
+					i->post_select(&fd_read_set, &fd_write_set);
 					if (*i)
 						i++;
 					else
@@ -190,7 +229,7 @@ Cbvalue Cserver::t_file::select_peers(const Ctracker_input& ti) const
 		{
 			if ((ti.m_left || i->second.left) && i->second.listening)
 				candidates.push_back(i);
-		}
+		}		
 	}
 	int c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
 	if (ti.m_compact)
@@ -379,7 +418,12 @@ void Cserver::read_config()
 	m_announce_interval = 1800;
 	m_auto_register = true;
 	m_clean_up_interval = 60;
+	m_daemon = true;
+	m_gzip_announce = true;
+	m_gzip_debug = true;
+	m_gzip_scrape = true;
 	m_listen_check = true;
+	m_listen_ports.clear();
 	m_log = false;
 	m_read_config_interval = 300;
 	m_read_db_interval = 60;
@@ -394,8 +438,18 @@ void Cserver::read_config()
 				m_announce_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "auto_register"))
 				m_auto_register = row.f_int(1);
+			else if (!strcmp(row.f(0), "daemon"))
+				m_daemon = row.f_int(1);
+			else if (!strcmp(row.f(0), "gzip_announce"))
+				m_gzip_announce = row.f_int(1);
+			else if (!strcmp(row.f(0), "gzip_debug"))
+				m_gzip_debug = row.f_int(1);
+			else if (!strcmp(row.f(0), "gzip_scrape"))
+				m_gzip_scrape = row.f_int(1);
 			else if (!strcmp(row.f(0), "listen_check"))
 				m_listen_check = row.f_int(1);
+			else if (!strcmp(row.f(0), "listen_port"))
+				m_listen_ports.insert(row.f_int(1));
 			else if (!strcmp(row.f(0), "log"))
 				m_log = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_config_interval"))
@@ -409,6 +463,8 @@ void Cserver::read_config()
 	catch (Cxcc_error error)
 	{
 	}
+	if (m_listen_ports.empty())
+		m_listen_ports.insert(2710);
 	m_read_config_time = time(NULL);
 }
 
@@ -433,16 +489,21 @@ string Cserver::debug(const Ctracker_input& ti) const
 {
 	string page;
 	page += "<meta http-equiv=refresh content=60><title>XBT Tracker</title><table>";
+	int leechers = 0;
+	int seeders = 0;
+	int torrents = 0;
 	if (ti.m_info_hash.empty())
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			if (!i->second.leechers && !i->second.seeders)
 				continue;
+			leechers += i->second.leechers;
+			seeders += i->second.seeders;
+			torrents++;
 			page += "<tr><td align=right>" + n(i->second.fid) 
 				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
 				+ "<td>" + (i->second.dirty ? '*' : ' ')
-				+ "<td align=right>" + n(i->second.peers.size()) 
 				+ "<td align=right>" + n(i->second.leechers) 
 				+ "<td align=right>" + n(i->second.seeders) 
 				+ "<td align=right>" + n(i->second.announced) 
@@ -458,7 +519,11 @@ string Cserver::debug(const Ctracker_input& ti) const
 		if (i != m_files.end())
 			page += i->second.debug();
 	}
-	page += "</table><hr><table><tr><td>read config time<td>" + n(m_read_config_time) 
+	page += "</table><hr><table><tr><td>leechers<td>" + n(leechers)
+		+ "<tr><td>seeders<td>" + n(seeders)
+		+ "<tr><td>torrents<td>" + n(torrents)
+		+ "<tr>"
+		+ "<tr><td>read config time<td>" + n(m_read_config_time) 
 		+ "<tr><td>clean up time<td>" + n(m_clean_up_time) 
 		+ "<tr><td>listen check<td>" + n(m_listen_check) 
 		+ "<tr><td>read db time<td>" + n(m_read_db_time) 
