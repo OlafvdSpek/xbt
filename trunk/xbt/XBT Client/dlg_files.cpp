@@ -175,7 +175,13 @@ void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (pDispInfo->item.iSubItem)
 	{
 	case 0:
-		m_buffer[m_buffer_w] = e.name;
+		if (e.name.empty())
+		{
+			int i = m_name.rfind('\\');
+			m_buffer[m_buffer_w] = i == string::npos ? m_name : m_name.substr(i + 1);
+		}
+		else
+			m_buffer[m_buffer_w] = e.name;
 		break;
 	case 1:
 		if (e.size)
