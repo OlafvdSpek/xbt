@@ -13,6 +13,8 @@
 class CXBTClientDlg : public ETSLayoutDialog
 {
 public:
+	void set_torrent_state(Cbt_file::t_state);
+	Cbt_file::t_state get_torrent_state();
 	void set_bottom_view(int v);
 	int get_priority();
 	void set_priority(int v);
@@ -81,8 +83,6 @@ protected:
 	afx_msg void OnPopupExit();
 	afx_msg void OnPopupExplore();
 	afx_msg void OnDestroy();
-	afx_msg void OnPopupStart();
-	afx_msg void OnPopupStop();
 	afx_msg void OnWindowPosChanging(WINDOWPOS FAR* lpwndpos);
 	afx_msg void OnEndSession(BOOL bEnding);
 	afx_msg void OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult);
@@ -122,8 +122,6 @@ protected:
 	afx_msg void OnUpdatePopupTorrentClipboardCopyAnnounceUrl(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupTorrentClipboardCopyHash(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupCopy(CCmdUI* pCmdUI);
-	afx_msg void OnUpdatePopupStart(CCmdUI* pCmdUI);
-	afx_msg void OnUpdatePopupStop(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupAnnounce(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupExploreTracker(CCmdUI* pCmdUI);
 	afx_msg void OnPopupUploadRateLimit();
@@ -140,10 +138,14 @@ protected:
 	afx_msg void OnUpdatePopupTorrentPriorityNormal(CCmdUI* pCmdUI);
 	afx_msg void OnPopupViewPieces();
 	afx_msg void OnUpdatePopupViewPieces(CCmdUI* pCmdUI);
-	afx_msg void OnPopupTorrentPause();
-	afx_msg void OnPopupTorrentUnpause();
-	afx_msg void OnUpdatePopupTorrentUnpause(CCmdUI* pCmdUI);
-	afx_msg void OnUpdatePopupTorrentPause(CCmdUI* pCmdUI);
+	afx_msg void OnPopupStatePaused();
+	afx_msg void OnUpdatePopupStatePaused(CCmdUI* pCmdUI);
+	afx_msg void OnPopupStateQueued();
+	afx_msg void OnUpdatePopupStateQueued(CCmdUI* pCmdUI);
+	afx_msg void OnPopupStateStarted();
+	afx_msg void OnUpdatePopupStateStarted(CCmdUI* pCmdUI);
+	afx_msg void OnPopupStateStopped();
+	afx_msg void OnUpdatePopupStateStopped(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
@@ -250,7 +252,7 @@ private:
 		int session_started_at;
 		int completed_at;
 		int priority;
-		int state;
+		Cbt_file::t_state state;
 		bool removed;
 	};
 

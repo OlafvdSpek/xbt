@@ -263,17 +263,18 @@ BEGIN
             MENUITEM "Low",                         ID_POPUP_TORRENT_PRIORITY_LOW
 
         END
+        POPUP "State"
+        BEGIN
+            MENUITEM "Queued",                      ID_POPUP_STATE_QUEUED
+            MENUITEM "Started",                     ID_POPUP_STATE_STARTED
+            MENUITEM "Paused",                      ID_POPUP_STATE_PAUSED
+            MENUITEM "Stopped",                     ID_POPUP_STATE_STOPPED
+        END
         POPUP "&Torrent"
         BEGIN
             MENUITEM "Explore",                     ID_POPUP_EXPLORE
             MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
-            MENUITEM SEPARATOR
             MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
-            MENUITEM "Pause",                       ID_POPUP_TORRENT_PAUSE
-            MENUITEM "Unpause",                     ID_POPUP_TORRENT_UNPAUSE
-            MENUITEM "Start",                       ID_POPUP_START
-            MENUITEM "Stop",                        ID_POPUP_STOP
-            MENUITEM SEPARATOR
             MENUITEM "Open...\tIns",                ID_POPUP_OPEN
             MENUITEM "&Close\tDel",                 ID_POPUP_CLOSE
             MENUITEM "Delete",                      ID_POPUP_TORRENT_DELETE

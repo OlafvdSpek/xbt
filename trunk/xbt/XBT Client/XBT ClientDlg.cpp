@@ -173,8 +173,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_EXIT, OnPopupExit)
 	ON_COMMAND(ID_POPUP_EXPLORE, OnPopupExplore)
 	ON_WM_DESTROY()
-	ON_COMMAND(ID_POPUP_START, OnPopupStart)
-	ON_COMMAND(ID_POPUP_STOP, OnPopupStop)
 	ON_WM_WINDOWPOSCHANGING()
 	ON_WM_ENDSESSION()
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
@@ -214,8 +212,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnUpdatePopupTorrentClipboardCopyAnnounceUrl)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH, OnUpdatePopupTorrentClipboardCopyHash)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_COPY, OnUpdatePopupCopy)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_START, OnUpdatePopupStart)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_STOP, OnUpdatePopupStop)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_ANNOUNCE, OnUpdatePopupAnnounce)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE_TRACKER, OnUpdatePopupExploreTracker)
 	ON_COMMAND(ID_POPUP_UPLOAD_RATE_LIMIT, OnPopupUploadRateLimit)
@@ -234,10 +230,14 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_PIECES, OnUpdatePopupViewPieces)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
-	ON_COMMAND(ID_POPUP_TORRENT_PAUSE, OnPopupTorrentPause)
-	ON_COMMAND(ID_POPUP_TORRENT_UNPAUSE, OnPopupTorrentUnpause)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_UNPAUSE, OnUpdatePopupTorrentUnpause)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PAUSE, OnUpdatePopupTorrentPause)
+	ON_COMMAND(ID_POPUP_STATE_PAUSED, OnPopupStatePaused)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_PAUSED, OnUpdatePopupStatePaused)
+	ON_COMMAND(ID_POPUP_STATE_QUEUED, OnPopupStateQueued)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_QUEUED, OnUpdatePopupStateQueued)
+	ON_COMMAND(ID_POPUP_STATE_STARTED, OnPopupStateStarted)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_STARTED, OnUpdatePopupStateStarted)
+	ON_COMMAND(ID_POPUP_STATE_STOPPED, OnPopupStateStopped)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_STATE_STOPPED, OnUpdatePopupStateStopped)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -273,6 +273,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.seeding_ratio(AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio()));
 	m_show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
 	m_show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
+	m_server.torrent_limit(AfxGetApp()->GetProfileInt(m_reg_key, "torrent_limit", m_server.torrent_limit()));
 	m_server.tracker_port(AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port()));
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));
@@ -964,7 +965,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.c_valid_pieces = sr.read_int(4);
 	f.cb_chunk = sr.read_int(4);
 	f.cb_piece = sr.read_int(4);
-	f.state = sr.read_int(4);
+	f.state = static_cast<Cbt_file::t_state>(sr.read_int(4));
 	f.started_at = sr.read_int(4);
 	f.session_started_at = sr.read_int(4);
 	f.completed_at = sr.read_int(4);
@@ -1231,50 +1232,6 @@ void CXBTClientDlg::OnPopupAnnounce()
 }
 
 void CXBTClientDlg::OnUpdatePopupAnnounce(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
-}
-
-void CXBTClientDlg::OnPopupTorrentPause() 
-{
-	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.pause_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
-}
-
-void CXBTClientDlg::OnUpdatePopupTorrentPause(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
-}
-
-void CXBTClientDlg::OnPopupTorrentUnpause() 
-{
-	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.unpause_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
-}
-
-void CXBTClientDlg::OnUpdatePopupTorrentUnpause(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
-}
-
-void CXBTClientDlg::OnPopupStart()
-{
-	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.start_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
-}
-
-void CXBTClientDlg::OnUpdatePopupStart(CCmdUI* pCmdUI) 
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
-}
-
-void CXBTClientDlg::OnPopupStop()
-{
-	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.stop_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
-}
-
-void CXBTClientDlg::OnUpdatePopupStop(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
 }
@@ -2325,7 +2282,7 @@ void CXBTClientDlg::OnUpdatePopupPriorityHigh(CCmdUI* pCmdUI)
 	if (m_bottom_view == v_files && m_file)
 	{
 		pCmdUI->Enable(m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
-		pCmdUI->SetCheck(get_priority() == 1);
+		pCmdUI->SetRadio(get_priority() == 1);
 		return;
 	}
 	pCmdUI->Enable(false);
@@ -2336,7 +2293,7 @@ void CXBTClientDlg::OnUpdatePopupPriorityNormal(CCmdUI* pCmdUI)
 	if (m_bottom_view == v_files && m_file)
 	{
 		pCmdUI->Enable(m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
-		pCmdUI->SetCheck(get_priority() == 0);
+		pCmdUI->SetRadio(get_priority() == 0);
 		return;
 	}
 	pCmdUI->Enable(false);
@@ -2347,7 +2304,7 @@ void CXBTClientDlg::OnUpdatePopupPriorityLow(CCmdUI* pCmdUI)
 	if (m_bottom_view == v_files && m_file)
 	{
 		pCmdUI->Enable(m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
-		pCmdUI->SetCheck(get_priority() == -1);
+		pCmdUI->SetRadio(get_priority() == -1);
 		return;
 	}
 	pCmdUI->Enable(false);
@@ -2358,7 +2315,7 @@ void CXBTClientDlg::OnUpdatePopupPriorityExclude(CCmdUI* pCmdUI)
 	if (m_bottom_view == v_files && m_file)
 	{
 		pCmdUI->Enable(m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
-		pCmdUI->SetCheck(get_priority() == -10);
+		pCmdUI->SetRadio(get_priority() == -10);
 		return;
 	}
 	pCmdUI->Enable(false);
@@ -2505,7 +2462,7 @@ void CXBTClientDlg::set_torrent_priority(int v)
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
 		const t_file& e = m_files_map[m_files.GetItemData(index)];
-		m_server.file_priority(m_file->info_hash, v);
+		m_server.file_priority(e.info_hash, v);
 	}
 }
 
@@ -2517,7 +2474,7 @@ void CXBTClientDlg::OnPopupTorrentPriorityHigh()
 void CXBTClientDlg::OnUpdatePopupTorrentPriorityHigh(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
-	pCmdUI->SetCheck(get_torrent_priority() == 1);
+	pCmdUI->SetRadio(get_torrent_priority() == 1);
 }
 
 void CXBTClientDlg::OnPopupTorrentPriorityNormal() 
@@ -2528,16 +2485,83 @@ void CXBTClientDlg::OnPopupTorrentPriorityNormal()
 void CXBTClientDlg::OnUpdatePopupTorrentPriorityNormal(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
-	pCmdUI->SetCheck(get_torrent_priority() == 0);
+	pCmdUI->SetRadio(get_torrent_priority() == 0);
 }
 
 void CXBTClientDlg::OnPopupTorrentPriorityLow() 
 {
-	set_torrent_priority(-1);	
+	set_torrent_priority(-1);
 }
 
 void CXBTClientDlg::OnUpdatePopupTorrentPriorityLow(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
-	pCmdUI->SetCheck(get_torrent_priority() == -1);
+	pCmdUI->SetRadio(get_torrent_priority() == -1);
+}
+
+Cbt_file::t_state CXBTClientDlg::get_torrent_state()
+{
+	Cbt_file::t_state v = Cbt_file::s_unknown;
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_file& e = m_files_map[m_files.GetItemData(index)];
+		if (v == Cbt_file::s_unknown)
+			v = e.state;
+		else if (e.state != v)
+			return Cbt_file::s_unknown;
+	}
+	return v;
+}
+
+void CXBTClientDlg::set_torrent_state(Cbt_file::t_state v)
+{
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_file& e = m_files_map[m_files.GetItemData(index)];
+		m_server.file_state(e.info_hash, v);
+	}
+}
+
+void CXBTClientDlg::OnPopupStatePaused() 
+{
+	set_torrent_state(Cbt_file::s_paused);
+}
+
+void CXBTClientDlg::OnUpdatePopupStatePaused(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+	pCmdUI->SetRadio(get_torrent_state() == Cbt_file::s_paused);
+}
+
+void CXBTClientDlg::OnPopupStateQueued() 
+{
+	set_torrent_state(Cbt_file::s_queued);	
+}
+
+void CXBTClientDlg::OnUpdatePopupStateQueued(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+	pCmdUI->SetRadio(get_torrent_state() == Cbt_file::s_queued);
+}
+
+void CXBTClientDlg::OnPopupStateStarted() 
+{
+	set_torrent_state(Cbt_file::s_running);	
+}
+
+void CXBTClientDlg::OnUpdatePopupStateStarted(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+	pCmdUI->SetRadio(get_torrent_state() == Cbt_file::s_hashing || get_torrent_state() == Cbt_file::s_running);
+}
+
+void CXBTClientDlg::OnPopupStateStopped() 
+{
+	set_torrent_state(Cbt_file::s_stopped);
+}
+
+void CXBTClientDlg::OnUpdatePopupStateStopped(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+	pCmdUI->SetRadio(get_torrent_state() == Cbt_file::s_stopped);
 }

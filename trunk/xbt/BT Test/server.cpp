@@ -72,6 +72,7 @@ Cserver::Cserver()
 	m_tracker_port = m_new_tracker_port = 2710;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time(NULL);
+	m_update_states_time = 0;
 	m_upload_rate = 0;
 	m_upload_slots = 8;
 
@@ -304,6 +305,8 @@ int Cserver::run()
 		post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 		if (time(NULL) - m_update_chokes_time > 10)
 			update_chokes();
+		else if (time(NULL) - m_update_states_time > 15)
+			update_states();
 		else if (time(NULL) - m_save_state_time > 60)
 			save_state(true).save(state_fname());
 		unlock();
@@ -476,68 +479,30 @@ int Cserver::announce(const string& id)
 	return 1;
 }
 
-int Cserver::pause_file(const string& id)
+int Cserver::file_priority(const string& id, int priority)
 {
 	Clock l(m_cs);
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->pause();
+		i->priority(priority);
 		return 0;
 	}
 	return 1;
 }
 
-int Cserver::unpause_file(const string& id)
+int Cserver::file_state(const string& id, Cbt_file::t_state state)
 {
 	Clock l(m_cs);
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
 		if (i->m_info_hash != id)
 			continue;
-		i->unpause();
+		i->state(state);
 		return 0;
 	}
 	return 1;
-}
-
-int Cserver::start_file(const string& id)
-{
-	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != id)
-			continue;
-		i->open();
-		return 0;
-	}
-	return 1;
-}
-
-int Cserver::stop_file(const string& id)
-{
-	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != id)
-			continue;
-		i->close();
-		return 0;
-	}
-	return 1;
-}
-
-void Cserver::file_priority(const string& file_id, int priority)
-{
-	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != file_id)
-			continue;
-		i->m_priority = priority;
-		return;
-	}
 }
 
 void Cserver::sub_file_priority(const string& file_id, const string& sub_file_id, int priority)
@@ -803,6 +768,15 @@ void Cserver::update_send_quotas()
 	}
 }
 
+void Cserver::update_states()
+{
+	for (t_files::iterator i = m_files.begin(); i != m_files.end() && below_torrent_limit(); i++)
+	{
+		if (i->state() == Cbt_file::s_queued)
+			i->open();
+	}
+}
+
 string Cserver::completes_dir() const
 {
 	return m_completes_dir;
@@ -899,7 +873,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 			file.d(bts_complete, i->c_seeders());
 			file.d(bts_incomplete, i->c_leechers());
 			file.d(bts_left, i->m_left);
-			file.d(bts_priority, i->m_priority);
+			file.d(bts_priority, i->priority());
 			file.d(bts_size, i->mcb_f);
 			file.d(bts_state, i->state());
 			file.d(bts_total_downloaded, i->m_total_downloaded);
@@ -914,7 +888,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	else if (action == bts_open_torrent) 
 		open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), "");
 	else if (action == bts_pause_torrent)
-		pause_file(s.d(bts_hash).s());
+		file_state(s.d(bts_hash).s(), Cbt_file::s_paused);
 	else if (action == bts_set_options)
 	{
 		if (s.d_has(bts_peer_port))
@@ -935,10 +909,10 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	else if (action == bts_set_priority)
 		file_priority(s.d(bts_hash).s(), s.d(bts_priority).i());
 	else if (action == bts_start_torrent)
-		start_file(s.d(bts_hash).s());
+		file_state(s.d(bts_hash).s(), Cbt_file::s_running);
 	else if (action == bts_stop_torrent)
-		stop_file(s.d(bts_hash).s());
+		file_state(s.d(bts_hash).s(), Cbt_file::s_stopped);
 	else if (action == bts_unpause_torrent)
-		unpause_file(s.d(bts_hash).s());
+		file_state(s.d(bts_hash).s(), Cbt_file::s_running);
 	return d;
 }
