@@ -31,6 +31,7 @@ public:
 	//{{AFX_VIRTUAL(CXBTClientApp)
 	public:
 	virtual BOOL InitInstance();
+	virtual int ExitInstance();
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -40,6 +41,7 @@ public:
 	DECLARE_MESSAGE_MAP()
 private:
 	Cserver m_server;
+	CWinThread* m_server_thread;
 };
 
 

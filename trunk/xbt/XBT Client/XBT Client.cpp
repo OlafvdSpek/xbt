@@ -21,13 +21,6 @@ BEGIN_MESSAGE_MAP(CXBTClientApp, CWinApp)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// CXBTClientApp construction
-
-CXBTClientApp::CXBTClientApp()
-{
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // The one and only CXBTClientApp object
 
 CXBTClientApp theApp;
@@ -51,7 +44,8 @@ BOOL CXBTClientApp::InitInstance()
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
 	SetRegistryKey("XBT");
-	AfxBeginThread(backend_thread, this);
+	m_server_thread = AfxBeginThread(backend_thread, this);
+	m_server_thread->m_bAutoDelete = false;
 
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
@@ -60,6 +54,7 @@ BOOL CXBTClientApp::InitInstance()
 	m_pMainWnd = &dlg;
 	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen && !cmdInfo.m_strFileName.IsEmpty())
 		dlg.open(static_cast<string>(cmdInfo.m_strFileName));
+	dlg.server(m_server);
 	dlg.DoModal();
 
 	// Since the dialog has been closed, return FALSE so that we exit the
@@ -73,3 +68,9 @@ unsigned int CXBTClientApp::backend_thread(void* p)
 	return 0;
 }
 
+int CXBTClientApp::ExitInstance() 
+{
+	m_server.stop();
+	WaitForSingleObject(m_server_thread->m_hThread, INFINITE);	
+	return CWinApp::ExitInstance();
+}

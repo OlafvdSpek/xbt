@@ -30,12 +30,12 @@ IDD_XBTCLIENT_DIALOG DIALOGEX 0, 0, 128, 122
 STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
     WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "XBT Client by Olaf van der Spek"
+CAPTION "XBT Client"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | 
-                    WS_BORDER | WS_TABSTOP,7,7,114,50
+                    WS_BORDER | WS_TABSTOP,7,7,114,50,WS_EX_ACCEPTFILES
     CONTROL         "List1",IDC_PEERS,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | 
                     WS_BORDER | WS_TABSTOP,7,65,114,50
@@ -173,6 +173,21 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\XBT Client.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+CG_IDR_POPUP_XBTCLIENT_DLG MENU DISCARDABLE 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        MENUITEM "Open...",                     ID_POPUP_OPEN
+        MENUITEM "Close",                       ID_POPUP_CLOSE
+    END
+END
+
 #endif    // Dutch (Netherlands) resources
 /////////////////////////////////////////////////////////////////////////////
 

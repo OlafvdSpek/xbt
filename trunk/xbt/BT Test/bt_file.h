@@ -25,7 +25,6 @@ public:
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	ostream& dump(ostream&) const;
-	void write_have(int);
 	int next_invalid_piece(const Cbt_peer_link::t_remote_pieces&) const;
 	int read_piece(int a, byte* d);
 	void write_data(int o, const char* s, int cb_s);

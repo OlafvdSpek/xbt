@@ -17,6 +17,7 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void server(Cserver& server);
 	void auto_size_files();
 	void auto_size_peers();
 	void auto_size();
@@ -39,6 +40,7 @@ public:
 
 // Implementation
 protected:
+	afx_msg void OnContextMenu(CWnd*, CPoint point);
 	HICON m_hIcon;
 
 	// Generated message map functions
@@ -51,6 +53,11 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimer(UINT nIDEvent);
+	virtual void OnCancel();
+	virtual void OnOK();
+	afx_msg void OnPopupOpen();
+	afx_msg void OnPopupClose();
+	afx_msg void OnUpdatePopupClose(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -100,6 +107,7 @@ private:
 	int m_buffer_w;
 	t_file* m_file;
 	t_files m_files_map;
+	Cserver* m_server;
 };
 
 //{{AFX_INSERT_LOCATION}}
