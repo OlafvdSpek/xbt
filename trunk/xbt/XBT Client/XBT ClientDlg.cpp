@@ -182,6 +182,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_PRIORITY_HIGH, OnPopupPriorityHigh)
 	ON_COMMAND(ID_POPUP_PRIORITY_LOW, OnPopupPriorityLow)
 	ON_COMMAND(ID_POPUP_PRIORITY_NORMAL, OnPopupPriorityNormal)
+	ON_COMMAND(ID_POPUP_VIEW_ADVANCED_COLUMNS, OnPopupViewAdvancedColumns)
+	ON_COMMAND(ID_POPUP_VIEW_TRAY_ICON, OnPopupViewTrayIcon)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1910,4 +1912,22 @@ void CXBTClientDlg::set_priority(int v)
 		const t_sub_file& e = m_file->sub_files[m_peers.GetItemData(index)];
 		m_server.sub_file_priority(m_file->info_hash, e.name, v);
 	}
+}
+
+void CXBTClientDlg::OnPopupViewAdvancedColumns() 
+{
+	m_show_advanced_columns = !AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", m_show_advanced_columns);
+	insert_columns();
+	auto_size();
+}
+
+void CXBTClientDlg::OnPopupViewTrayIcon() 
+{
+	m_show_tray_icon = !AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", m_show_tray_icon);
+	if (m_show_tray_icon)
+		register_tray();
+	else
+		unregister_tray();
 }
