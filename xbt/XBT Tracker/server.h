@@ -37,11 +37,43 @@ public:
 
 	typedef map<int, t_peer> t_peers;
 
+	class Cannounce_output
+	{
+	public:
+		virtual void peer(int h, const t_peer&) = 0;
+
+		void complete(int v)
+		{
+			m_complete = v;
+		}
+
+		void incomplete(int v)
+		{
+			m_incomplete = v;
+		}
+
+		void interval(int v)
+		{
+			m_interval = v;
+		}
+
+		Cannounce_output()
+		{
+			m_complete = 0;
+			m_incomplete = 0;
+			m_interval = 1800;
+		}
+	protected:
+		int m_complete;
+		int m_incomplete;
+		int m_interval;
+	};
+
 	struct t_file
 	{
 		void clean_up(int t);
 		string debug() const;
-		Cbvalue select_peers(const Ctracker_input& ti) const;
+		void select_peers(const Ctracker_input&, Cannounce_output&) const;
 		Cbvalue scrape() const;
 
 		t_file()

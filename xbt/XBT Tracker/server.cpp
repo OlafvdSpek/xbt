@@ -13,6 +13,71 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+class Cannounce_output_http_compact: public Cserver::Cannounce_output
+{
+public:
+	void peer(int h, const Cserver::t_peer& peer)
+	{
+		m_peers.append(reinterpret_cast<const char*>(&h), 4);
+		m_peers.append(reinterpret_cast<const char*>(&peer.port), 2);
+	}
+
+	Cbvalue v() const
+	{
+		Cbvalue v;
+		if (m_complete)
+			v.d(bts_complete, m_complete);
+		if (m_incomplete)
+			v.d(bts_incomplete, m_incomplete);
+		v.d(bts_interval, m_interval);
+		v.d(bts_peers, m_peers);
+		return v;
+	}
+private:
+	string m_peers;
+};
+
+class Cannounce_output_http: public Cserver::Cannounce_output
+{
+public:
+	void no_peer_id(bool v)
+	{
+		m_no_peer_id = v;
+	}
+
+	void peer(int h, const Cserver::t_peer& p)
+	{
+		Cbvalue peer;
+		if (!m_no_peer_id)
+			peer.d(bts_peer_id, p.peer_id);
+		in_addr a;
+		a.s_addr = h;
+		peer.d(bts_ipa, static_cast<string>(inet_ntoa(a)));
+		peer.d(bts_port, ntohs(p.port));
+		m_peers.l(peer);
+	}
+
+	Cbvalue v() const
+	{
+		Cbvalue v;
+		if (m_complete)
+			v.d(bts_complete, m_complete);
+		if (m_incomplete)
+			v.d(bts_incomplete, m_incomplete);
+		v.d(bts_interval, m_interval);
+		v.d(bts_peers, m_peers);
+		return v;
+	}
+
+	Cannounce_output_http():
+		m_peers(Cbvalue::vt_list)
+	{
+	}
+private:
+	bool m_no_peer_id;
+	Cbvalue m_peers;
+};
+
 Cserver::Cserver(Cdatabase& database):
 	m_database(database)
 {
@@ -219,7 +284,7 @@ void Cserver::update_peer(const string& file_id, int peer_id, bool listening)
 	j->second.listening = listening;
 }
 
-Cbvalue Cserver::t_file::select_peers(const Ctracker_input& ti) const
+void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o) const
 {
 	typedef vector<t_peers::const_iterator> t_candidates;
 
@@ -231,41 +296,30 @@ Cbvalue Cserver::t_file::select_peers(const Ctracker_input& ti) const
 				candidates.push_back(i);
 		}		
 	}
+	o.complete(seeders);
+	o.incomplete(leechers);
 	int c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
-	if (ti.m_compact)
-	{
-		string peers;
-		for (t_candidates::const_iterator i = candidates.begin(); c-- && i != candidates.end(); i++)
-			peers += string(reinterpret_cast<const char*>(&(*i)->first), 4)
-				+ string(reinterpret_cast<const char*>(&(*i)->second.port), 2);
-		return peers;
-	}
-	Cbvalue peers(Cbvalue::vt_list);
 	for (t_candidates::const_iterator i = candidates.begin(); c-- && i != candidates.end(); i++)
-	{
-		Cbvalue peer;
-		if (!ti.m_no_peer_id)
-			peer.d(bts_peer_id, (*i)->second.peer_id);
-		in_addr a;
-		a.s_addr = (*i)->first;
-		peer.d(bts_ipa, static_cast<string>(inet_ntoa(a)));
-		peer.d(bts_port, ntohs((*i)->second.port));
-		peers.l(peer);
-	}	
-	return peers;
+		o.peer((*i)->first, (*i)->second);
 }
 
 Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 {
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
-	if (i == m_files.end())
+	if (i == m_files.end()) 
 		return Cbvalue();
-	Cbvalue v;
-	v.d(bts_complete, i->second.seeders);
-	v.d(bts_incomplete, i->second.leechers);
-	v.d(bts_interval, m_announce_interval);
-	v.d(bts_peers, i->second.select_peers(ti));	
-	return v;
+	if (ti.m_compact)
+	{
+		Cannounce_output_http_compact o;
+		o.interval(m_announce_interval);
+		i->second.select_peers(ti, o);
+		return o.v();
+	}
+	Cannounce_output_http o;
+	o.interval(m_announce_interval);
+	o.no_peer_id(ti.m_no_peer_id);
+	i->second.select_peers(ti, o);
+	return o.v();
 }
 
 void Cserver::t_file::clean_up(int t)
