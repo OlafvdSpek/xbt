@@ -35,7 +35,6 @@ public:
 	void sub_file_priority(const string& id, int priority);
 	int local_ipa() const;
 	int local_port() const;
-	bool info_valid() const;
 	Cbt_peer_link* find_peer(int h);
 	string get_url() const;
 	void alert(const Calert&);
@@ -45,7 +44,6 @@ public:
 	__int64 size() const;
 	int c_seeders() const;
 	int c_leechers() const;
-	int time_remaining() const;
 	int pre_dump(int flags) const;
 	void dump(Cstream_writer&, int flags) const;
 	int next_invalid_piece(const Cbt_peer_link&);
