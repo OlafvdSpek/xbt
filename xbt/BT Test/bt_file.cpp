@@ -43,7 +43,7 @@ int Cbt_file::info(const Cbvalue& v, bool torrent)
 			{
 				const Cbvalue::t_list& path = i->d(bts_path).l();
 				for (Cbvalue::t_list::const_iterator i = path.begin(); i != path.end(); i++)
-					name += i->s();
+					name += '/' + i->s();
 			}
 			int size = i->d(bts_length).i();
 			if (name.empty() || size < 1)
@@ -86,7 +86,7 @@ void Cbt_file::t_sub_file::close()
 
 FILE* Cbt_file::t_sub_file::open(const string& parent_name, const char* mode)
 {
-	return m_f = fopen((m_name.empty() ? parent_name : parent_name + '/' + m_name).c_str(), mode);
+	return m_f = fopen((parent_name + m_name).c_str(), mode);
 }
 
 int Cbt_file::t_sub_file::read(int offset, void* s, int cb_s)
