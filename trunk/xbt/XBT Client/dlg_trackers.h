@@ -8,6 +8,7 @@
 // dlg_trackers.h : header file
 //
 
+#include "ListCtrlEx.h"
 #include "resource.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -26,7 +27,6 @@ public:
 
 	typedef map<int, t_tracker> t_trackers;
 
-	void auto_size();
 	void insert(const t_tracker&);
 	Cdlg_trackers(CWnd* pParent);   // standard constructor
 
@@ -38,7 +38,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(Cdlg_trackers)
 	enum { IDD = IDD_TRACKERS };
-	CListCtrl	m_list;
+	CListCtrlEx	m_list;
 	//}}AFX_DATA
 
 
@@ -59,7 +59,6 @@ protected:
 	afx_msg void OnDelete();
 	afx_msg void OnEdit();
 	afx_msg void OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

@@ -132,20 +132,7 @@ void Cdlg_files::load_data()
 			m_files.SetItemData(m_files.InsertItem(m_files.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
 	}
 	sort();
-	auto_size();
-}
-
-void Cdlg_files::auto_size()
-{
-	for (int i = 0; i < m_files.GetHeaderCtrl()->GetItemCount(); i++)
-		m_files.SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
-}
-
-void Cdlg_files::OnSize(UINT nType, int cx, int cy) 
-{
-	ETSLayoutDialog::OnSize(nType, cx, cy);
-	if (m_files.GetSafeHwnd())
-		auto_size();
+	m_files.auto_size();
 }
 
 void Cdlg_files::OnTimer(UINT nIDEvent) 

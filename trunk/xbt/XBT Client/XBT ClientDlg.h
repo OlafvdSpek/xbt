@@ -9,6 +9,7 @@
 #endif // _MSC_VER > 1000
 
 #include "../bt test/server.h"
+#include "ListCtrlEx.h"
 #include "resource.h"
 #include "stream_reader.h"
 
@@ -40,8 +41,6 @@ public:
 	void unregister_tray();
 	void update_tray();
 	void update_tray(const char* info_title, const char* info);
-	void auto_size_files();
-	void auto_size_peers();
 	void auto_size();
 	void fill_peers();
 	void open(const string& name, bool ask_for_location);
@@ -51,8 +50,8 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CXBTClientDlg)
 	enum { IDD = IDD_XBTCLIENT_DIALOG };
-	CListCtrl	m_peers;
-	CListCtrl	m_files;
+	CListCtrlEx	m_peers;
+	CListCtrlEx	m_files;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides

@@ -8,6 +8,7 @@
 // dlg_make_torrent.h : header file
 //
 
+#include "ListCtrlEx.h"
 #include "resource.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -18,7 +19,6 @@ class Cdlg_make_torrent : public ETSLayoutDialog
 // Construction
 public:
 	void post_insert();
-	void auto_size();
 	int compare(int id_a, int id_b) const;
 	void insert(const string& name);
 	void sort();
@@ -33,7 +33,7 @@ public:
 	//{{AFX_DATA(Cdlg_make_torrent)
 	enum { IDD = IDD_MAKE_TORRENT };
 	CButton	m_save;
-	CListCtrl	m_list;
+	CListCtrlEx	m_list;
 	CString	m_tracker;
 	CString	m_name;
 	BOOL	m_use_merkle;
@@ -57,7 +57,6 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
 	afx_msg void OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnSave();
 	afx_msg void OnColumnclickList(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnLoadTrackers();
