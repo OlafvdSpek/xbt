@@ -88,7 +88,9 @@ enum
 
 enum
 {
+	dr_chunks,
 	dr_completed_at,
+	dr_distributed_copies,
 	dr_downloaded,
 	dr_hash,
 	dr_leechers,
@@ -443,7 +445,9 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	m_buffer[++m_buffer_w &= 3].erase();
 	const char* row_names[] =
 	{
+		"Chunks",
 		"Completed at",
+		"Distributed Copies",
 		"Downloaded",
 		"Hash",
 		"Leechers",
@@ -465,11 +469,15 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	case dc_value:
 		switch (pDispInfo->item.iItem)
 		{
+		case dr_chunks:
+			break;
 		case dr_completed_at:
 			if (m_file->completed_at)
 				m_buffer[m_buffer_w] = time2a(m_file->completed_at);
 			else if (m_file->downloaded && m_file->left && time(NULL) - m_file->started_at > 300)
 				m_buffer[m_buffer_w] = time2a(m_file->left * (time(NULL) - m_file->started_at) / m_file->downloaded + time(NULL)) + " (estimated)";
+			break;
+		case dr_distributed_copies:
 			break;
 		case dr_downloaded:
 			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b");
