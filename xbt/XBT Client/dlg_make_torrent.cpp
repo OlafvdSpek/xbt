@@ -5,6 +5,7 @@
 #include "dlg_make_torrent.h"
 
 #include "bt_strings.h"
+#include "bt_torrent.h"
 #include "xcc_z.h"
 
 #include <sys/stat.h>
@@ -59,6 +60,7 @@ BEGIN_MESSAGE_MAP(Cdlg_make_torrent, ETSLayoutDialog)
 	ON_WM_SIZE()
 	ON_BN_CLICKED(IDC_SAVE, OnSave)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_LIST, OnColumnclickList)
+	ON_BN_CLICKED(IDC_LOAD_TRACKERS, OnLoadTrackers)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -402,3 +404,23 @@ void Cdlg_make_torrent::sort()
 	m_list.SortItems(::compare, reinterpret_cast<DWORD>(this));	
 }
 
+void Cdlg_make_torrent::OnLoadTrackers() 
+{
+	UpdateData(true);
+	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
+	if (IDOK != dlg.DoModal())
+		return;
+	Cvirtual_binary d(static_cast<string>(dlg.GetPathName()));
+	Cbt_torrent torrent(d);
+	if (!torrent.valid())
+		return;
+	m_tracker = torrent.announce().c_str();
+	m_trackers.Empty();
+	const Cbt_torrent::t_announces& announces = torrent.announces();
+	for (Cbt_torrent::t_announces::const_iterator i = announces.begin(); i != announces.end(); i++)
+	{
+		m_trackers += i->c_str();
+		m_trackers + "\r\n";
+	}
+	UpdateData(false);
+}
