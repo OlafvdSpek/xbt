@@ -29,23 +29,7 @@ string Csql_query::read() const
 	t_list::const_iterator l = m_list.begin();
 	for (int i = 0; i < m_data.length(); i++)
 	{
-		if (m_data[i] == '%')
-		{
-			if (++i < m_data.length())
-			{
-				switch (m_data[i])
-				{
-				case 'd':
-				case 's':
-					assert(l != m_list.end());
-					r += *l++;
-					break;
-				default:
-					r += m_data[i];
-				}
-			}
-		}
-		else if (m_data[i] == '?')
+		if (m_data[i] == '?')
 		{
 			assert(l != m_list.end());
 			r += *l++;
