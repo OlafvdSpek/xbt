@@ -75,7 +75,9 @@
 		$d .= '<tr>';
 		$d .= sprintf('<td><input type=checkbox name="%s">', urlencode($v['info_hash']['value']));
 		$d .= sprintf('<td align=left>%s', htmlspecialchars(strip_name($v['name']['value'])));
-		$d .= sprintf('<td align=right>%d', ($v['size']['value'] - $v['left']['value']) * 100 / $v['size']['value']);
+		$d .= $v['size']['value']
+			? sprintf('<td align=right>%d', ($v['size']['value'] - $v['left']['value']) * 100 / $v['size']['value'])
+			: '<td>';
 		$d .= sprintf('<td align=right>%s', b2a($v['left']['value']));
 		$d .= sprintf('<td align=right>%s', b2a($v['size']['value']));
 		$d .= sprintf('<td align=right>%s', b2a($v['total downloaded']['value']));

@@ -2,7 +2,8 @@
 	require_once('common.php');
 	require_once('templates.php');
 
-	if ($config['users'][$_SERVER['PHP_AUTH_USER']] != $_SERVER['PHP_AUTH_PW'])
+	if (!isset($config['users'][$_SERVER['PHP_AUTH_USER']])
+		|| $config['users'][$_SERVER['PHP_AUTH_USER']] != $_SERVER['PHP_AUTH_PW'])
 	{
 		header('www-authenticate: basic realm="XBT Client"');
 		return;
