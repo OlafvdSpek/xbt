@@ -78,7 +78,7 @@ void Csql_query::pe(const string& v)
 	delete[] r;
 }
 
-void Csql_query::pe(const Cvirtual_binary v)
+void Csql_query::pe(const Cvirtual_binary& v)
 {
 	char* r = new char[2 * v.size() + 3];
 	r[0] = '\"';
