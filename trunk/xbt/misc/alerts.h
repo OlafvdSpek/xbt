@@ -76,6 +76,13 @@ private:
 
 class Calerts: public list<Calert>
 {
+public:
+	void push_back(const value_type& v)
+	{
+		list<value_type>::push_back(v);
+		while (size() > 125)
+			erase(begin());
+	}
 };
 
 #endif // !defined(AFX_ALERTS_H__FE59568B_F1B9_45F4_9148_369A1454BC33__INCLUDED_)
