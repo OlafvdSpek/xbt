@@ -135,3 +135,49 @@ int Csocket::get_host(const string& name)
 	hostent* e = gethostbyname(name.c_str());
 	return e && e->h_addrtype == AF_INET && e->h_length == sizeof(in_addr) && e->h_addr_list ? *reinterpret_cast<int*>(*e->h_addr_list) : INADDR_NONE;
 }
+
+string Csocket::error2a(int v)
+{
+	switch (v)
+	{
+	case WSAEADDRINUSE: return "EADDRINUSE";
+	case WSAEADDRNOTAVAIL: return "EADDRNOTAVAIL";
+	case WSAEAFNOSUPPORT: return "EAFNOSUPPORT";
+	case WSAEALREADY: return "EALREADY";
+	case WSAECONNABORTED: return "ECONNABORTED";
+	case WSAECONNREFUSED: return "ECONNREFUSED";
+	case WSAECONNRESET: return "ECONNRESET";
+	case WSAEDESTADDRREQ: return "EDESTADDRREQ";
+	case WSAEDQUOT: return "EDQUOT";
+	case WSAEHOSTDOWN: return "EHOSTDOWN";
+	case WSAEHOSTUNREACH: return "EHOSTUNREACH";
+	case WSAEINPROGRESS: return "EINPROGRESS";
+	case WSAEISCONN: return "EISCONN";
+	case WSAELOOP: return "ELOOP";
+	case WSAEMSGSIZE: return "EMSGSIZE";
+	case WSAENAMETOOLONG: return "ENAMETOOLONG";
+	case WSAENETDOWN: return "ENETDOWN";
+	case WSAENETRESET: return "ENETRESET";
+	case WSAENETUNREACH: return "ENETUNREACH";
+	case WSAENOBUFS: return "ENOBUFS";
+	case WSAENOPROTOOPT: return "ENOPROTOOPT";
+	case WSAENOTCONN: return "ENOTCONN";
+	case WSAENOTEMPTY: return "ENOTEMPTY";
+	case WSAENOTSOCK: return "ENOTSOCK";
+	case WSAEOPNOTSUPP: return "EOPNOTSUPP";
+	case WSAEPFNOSUPPORT: return "EPFNOSUPPORT";
+	case WSAEPROTONOSUPPORT: return "EPROTONOSUPPORT";
+	case WSAEPROTOTYPE: return "EPROTOTYPE";
+	case WSAEREMOTE: return "EREMOTE";
+	case WSAESHUTDOWN: return "ESHUTDOWN";
+	case WSAESOCKTNOSUPPORT: return "ESOCKTNOSUPPORT";
+	case WSAESTALE: return "ESTALE";
+	case WSAETIMEDOUT: return "ETIMEDOUT";
+	case WSAETOOMANYREFS: return "ETOOMANYREFS";
+	case WSAEUSERS: return "EUSERS";
+	case WSAEWOULDBLOCK: return "EWOULDBLOCK";
+	}
+	char b[12];
+	sprintf(b, "%d", v);
+	return b;
+}

@@ -87,6 +87,7 @@ private:
 class Csocket  
 {
 public:
+	static string error2a(int v);
 	static int get_host(const string& name);
 	int bind(int h, int p);
 	int blocking(bool v);

@@ -45,7 +45,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		}
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
-			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + error2a(WSAGetLastError())));
+			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(WSAGetLastError())));
 			close();
 			return 0;
 		}
@@ -129,12 +129,12 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 					return 1;
 				if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
 				{
-					alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + error2a(WSAGetLastError())));
+					alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(WSAGetLastError())));
 					return 1;
 				}
 				return 0;
 			}
-			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + error2a(e)));
+			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(e)));
 			return 1;
 		}
 	case 3:

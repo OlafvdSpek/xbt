@@ -98,19 +98,19 @@ void Cserver::run()
 			Csocket l0, l1;
 			int v = true;
 			if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
-				cerr << "socket failed: " << error2a(WSAGetLastError()) << endl;
+				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (setsockopt(l0, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
 				l0.bind(*j, htons(*i)))			
-				cerr << "bind failed: " << error2a(WSAGetLastError()) << endl;
+				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l0.listen())
-				cerr << "listen failed: " << error2a(WSAGetLastError()) << endl;
+				cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 				lt.push_back(l0);
 			if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
-				cerr << "socket failed: " << error2a(WSAGetLastError()) << endl;
+				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (setsockopt(l1, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
 				l1.bind(*j, htons(*i)))
-				cerr << "bind failed: " << error2a(WSAGetLastError()) << endl;
+				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 				lu.push_back(l1);
 		}
@@ -160,7 +160,7 @@ void Cserver::run()
 			n = max(n, static_cast<SOCKET>(*i));
 		}
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, NULL) == SOCKET_ERROR)
-			cerr << "select failed: " << error2a(WSAGetLastError()) << endl;
+			cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 		else 
 		{
 			for (t_sockets::iterator i = lt.begin(); i != lt.end(); i++)
@@ -171,11 +171,11 @@ void Cserver::run()
 				socklen_t cb_a = sizeof(sockaddr_in);
 				Csocket s = accept(*i, reinterpret_cast<sockaddr*>(&a), &cb_a);
 				if (s == SOCKET_ERROR)
-					cerr << "accept failed: " << error2a(WSAGetLastError()) << endl;
+					cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 				else
 				{
 					if (s.blocking(false))
-						cerr << "ioctlsocket failed: " << error2a(WSAGetLastError()) << endl;
+						cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 					m_connections.push_front(Cconnection(this, s, a));
 				}
 			}
@@ -221,7 +221,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	if (m_log_announce)
 	{
 		Csql_query q(m_database);
-		q.write("(%d, %d, %d, %s, %s, %d, %d, %d, %d, %d)");
+		q.write("(%d,%d,%d,%s,%s,%d,%d,%d,%d,%d),");
 		q.p(ntohl(v.m_ipa));
 		q.p(ntohs(v.m_port));
 		q.p(v.m_event);
@@ -232,8 +232,6 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		q.p(v.m_uploaded);
 		q.p(uid);
 		q.p(time(NULL));
-		if (!m_announce_log_buffer.empty())
-			m_announce_log_buffer += ", ";
 		m_announce_log_buffer += q.read();
 	}
 	if (!m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
@@ -383,15 +381,13 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	if (m_log_scrape)
 	{
 		Csql_query q(m_database);
-		q.write("(%d, %s, %d)");
+		q.write("(%d,%s,%d),");
 		q.p(ntohl(ti.m_ipa));
 		if (ti.m_info_hash.empty())
 			q.p("NULL");
 		else
 			q.pe(ti.m_info_hash);
 		q.p(time(NULL));
-		if (!m_scrape_log_buffer.empty())
-			m_scrape_log_buffer += ", ";
 		m_scrape_log_buffer += q.read();
 	}
 	Cbvalue v;
@@ -531,11 +527,13 @@ void Cserver::write_db()
 		}
 		if (!m_announce_log_buffer.empty())
 		{
+			m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
 			m_database.query("insert delayed into xbt_announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
 			m_announce_log_buffer.erase();
 		}
 		if (!m_scrape_log_buffer.empty())
 		{
+			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
 			m_database.query("insert delayed into xbt_scrape_log (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
 			m_scrape_log_buffer.erase();
 		}
