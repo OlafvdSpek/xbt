@@ -421,96 +421,96 @@ static string priority2a(int v)
 void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_files.get_buffer();
 	const t_file& e = m_files_map.find(pDispInfo->item.lParam)->second;
 	switch (m_torrents_columns[pDispInfo->item.iSubItem])
 	{
 	case fc_hash:
-		m_buffer[m_buffer_w] = hex_encode(e.m_info_hash);
+		buffer = hex_encode(e.m_info_hash);
 		break;
 	case fc_done:
 		if (e.m_size)
-			m_buffer[m_buffer_w] = n((e.m_size - e.m_left) * 100 / e.m_size);
+			buffer = n((e.m_size - e.m_left) * 100 / e.m_size);
 		break;
 	case fc_left:
 		if (e.m_left)
-			m_buffer[m_buffer_w] = b2a(e.m_left);
+			buffer = b2a(e.m_left);
 		break;
 	case fc_size:
 		if (e.m_size)
-			m_buffer[m_buffer_w] = b2a(e.m_size);
+			buffer = b2a(e.m_size);
 		break;
 	case fc_total_downloaded:
 		if (e.m_total_downloaded)
 		{
-			m_buffer[m_buffer_w] = b2a(e.m_total_downloaded);
+			buffer = b2a(e.m_total_downloaded);
 			if (e.m_size)
-				m_buffer[m_buffer_w] += " (" + n(e.m_total_downloaded * 100 / e.m_size) + " %)";
+				buffer += " (" + n(e.m_total_downloaded * 100 / e.m_size) + " %)";
 		}
 		break;
 	case fc_total_uploaded:
 		if (e.m_total_uploaded)
 		{
-			m_buffer[m_buffer_w] = b2a(e.m_total_uploaded);
+			buffer = b2a(e.m_total_uploaded);
 			if (e.m_size)
-				m_buffer[m_buffer_w] += " (" + n(e.m_total_uploaded * 100 / e.m_size) + " %)";
+				buffer += " (" + n(e.m_total_uploaded * 100 / e.m_size) + " %)";
 		}
 		break;
 	case fc_down_rate:
 		if (e.m_down_rate)
-			m_buffer[m_buffer_w] = b2a(e.m_down_rate);
+			buffer = b2a(e.m_down_rate);
 		break;
 	case fc_up_rate:
 		if (e.m_up_rate)
-			m_buffer[m_buffer_w] = b2a(e.m_up_rate);
+			buffer = b2a(e.m_up_rate);
 		break;
 	case fc_leechers:
 		if (e.mc_leechers || e.mc_leechers_total)
-			m_buffer[m_buffer_w] = n(e.mc_leechers);
+			buffer = n(e.mc_leechers);
 		if (e.mc_leechers_total)
-			m_buffer[m_buffer_w] += " / " + n(e.mc_leechers_total);
+			buffer += " / " + n(e.mc_leechers_total);
 		break;
 	case fc_peers:
 		if (e.mc_leechers || e.mc_leechers_total || e.mc_seeders || e.mc_seeders_total)
-			m_buffer[m_buffer_w] = n(e.mc_leechers + e.mc_seeders);
+			buffer = n(e.mc_leechers + e.mc_seeders);
 		if (e.mc_leechers_total || e.mc_seeders_total)
-			m_buffer[m_buffer_w] += " / " + n(e.mc_leechers_total + e.mc_seeders_total);
+			buffer += " / " + n(e.mc_leechers_total + e.mc_seeders_total);
 		break;
 	case fc_priority:
 		if (e.m_priority)
-			m_buffer[m_buffer_w] = priority2a(e.m_priority);
+			buffer = priority2a(e.m_priority);
 		break;
 	case fc_seeders:
 		if (e.mc_seeders || e.mc_seeders_total)
-			m_buffer[m_buffer_w] = n(e.mc_seeders);
+			buffer = n(e.mc_seeders);
 		if (e.mc_seeders_total)
-			m_buffer[m_buffer_w] += " / " + n(e.mc_seeders_total);
+			buffer += " / " + n(e.mc_seeders_total);
 		break;
 	case fc_state:
 		switch (e.m_state)
 		{
 		case Cbt_file::s_queued:
-			m_buffer[m_buffer_w] = "Queued";
+			buffer = "Queued";
 			break;
 		case Cbt_file::s_hashing:
-			m_buffer[m_buffer_w] = "Hashing";
+			buffer = "Hashing";
 			break;
 		case Cbt_file::s_running:
-			m_buffer[m_buffer_w] = "Running";
+			buffer = "Running";
 			break;
 		case Cbt_file::s_paused:
-			m_buffer[m_buffer_w] = "Paused";
+			buffer = "Paused";
 			break;
 		case Cbt_file::s_stopped:
-			m_buffer[m_buffer_w] = "Stopped";
+			buffer = "Stopped";
 			break;
 		}
 		break;
 	case fc_name:
-		m_buffer[m_buffer_w] = e.m_display_name;
+		buffer = e.m_display_name;
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 
@@ -519,7 +519,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_peers.get_buffer();
 	const char* row_names[] =
 	{
 		"Chunks",
@@ -547,7 +547,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (m_torrents_columns[pDispInfo->item.iSubItem])
 	{
 	case dc_name:
-		m_buffer[m_buffer_w] = row_names[pDispInfo->item.iItem];
+		buffer = row_names[pDispInfo->item.iItem];
 		break;
 	case dc_value:
 		switch (pDispInfo->item.iItem)
@@ -555,97 +555,97 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		case dr_chunks:
 			if (!m_file->mc_valid_chunks)
 				break;
-			m_buffer[m_buffer_w] = n(m_file->mc_valid_chunks) + " / " + n(m_file->mc_invalid_chunks + m_file->mc_valid_chunks) + " x " + b2a(m_file->mcb_chunk, "b")
+			buffer = n(m_file->mc_valid_chunks) + " / " + n(m_file->mc_invalid_chunks + m_file->mc_valid_chunks) + " x " + b2a(m_file->mcb_chunk, "b")
 				+ " = " + b2a(m_file->mc_valid_chunks * m_file->mcb_chunk, "b") + " / " + b2a((m_file->mc_invalid_chunks + m_file->mc_valid_chunks) * m_file->mcb_chunk, "b");
 			break;
 		case dr_completed_at:
 			if (m_file->m_completed_at)
-				m_buffer[m_buffer_w] = time2a(m_file->m_completed_at);
+				buffer = time2a(m_file->m_completed_at);
 			else if (m_file->m_downloaded && m_file->m_left && time(NULL) - m_file->m_session_started_at > 300)
-				m_buffer[m_buffer_w] = time2a(m_file->m_left * (time(NULL) - m_file->m_session_started_at) / m_file->m_downloaded + time(NULL)) + " (estimated)";
+				buffer = time2a(m_file->m_left * (time(NULL) - m_file->m_session_started_at) / m_file->m_downloaded + time(NULL)) + " (estimated)";
 			break;
 		case dr_distributed_copies:
 			if (m_file->mc_distributed_copies || m_file->mc_distributed_copies_remainder)
-				m_buffer[m_buffer_w] = n(m_file->mc_distributed_copies) + " + " + n(m_file->mc_distributed_copies_remainder) + " / " + n(m_file->mc_invalid_pieces + m_file->mc_valid_pieces);
+				buffer = n(m_file->mc_distributed_copies) + " + " + n(m_file->mc_distributed_copies_remainder) + " / " + n(m_file->mc_invalid_pieces + m_file->mc_valid_pieces);
 			break;
 		case dr_downloaded:
-			m_buffer[m_buffer_w] = b2a(m_file->m_downloaded, "b");
+			buffer = b2a(m_file->m_downloaded, "b");
 			if (m_file->m_total_downloaded != m_file->m_downloaded)
-				m_buffer[m_buffer_w] += " / " + b2a(m_file->m_total_downloaded, "b");
+				buffer += " / " + b2a(m_file->m_total_downloaded, "b");
 			if (m_file->m_size)
-				m_buffer[m_buffer_w] += " (" + n(m_file->m_total_downloaded * 100 / m_file->m_size) + " %)";
+				buffer += " (" + n(m_file->m_total_downloaded * 100 / m_file->m_size) + " %)";
 			break;
 		case dr_downloaded_l5_overhead:
-			m_buffer[m_buffer_w] = b2a(m_file->m_downloaded_l5 - m_file->m_downloaded, "b");
+			buffer = b2a(m_file->m_downloaded_l5 - m_file->m_downloaded, "b");
 			break;
 		case dr_files:
-			m_buffer[m_buffer_w] = n(m_file->m_sub_files.size());
+			buffer = n(m_file->m_sub_files.size());
 			break;
 		case dr_hash:
-			m_buffer[m_buffer_w] = hex_encode(m_file->m_info_hash);
+			buffer = hex_encode(m_file->m_info_hash);
 			break;
 		case dr_leechers:
-			m_buffer[m_buffer_w] = n(m_file->mc_leechers);
+			buffer = n(m_file->mc_leechers);
 			if (m_file->mc_leechers_total)
-				m_buffer[m_buffer_w] += " / " + n(m_file->mc_leechers_total);
+				buffer += " / " + n(m_file->mc_leechers_total);
 			break;
 		case dr_left:
 			if (m_file->m_left)
-				m_buffer[m_buffer_w] = b2a(m_file->m_left, "b");
+				buffer = b2a(m_file->m_left, "b");
 			break;
 		case dr_name:
-			m_buffer[m_buffer_w] = m_file->m_name;
+			buffer = m_file->m_name;
 			break;
 		case dr_peers:
-			m_buffer[m_buffer_w] = n(m_file->mc_leechers + m_file->mc_seeders);
+			buffer = n(m_file->mc_leechers + m_file->mc_seeders);
 			if (m_file->mc_leechers_total + m_file->mc_seeders_total)
-				m_buffer[m_buffer_w] += " / " + n(m_file->mc_leechers_total + m_file->mc_seeders_total);
+				buffer += " / " + n(m_file->mc_leechers_total + m_file->mc_seeders_total);
 			break;
 		case dr_pieces:
-			m_buffer[m_buffer_w] = n(m_file->mc_valid_pieces) + " / " + n(m_file->mc_invalid_pieces + m_file->mc_valid_pieces) + " x " + b2a(m_file->mcb_piece, "b");
+			buffer = n(m_file->mc_valid_pieces) + " / " + n(m_file->mc_invalid_pieces + m_file->mc_valid_pieces) + " x " + b2a(m_file->mcb_piece, "b");
 			break;
 		case dr_rejected_chunks:
 			if (m_file->mc_rejected_chunks)
-				m_buffer[m_buffer_w] = n(m_file->mc_rejected_chunks) + " x " + b2a(m_file->mcb_chunk, "b") + " = " + b2a(m_file->mc_rejected_chunks * m_file->mcb_chunk, "b");
+				buffer = n(m_file->mc_rejected_chunks) + " x " + b2a(m_file->mcb_chunk, "b") + " = " + b2a(m_file->mc_rejected_chunks * m_file->mcb_chunk, "b");
 			break;
 		case dr_rejected_pieces:
 			if (m_file->mc_rejected_pieces)
-				m_buffer[m_buffer_w] = n(m_file->mc_rejected_pieces) + " x " + b2a(m_file->mcb_piece, "b") + " = " + b2a(m_file->mc_rejected_pieces * m_file->mcb_piece, "b");
+				buffer = n(m_file->mc_rejected_pieces) + " x " + b2a(m_file->mcb_piece, "b") + " = " + b2a(m_file->mc_rejected_pieces * m_file->mcb_piece, "b");
 			break;
 		case dr_seeders:
-			m_buffer[m_buffer_w] = n(m_file->mc_seeders);
+			buffer = n(m_file->mc_seeders);
 			if (m_file->mc_seeders_total)
-				m_buffer[m_buffer_w] += " / " + n(m_file->mc_seeders_total);
+				buffer += " / " + n(m_file->mc_seeders_total);
 			break;
 		case dr_seeding_ratio:
 			if (m_file->m_seeding_ratio)
-				m_buffer[m_buffer_w] = n(m_file->m_seeding_ratio) + " %";
+				buffer = n(m_file->m_seeding_ratio) + " %";
 			break;
 		case dr_size:
-			m_buffer[m_buffer_w] = b2a(m_file->m_size, "b");
+			buffer = b2a(m_file->m_size, "b");
 			break;
 		case dr_started_at:
 			if (m_file->m_started_at)
-				m_buffer[m_buffer_w] = time2a(m_file->m_started_at);
+				buffer = time2a(m_file->m_started_at);
 			break;
 		case dr_tracker:
 			if (!m_file->m_trackers.empty())
-				m_buffer[m_buffer_w] = m_file->m_trackers.front().url;
+				buffer = m_file->m_trackers.front().url;
 			break;
 		case dr_uploaded:
-			m_buffer[m_buffer_w] = b2a(m_file->m_uploaded, "b");
+			buffer = b2a(m_file->m_uploaded, "b");
 			if (m_file->m_total_uploaded != m_file->m_uploaded)
-				m_buffer[m_buffer_w] += " / " + b2a(m_file->m_total_uploaded, "b");
+				buffer += " / " + b2a(m_file->m_total_uploaded, "b");
 			if (m_file->m_size)
-				m_buffer[m_buffer_w] += " (" + n(m_file->m_total_uploaded * 100 / m_file->m_size) + " %)";
+				buffer += " (" + n(m_file->m_total_uploaded * 100 / m_file->m_size) + " %)";
 			break;
 		case dr_uploaded_l5_overhead:
-			m_buffer[m_buffer_w] = b2a(m_file->m_uploaded_l5 - m_file->m_uploaded, "b");
+			buffer = b2a(m_file->m_uploaded_l5 - m_file->m_uploaded, "b");
 			break;
 		}
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 
@@ -654,7 +654,7 @@ void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_peers.get_buffer();
 	const t_event& e = m_file->events[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
@@ -665,20 +665,20 @@ void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 				break;
 			char time_string[16];
 			sprintf(time_string, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
-			m_buffer[m_buffer_w] = time_string;
+			buffer = time_string;
 		}
 		break;
 	case ec_level:
-		m_buffer[m_buffer_w] = n(e.level);
+		buffer = n(e.level);
 		break;
 	case ec_source:
-		m_buffer[m_buffer_w] = e.source;
+		buffer = e.source;
 		break;
 	case ec_message:
-		m_buffer[m_buffer_w] = e.message;
+		buffer = e.message;
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 
@@ -705,85 +705,85 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_peers.get_buffer();
 	const t_peer& e = m_file->peers.find(pDispInfo->item.lParam)->second;
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case pc_host:
-		m_buffer[m_buffer_w] = inet_ntoa(e.m_host);
+		buffer = inet_ntoa(e.m_host);
 		break;
 	case pc_port:
-		m_buffer[m_buffer_w] = n(ntohs(e.m_port));
+		buffer = n(ntohs(e.m_port));
 		break;
 	case pc_done:
 		if (m_file->m_size)
-			m_buffer[m_buffer_w] = n((m_file->m_size - e.m_left) * 100 / m_file->m_size);
+			buffer = n((m_file->m_size - e.m_left) * 100 / m_file->m_size);
 		break;
 	case pc_left:
 		if (e.m_left)
-			m_buffer[m_buffer_w] = b2a(e.m_left);
+			buffer = b2a(e.m_left);
 		break;
 	case pc_downloaded:
 		if (e.m_downloaded)
-			m_buffer[m_buffer_w] = b2a(e.m_downloaded);
+			buffer = b2a(e.m_downloaded);
 		break;
 	case pc_uploaded:
 		if (e.m_uploaded)
-			m_buffer[m_buffer_w] = b2a(e.m_uploaded);
+			buffer = b2a(e.m_uploaded);
 		break;
 	case pc_down_rate:
 		if (e.m_down_rate)
-			m_buffer[m_buffer_w] = b2a(e.m_down_rate);
+			buffer = b2a(e.m_down_rate);
 		break;
 	case pc_up_rate:
 		if (e.m_up_rate)
-			m_buffer[m_buffer_w] = b2a(e.m_up_rate);
+			buffer = b2a(e.m_up_rate);
 		break;
 	case pc_link_direction:
-		m_buffer[m_buffer_w] = e.m_local_link ? 'L' : 'R';
+		buffer = e.m_local_link ? 'L' : 'R';
 		break;
 	case pc_local_choked:
 		if (e.m_local_choked)
-			m_buffer[m_buffer_w] = 'C';
+			buffer = 'C';
 		break;
 	case pc_local_interested:
 		if (e.m_local_interested)
-			m_buffer[m_buffer_w] = 'I';
+			buffer = 'I';
 		break;
 	case pc_local_requests:
 		if (e.mc_local_requests)
-			m_buffer[m_buffer_w] = n(e.mc_local_requests);
+			buffer = n(e.mc_local_requests);
 		break;
 	case pc_remote_choked:
 		if (e.m_remote_choked)
-			m_buffer[m_buffer_w] = 'C';
+			buffer = 'C';
 		break;
 	case pc_remote_interested:
 		if (e.m_remote_interested)
-			m_buffer[m_buffer_w] = 'I';
+			buffer = 'I';
 		break;
 	case pc_remote_requests:
 		if (e.mc_remote_requests)
-			m_buffer[m_buffer_w] = n(e.mc_remote_requests);
+			buffer = n(e.mc_remote_requests);
 		break;
 	case pc_pieces:
 		if (e.mc_pieces)
-			m_buffer[m_buffer_w] = n(e.mc_pieces);
+			buffer = n(e.mc_pieces);
 		break;
 	case pc_recv_time:
-		m_buffer[m_buffer_w] = n(time(NULL) - e.m_rtime);
+		buffer = n(time(NULL) - e.m_rtime);
 		break;
 	case pc_send_time:
-		m_buffer[m_buffer_w] = n(time(NULL) - e.m_stime);
+		buffer = n(time(NULL) - e.m_stime);
 		break;
 	case pc_peer_id:
-		m_buffer[m_buffer_w] = hex_encode(e.m_remote_peer_id);
+		buffer = hex_encode(e.m_remote_peer_id);
 		break;
 	case pc_client:
-		m_buffer[m_buffer_w] = peer_id2a(e.m_remote_peer_id);
+		buffer = peer_id2a(e.m_remote_peer_id);
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 
@@ -792,35 +792,35 @@ void CXBTClientDlg::OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_peers.get_buffer();
 	const t_piece& e = m_file->pieces[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case pic_index:
-		m_buffer[m_buffer_w] = n(e.index);
+		buffer = n(e.index);
 		break;
 	case pic_c_chunks:
 		if (e.c_chunks_valid)
-			m_buffer[m_buffer_w] = n(e.c_chunks_valid) + " / " + n(e.c_chunks_invalid + e.c_chunks_valid);
+			buffer = n(e.c_chunks_valid) + " / " + n(e.c_chunks_invalid + e.c_chunks_valid);
 		break;
 	case pic_c_peers:
 		if (e.c_peers)
-			m_buffer[m_buffer_w] = n(e.c_peers);
+			buffer = n(e.c_peers);
 		break;
 	case pic_priority:
 		if (e.m_priority)
-			m_buffer[m_buffer_w] = priority2a(e.m_priority);
+			buffer = priority2a(e.m_priority);
 		break;
 	case pic_valid:
 		if (e.m_valid)
-			m_buffer[m_buffer_w] = 'V';
+			buffer = 'V';
 		break;
 	case pic_rank:
 		if (e.rank != INT_MAX)
-			m_buffer[m_buffer_w] = n(e.rank);
+			buffer = n(e.rank);
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 
@@ -829,7 +829,7 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_peers.get_buffer();
 	const t_sub_file& e = m_file->m_sub_files[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
@@ -837,31 +837,31 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		if (e.m_name.empty())
 		{
 			int i = m_file->m_name.rfind('\\');
-			m_buffer[m_buffer_w] = i == string::npos ? m_file->m_name : m_file->m_name.substr(i + 1);
+			buffer = i == string::npos ? m_file->m_name : m_file->m_name.substr(i + 1);
 		}
 		else
-			m_buffer[m_buffer_w] = e.m_name;
+			buffer = e.m_name;
 		break;
 	case sfc_done:
 		if (e.m_size)
-			m_buffer[m_buffer_w] = n((e.m_size - e.m_left) * 100 / e.m_size);
+			buffer = n((e.m_size - e.m_left) * 100 / e.m_size);
 		break;
 	case sfc_left:
 		if (e.m_left)
-			m_buffer[m_buffer_w] = b2a(e.m_left);
+			buffer = b2a(e.m_left);
 		break;
 	case sfc_size:
-		m_buffer[m_buffer_w] = b2a(e.m_size);
+		buffer = b2a(e.m_size);
 		break;
 	case sfc_priority:
 		if (e.m_priority)
-			m_buffer[m_buffer_w] = priority2a(e.m_priority);
+			buffer = priority2a(e.m_priority);
 		break;
 	case sfc_hash:
-		m_buffer[m_buffer_w] = hex_encode(e.m_merkle_hash);
+		buffer = hex_encode(e.m_merkle_hash);
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 
@@ -870,15 +870,15 @@ void CXBTClientDlg::OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_peers.get_buffer();
 	const t_tracker& e = m_file->m_trackers[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case tc_url:
-		m_buffer[m_buffer_w] = e.url;
+		buffer = e.url;
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 

@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <string>
+
 class CListCtrlEx: public CListCtrl
 {
 public:
@@ -15,6 +17,7 @@ public:
 	virtual void PreSubclassWindow();
 	//}}AFX_VIRTUAL
 public:
+	std::string& get_buffer();
 	void select_all();
 	DWORD GetItemData(int nItem) const;
 	void auto_size();
@@ -24,6 +27,9 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+private:
+	std::string m_buffer[4];
+	int m_buffer_w;
 };
 
 /////////////////////////////////////////////////////////////////////////////
