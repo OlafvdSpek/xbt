@@ -258,6 +258,8 @@ private:
 		int mc_files;
 		int mc_leechers;
 		int mc_seeders;
+		int mc_torrents_complete;
+		int mc_torrents_incomplete;
 	};
 
 	typedef vector<int> t_columns;
