@@ -1046,5 +1046,5 @@ void Cserver::term()
 
 int Cserver::version()
 {
-	return 44;
+	return 45;
 }
