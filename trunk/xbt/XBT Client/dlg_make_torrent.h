@@ -24,6 +24,11 @@ public:
 	void sort();
 	Cdlg_make_torrent(CWnd* pParent = NULL);   // standard constructor
 
+	const string& torrent_fname() const
+	{
+		return m_torrent_fname;
+	}
+
 // Dialog Data
 	//{{AFX_DATA(Cdlg_make_torrent)
 	enum { IDD = IDD_MAKE_TORRENT };
@@ -33,6 +38,7 @@ public:
 	CString	m_name;
 	BOOL	m_use_merkle;
 	CString	m_trackers;
+	BOOL	m_seed_after_making;
 	//}}AFX_DATA
 
 
@@ -70,6 +76,7 @@ private:
 	t_map m_map;
 	int m_sort_column;
 	bool m_sort_reverse;
+	string m_torrent_fname;
 };
 
 //{{AFX_INSERT_LOCATION}}

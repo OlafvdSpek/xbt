@@ -173,7 +173,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	CCommandLineInfo cmdInfo;
 	AfxGetApp()->ParseCommandLine(cmdInfo);
 	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
-		open(static_cast<string>(cmdInfo.m_strFileName));
+		open(static_cast<string>(cmdInfo.m_strFileName), m_ask_for_location);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -211,7 +211,7 @@ HCURSOR CXBTClientDlg::OnQueryDragIcon()
 	return (HCURSOR) m_hIcon;
 }
 
-void CXBTClientDlg::open(const string& name)
+void CXBTClientDlg::open(const string& name, bool ask_for_location)
 {
 	Cvirtual_binary d(name);
 	Cbt_torrent torrent(d);
@@ -224,7 +224,7 @@ void CXBTClientDlg::open(const string& name)
 		d.save(path + "\\" + torrent.name() + ".torrent");
 	}
 	string path = m_dir;
-	if (!m_dir.IsEmpty() && !m_ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
+	if (!m_dir.IsEmpty() && !ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
 	{
 		path += "\\Incompletes\\" + torrent.name();
 		update_tray("Opened", torrent.name().c_str());
@@ -744,7 +744,7 @@ void CXBTClientDlg::OnPopupOpen()
 {
 	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
 	if (IDOK == dlg.DoModal())
-		open(static_cast<string>(dlg.GetPathName()));
+		open(static_cast<string>(dlg.GetPathName()), m_ask_for_location);
 }
 
 void CXBTClientDlg::OnPopupClose() 
@@ -775,7 +775,9 @@ void CXBTClientDlg::OnPopupFiles()
 
 void CXBTClientDlg::OnPopupMakeTorrent() 
 {
-	Cdlg_make_torrent().DoModal();	
+	Cdlg_make_torrent dlg;
+	if (IDOK == dlg.DoModal() && dlg.m_seed_after_making)
+		open(dlg.torrent_fname(), true);
 }
 
 void CXBTClientDlg::OnPopupOptions() 
@@ -905,7 +907,7 @@ void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 			|| b.st_size > 512 << 10)
 			names.insert(name);
 		else
-			open(name);
+			open(name, m_ask_for_location);
 	}
 	ETSLayoutDialog::OnDropFiles(hDropInfo);
 	if (names.empty())
@@ -913,7 +915,8 @@ void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 	Cdlg_make_torrent dlg;
 	for (t_names::const_iterator i = names.begin(); i != names.end(); i++)
 		dlg.insert(*i);
-	dlg.DoModal();
+	if (IDOK == dlg.DoModal() && dlg.m_seed_after_making)
+		open(dlg.torrent_fname(), true);
 }
 
 BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg) 
@@ -1018,7 +1021,7 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			switch (cds.dwData)
 			{
 			case 0:
-				open(string(reinterpret_cast<const char*>(cds.lpData), cds.cbData));
+				open(string(reinterpret_cast<const char*>(cds.lpData), cds.cbData), m_ask_for_location);
 				return true;
 			}				
 		}

@@ -32,6 +32,7 @@ Cdlg_make_torrent::Cdlg_make_torrent(CWnd* pParent):
 	m_name = _T("");
 	m_use_merkle = FALSE;
 	m_trackers = _T("");
+	m_seed_after_making = TRUE;
 	//}}AFX_DATA_INIT
 }
 
@@ -46,6 +47,7 @@ void Cdlg_make_torrent::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_NAME, m_name);
 	DDX_Check(pDX, IDC_USE_MERKLE, m_use_merkle);
 	DDX_Text(pDX, IDC_TRACKERS, m_trackers);
+	DDX_Check(pDX, IDC_SEED_AFTER_MAKING, m_seed_after_making);
 	//}}AFX_DATA_MAP
 }
 
@@ -84,6 +86,7 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 			)
 		<< item (IDC_LIST, GREEDY)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
+			<< item (IDC_SEED_AFTER_MAKING, NORESIZE)
 			<< item (IDC_USE_MERKLE, NORESIZE)
 			<< itemGrowing(HORIZONTAL)
 			<< item (IDC_SAVE, NORESIZE)
@@ -354,6 +357,7 @@ void Cdlg_make_torrent::OnSave()
 	if (m_use_merkle)
 		s = gzip(s);
 	s.save(static_cast<string>(dlg.GetPathName()));
+	m_torrent_fname = dlg.GetPathName();
 	EndDialog(IDOK);
 }
 

@@ -37,7 +37,7 @@ public:
 	void auto_size_peers();
 	void auto_size();
 	void fill_peers();
-	void open(const string& name);
+	void open(const string& name, bool ask_for_location);
 	void open_url(const string&);
 	CXBTClientDlg(CWnd* pParent = NULL);	// standard constructor
 
