@@ -119,22 +119,22 @@ const Csocket& Csocket::open(int t, bool _blocking)
 	return *this;
 }
 
-int Csocket::recv(void* d, int cb_d)
+int Csocket::recv(void* d, int cb_d) const
 {
 	return ::recv(*this, reinterpret_cast<char*>(d), cb_d, MSG_NOSIGNAL);
 }
 
-int Csocket::recvfrom(void* d, int cb_d, sockaddr* a, socklen_t* cb_a)
+int Csocket::recvfrom(void* d, int cb_d, sockaddr* a, socklen_t* cb_a) const
 {
 	return ::recvfrom(*this, reinterpret_cast<char*>(d), cb_d, MSG_NOSIGNAL, a, cb_a);
 }
 
-int Csocket::send(const void* s, int cb_s)
+int Csocket::send(const void* s, int cb_s) const
 {
 	return ::send(*this, reinterpret_cast<const char*>(s), cb_s, MSG_NOSIGNAL);
 }
 
-int Csocket::sendto(const void* s, int cb_s, const sockaddr* a, socklen_t cb_a)
+int Csocket::sendto(const void* s, int cb_s, const sockaddr* a, socklen_t cb_a) const
 {
 	return ::sendto(*this, reinterpret_cast<const char*>(s), cb_s, MSG_NOSIGNAL, a, cb_a);
 }
