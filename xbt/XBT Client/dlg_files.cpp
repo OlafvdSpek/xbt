@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(Cdlg_files, ETSLayoutDialog)
 	ON_BN_CLICKED(IDC_OPEN, OnOpen)
 	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
 	ON_BN_CLICKED(IDC_EXPLORE, OnExplore)
+	ON_BN_CLICKED(IDC_EXCLUDE, OnExclude)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -74,7 +75,7 @@ BOOL Cdlg_files::OnInitDialog()
 	m_files.InsertColumn(1, "%", LVCFMT_RIGHT);
 	m_files.InsertColumn(2, "Left", LVCFMT_RIGHT);
 	m_files.InsertColumn(3, "Size", LVCFMT_RIGHT);
-	m_files.InsertColumn(4, "Priority");
+	m_files.InsertColumn(4, "Priority", LVCFMT_RIGHT);
 	m_files.InsertColumn(5, "Hash");
 	m_sort_column = 0;
 	m_sort_reverse = false;
@@ -146,6 +147,16 @@ void Cdlg_files::OnTimer(UINT nIDEvent)
 {
 	load_data();	
 	ETSLayoutDialog::OnTimer(nIDEvent);
+}
+
+void Cdlg_files::OnExclude() 
+{
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_map_entry& e = m_map.find(m_files.GetItemData(index))->second;
+		m_server.sub_file_priority(m_info_hash, e.name, -10);
+	}
+	load_data();
 }
 
 void Cdlg_files::OnDecreasePriority() 
@@ -294,3 +305,4 @@ void Cdlg_files::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	OnOpen();	
 	*pResult = 0;
 }
+
