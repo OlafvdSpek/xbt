@@ -152,17 +152,14 @@ void Cmerkle_tree::set(int i, const string& v, const string& w)
 	int a = 0;
 	int b = m_size;
 	int z = 0;
-	string h = v;
-	while (1)
+	set0(a + i, v);
+	while (b - a >= 2 && z + 20 <= w.size())
 	{
-		if (*d(a + i))
-			return;
-		set0(a + i, h);
-		if (b - a < 2 || z + 20 > w.size())
-			return;
 		int j = i ^ 1;
 		if (a + j < b)
 		{
+			if (*d(a + j))
+				return;
 			set0(a + j, w.substr(z, 20));
 			z += 20;
 		}
