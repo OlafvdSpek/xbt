@@ -331,7 +331,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_bottom_view = GetProfileInt("bottom_view", v_peers);
 	m_server.admin_port(GetProfileInt("admin_port", m_server.admin_port()));
 	m_ask_for_location = GetProfileInt("ask_for_location", false);
-	m_server.bind_before_connect(GetProfileInt("bind_before_connect", false));
+	m_server.bind_before_connect(GetProfileInt("bind_before_connect", m_server.bind_before_connect()));
 	set_dir(GetProfileString("completes_dir"),
 		GetProfileString("incompletes_dir"),
 		GetProfileString("local_app_data_dir"),
@@ -344,6 +344,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	if (!public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(public_ipa));
 	m_server.seeding_ratio(GetProfileInt("seeding_ratio", m_server.seeding_ratio()));
+	m_server.send_stop_event(GetProfileInt("send_stop_event", m_server.send_stop_event()));
 	m_show_advanced_columns = GetProfileInt("show_advanced_columns", false);
 	m_show_tray_icon = GetProfileInt("show_tray_icon", true);
 	m_server.torrent_limit(GetProfileInt("torrent_limit", m_server.torrent_limit()));
@@ -2866,7 +2867,7 @@ void CXBTClientDlg::OnToolsOptions()
 	Cdlg_options::t_data data;
 	data.admin_port = GetProfileInt("admin_port", m_server.admin_port());
 	data.ask_for_location = GetProfileInt("ask_for_location", false);
-	data.bind_before_connect = GetProfileInt("bind_before_connect", false);
+	data.bind_before_connect = m_server.bind_before_connect();
 	data.completes_dir = m_server.completes_dir();
 	data.hide_on_deactivate = GetProfileInt("hide_on_deactivate", false);
 	data.hot_key = GetProfileInt("hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q');
@@ -2876,6 +2877,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.peer_port = GetProfileInt("peer_port", m_server.peer_port());
 	data.public_ipa = GetProfileString("public_ipa");
 	data.seeding_ratio = m_server.seeding_ratio();
+	data.send_stop_event = m_server.send_stop_event();
 	data.show_advanced_columns = GetProfileInt("show_advanced_columns", false);
 	data.show_confirm_exit_dialog = GetProfileInt("show_confirm_exit_dialog", false);
 	data.show_tray_icon = GetProfileInt("show_tray_icon", true);
@@ -2904,6 +2906,7 @@ void CXBTClientDlg::OnToolsOptions()
 	if (!data.public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(data.public_ipa));
 	m_server.seeding_ratio(data.seeding_ratio);
+	m_server.send_stop_event(data.send_stop_event);
 	m_show_advanced_columns = data.show_advanced_columns;
 	m_show_tray_icon = data.show_tray_icon;
 	m_server.torrent_limit(data.torrent_limit);
@@ -2922,6 +2925,7 @@ void CXBTClientDlg::OnToolsOptions()
 	WriteProfileInt("peer_port", data.peer_port);
 	WriteProfileString("public_ipa", data.public_ipa);
 	WriteProfileInt("seeding_ratio", data.seeding_ratio);
+	WriteProfileInt("send_stop_event", data.send_stop_event);
 	WriteProfileInt("show_advanced_columns", data.show_advanced_columns);
 	WriteProfileInt("show_confirm_exit_dialog", data.show_confirm_exit_dialog);
 	WriteProfileInt("show_tray_icon", data.show_tray_icon);

@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_options dialog
 
-class Cdlg_options: public CDialog
+class Cdlg_options: public ETSLayoutDialog
 {
 // Construction
 public:
@@ -32,6 +32,7 @@ public:
 		int peer_port;
 		string public_ipa;
 		int seeding_ratio;
+		bool send_stop_event;
 		bool show_advanced_columns;
 		bool show_confirm_exit_dialog;
 		bool show_tray_icon;
@@ -70,6 +71,7 @@ public:
 	int		m_torrent_limit;
 	BOOL	m_show_confirm_exit_dialog;
 	BOOL	m_hide_on_deactivate;
+	BOOL	m_send_stop_event;
 	//}}AFX_DATA
 
 
@@ -88,6 +90,7 @@ protected:
 	afx_msg void OnCompletesDirectoryBrowse();
 	afx_msg void OnIncompletesDirectoryBrowse();
 	afx_msg void OnTorrentsDirectoryBrowse();
+	virtual BOOL OnInitDialog();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
