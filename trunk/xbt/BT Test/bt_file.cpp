@@ -534,10 +534,7 @@ int Cbt_file::c_seeders() const
 
 __int64 Cbt_file::size() const
 {
-	__int64 c = 0;
-	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		c += i->size();
-	return c;
+	return mcb_f;
 }
 
 void Cbt_file::load_state(Cstream_reader& r)
