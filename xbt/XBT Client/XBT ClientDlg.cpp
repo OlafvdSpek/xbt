@@ -1456,15 +1456,27 @@ void CXBTClientDlg::update_tray()
 {
 	__int64 left = 0;
 	__int64 size = 0;
+	int down_rate = 0;
+	int up_rate = 0;
 	int leechers = 0;
 	int seeders = 0;
 	for (t_files::const_iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
 	{
 		left += i->second.m_left;
 		size += i->second.m_size;
+		down_rate += i->second.m_down_rate;
+		up_rate += i->second.m_up_rate;
 		leechers += i->second.mc_leechers;
 		seeders += i->second.mc_seeders;
 	}
+	char b[256];
+	if (size)
+		sprintf(b, "%d %%, %s left, %s down, %s up, %d leechers, %d seeders - XBT Client", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), b2a(down_rate, "b/s").c_str(), b2a(up_rate, "b/s").c_str(), leechers, seeders);
+	else
+		strcpy(b, "XBT Client");
+	SetWindowText(b);
+	if (!m_show_tray_icon)
+		return;
 	NOTIFYICONDATA nid;
 	nid.cbSize = NOTIFYICONDATA_V1_SIZE;
 	nid.hWnd = GetSafeHwnd();
@@ -1474,9 +1486,6 @@ void CXBTClientDlg::update_tray()
 		sprintf(nid.szTip, "%d %%, %s left, %d leechers, %d seeders - XBT Client", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders);
 	else
 		strcpy(nid.szTip, "XBT Client");
-	SetWindowText(nid.szTip);
-	if (!m_show_tray_icon)
-		return;
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
