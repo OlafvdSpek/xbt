@@ -536,21 +536,33 @@ void Cserver::write_db()
 			q.execute();
 			file.dirty = false;
 		}
-		if (!m_announce_log_buffer.empty())
-		{
-			m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
-			m_database.query("insert delayed into xbt_announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
-			m_announce_log_buffer.erase();
-		}
-		if (!m_scrape_log_buffer.empty())
-		{
-			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
-			m_database.query("insert delayed into xbt_scrape_log (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
-			m_scrape_log_buffer.erase();
-		}
 	}
 	catch (Cxcc_error error)
 	{
+	}
+	if (!m_announce_log_buffer.empty())
+	{
+		try
+		{
+			m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
+			m_database.query("insert delayed into xbt_announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
+		}
+		catch (Cxcc_error error)
+		{
+		}
+		m_announce_log_buffer.erase();
+	}
+	if (!m_scrape_log_buffer.empty())
+	{
+		try
+		{
+			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
+			m_database.query("insert delayed into xbt_scrape_log (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
+		}
+		catch (Cxcc_error error)
+		{
+		}
+		m_scrape_log_buffer.erase();
 	}
 	m_write_db_time = time(NULL);
 }
