@@ -73,6 +73,19 @@ const Csocket& Csocket::operator=(const Csocket& v)
 	return *this;
 }
 
+int Csocket::accept(int& h, int& p)
+{
+	sockaddr_in a;
+	socklen_t cb_a = sizeof(sockaddr_in);
+	a.sin_family = AF_INET;
+	int r = ::accept(*this, reinterpret_cast<sockaddr*>(&a), &cb_a);
+	if (r == INVALID_SOCKET)
+		return r;
+	h = a.sin_addr.s_addr;
+	p = a.sin_port;
+	return 0;
+}
+
 int Csocket::bind(int h, int p)
 {
 	sockaddr_in a;
