@@ -792,15 +792,15 @@ void Cserver::read_config()
 			else if (!strcmp(row.f(0), "write_db_interval"))
 				config.m_write_db_interval = row.f_int(1);
 		}
-		if (config.m_listen_ipas.empty())
-			config.m_listen_ipas.insert(htonl(INADDR_ANY));
-		if (config.m_listen_ports.empty())
-			config.m_listen_ports.insert(2710);
 		m_config = config;
 	}
 	catch (Cxcc_error)
 	{
 	}
+	if (m_config.m_listen_ipas.empty())
+		m_config.m_listen_ipas.insert(htonl(INADDR_ANY));
+	if (m_config.m_listen_ports.empty())
+		m_config.m_listen_ports.insert(2710);
 	m_read_config_time = time();
 }
 
