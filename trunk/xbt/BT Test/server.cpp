@@ -487,7 +487,7 @@ void Cserver::clean_scheduler()
 		if (m_profiles.count(i->second.profile))
 			i++;
 		else
-			i = m_scheduler.erase(i);
+			m_scheduler.erase(i++);
 	}
 }
 
