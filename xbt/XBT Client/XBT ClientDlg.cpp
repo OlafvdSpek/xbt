@@ -1471,7 +1471,7 @@ void CXBTClientDlg::update_tray()
 	}
 	char b[256];
 	if (size)
-		sprintf(b, "%d %%, %s left, %s down, %s up, %d leechers, %d seeders - XBT Client", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), b2a(down_rate, "b/s").c_str(), b2a(up_rate, "b/s").c_str(), leechers, seeders);
+		sprintf(b, "%d %%, %s left, %s down, %s up, %d leechers, %d seeders - XBT Client", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), b2a(down_rate).c_str(), b2a(up_rate).c_str(), leechers, seeders);
 	else
 		strcpy(b, "XBT Client");
 	SetWindowText(b);
