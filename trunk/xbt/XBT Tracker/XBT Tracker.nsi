@@ -5,10 +5,12 @@
 Name "XBT Tracker ${VERSION}"
 Outfile "XBT_Tracker-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT\Tracker"
+InstallDirRegKey HKLM "Software\XBT\Tracker" "InstallDir"
 Page directory
 Page instfiles
 UninstPage uninstConfirm
 UninstPage instfiles
+
 Section "Install"
 	SetShellVarContext all
 	SetOutPath "$INSTDIR"
@@ -30,6 +32,7 @@ Section "Install"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker" "DisplayName" "XBT Tracker ${VERSION}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker" "UninstallString" '"$INSTDIR\Uninstall.exe"'
 	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker" "NoModify" 1
+	WriteRegStr HKLM "Software\XBT\Tracker" "InstallDir" "$INSTDIR"
 SectionEnd
 
 Section "Uninstall"
@@ -38,6 +41,8 @@ Section "Uninstall"
 	ExecWait "$INSTDIR\XBT Tracker.exe --uninstall"
 	Delete "$SMPROGRAMS\XBT Tracker.lnk"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker"
+	DeleteRegKey HKLM "Software\XBT\Tracker"
+	DeleteRegKey /ifempty HKLM "Software\XBT"
 	RMDir /r "$INSTDIR"
 	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
