@@ -44,7 +44,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_tracker message handlers
 
-BOOL Cdlg_tracker::OnInitDialog() 
+BOOL Cdlg_tracker::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)

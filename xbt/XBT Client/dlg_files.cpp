@@ -54,7 +54,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_files message handlers
 
-BOOL Cdlg_files::OnInitDialog() 
+BOOL Cdlg_files::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
@@ -134,13 +134,13 @@ void Cdlg_files::load_data()
 	m_files.auto_size();
 }
 
-void Cdlg_files::OnTimer(UINT nIDEvent) 
+void Cdlg_files::OnTimer(UINT nIDEvent)
 {
-	load_data();	
+	load_data();
 	ETSLayoutDialog::OnTimer(nIDEvent);
 }
 
-void Cdlg_files::OnExclude() 
+void Cdlg_files::OnExclude()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
@@ -150,7 +150,7 @@ void Cdlg_files::OnExclude()
 	load_data();
 }
 
-void Cdlg_files::OnDecreasePriority() 
+void Cdlg_files::OnDecreasePriority()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
@@ -160,7 +160,7 @@ void Cdlg_files::OnDecreasePriority()
 	load_data();
 }
 
-void Cdlg_files::OnIncreasePriority() 
+void Cdlg_files::OnIncreasePriority()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
@@ -170,7 +170,7 @@ void Cdlg_files::OnIncreasePriority()
 	load_data();
 }
 
-void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	m_buffer[++m_buffer_w &= 3].erase();
@@ -209,7 +209,7 @@ void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void Cdlg_files::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_files::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	m_sort_reverse = pNMListView->iSubItem == m_sort_column && !m_sort_reverse;
@@ -255,10 +255,10 @@ static int CALLBACK compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 
 void Cdlg_files::sort()
 {
-	m_files.SortItems(::compare, reinterpret_cast<DWORD>(this));	
+	m_files.SortItems(::compare, reinterpret_cast<DWORD>(this));
 }
 
-void Cdlg_files::OnExplore() 
+void Cdlg_files::OnExplore()
 {
 	string name = m_name;
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
@@ -279,7 +279,7 @@ void Cdlg_files::OnExplore()
 	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
 }
 
-void Cdlg_files::OnOpen() 
+void Cdlg_files::OnOpen()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
@@ -291,9 +291,9 @@ void Cdlg_files::OnOpen()
 	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
 }
 
-void Cdlg_files::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_files::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	OnOpen();	
+	OnOpen();
 	*pResult = 0;
 }
 

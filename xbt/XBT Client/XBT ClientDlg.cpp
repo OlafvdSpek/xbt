@@ -197,7 +197,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 {
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
+
 	CreateRoot(VERTICAL)
 		<< item (IDC_FILES, GREEDY)
 		<< item (IDC_PEERS, GREEDY)
@@ -221,7 +221,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
 	m_server.tracker_port(AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port()));
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
-	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));	
+	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));
 	start_server();
 	insert_columns(true);
 	m_files_sort_column = fc_name;
@@ -244,7 +244,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 //  to draw the icon.  For MFC applications using the document/view model,
 //  this is automatically done for you by the framework.
 
-void CXBTClientDlg::OnPaint() 
+void CXBTClientDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -335,7 +335,7 @@ void CXBTClientDlg::open_url(const string& v)
 	m_server.open_url(v);
 }
 
-void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
@@ -413,7 +413,7 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (!m_file)
 		return;
@@ -506,7 +506,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (!m_file)
 		return;
@@ -539,7 +539,7 @@ void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	switch (m_bottom_view)
 	{
@@ -623,7 +623,7 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (!m_file)
 		return;
@@ -681,7 +681,7 @@ void CXBTClientDlg::OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void CXBTClientDlg::OnSize(UINT nType, int cx, int cy) 
+void CXBTClientDlg::OnSize(UINT nType, int cx, int cy)
 {
 	ETSLayoutDialog::OnSize(nType, cx, cy);
 	if (nType == SIZE_MINIMIZED && m_show_tray_icon)
@@ -718,14 +718,14 @@ void CXBTClientDlg::fill_peers()
 	m_peers.auto_size();
 }
 
-void CXBTClientDlg::OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	if (pNMListView->uNewState & LVIS_FOCUSED && m_file != &m_files_map.find(pNMListView->lParam)->second)
 	{
 		m_file = &m_files_map.find(pNMListView->lParam)->second;
 		fill_peers();
-	}	
+	}
 	*pResult = 0;
 }
 
@@ -951,7 +951,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 		m_peers.auto_size();
 }
 
-void CXBTClientDlg::OnTimer(UINT nIDEvent) 
+void CXBTClientDlg::OnTimer(UINT nIDEvent)
 {
 	m_initial_hide = false;
 	switch (nIDEvent)
@@ -1018,7 +1018,7 @@ void CXBTClientDlg::OnContextMenu(CWnd* pWnd, CPoint point)
 	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, pWndPopupOwner);
 }
 
-void CXBTClientDlg::OnPopupExplore() 
+void CXBTClientDlg::OnPopupExplore()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
@@ -1039,7 +1039,7 @@ void CXBTClientDlg::OnPopupExplore()
 	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
 }
 
-void CXBTClientDlg::OnPopupExploreTracker() 
+void CXBTClientDlg::OnPopupExploreTracker()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
@@ -1051,26 +1051,26 @@ void CXBTClientDlg::OnPopupExploreTracker()
 	ShellExecute(m_hWnd, "open", ("http://" + url.m_host).c_str(), NULL, NULL, SW_SHOW);
 }
 
-void CXBTClientDlg::OnPopupAnnounce() 
+void CXBTClientDlg::OnPopupAnnounce()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index != -1)
 		m_server.announce(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
-void CXBTClientDlg::OnPopupStart() 
+void CXBTClientDlg::OnPopupStart()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.start_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
-void CXBTClientDlg::OnPopupStop() 
+void CXBTClientDlg::OnPopupStop()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.stop_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
-void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl() 
+void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index != -1)
@@ -1081,21 +1081,21 @@ void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl()
 	}
 }
 
-void CXBTClientDlg::OnPopupTorrentClipboardCopyHash() 
+void CXBTClientDlg::OnPopupTorrentClipboardCopyHash()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index != -1)
 		set_clipboard(hex_encode(m_files_map.find(m_files.GetItemData(index))->second.info_hash));
 }
 
-void CXBTClientDlg::OnPopupCopy() 
+void CXBTClientDlg::OnPopupCopy()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index != -1)
 		set_clipboard(m_server.get_url(m_files_map.find(m_files.GetItemData(index))->second.info_hash));
 }
 
-void CXBTClientDlg::OnPopupPaste() 
+void CXBTClientDlg::OnPopupPaste()
 {
 	if (!OpenClipboard())
 		return;
@@ -1103,34 +1103,34 @@ void CXBTClientDlg::OnPopupPaste()
 	void* p = GlobalLock(h);
 	if (p)
 		open_url(reinterpret_cast<char*>(p));
-	CloseClipboard();	
+	CloseClipboard();
 }
 
-void CXBTClientDlg::OnPopupOpen() 
+void CXBTClientDlg::OnPopupOpen()
 {
 	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
 	if (IDOK == dlg.DoModal())
 		open(static_cast<string>(dlg.GetPathName()), m_ask_for_location);
 }
 
-void CXBTClientDlg::OnPopupClose() 
+void CXBTClientDlg::OnPopupClose()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
-void CXBTClientDlg::OnPopupTorrentDelete() 
+void CXBTClientDlg::OnPopupTorrentDelete()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash, true);
 }
 
-void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI) 
+void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
 }
 
-void CXBTClientDlg::OnPopupFiles() 
+void CXBTClientDlg::OnPopupFiles()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
@@ -1139,14 +1139,14 @@ void CXBTClientDlg::OnPopupFiles()
 	dlg.DoModal();
 }
 
-void CXBTClientDlg::OnPopupMakeTorrent() 
+void CXBTClientDlg::OnPopupMakeTorrent()
 {
 	Cdlg_make_torrent dlg;
 	if (IDOK == dlg.DoModal() && dlg.m_seed_after_making)
 		open(dlg.torrent_fname(), true);
 }
 
-void CXBTClientDlg::OnPopupOptions() 
+void CXBTClientDlg::OnPopupOptions()
 {
 	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
@@ -1208,7 +1208,7 @@ void CXBTClientDlg::OnPopupOptions()
 		unregister_tray();
 }
 
-void CXBTClientDlg::OnPopupTrackers() 
+void CXBTClientDlg::OnPopupTrackers()
 {
 	Cdlg_trackers dlg(this);
 	Cstream_reader r(m_server.get_trackers());
@@ -1237,17 +1237,17 @@ void CXBTClientDlg::OnPopupTrackers()
 	m_server.set_trackers(d);
 }
 
-void CXBTClientDlg::OnPopupExit() 
+void CXBTClientDlg::OnPopupExit()
 {
 	EndDialog(IDCANCEL);
 }
 
-void CXBTClientDlg::OnPopupAbout() 
+void CXBTClientDlg::OnPopupAbout()
 {
-	Cdlg_about().DoModal();	
+	Cdlg_about().DoModal();
 }
 
-void CXBTClientDlg::OnPopupTorrentAlerts() 
+void CXBTClientDlg::OnPopupTorrentAlerts()
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
@@ -1255,19 +1255,19 @@ void CXBTClientDlg::OnPopupTorrentAlerts()
 	Cdlg_torrent(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash).DoModal();
 }
 
-void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	OnPopupExplore();
 	*pResult = 0;
 }
 
-void CXBTClientDlg::OnDropFiles(HDROP hDropInfo) 
+void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 {
 	typedef set<string> t_names;
 
 	int c_files = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
 	t_names names;
-	
+
 	for (int i = 0; i < c_files; i++)
 	{
 		char name[MAX_PATH];
@@ -1291,7 +1291,7 @@ void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 		open(dlg.torrent_fname(), true);
 }
 
-BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg) 
+BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_KEYDOWN)
 	{
@@ -1300,6 +1300,13 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 		case VK_CANCEL:
 		case VK_ESCAPE:
 			ShowWindow(SW_HIDE);
+			return true;
+		case VK_DELETE:
+			OnPopupClose();
+			return true;
+		case VK_INSERT:
+			OnPopupOpen();
+			return true;
 		case VK_RETURN:
 			return true;
 		}
@@ -1307,7 +1314,7 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 	return ETSLayoutDialog::PreTranslateMessage(pMsg);
 }
 
-void CXBTClientDlg::OnDestroy() 
+void CXBTClientDlg::OnDestroy()
 {
 	stop_server();
 	unregister_tray();
@@ -1385,7 +1392,7 @@ void CXBTClientDlg::update_tray(const char* info_title, const char* info)
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
-LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
+LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -1397,12 +1404,12 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			case 0:
 				open(string(reinterpret_cast<const char*>(cds.lpData), cds.cbData), m_ask_for_location);
 				return true;
-			}				
+			}
 		}
 		break;
 	default:
 		if (message == g_tray_message_id)
-		{	
+		{
 			switch (lParam)
 			{
 			case WM_LBUTTONUP:
@@ -1416,14 +1423,14 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return ETSLayoutDialog::WindowProc(message, wParam, lParam);
 }
 
-void CXBTClientDlg::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
+void CXBTClientDlg::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos)
 {
 	if (m_initial_hide)
 		lpwndpos->flags &= ~SWP_SHOWWINDOW;
 	ETSLayoutDialog::OnWindowPosChanging(lpwndpos);
 }
 
-void CXBTClientDlg::OnEndSession(BOOL bEnding) 
+void CXBTClientDlg::OnEndSession(BOOL bEnding)
 {
 	stop_server();
 	ETSLayoutDialog::OnEndSession(bEnding);
@@ -1447,7 +1454,7 @@ void CXBTClientDlg::stop_server()
 {
 	m_server.stop();
 	if (m_server_thread)
-		WaitForSingleObject(m_server_thread->m_hThread, INFINITE);	
+		WaitForSingleObject(m_server_thread->m_hThread, INFINITE);
 	delete m_server_thread;
 	m_server_thread = NULL;
 }
@@ -1501,7 +1508,7 @@ static int CALLBACK files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamS
 	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->files_compare(lParam1, lParam2);
 }
 
-void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	m_files_sort_reverse = m_torrents_columns[pNMListView->iSubItem] == m_files_sort_column && !m_files_sort_reverse;
@@ -1617,7 +1624,7 @@ static int CALLBACK sub_files_compare(LPARAM lParam1, LPARAM lParam2, LPARAM lPa
 	return reinterpret_cast<CXBTClientDlg*>(lParamSort)->sub_files_compare(lParam1, lParam2);
 }
 
-void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
 	m_peers_sort_reverse = m_peers_columns[pNMListView->iSubItem] == m_peers_sort_column && !m_peers_sort_reverse;
@@ -1628,12 +1635,12 @@ void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::sort_events()
 {
-	m_files.SortItems(::events_compare, reinterpret_cast<DWORD>(this));	
+	m_files.SortItems(::events_compare, reinterpret_cast<DWORD>(this));
 }
 
 void CXBTClientDlg::sort_files()
 {
-	m_files.SortItems(::files_compare, reinterpret_cast<DWORD>(this));	
+	m_files.SortItems(::files_compare, reinterpret_cast<DWORD>(this));
 }
 
 void CXBTClientDlg::sort_peers()
@@ -1851,7 +1858,7 @@ void CXBTClientDlg::set_dir(const string& v)
 		char path[MAX_PATH];
 		if (FAILED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
 			strcpy(path, "C:");
-		strcat(path, "\\XBT");	
+		strcat(path, "\\XBT");
 		m_dir = path;
 	}
 	else
@@ -1894,15 +1901,15 @@ void CXBTClientDlg::set_clipboard(const string& v)
 }
 
 
-void CXBTClientDlg::OnPopupViewDetails() 
+void CXBTClientDlg::OnPopupViewDetails()
 {
 	m_bottom_view = v_details;
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-}	
+}
 
-void CXBTClientDlg::OnPopupViewEvents() 
+void CXBTClientDlg::OnPopupViewEvents()
 {
 	m_bottom_view = v_events;
 	m_peers_sort_column = -1;
@@ -1910,7 +1917,7 @@ void CXBTClientDlg::OnPopupViewEvents()
 	fill_peers();
 }
 
-void CXBTClientDlg::OnPopupViewFiles() 
+void CXBTClientDlg::OnPopupViewFiles()
 {
 	m_bottom_view = v_files;
 	m_peers_sort_column = -1;
@@ -1918,7 +1925,7 @@ void CXBTClientDlg::OnPopupViewFiles()
 	fill_peers();
 }
 
-void CXBTClientDlg::OnPopupViewPeers() 
+void CXBTClientDlg::OnPopupViewPeers()
 {
 	m_bottom_view = v_peers;
 	m_peers_sort_column = pc_client;
@@ -1926,7 +1933,7 @@ void CXBTClientDlg::OnPopupViewPeers()
 	fill_peers();
 }
 
-void CXBTClientDlg::OnPopupViewTrackers() 
+void CXBTClientDlg::OnPopupViewTrackers()
 {
 	m_bottom_view = v_trackers;
 	m_peers_sort_column = -1;
@@ -1964,22 +1971,22 @@ void CXBTClientDlg::OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	}
 }
 
-void CXBTClientDlg::OnPopupPriorityHigh() 
+void CXBTClientDlg::OnPopupPriorityHigh()
 {
 	set_priority(1);
 }
 
-void CXBTClientDlg::OnPopupPriorityNormal() 
+void CXBTClientDlg::OnPopupPriorityNormal()
 {
 	set_priority(0);
 }
 
-void CXBTClientDlg::OnPopupPriorityLow() 
+void CXBTClientDlg::OnPopupPriorityLow()
 {
 	set_priority(-1);
 }
 
-void CXBTClientDlg::OnPopupPriorityExclude() 
+void CXBTClientDlg::OnPopupPriorityExclude()
 {
 	set_priority(-10);
 }
@@ -1995,7 +2002,7 @@ void CXBTClientDlg::set_priority(int v)
 	}
 }
 
-void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult) 
+void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (m_bottom_view != v_files || !m_file)
 		return;
@@ -2004,14 +2011,14 @@ void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	ShellExecute(m_hWnd, "open", (m_file->name + e.name).c_str(), NULL, NULL, SW_SHOW);
 }
 
-void CXBTClientDlg::OnPopupViewAdvancedColumns() 
+void CXBTClientDlg::OnPopupViewAdvancedColumns()
 {
 	m_show_advanced_columns = !AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", m_show_advanced_columns);
 	insert_columns(true);
 }
 
-void CXBTClientDlg::OnPopupViewTrayIcon() 
+void CXBTClientDlg::OnPopupViewTrayIcon()
 {
 	m_show_tray_icon = !AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", m_show_tray_icon);

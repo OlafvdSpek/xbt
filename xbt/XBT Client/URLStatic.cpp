@@ -16,7 +16,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CURLStatic message handlers
 
-HBRUSH CURLStatic::CtlColor(CDC* pDC, UINT nCtlColor) 
+HBRUSH CURLStatic::CtlColor(CDC* pDC, UINT nCtlColor)
 {
 	pDC->SetBkMode(TRANSPARENT);
 	pDC->SetTextColor(RGB(0, 0, 255));
