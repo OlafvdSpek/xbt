@@ -696,77 +696,77 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case pc_host:
-		m_buffer[m_buffer_w] = inet_ntoa(e.host);
+		m_buffer[m_buffer_w] = inet_ntoa(e.m_host);
 		break;
 	case pc_port:
-		m_buffer[m_buffer_w] = n(ntohs(e.port));
+		m_buffer[m_buffer_w] = n(ntohs(e.m_port));
 		break;
 	case pc_done:
 		if (m_file->m_size)
-			m_buffer[m_buffer_w] = n((m_file->m_size - e.left) * 100 / m_file->m_size);
+			m_buffer[m_buffer_w] = n((m_file->m_size - e.m_left) * 100 / m_file->m_size);
 		break;
 	case pc_left:
-		if (e.left)
-			m_buffer[m_buffer_w] = b2a(e.left);
+		if (e.m_left)
+			m_buffer[m_buffer_w] = b2a(e.m_left);
 		break;
 	case pc_downloaded:
-		if (e.downloaded)
-			m_buffer[m_buffer_w] = b2a(e.downloaded);
+		if (e.m_downloaded)
+			m_buffer[m_buffer_w] = b2a(e.m_downloaded);
 		break;
 	case pc_uploaded:
-		if (e.uploaded)
-			m_buffer[m_buffer_w] = b2a(e.uploaded);
+		if (e.m_uploaded)
+			m_buffer[m_buffer_w] = b2a(e.m_uploaded);
 		break;
 	case pc_down_rate:
-		if (e.down_rate)
-			m_buffer[m_buffer_w] = b2a(e.down_rate);
+		if (e.m_down_rate)
+			m_buffer[m_buffer_w] = b2a(e.m_down_rate);
 		break;
 	case pc_up_rate:
-		if (e.up_rate)
-			m_buffer[m_buffer_w] = b2a(e.up_rate);
+		if (e.m_up_rate)
+			m_buffer[m_buffer_w] = b2a(e.m_up_rate);
 		break;
 	case pc_link_direction:
-		m_buffer[m_buffer_w] = e.local_link ? 'L' : 'R';
+		m_buffer[m_buffer_w] = e.m_local_link ? 'L' : 'R';
 		break;
 	case pc_local_choked:
-		if (e.local_choked)
+		if (e.m_local_choked)
 			m_buffer[m_buffer_w] = 'C';
 		break;
 	case pc_local_interested:
-		if (e.local_interested)
+		if (e.m_local_interested)
 			m_buffer[m_buffer_w] = 'I';
 		break;
 	case pc_local_requests:
-		if (e.c_local_requests)
-			m_buffer[m_buffer_w] = n(e.c_local_requests);
+		if (e.mc_local_requests)
+			m_buffer[m_buffer_w] = n(e.mc_local_requests);
 		break;
 	case pc_remote_choked:
-		if (e.remote_choked)
+		if (e.m_remote_choked)
 			m_buffer[m_buffer_w] = 'C';
 		break;
 	case pc_remote_interested:
-		if (e.remote_interested)
+		if (e.m_remote_interested)
 			m_buffer[m_buffer_w] = 'I';
 		break;
 	case pc_remote_requests:
-		if (e.c_remote_requests)
-			m_buffer[m_buffer_w] = n(e.c_remote_requests);
+		if (e.mc_remote_requests)
+			m_buffer[m_buffer_w] = n(e.mc_remote_requests);
 		break;
 	case pc_pieces:
-		if (e.c_pieces)
-			m_buffer[m_buffer_w] = n(e.c_pieces);
+		if (e.mc_pieces)
+			m_buffer[m_buffer_w] = n(e.mc_pieces);
 		break;
 	case pc_recv_time:
-		m_buffer[m_buffer_w] = n(time(NULL) - e.rtime);
+		m_buffer[m_buffer_w] = n(time(NULL) - e.m_rtime);
 		break;
 	case pc_send_time:
-		m_buffer[m_buffer_w] = n(time(NULL) - e.stime);
+		m_buffer[m_buffer_w] = n(time(NULL) - e.m_stime);
 		break;
 	case pc_peer_id:
-		m_buffer[m_buffer_w] = hex_encode(e.peer_id);
+		m_buffer[m_buffer_w] = hex_encode(e.m_remote_peer_id);
 		break;
 	case pc_client:
-		m_buffer[m_buffer_w] = peer_id2a(e.peer_id);
+		m_buffer[m_buffer_w] = peer_id2a(e.m_remote_peer_id);
 		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
@@ -1021,7 +1021,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	}
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); i++)
-			i->second.removed = true;
+			i->second.m_removed = true;
 	}
 	{
 		int c_peers = sr.read_int(4);
@@ -1091,7 +1091,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); )
 		{
-			if (i->second.removed)
+			if (i->second.m_removed)
 			{
 				if (m_bottom_view == v_peers && m_file == &f)
 				{
@@ -1119,30 +1119,30 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 {
 	bool inserted = false;
 	t_peer p;
-	p.host.s_addr = htonl(sr.read_int(4));
-	p.port = htons(sr.read_int(4));
-	p.peer_id = sr.read_string();
-	p.downloaded = sr.read_int(8);
-	p.left = sr.read_int(8);
-	p.uploaded = sr.read_int(8);
-	p.down_rate = sr.read_int(4);
-	p.up_rate = sr.read_int(4);
-	p.local_link = sr.read_int(1);
-	p.local_choked = sr.read_int(1);
-	p.local_interested = sr.read_int(1);
-	p.c_local_requests = sr.read_int(4);
-	p.remote_choked = sr.read_int(1);
-	p.remote_interested = sr.read_int(1);
-	p.c_remote_requests = sr.read_int(4);
-	p.c_pieces = sr.read_int(4);
-	p.rtime = sr.read_int(4);
-	p.stime = sr.read_int(4);
-	if (p.peer_id.empty())
+	p.m_host.s_addr = htonl(sr.read_int(4));
+	p.m_port = htons(sr.read_int(4));
+	p.m_remote_peer_id = sr.read_string();
+	p.m_downloaded = sr.read_int(8);
+	p.m_left = sr.read_int(8);
+	p.m_uploaded = sr.read_int(8);
+	p.m_down_rate = sr.read_int(4);
+	p.m_up_rate = sr.read_int(4);
+	p.m_local_link = sr.read_int(1);
+	p.m_local_choked = sr.read_int(1);
+	p.m_local_interested = sr.read_int(1);
+	p.mc_local_requests = sr.read_int(4);
+	p.m_remote_choked = sr.read_int(1);
+	p.m_remote_interested = sr.read_int(1);
+	p.mc_remote_requests = sr.read_int(4);
+	p.mc_pieces = sr.read_int(4);
+	p.m_rtime = sr.read_int(4);
+	p.m_stime = sr.read_int(4);
+	if (p.m_remote_peer_id.empty())
 		return;
 	t_peers::iterator i;
 	for (i = f.peers.begin(); i != f.peers.end(); i++)
 	{
-		if (i->second.host.s_addr == p.host.s_addr)
+		if (i->second.m_host.s_addr == p.m_host.s_addr)
 			break;
 	}
 	int id;
@@ -1157,7 +1157,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	}
 	else
 		id = i->first;
-	p.removed = false;
+	p.m_removed = false;
 	f.peers.find(id)->second = p;
 	if (inserted)
 		m_peers.auto_size();
@@ -1821,45 +1821,45 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	switch (m_peers_sort_column)
 	{
 	case pc_host:
-		return compare(ntohl(a.host.s_addr), ntohl(b.host.s_addr));
+		return compare(ntohl(a.m_host.s_addr), ntohl(b.m_host.s_addr));
 	case pc_port:
-		return compare(ntohs(a.port), ntohs(b.port));
+		return compare(ntohs(a.m_port), ntohs(b.m_port));
 	case pc_done:
-		return compare(b.left, a.left);
+		return compare(b.m_left, a.m_left);
 	case pc_left:
-		return compare(a.left, b.left);
+		return compare(a.m_left, b.m_left);
 	case pc_downloaded:
-		return compare(b.downloaded, a.downloaded);
+		return compare(b.m_downloaded, a.m_downloaded);
 	case pc_uploaded:
-		return compare(b.uploaded, a.uploaded);
+		return compare(b.m_uploaded, a.m_uploaded);
 	case pc_down_rate:
-		return compare(b.down_rate, a.down_rate);
+		return compare(b.m_down_rate, a.m_down_rate);
 	case pc_up_rate:
-		return compare(b.up_rate, a.up_rate);
+		return compare(b.m_up_rate, a.m_up_rate);
 	case pc_link_direction:
-		return compare(a.local_link, b.local_link);
+		return compare(a.m_local_link, b.m_local_link);
 	case pc_local_choked:
-		return compare(a.local_choked, b.local_choked);
+		return compare(a.m_local_choked, b.m_local_choked);
 	case pc_local_interested:
-		return compare(a.local_interested, b.local_interested);
+		return compare(a.m_local_interested, b.m_local_interested);
 	case pc_local_requests:
-		return compare(b.c_local_requests, a.c_local_requests);
+		return compare(b.mc_local_requests, a.mc_local_requests);
 	case pc_remote_choked:
-		return compare(a.remote_choked, b.remote_choked);
+		return compare(a.m_remote_choked, b.m_remote_choked);
 	case pc_remote_interested:
-		return compare(a.remote_interested, b.remote_interested);
+		return compare(a.m_remote_interested, b.m_remote_interested);
 	case pc_remote_requests:
-		return compare(b.c_remote_requests, a.c_remote_requests);
+		return compare(b.mc_remote_requests, a.mc_remote_requests);
 	case pc_pieces:
-		return compare(b.c_pieces, a.c_pieces);
+		return compare(b.mc_pieces, a.mc_pieces);
 	case pc_recv_time:
-		return compare(b.rtime, a.rtime);
+		return compare(b.m_rtime, a.m_rtime);
 	case pc_send_time:
-		return compare(b.stime, a.stime);
+		return compare(b.m_stime, a.m_stime);
 	case pc_peer_id:
-		return compare(a.peer_id, b.peer_id);
+		return compare(a.m_remote_peer_id, b.m_remote_peer_id);
 	case pc_client:
-		return compare(peer_id2a(a.peer_id), peer_id2a(b.peer_id));
+		return compare(peer_id2a(a.m_remote_peer_id), peer_id2a(b.m_remote_peer_id));
 	}
 	return 0;
 }
