@@ -53,7 +53,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		FD_SET(m_s, fd_except_set);
 	case 3:
 	case 4:
-		if (!m_local_choked && !m_remote_requests.empty() && m_write_b.empty())
+		if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
 		{
 			const t_remote_request& request = m_remote_requests.front();
 			Cvirtual_binary d;
@@ -63,7 +63,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		}
 		if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 120)
 			clear_local_requests();
-		while (!m_remote_choked && mc_local_requests_pending < 8)
+		while (m_local_interested && !m_remote_choked && mc_local_requests_pending < 8)
 		{
 			if (m_local_requests.empty())
 			{
@@ -104,7 +104,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 	return 0;
 }
 
-void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
+int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
 	switch (m_state)
 	{
@@ -115,8 +115,7 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 			int size = sizeof(int);
 			getsockopt(m_s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&e), &size);
 			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + n(e)));
-			close();
-			return;
+			return 1;
 		}
 	case 3:
 	case 4:
@@ -128,9 +127,8 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 			case 2:
 				if (m_read_b.cb_r() < sizeof(t_bt_handshake))
 					break;
-				read_handshake(*reinterpret_cast<const t_bt_handshake*>(m_read_b.r()));
-				if (!*this)
-					return;
+				if (read_handshake(*reinterpret_cast<const t_bt_handshake*>(m_read_b.r())))
+					return 1;
 				m_read_b.cb_r(sizeof(t_bt_handshake));
 				m_f->insert_old_peer(m_a.sin_addr.s_addr, m_a.sin_port);
 				m_state = 4;
@@ -154,10 +152,7 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 						if (cb_m)
 						{
 							if (cb_m < 0 || cb_m > 64 << 10)
-							{
-								close();
-								return;
-							}
+								return 1;
 							if (m_read_b.cb_r() < 4 + cb_m)
 								break;
 							const char* s = m_read_b.r() + 4;
@@ -181,8 +176,9 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 	if (!m_left && !m_f->m_left)
 	{
 		alert(Calert(Calert::debug, m_a, "Peer: seeder to seeder link closed"));
-		close();
+		return 1;
 	}
+	return 0;
 }
 
 void Cbt_peer_link::close()
@@ -327,18 +323,18 @@ byte* Cbt_peer_link::write(byte* w, int v)
 	return w + 4;
 }
 
-void Cbt_peer_link::read_handshake(const t_bt_handshake& h)
+int Cbt_peer_link::read_handshake(const t_bt_handshake& h)
 {
 	if (h.cb_name != 19
 		|| memcmp(h.name, "BitTorrent protocol", 19)
 		|| h.info_hash() != m_f->m_info_hash)
 	{
 		alert(Calert(Calert::warn, m_a, "Peer: handshake failed"));
-		close();
-		return;
+		return 1;
 	}
 	m_get_info_extension = h.reserved[7] & 1;
 	m_get_peers_extension = h.reserved[7] & 2;
+	return 0;
 }
 
 void Cbt_peer_link::write_handshake()

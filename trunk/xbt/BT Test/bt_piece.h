@@ -31,6 +31,7 @@ public:
 	int mc_sub_pieces_left;
 	int mcb_sub_piece;
 	bool m_valid;
+	char m_priority;
 };
 
 #endif // !defined(AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_)
