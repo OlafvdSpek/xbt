@@ -82,6 +82,7 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 		m_torrents_dir = path;
 		m_torrents_dir += "\\Torrents";
 		CreateDirectory(path, NULL);
+		CreateDirectory(m_incompletes_dir, NULL);
 	}
 }
 
@@ -149,6 +150,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	if (!public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(public_ipa));
 	m_server.seeding_ratio(AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio()));
+	m_show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));	
 	start_server();
@@ -413,7 +415,7 @@ void CXBTClientDlg::auto_size_peers()
 void CXBTClientDlg::OnSize(UINT nType, int cx, int cy) 
 {
 	ETSLayoutDialog::OnSize(nType, cx, cy);
-	if (nType == SIZE_MINIMIZED)
+	if (nType == SIZE_MINIMIZED && m_show_tray_icon)
 		ShowWindow(SW_HIDE);
 	else if (m_files.GetSafeHwnd())
 		auto_size();
@@ -618,6 +620,8 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 		update_tray();
 		break;
 	case 1:
+		if (!m_show_tray_icon)
+			break;
 		read_server_dump(Cstream_reader(m_server.get_status(0)));
 		update_tray();
 		break;
@@ -753,6 +757,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
 	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
 	data.seeding_ratio = AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio());
+	data.show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
 	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate());
 	data.upload_slots = AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots());
 	dlg.set(data);
@@ -764,14 +769,20 @@ void CXBTClientDlg::OnPopupOptions()
 	if (!data.public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(data.public_ipa));
 	m_server.seeding_ratio(data.seeding_ratio);
+	m_show_tray_icon = data.show_tray_icon;
 	m_server.upload_rate(data.upload_rate);
 	m_server.upload_slots(data.upload_slots);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
 	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
+	if (m_show_tray_icon)
+		register_tray();
+	else
+		unregister_tray();
 }
 
 void CXBTClientDlg::OnPopupTrackers() 
@@ -839,7 +850,8 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 		{
 		case VK_CANCEL:
 		case VK_ESCAPE:
-			ShowWindow(SW_HIDE);
+			if (m_show_tray_icon)
+				ShowWindow(SW_HIDE);
 		case VK_RETURN:
 			return true;
 		}
@@ -856,6 +868,8 @@ void CXBTClientDlg::OnDestroy()
 
 void CXBTClientDlg::register_tray()
 {
+	if (!m_show_tray_icon)
+		return;
 	NOTIFYICONDATA nid;
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = GetSafeHwnd();
@@ -878,6 +892,8 @@ void CXBTClientDlg::unregister_tray()
 
 void CXBTClientDlg::update_tray()
 {
+	if (!m_show_tray_icon)
+		return;
 	__int64 left = 0;
 	__int64 size = 0;
 	int leechers = 0;
@@ -935,7 +951,7 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 void CXBTClientDlg::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
 {
-	if (m_initial_hide)
+	if (m_initial_hide && m_show_tray_icon)
 		lpwndpos->flags &= ~SWP_SHOWWINDOW;
 	ETSLayoutDialog::OnWindowPosChanging(lpwndpos);
 }
