@@ -148,6 +148,11 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 		send_error(r, r_end, bts_unregistered_torrent);
 		return;
 	}
+	if (user && user->fid_end && file->fid > user->fid_end)
+	{
+		send_error(r, r_end, bts_wait_time);
+		return;
+	}
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_announce);
