@@ -22,6 +22,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_peer_port = 0;
 	m_admin_port = 0;
 	m_upload_rate = 0;
+	m_public_ipa = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -35,6 +36,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_ADMIN_PORT, m_admin_port);
 	DDV_MinMaxInt(pDX, m_admin_port, 0, 65535);
 	DDX_Text(pDX, IDC_UPLOAD_RATE, m_upload_rate);
+	DDX_Text(pDX, IDC_PUBLIC_IPA, m_public_ipa);
 	//}}AFX_DATA_MAP
 }
 
@@ -53,6 +55,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	t_data v;
 	v.admin_port = m_admin_port;
 	v.peer_port = m_peer_port;
+	v.public_ipa = m_public_ipa;
 	v.upload_rate = m_upload_rate << 10;
 	return v;
 }
@@ -61,5 +64,6 @@ void Cdlg_options::set(const t_data& v)
 {
 	m_admin_port = v.admin_port;
 	m_peer_port = v.peer_port;
+	m_public_ipa = v.public_ipa.c_str();
 	m_upload_rate = v.upload_rate >> 10;
 }

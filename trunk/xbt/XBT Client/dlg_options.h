@@ -18,6 +18,7 @@ public:
 	{
 		int admin_port;
 		int peer_port;
+		string public_ipa;
 		int upload_rate;
 	};
 
@@ -31,6 +32,7 @@ public:
 	int		m_peer_port;
 	int		m_admin_port;
 	int		m_upload_rate;
+	CString	m_public_ipa;
 	//}}AFX_DATA
 
 
