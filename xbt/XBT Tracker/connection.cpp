@@ -199,7 +199,9 @@ void Cconnection::read(const string& v)
 			s = m_server->scrape(ti).read();
 		}
 		break;
-	default:
+	}
+	if (!s.size())
+	{
 		if (m_server->redirect_url().empty())
 			h = "HTTP/1.0 404 Not Found\r\n";
 		else
@@ -208,7 +210,7 @@ void Cconnection::read(const string& v)
 				"Location: " + m_server->redirect_url() + "\r\n";
 		}
 	}
-	if (gzip && s)
+	else if (gzip)
 	{
 		Cvirtual_binary s2 = xcc_z::gzip(s);
 #ifndef NDEBUG
