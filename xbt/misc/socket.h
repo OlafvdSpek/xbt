@@ -13,6 +13,14 @@
 
 using namespace std;
 
+#ifdef WIN32
+#include <windows.h>
+
+typedef int socklen_t;
+
+const int MSG_NOSIGNAL = 0;
+#endif
+
 class Csocket_source
 {
 public:
