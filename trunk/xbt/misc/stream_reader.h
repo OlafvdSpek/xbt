@@ -51,6 +51,12 @@ public:
 		return *reinterpret_cast<const __int64*>(read(8));
 	}
 
+	Cvirtual_binary read_data()
+	{
+		int l = read_int32();
+		return Cvirtual_binary(read(l), l);
+	}
+
 	string read_string()
 	{
 		int l = read_int32();
