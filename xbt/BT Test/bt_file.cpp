@@ -562,7 +562,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	int c_valid_chunks = 0;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
 	{
-		c_distributed_copies = min(c_distributed_copies, i->mc_peers + i->valid());
+		c_distributed_copies = min(c_distributed_copies, i->mc_peers + (m_left && i->valid()) - c_seeders());
 		if (!i->sub_pieces().empty() && i->c_sub_pieces_left() != i->c_sub_pieces())
 		{
 			c_invalid_chunks += i->c_sub_pieces_left();
@@ -570,7 +570,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 		}
 	}
 	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
-		c_distributed_copies_remainder += i->mc_peers + i->valid() > c_distributed_copies;
+		c_distributed_copies_remainder += i->mc_peers + (m_left && i->valid()) - c_seeders() > c_distributed_copies;
 	w.write_int(8, m_downloaded);
 	w.write_int(8, m_downloaded_l5);
 	w.write_int(8, m_left);

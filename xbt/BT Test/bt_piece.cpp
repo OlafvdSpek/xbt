@@ -42,7 +42,6 @@ int Cbt_piece::next_invalid_sub_piece(Cbt_peer_link* peer)
 			continue;
 		i->m_peers.insert(peer);
 		mc_unrequested_sub_pieces--;
-		int z = &*i - &m_sub_pieces.front();
 		return &*i - &m_sub_pieces.front();
 	}
 	assert(false);
@@ -68,6 +67,8 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 	if (m_valid || offset < 0 || offset >= size() || offset % cb_sub_piece() || cb_s != cb_sub_piece(b)
 		|| b >= m_sub_pieces.size() || m_sub_pieces[b].valid())
 		return;
+	if (m_sub_pieces[b].m_peers.empty())
+		mc_unrequested_sub_pieces--;
 	m_sub_pieces[b].valid(true);
 	if (!--mc_sub_pieces_left)
 	{
