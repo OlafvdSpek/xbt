@@ -38,7 +38,7 @@ private:
 
 Cserver::Cserver()
 {
-	m_admin_port = 6880;
+	m_admin_port = 6879;
 	m_peer_port = 6889;
 
 	InitializeCriticalSection(&m_cs);
