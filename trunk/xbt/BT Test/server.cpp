@@ -53,33 +53,18 @@ public:
 Cserver::Cserver()
 {
 	m_admin_port = m_new_admin_port = 6879;
-	m_bind_before_connect = false;
-	m_completes_dir = "Completes";
-	m_end_mode = false;
-	m_incompletes_dir = "Incompletes";
-	m_local_app_data_dir = ".";
-	m_log_peer_connect_failures = false;
-	m_log_peer_connection_closures = false;
-	m_log_peer_recv_failures = false;
-	m_log_peer_send_failures = true;
-	m_peer_limit = 0;
 	m_peer_port = m_new_peer_port = 6881;
-	m_public_ipa = 0;
 	m_run = false;
-	m_seeding_ratio = 0;
-	m_torrent_limit = 0;
-	m_torrents_dir = "Torrents";
+	m_time = ::time(NULL);
 	m_tracker_port = m_new_tracker_port = 2710;
 	m_update_chokes_time = 0;
-	m_update_send_quotas_time = time(NULL);
+	m_update_send_quotas_time = time();
 	m_update_states_time = 0;
-	m_upload_rate = 0;
-	m_upload_slots = 8;
 
 #ifdef WIN32
 	InitializeCriticalSection(&m_cs);
 #endif
-	srand(time(NULL));
+	srand(time());
 #ifndef NDEBUG
 	m_logger.open("/temp/bt_logger.txt");
 #endif
@@ -117,12 +102,12 @@ void Cserver::peer_port(int v)
 
 void Cserver::public_ipa(int v)
 {
-	m_public_ipa = v == INADDR_NONE ? 0 : v;
+	m_config.m_public_ipa = v == INADDR_NONE ? 0 : v;
 }
 
 void Cserver::seeding_ratio(int v)
 {
-	m_seeding_ratio = v ? max(100, v) : 0;
+	m_config.m_seeding_ratio = v ? max(100, v) : 0;
 }
 
 void Cserver::tracker_port(int v)
@@ -132,12 +117,12 @@ void Cserver::tracker_port(int v)
 
 void Cserver::upload_rate(int v)
 {
-	m_upload_rate = max(0, v);
+	m_config.m_upload_rate = max(0, v);
 }
 
 void Cserver::upload_slots(int v)
 {
-	m_upload_slots = max(0, v);
+	m_config.m_upload_slots = max(0, v);
 }
 
 int Cserver::run()
@@ -172,7 +157,7 @@ int Cserver::run()
 	if (sigaction(SIGTERM, &act, NULL))
 		cerr << "sigaction failed" << endl;
 #endif
-	m_save_state_time = time(NULL);
+	m_save_state_time = time();
 	fd_set fd_read_set;
 	fd_set fd_write_set;
 	fd_set fd_except_set;
@@ -240,11 +225,12 @@ int Cserver::run()
 			alert(Calert(Calert::error, "Server", "select failed: " + Csocket::error2a(WSAGetLastError())));
 			break;
 		}
+		m_time = ::time(NULL);
 		if (0)
 		{
 #ifdef WIN32
 			static ofstream f("/temp/select log.txt");
-			f << time(NULL);
+			f << time();
 			f << "\tR:";
 			for (int i = 0; i < fd_read_set.fd_count; i++)
 				f << ' ' << fd_read_set.fd_array[i];
@@ -303,11 +289,11 @@ int Cserver::run()
 		if (FD_ISSET(lt, &fd_read_set))
 			m_udp_tracker.recv(lt);
 		post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-		if (time(NULL) - m_update_chokes_time > 10)
+		if (time() - m_update_chokes_time > 10)
 			update_chokes();
-		else if (time(NULL) - m_update_states_time > 15)
+		else if (time() - m_update_states_time > 15)
 			update_states();
-		else if (time(NULL) - m_save_state_time > 60)
+		else if (time() - m_save_state_time > 60)
 			save_state(true).save(state_fname());
 		unlock();
 	}
@@ -652,7 +638,7 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->save_state(w, intermediate);
 	assert(w.w() == d.data_end());
-	m_save_state_time = time(NULL);
+	m_save_state_time = time();
 	return d;
 }
 
@@ -686,7 +672,7 @@ void Cserver::update_chokes()
 				continue;
 			if (i->state() != Cbt_file::s_running || !j->m_left)
 				j->choked(true);
-			else if (!m_upload_slots)
+			else if (!m_config.m_upload_slots)
 				j->choked(false);
 			else if (j->m_down_counter.rate() > 256)
 				links0.insert(t_links0::value_type(j->m_down_counter.rate(), &*j));
@@ -694,7 +680,7 @@ void Cserver::update_chokes()
 				(j->m_local_interested ? links1 : links2).push_back(&*j);
 		}
 	}
-	int slots_left = max(4, m_upload_slots);
+	int slots_left = max(4, m_config.m_upload_slots);
 	for (t_links0::iterator i = links0.begin(); i != links0.end(); i++)
 	{
 		if (slots_left)
@@ -724,21 +710,21 @@ void Cserver::update_chokes()
 		(*i)->choked(true);
 	for (t_links1::const_iterator i = links2.begin(); i != links2.end(); i++)
 		(*i)->choked(true);
-	m_update_chokes_time = time(NULL);
+	m_update_chokes_time = time();
 }
 
 void Cserver::update_send_quotas()
 {
-	if (m_upload_rate)
+	if (m_config.m_upload_rate)
 	{
-		int t = time(NULL);
+		int t = time();
 		if (m_update_send_quotas_time == t)
 		{
 			if (!m_send_quota)
 				return;
 		}
 		else
-			m_send_quota = min(t - m_update_send_quotas_time, 3) * m_upload_rate;
+			m_send_quota = min(t - m_update_send_quotas_time, 3) * m_config.m_upload_rate;
 		m_update_send_quotas_time = t;
 
 		typedef multimap<int, Cbt_peer_link*> t_links;
@@ -775,67 +761,67 @@ void Cserver::update_states()
 		if (i->state() == Cbt_file::s_queued)
 			i->open();
 	}
-	m_update_states_time = time(NULL);
+	m_update_states_time = time();
 }
 
 string Cserver::completes_dir() const
 {
-	return m_completes_dir;
+	return m_config.m_completes_dir;
 }
 
 void Cserver::completes_dir(const string& v)
 {
-	m_completes_dir = v;
+	m_config.m_completes_dir = v;
 }
 
 string Cserver::incompletes_dir() const
 {
-	return m_incompletes_dir;
+	return m_config.m_incompletes_dir;
 }
 
 void Cserver::incompletes_dir(const string& v)
 {
-	m_incompletes_dir = v;
+	m_config.m_incompletes_dir = v;
 }
 
 string Cserver::local_app_data_dir() const
 {
-	return m_local_app_data_dir;
+	return m_config.m_local_app_data_dir;
 }
 
 void Cserver::local_app_data_dir(const string& v)
 {
-	m_local_app_data_dir = v;
+	m_config.m_local_app_data_dir = v;
 }
 
 string Cserver::torrents_dir() const
 {
-	return m_torrents_dir;
+	return m_config.m_torrents_dir;
 }
 
 void Cserver::torrents_dir(const string& v)
 {
-	m_torrents_dir = v;
+	m_config.m_torrents_dir = v;
 }
 
 bool Cserver::below_peer_limit() const
 {
-	if (!m_peer_limit)
+	if (!m_config.m_peer_limit)
 		return true;
 	int c = 0;
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		c += i->m_peers.size();
-	return c < m_peer_limit;
+	return c < m_config.m_peer_limit;
 }
 
 bool Cserver::below_torrent_limit() const
 {
-	if (!m_torrent_limit)
+	if (!m_config.m_torrent_limit)
 		return true;
 	int c = 0;
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		c += i->is_open();
-	return c < m_torrent_limit;
+	return c < m_config.m_torrent_limit;
 }
 
 void Cserver::sig_handler(int v)

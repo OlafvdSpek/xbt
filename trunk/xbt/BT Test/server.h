@@ -15,6 +15,7 @@
 #include "bt_logger.h"
 #include "bt_tracker_account.h"
 #include "bt_tracker_link.h"
+#include "config.h"
 #include "stream_writer.h"
 #include "udp_tracker.h"
 
@@ -95,42 +96,42 @@ public:
 
 	bool bind_before_connect() const
 	{
-		return m_bind_before_connect;
+		return m_config.m_bind_before_connect;
 	}
 
 	void bind_before_connect(bool v)
 	{
-		m_bind_before_connect = v;
+		m_config.m_bind_before_connect = v;
 	}
 
 	bool end_mode() const
 	{
-		return m_end_mode;
+		return m_config.m_end_mode;
 	}
 
 	void end_mode(bool v)
 	{
-		m_end_mode = v;
+		m_config.m_end_mode = v;
 	}
 	
 	bool log_peer_connect_failures() const
 	{
-		return m_log_peer_connect_failures;
+		return m_config.m_log_peer_connect_failures;
 	}
 
 	bool log_peer_connection_closures() const
 	{
-		return m_log_peer_connection_closures;
+		return m_config.m_log_peer_connection_closures;
 	}
 
 	bool log_peer_recv_failures() const
 	{
-		return m_log_peer_recv_failures;
+		return m_config.m_log_peer_recv_failures;
 	}
 
 	bool log_peer_send_failures() const
 	{
-		return m_log_peer_send_failures;
+		return m_config.m_log_peer_send_failures;
 	}
 
 	Cbt_logger& logger()
@@ -140,12 +141,12 @@ public:
 
 	int peer_limit() const
 	{
-		return m_peer_limit;
+		return m_config.m_peer_limit;
 	}
 
 	void peer_limit(int v)
 	{
-		m_peer_limit = v;
+		m_config.m_peer_limit = v;
 	}
 	
 	int peer_port() const
@@ -155,22 +156,27 @@ public:
 
 	int public_ipa() const
 	{
-		return m_public_ipa;
+		return m_config.m_public_ipa;
 	}
 
 	int seeding_ratio() const
 	{
-		return m_seeding_ratio;
+		return m_config.m_seeding_ratio;
+	}
+
+	int time() const
+	{
+		return m_time;
 	}
 
 	int torrent_limit() const
 	{
-		return m_torrent_limit;
+		return m_config.m_torrent_limit;
 	}
 
 	void torrent_limit(int v)
 	{
-		m_torrent_limit = v;
+		m_config.m_torrent_limit = v;
 	}
 	
 	const Cbt_tracker_accounts& tracker_accounts()
@@ -185,12 +191,12 @@ public:
 
 	int upload_rate() const
 	{
-		return m_upload_rate;
+		return m_config.m_upload_rate;
 	}
 
 	int upload_slots() const
 	{
-		return m_upload_slots;
+		return m_config.m_upload_slots;
 	}
 private:
 	static void sig_handler(int v);
@@ -201,36 +207,22 @@ private:
 	t_links m_links;
 	Cbt_logger m_logger;
 	Cbt_tracker_accounts m_tracker_accounts;
+	Cconfig m_config;
 	Cudp_tracker m_udp_tracker;
 
 	int m_admin_port;
-	bool m_bind_before_connect;
-	string m_completes_dir;
-	bool m_end_mode;
-	string m_incompletes_dir;
-	string m_local_app_data_dir;
-	bool m_log_peer_connect_failures;
-	bool m_log_peer_connection_closures;
-	bool m_log_peer_recv_failures;
-	bool m_log_peer_send_failures;
 	int m_new_admin_port;
 	int m_new_peer_port;
 	int m_new_tracker_port;
-	int m_peer_limit;
 	int m_peer_port;
-	int m_public_ipa;
 	int m_send_quota;
 	bool m_run;
 	int m_save_state_time;
-	int m_seeding_ratio;
-	int m_torrent_limit;
-	string m_torrents_dir;
+	int m_time;
 	int m_tracker_port;
 	int m_update_chokes_time;
 	int m_update_send_quotas_time;
 	int m_update_states_time;
-	int m_upload_rate;
-	int m_upload_slots;
 
 #ifdef WIN32
 	CRITICAL_SECTION m_cs;
