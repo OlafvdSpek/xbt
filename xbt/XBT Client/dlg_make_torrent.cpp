@@ -127,10 +127,10 @@ void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo)
 
 void Cdlg_make_torrent::insert(const string& name)
 {
-	struct stat b;
+	struct _stati64 b;
 	if (!stricmp(base_name(name).c_str(), "desktop.ini")
 		|| !stricmp(base_name(name).c_str(), "thumbs.db")
-		|| stat(name.c_str(), &b))
+		|| _stati64(name.c_str(), &b))
 		return;
 	if (b.st_mode & _S_IFDIR)
 	{
@@ -240,6 +240,8 @@ void Cdlg_make_torrent::OnSave()
 {
 	if (!UpdateData())
 		return;
+	m_name.TrimRight(" ");
+	m_tracker.TrimRight(" ");
 	CFileDialog dlg(false, "torrent", m_name + ".torrent", OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
