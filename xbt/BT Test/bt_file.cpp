@@ -69,11 +69,11 @@ int Cbt_file::info(const Cbvalue& info)
 			if (name.empty() || size < 1)
 				return 1;
 			mcb_f += size;
-			m_sub_files.push_back(t_sub_file(name, 0, size));
+			m_sub_files.push_back(t_sub_file(i->d(bts_merkle_hash).s(), name, 0, size));
 		}
 	}
 	if (m_sub_files.empty())
-		m_sub_files.push_back(t_sub_file("", 0, mcb_f = info.d(bts_length).i()));
+		m_sub_files.push_back(t_sub_file(info.d(bts_merkle_hash).s(), "", 0, mcb_f = info.d(bts_length).i()));
 	if (mcb_f < 1 
 		|| mcb_piece < 16 << 10
 		|| mcb_piece > 16 << 20)
