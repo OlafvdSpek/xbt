@@ -22,7 +22,7 @@ Cbt_link::Cbt_link(Cserver* server, const sockaddr_in& a, const Csocket& s)
 	m_server = server;
 	m_ctime = m_mtime = time(NULL);
 
-	m_read_b.size(69);
+	m_read_b.size(49);
 }
 
 int Cbt_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
