@@ -196,8 +196,7 @@ void Cconnection::read(const string& v)
 		if (v.length() >= 7 && v[6] == 't')
 		{
 			gzip = m_server->gzip_debug();
-			ti.m_compact = true;
-			string v = m_server->debug(ti);
+			string v = m_server->statistics();
 			s = Cvirtual_binary(v.c_str(), v.length());
 		}
 		else
