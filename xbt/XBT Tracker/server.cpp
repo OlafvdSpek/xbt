@@ -116,7 +116,7 @@ void Cserver::insert_peer(const Ctracker_input& v)
 
 		if (!peer.listening && time(NULL) - peer.mtime > 900)
 		{
-			Cpeer_link peer_link(v.m_ipa, htons(v.m_port), this, v.m_info_hash, v.m_ipa);
+			Cpeer_link peer_link(v.m_ipa, v.m_port, this, v.m_info_hash, v.m_ipa);
 			if (peer_link)
 				m_peer_links.push_front(peer_link);
 		}
@@ -170,7 +170,7 @@ Cbvalue Cserver::t_file::select_peers(const Ctracker_input& ti) const
 		in_addr a;
 		a.s_addr = (*i)->first;
 		peer.d(bts_ipa, static_cast<string>(inet_ntoa(a)));
-		peer.d(bts_port, (*i)->second.port);
+		peer.d(bts_port, ntohs((*i)->second.port));
 		peers.l(peer);
 	}	
 	return peers;
@@ -443,7 +443,9 @@ string Cserver::t_file::debug() const
 	string page;
 	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
 	{
-		page += "<tr><td>" + n(i->first)
+		in_addr a;
+		a.s_addr = i->first;
+		page += "<tr><td>" + static_cast<string>(inet_ntoa(a))
 			+ "<td>" + n(i->second.port)
 			+ "<td>" + n(i->second.listening)
 			+ "<td>" + n(i->second.left)
