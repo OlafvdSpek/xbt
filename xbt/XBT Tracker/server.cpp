@@ -214,7 +214,7 @@ void Cserver::t_file::clean_up(int t)
 void Cserver::clean_up()
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->second.clean_up(time(NULL) - 1.5 * m_announce_interval);
+		i->second.clean_up(time(NULL) - static_cast<int>(1.5 * m_announce_interval));
 	m_clean_up_time = time(NULL);
 }
 
