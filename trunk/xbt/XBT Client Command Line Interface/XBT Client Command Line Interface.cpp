@@ -21,7 +21,7 @@ int send(Csocket& s, const Cbvalue& v)
 
 string strip_name(const string& v)
 {
-	int i = v.rfind('\\');
+	int i = v.find_last_of('/\\');
 	return i == string::npos ? v : v.substr(i + 1);
 }
 
@@ -146,7 +146,6 @@ int main(int argc, char* argv[])
 			Cbvalue v;
 			if (v.write(d + 5, ntohl(*reinterpret_cast<__int32*>(d)) - 1))
 				break;
-			v.read().save("/temp/bvalue.txt");
 			if (v.d().empty())
 				break;
 			if (v.d_has(bts_files))
