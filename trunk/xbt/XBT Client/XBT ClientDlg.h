@@ -164,9 +164,12 @@ protected:
 	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 	afx_msg void OnPopupViewGlobalEvents();
 	afx_msg void OnUpdatePopupViewGlobalEvents(CCmdUI* pCmdUI);
+	afx_msg void OnPopupViewGlobalDetails();
+	afx_msg void OnUpdatePopupViewGlobalDetails(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoGlobalEvents(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult);
