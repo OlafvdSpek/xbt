@@ -305,6 +305,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.tracker_port(AfxGetApp()->GetProfileInt(m_reg_key, "tracker_port", m_server.tracker_port()));
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));
+	m_tab.SetCurSel(m_bottom_view);
 	start_server();
 	insert_columns(true);
 	m_events_sort_column = -1;
