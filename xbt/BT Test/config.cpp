@@ -29,6 +29,8 @@ Cconfig::Cconfig()
 	m_public_ipa = 0;
 	m_seeding_ratio = 0;
 	m_torrent_limit = 0;
+	m_torrent_upload_slots_max = 0;
+	m_torrent_upload_slots_min = 0;
 	m_torrents_dir = "Torrents";
 	m_tracker_port = 2710;
 	m_upload_rate = 0;

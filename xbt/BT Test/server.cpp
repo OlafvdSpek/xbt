@@ -582,6 +582,32 @@ void Cserver::torrent_seeding_ratio(const string &file_id, bool override, int v)
 	}
 }
 
+void Cserver::torrent_upload_slots_max(const string& file_id, bool override, int v)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != file_id)
+			continue;
+		i->m_upload_slots_max = max(0, v);
+		i->m_upload_slots_max_override = override;
+		return;
+	}
+}
+
+void Cserver::torrent_upload_slots_min(const string& file_id, bool override, int v)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != file_id)
+			continue;
+		i->m_upload_slots_min = max(0, v);
+		i->m_upload_slots_min_override = override;
+		return;
+	}
+}
+
 string Cserver::get_url(const string& id)
 {
 	Clock l(m_cs);
