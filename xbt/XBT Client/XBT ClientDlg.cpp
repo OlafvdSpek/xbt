@@ -1623,7 +1623,7 @@ void CXBTClientDlg::update_tray()
 {
 	char b[256];
 	if (m_global_details.m_size)
-		sprintf(b, "%d %%, %s left, %s down, %s up, %d leechers, %d seeders - ", static_cast<int>((m_global_details.m_size - m_global_details.m_left) * 100 / m_global_details.m_size), b2a(m_global_details.m_left).c_str(), b2a(m_global_details.m_down_rate).c_str(), b2a(m_global_details.m_up_rate).c_str(), m_global_details.mc_leechers, m_global_details.mc_seeders);
+		sprintf(b, "%d %%, %s left, %d peers, %s down, %s up, %d leechers, %d seeders - ", static_cast<int>((m_global_details.m_size - m_global_details.m_left) * 100 / m_global_details.m_size), b2a(m_global_details.m_left).c_str(), m_global_details.mc_leechers + m_global_details.mc_seeders, b2a(m_global_details.m_down_rate).c_str(), b2a(m_global_details.m_up_rate).c_str(), m_global_details.mc_leechers, m_global_details.mc_seeders);
 	else
 		*b = 0;
 	strcat(b, "XBT Client ");
