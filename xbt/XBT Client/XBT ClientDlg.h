@@ -17,6 +17,8 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void sort_peers();
+	void sort_files();
 	int files_compare(int id_a, int id_b) const;
 	int peers_compare(int id_a, int id_b) const;
 	static unsigned int server_thread(void* p);
@@ -81,6 +83,8 @@ protected:
 	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnPopupCopy();
 	afx_msg void OnPopupPaste();
+	afx_msg void OnPopupFiles();
+	afx_msg void OnPopupTrackers();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -119,6 +123,8 @@ private:
 		int up_rate;
 		int c_leechers;
 		int c_seeders;
+		int c_leechers_total;
+		int c_seeders_total;
 		bool run;
 		bool removed;
 	};

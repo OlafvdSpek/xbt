@@ -20,6 +20,7 @@ public:
 		int peer_port;
 		string public_ipa;
 		int upload_rate;
+		int upload_slots;
 	};
 
 	t_data get() const;
@@ -33,6 +34,7 @@ public:
 	int		m_admin_port;
 	int		m_upload_rate;
 	CString	m_public_ipa;
+	int		m_upload_slots;
 	//}}AFX_DATA
 
 
