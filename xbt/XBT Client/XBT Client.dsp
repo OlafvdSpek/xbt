@@ -176,6 +176,10 @@ SOURCE=.\dlg_options.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\dlg_torrent_options.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\dlg_tracker.cpp
 # End Source File
 # Begin Source File
@@ -350,6 +354,10 @@ SOURCE=.\dlg_options.h
 # Begin Source File
 
 SOURCE=.\dlg_torrent.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_torrent_options.h
 # End Source File
 # Begin Source File
 
