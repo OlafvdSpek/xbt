@@ -18,6 +18,7 @@ Ctracker_input::Ctracker_input()
 	m_port = 0;
 	m_uploaded = 0;
 	m_num_want = -1;
+	m_compact = false;
 	m_no_peer_id = false;
 }
 
@@ -27,6 +28,10 @@ void Ctracker_input::set(const string& name, const string& value)
 		return;
 	switch (name[0])
 	{
+	case 'c':
+		if (name == "compact")
+			m_compact = atoi(value.c_str());
+		break;
 	case 'd':
 		if (name == "downloaded")
 			m_downloaded = atoi(value.c_str());
