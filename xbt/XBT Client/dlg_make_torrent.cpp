@@ -251,13 +251,17 @@ void Cdlg_make_torrent::OnSave()
 		while (cb_total / cb_piece > 4 << 10)
 			cb_piece <<= 1;
 	}
+	typedef set<string> t_set;
+	t_set set;
+	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
+		set.insert(i->second.name);
 	Cbvalue files;
 	string pieces;
 	Cvirtual_binary d;
 	byte* w = d.write_start(cb_piece);
-	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
+	for (t_set::const_iterator i = set.begin(); i != set.end(); i++)
 	{
-		int f = open(i->second.name.c_str(), _O_BINARY | _O_RDONLY);
+		int f = open(i->c_str(), _O_BINARY | _O_RDONLY);
 		if (!f)
 			continue;
 		__int64 cb_f = 0;
@@ -316,8 +320,8 @@ void Cdlg_make_torrent::OnSave()
 		}
 		close(f);
 		files.l(merkle_hash.empty()
-			? Cbvalue().d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name)))
-			: Cbvalue().d(bts_merkle_hash, merkle_hash).d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(i->second.name))));
+			? Cbvalue().d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(*i)))
+			: Cbvalue().d(bts_merkle_hash, merkle_hash).d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(*i))));
 	}
 	if (w != d)
 		pieces += Csha1(d, w - d).read();
