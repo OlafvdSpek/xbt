@@ -174,10 +174,10 @@ void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
 		break;
 	case 2:
-		m_buffer[m_buffer_w] = n(e.left);
+		m_buffer[m_buffer_w] = b2a(e.left);
 		break;
 	case 3:
-		m_buffer[m_buffer_w] = n(e.size);
+		m_buffer[m_buffer_w] = b2a(e.size);
 		break;
 	case 4:
 		if (e.priority)
