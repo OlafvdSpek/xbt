@@ -25,12 +25,6 @@ Cbt_admin_link::Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csoc
 
 	m_read_b.size(4 << 10);
 	m_write_b.size(64 << 10);
-
-	strstream str;
-	str << "HTTP/1.0 200\r\ncontent-type: text/html\r\n\r\n";
-	m_server->dump(str);
-	m_write_b.write(str.str(), str.pcount());
-	m_close = true;
 }
 
 Cbt_admin_link::~Cbt_admin_link()
@@ -49,7 +43,14 @@ int Cbt_admin_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 void Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
 	if (m_read_b.cb_w() && FD_ISSET(m_s, fd_read_set))
+	{
 		recv();
+		strstream str;
+		str << "HTTP/1.0 200\r\ncontent-type: text/html\r\n\r\n";
+		m_server->dump(str);
+		m_write_b.write(str.str(), str.pcount());
+		m_close = true;
+	}
 	if (m_write_b.cb_r() && FD_ISSET(m_s, fd_write_set))
 		send();
 }
