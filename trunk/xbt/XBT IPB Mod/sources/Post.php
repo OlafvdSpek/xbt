@@ -852,6 +852,7 @@ class Post {
 			$piece_count = $torrent["value"]["info"]["value"]["pieces"]["strlen"] / 20;
 			$piece_length = $torrent["value"]["info"]["value"]["piece length"]["value"];
 			$attach_data['bt_size'] = $piece_count * $piece_length;
+			$attach_data['bt_tracker'] = $torrent["value"]["announce"]["value"];
 		}
 
 		return $attach_data;
