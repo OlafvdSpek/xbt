@@ -132,6 +132,7 @@ public:
 	void insert_peer(const Ctracker_input&, bool listen_check, bool udp, int uid);
 	void update_peer(const string& file_id, int peer_id, bool listening);
 	string debug(const Ctracker_input&) const;
+	string statistics() const;
 	Cbvalue select_peers(const Ctracker_input&);
 	Cbvalue scrape(const Ctracker_input&);
 	int run();
