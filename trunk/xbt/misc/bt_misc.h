@@ -21,6 +21,7 @@ string escape_string(const string& v);
 string forward_slashes(string v);
 bool is_private_ipa(int a);
 int merkle_tree_size(int v);
+int mkpath(const string& v);
 string n(__int64 v);
 string hex_decode(const string&);
 string hex_encode(int l, int v);

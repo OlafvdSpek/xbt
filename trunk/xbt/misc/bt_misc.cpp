@@ -253,3 +253,20 @@ string forward_slashes(string v)
 		v[i] = '/';
 	return v;
 }
+
+int mkpath(const string& v)
+{
+	for (int i = 0; i < v.size(); )
+	{
+		int a = v.find_first_of("/\\", i);
+		if (a == string::npos)
+			a = v.size();
+#ifdef WIN32
+		CreateDirectory(v.substr(0, a).c_str(), NULL);
+#else
+		mkdir(v.substr(0, a).c_str(), 0777);
+#endif
+		i = a + 1;
+	}
+	return 0;
+}
