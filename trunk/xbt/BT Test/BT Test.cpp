@@ -8,9 +8,8 @@ int main1()
 {
 	srand(time(NULL));
 	Cserver server;
-	server.config(Cconfig().write(Cvirtual_binary(server.local_app_data_dir() + "/options.bin")));
+	server.config(Cconfig().write(Cvirtual_binary(server.options_fname())));
 	server.run();
-	server.config().read().read().save(server.local_app_data_dir() + "/options.bin");
 	return 0;
 }
 

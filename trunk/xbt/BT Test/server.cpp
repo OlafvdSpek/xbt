@@ -299,6 +299,7 @@ int Cserver::run()
 			run_scheduler();
 		unlock();
 	}
+	config().read().read().save(options_fname());
 	save_state(false).save(state_fname());
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->close();
@@ -718,6 +719,11 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	assert(w.w() == d.data_end());
 	m_save_state_time = time();
 	return d;
+}
+
+string Cserver::options_fname() const
+{
+	return local_app_data_dir() + "/options.bin";
 }
 
 string Cserver::profiles_fname() const
