@@ -10,7 +10,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#pragma warning(disable: 4786)
+#pragma warning(disable: 4786 4800)
 
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
@@ -28,6 +28,7 @@
 #include <list>
 #include <map>
 #include <set>
+#include <shlwapi.h>
 #include <string>
 #include <strstream>
 #include <vector>
