@@ -29,6 +29,7 @@ CXBTClientApp theApp;
 
 BOOL CXBTClientApp::InitInstance()
 {
+	srand(time(NULL));
 	CreateMutex(NULL, true, "9a6bfda6-7733-4b7d-92b0-3046c9191830");
 	if (GetLastError() == ERROR_ALREADY_EXISTS)
 	{

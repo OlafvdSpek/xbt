@@ -30,6 +30,14 @@ enum
 	bti_status,
 };
 
+enum
+{
+	bti_none,
+	bti_completed,
+	bti_started,
+	bti_stopped,
+};
+
 const string bts_announce = "announce";
 const string bts_announce_list = "announce-list";
 const string bts_complete = "complete";
