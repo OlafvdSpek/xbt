@@ -54,6 +54,7 @@
 #define IDC_LOWER_PROCESS_PRIORITY      1037
 #define IDC_LICENSE                     1038
 #define IDC_SEED_AFTER_MAKING           1039
+#define IDC_LOAD_TRACKERS               1040
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -80,7 +81,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32792
-#define _APS_NEXT_CONTROL_VALUE         1040
+#define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

@@ -165,14 +165,15 @@ BEGIN
                     ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,103,172,50
-    LTEXT           "Trackers:",IDC_TRACKERS_STATIC,7,38,31,8
-    DEFPUSHBUTTON   "Save...",IDC_SAVE,129,154,50,14,WS_DISABLED
-    LTEXT           "Name:",IDC_NAME_STATIC,7,7,31,8
     CONTROL         "Use &Merkle Tree",IDC_USE_MERKLE,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,158,69,10
-    LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,23,31,8
     CONTROL         "Seed after Making",IDC_SEED_AFTER_MAKING,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,75,158,74,10
+    PUSHBUTTON      "Load Trackers...",IDC_LOAD_TRACKERS,7,52,57,14
+    DEFPUSHBUTTON   "Save...",IDC_SAVE,129,154,50,14,WS_DISABLED
+    LTEXT           "Trackers:",IDC_TRACKERS_STATIC,7,38,31,8
+    LTEXT           "Name:",IDC_NAME_STATIC,7,7,31,8
+    LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,23,31,8
 END
 
 
@@ -347,7 +348,7 @@ BEGIN
         POPUP "&Torrent"
         BEGIN
             MENUITEM "Explore",                     ID_POPUP_EXPLORE
-            MENUITEM "Explore tracker",             ID_POPUP_EXPLORE_TRACKER
+            MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
             MENUITEM "Files...",                    ID_POPUP_FILES
             MENUITEM SEPARATOR
             MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
