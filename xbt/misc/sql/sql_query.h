@@ -24,7 +24,7 @@ public:
 	void p(const string& v);
 	void p(int v);
 	void pe(const string& v);
-	void pe(const Cvirtual_binary v);
+	void pe(const Cvirtual_binary& v);
 	Csql_query(Cdatabase& database);
 private:
 	typedef list<string> t_list;
