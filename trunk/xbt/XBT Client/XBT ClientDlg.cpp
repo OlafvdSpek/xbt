@@ -37,6 +37,7 @@ enum
 	fc_up_rate,
 	fc_leechers,
 	fc_seeders,
+	fc_peers,
 	fc_state,
 	fc_hash,
 };
@@ -354,6 +355,12 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = n(e.c_leechers);
 		if (e.c_leechers_total)
 			m_buffer[m_buffer_w] += " / " + n(e.c_leechers_total);
+		break;
+	case fc_peers:
+		if (e.c_leechers || e.c_leechers_total || e.c_seeders || e.c_seeders_total)
+			m_buffer[m_buffer_w] = n(e.c_leechers + e.c_seeders);
+		if (e.c_leechers_total || e.c_seeders_total)
+			m_buffer[m_buffer_w] += " / " + n(e.c_leechers_total + e.c_seeders_total);
 		break;
 	case fc_seeders:
 		if (e.c_seeders || e.c_seeders_total)
@@ -1254,6 +1261,8 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 		return compare(a.c_leechers, b.c_leechers);
 	case fc_seeders:
 		return compare(a.c_seeders, b.c_seeders);
+	case fc_peers:
+		return compare(a.c_leechers + a.c_seeders, b.c_leechers + b.c_seeders);
 	case fc_state:
 		return compare(a.running, b.running);
 	case fc_name:
@@ -1357,6 +1366,7 @@ void CXBTClientDlg::insert_top_columns()
 	m_torrents_columns.push_back(fc_up_rate);
 	m_torrents_columns.push_back(fc_leechers);
 	m_torrents_columns.push_back(fc_seeders);
+	m_torrents_columns.push_back(fc_peers);
 	m_torrents_columns.push_back(fc_state);
 	if (m_show_advanced_columns)
 	{
@@ -1374,12 +1384,15 @@ void CXBTClientDlg::insert_top_columns()
 		"Up rate",
 		"Leechers",
 		"Seeders",
+		"Peers",
 		"State",
 		"Hash"
 	};
 	const int torrents_columns_formats[] =
 	{
 		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
