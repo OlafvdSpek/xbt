@@ -20,6 +20,7 @@ public:
 		bool ask_for_location;
 		bool end_mode;
 		string files_location;
+		bool lower_process_priority;
 		int peer_port;
 		string public_ipa;
 		int seeding_ratio;
@@ -51,6 +52,7 @@ public:
 	BOOL	m_ask_for_location;
 	int		m_tracker_port;
 	BOOL	m_end_mode;
+	BOOL	m_lower_process_priority;
 	//}}AFX_DATA
 
 

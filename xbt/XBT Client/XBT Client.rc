@@ -40,7 +40,7 @@ BEGIN
                     WS_TABSTOP,7,65,114,50
 END
 
-IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 215
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 222
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 8, "MS Sans Serif"
@@ -61,14 +61,18 @@ BEGIN
                     ES_NUMBER
     CONTROL         "Ask for location",IDC_ASK_FOR_LOCATION,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,150,65,10
+    CONTROL         "End mode",IDC_END_MODE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,161,48,10
+    CONTROL         "Lower process priority",IDC_LOWER_PROCESS_PRIORITY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,172,84,10
     CONTROL         "Show tray icon",IDC_SHOW_TRAY_ICON,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,174,63,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,183,63,10
     CONTROL         "Show advanced columns",IDC_SHOW_ADVANCED_COLUMNS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,186,96,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,194,96,10
     CONTROL         "Start minimzed",IDC_START_MINIMIZED,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,198,61,10
-    DEFPUSHBUTTON   "OK",IDOK,250,194,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,306,194,50,14
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,205,61,10
+    DEFPUSHBUTTON   "OK",IDOK,250,201,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,306,201,50,14
     LTEXT           "Admin port",IDC_STATIC,288,7,34,8
     LTEXT           "Peer port",IDC_STATIC,288,26,30,8
     LTEXT           "Upload rate (kbyte/s)",IDC_STATIC,288,61,68,8
@@ -77,8 +81,6 @@ BEGIN
     LTEXT           "Seeding ratio",IDC_STATIC,288,97,42,8
     LTEXT           "Files location",IDC_STATIC,288,115,42,8
     LTEXT           "Tracker port",IDC_STATIC,288,133,40,8
-    CONTROL         "End mode",IDC_END_MODE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,7,162,48,10
 END
 
 IDD_TORRENT DIALOG DISCARDABLE  0, 0, 186, 46
@@ -190,7 +192,7 @@ BEGIN
         VERTGUIDE, 284
         VERTGUIDE, 288
         TOPMARGIN, 7
-        BOTTOMMARGIN, 208
+        BOTTOMMARGIN, 215
         HORZGUIDE, 26
         HORZGUIDE, 44
         HORZGUIDE, 61
