@@ -42,7 +42,7 @@ void Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 
 void Cconnection::recv()
 {
-	for (int r; r = m_s.recv(static_cast<char*>(m_read_b.begin()) + m_w, m_read_b.size() - m_w); )
+	for (int r; r = m_s.recv(&m_read_b.front() + m_w, m_read_b.size() - m_w); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -60,13 +60,13 @@ void Cconnection::recv()
 			}
 			return;
 		}
-		char* a = m_read_b.begin() + m_w;
+		char* a = &m_read_b.front() + m_w;
 		m_w += r;
-		while (a < m_read_b.begin() + m_w && *a != '\n' && *a != '\r')
+		while (a < &m_read_b.front() + m_w && *a != '\n' && *a != '\r')
 			a++;
-		if (a < m_read_b.begin() + m_w)
+		if (a < &m_read_b.front() + m_w)
 		{
-			read(string(m_read_b.begin(), a));
+			read(string(&m_read_b.front(), a));
 			break;
 		}
 	}
