@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "alerts.h"
 #include "bvalue.h"
 #include "bt_piece.h"
 #include "bt_peer_link.h"
@@ -19,6 +20,7 @@
 class Cbt_file  
 {
 public:
+	void alert(const Calert&);
 	void load_state(Cstream_reader&);
 	int pre_save_state(bool intermediate) const;
 	void save_state(Cstream_writer&, bool intermediate) const;
@@ -26,8 +28,8 @@ public:
 	int c_seeders() const;
 	int c_leechers() const;
 	int time_remaining() const;
-	int pre_dump() const;
-	void dump(Cstream_writer&) const;
+	int pre_dump(bool full = false) const;
+	void dump(Cstream_writer&, bool full = false) const;
 	ostream& dump(ostream&) const;
 	int next_invalid_piece(const Cbt_peer_link::t_remote_pieces&) const;
 	int read_piece(int a, byte* d);
@@ -55,13 +57,13 @@ public:
 		__int64 m_size;
 
 		void close();
-		FILE* open(const string& parent_name, const char* mode);
-		int read(int offset, void* s, int cb_s);
-		int write(int offset, const void* s, int cb_s);
+		bool open(const string& parent_name, int oflag);
+		int read(__int64  offset, void* s, int cb_s);
+		int write(__int64  offset, const void* s, int cb_s);
 		
 		operator bool() const
 		{
-			return m_f;
+			return m_f != -1;
 		}
 
 		t_sub_file()
@@ -70,12 +72,12 @@ public:
 
 		t_sub_file(const string& name, __int64 size)
 		{
-			m_f = NULL;
+			m_f = -1;
 			m_name = name;
 			m_size = size;
 		}
 	private:
-		FILE* m_f;
+		int m_f;
 	};
 
 	typedef map<int, int> t_new_peers;
@@ -92,6 +94,7 @@ public:
 	t_new_peers m_new_peers;
 	t_peers m_peers;
 	t_pieces m_pieces;
+	Calerts m_alerts;
 	Cbt_tracker_link m_tracker;
 	t_trackers m_trackers;
 	Cvirtual_binary m_info;

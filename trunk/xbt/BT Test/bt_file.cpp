@@ -5,6 +5,9 @@
 #include "stdafx.h"
 #include "bt_file.h"
 
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <io.h>
 #include "bt_strings.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -103,36 +106,38 @@ int Cbt_file::info(const Cbvalue& info)
 
 void Cbt_file::t_sub_file::close()
 {
-	if (m_f)
-		fclose(m_f);
-	m_f = NULL;
+	if (m_f != -1)
+		_close(m_f);
+	m_f = -1;
 }
 
-FILE* Cbt_file::t_sub_file::open(const string& parent_name, const char* mode)
+bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 {
-	return m_f = fopen((parent_name + m_name).c_str(), mode);
+	m_f = _open((parent_name + m_name).c_str(), oflag | _O_BINARY | _O_RDWR, _S_IREAD | _S_IWRITE);
+	if (m_f == -1)
+		m_f = _open((parent_name + m_name).c_str(), oflag | _O_BINARY | _O_RDONLY);
+	return *this;
 }
 
-int Cbt_file::t_sub_file::read(int offset, void* s, int cb_s)
+int Cbt_file::t_sub_file::read(__int64 offset, void* s, int cb_s)
 {
-	return !m_f
-		|| fseek(m_f, offset, SEEK_SET)
-		|| fread(s, cb_s, 1, m_f) != 1;
+	return !*this
+		|| _lseeki64(m_f, offset, SEEK_SET) != offset
+		|| _read(m_f, s, cb_s) != cb_s;
 }
 
-int Cbt_file::t_sub_file::write(int offset, const void* s, int cb_s)
+int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 {
-	return !m_f
-		|| fseek(m_f, offset, SEEK_SET)
-		|| fwrite(s, cb_s, 1, m_f) != 1
-		|| fflush(m_f);
+	return !*this
+		|| _lseeki64(m_f, offset, SEEK_SET) != offset
+		|| _write(m_f, s, cb_s) != cb_s;
 }
 
 int Cbt_file::open(const string& name, bool validate)
 {
 	m_name = name;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		i->open(m_name, "r+b");
+		i->open(m_name, 0);
 	{
 		Cvirtual_binary d;
 		for (int i = 0; i < m_pieces.size(); i++)
@@ -146,7 +151,7 @@ int Cbt_file::open(const string& name, bool validate)
 			if (!piece.m_valid)
 				m_left += piece.mcb_d;
 		}
-		cout << c_valid_pieces() << '/' << m_pieces.size() << endl;
+		alert(Calert(Calert::debug, "Torrent: " + n(c_valid_pieces()) + '/' + n(m_pieces.size())));
 	}
 	return 0;
 }
@@ -276,14 +281,14 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 		{
 			if (offset < i->m_size)
 			{
-				if (!*i && i->m_size && i->open(m_name, "w+b"))
+				if (!*i && i->m_size && i->open(m_name, _O_CREAT))
 				{
 					char b = 0;
 					i->write(i->m_size - 1, &b, 1);
 				}
 				int cb_write = min(size, i->m_size - offset);
 				if (i->write(offset, r, cb_write))
-					cerr << "fwrite failed" << endl;
+					alert(Calert(Calert::error, "Piece " + n(a) + ": write failed"));
 				size -= cb_write;
 				if (!size)
 					break;
@@ -301,6 +306,7 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 			for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 				i->write_have(a);
 		}
+		alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
 	}
 }
 
@@ -367,9 +373,9 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link::t_remote_pieces& remote_pi
 ostream& Cbt_file::dump(ostream& os) const
 {
 	os << "<table>"
-		<< "<tr><td align=right>invalid pieces:<td align=right>" << c_invalid_pieces() << "<td align=right>" << (mcb_piece * c_invalid_pieces() >> 20) << " mb"
-		<< "<tr><td align=right>valid pieces:<td align=right>" << c_valid_pieces() << "<td align=right>" << (mcb_piece * c_valid_pieces() >> 20) << " mb"
-		<< "<tr><td align=right>downloaded:<td align=right>" << static_cast<int>(m_downloaded >> 20) << " mb<td align=right>" << (m_down_counter.rate() >> 10) << " kb/s<td align=right>";
+		<< "<tr><td align=right>invalid pieces:<td align=right>" << c_invalid_pieces() << "<td align=right>" << b2a(mcb_piece * c_invalid_pieces(), "b")
+		<< "<tr><td align=right>valid pieces:<td align=right>" << c_valid_pieces() << "<td align=right>" << b2a(mcb_piece * c_valid_pieces(), "b")
+		<< "<tr><td align=right>downloaded:<td align=right>" << b2a(m_downloaded, "b") << "<td align=right>" << b2a(m_down_counter.rate(), "b/s") << "<td align=right>";
 	int t = time_remaining();
 	if (t != -1)
 	{
@@ -377,7 +383,7 @@ ostream& Cbt_file::dump(ostream& os) const
 			os << t / 3600 << " h ";
 		os << (t % 3600) / 60 << " m " << t % 60 << " s";
 	}
-	os << "<tr><td align=right>uploaded:<td align=right>" << static_cast<int>(m_uploaded >> 20) << " mb<td align=right>" << (m_up_counter.rate() >> 10) << " kb/s"
+	os << "<tr><td align=right>uploaded:<td align=right>" << b2a(m_uploaded, "b") << "<td align=right>" << b2a(m_up_counter.rate(), "b/s")
 		<< "</table>"
 		<< "<hr>"
 		<< "<table><tr><th><th><th>D<th>U<th><th colspan=2>L<th colspan=2>R";
@@ -402,15 +408,20 @@ ostream& operator<<(ostream& os, const Cbt_file& v)
 	return v.dump(os);
 }
 
-int Cbt_file::pre_dump() const
+int Cbt_file::pre_dump(bool full) const
 {
-	int size = m_info_hash.length() + m_name.length() + 80;
+	int size = m_info_hash.length() + m_name.length() + 84;
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 		size += i->pre_dump();
+	if (full)
+	{
+		for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
+			size += i->pre_dump();
+	}
 	return size;
 }
 
-void Cbt_file::dump(Cstream_writer& w) const
+void Cbt_file::dump(Cstream_writer& w, bool full) const
 {
 	w.write_string(m_info_hash);
 	w.write_string(m_name);
@@ -428,6 +439,12 @@ void Cbt_file::dump(Cstream_writer& w) const
 	w.write_int32(m_peers.size());
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 		i->dump(w);
+	w.write_int32(m_alerts.size());
+	if (full)
+	{
+		for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
+			i->dump(w);
+	}
 }
 
 int Cbt_file::time_remaining() const
@@ -491,7 +508,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + 8 * m_peers.size() + 40;
+	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + 8 * m_peers.size() + 36;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	return c;
@@ -524,4 +541,9 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 			w.write_int32(i->m_a.sin_port);
 		}
 	}
+}
+
+void Cbt_file::alert(const Calert& v)
+{
+	m_alerts.push_back(v);
 }
