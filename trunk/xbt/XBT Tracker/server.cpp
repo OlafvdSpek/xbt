@@ -280,7 +280,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
-			if (i->second.leechers || i->second.seeders)
+			if (i->second.leechers > 1 || i->second.seeders)
 				files.d(i->first, i->second.scrape());
 		}
 	}
