@@ -71,7 +71,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnPopupOpen();
