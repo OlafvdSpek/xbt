@@ -159,7 +159,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 	case 4:
 		if (FD_ISSET(m_s, fd_read_set))
 		{
-			recv();
+			if (recv())
+				return 1;
 			switch (m_state)
 			{
 			case -1:
@@ -253,7 +254,7 @@ int Cbt_peer_link::cb_write_buffer() const
 	return cb;
 }
 
-void Cbt_peer_link::recv()
+int Cbt_peer_link::recv()
 {
 	if (!m_read_b.size())
 		m_read_b.size(65 << 10);
@@ -267,22 +268,20 @@ void Cbt_peer_link::recv()
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
 				alert(Calert(Calert::debug, m_a, "Peer: connection aborted/reset"));
-				close();
+				return 1;
 			case WSAEWOULDBLOCK:
-				break;
-			default:
-				alert(Calert(Calert::debug, m_a, "Peer: recv failed:" + n(e)));
-				close();
+				return 0;
 			}
-			return;
+			alert(Calert(Calert::debug, m_a, "Peer: recv failed:" + n(e)));
+			return 1;
 		}
 		m_rtime = time(NULL);
 		m_read_b.cb_w(r);
 	}
 	if (!m_read_b.cb_w())
-		return;
+		return 0;
 	alert(Calert(Calert::debug, m_a, m_local_link ? "Peer: local link closed" : "Peer: remote link closed"));
-	close();
+	return 1;
 }
 
 void Cbt_peer_link::send()
