@@ -40,7 +40,7 @@ int Chttp_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* f
 	{
 		int e = 0;
 		m_s.getsockopt(SOL_SOCKET, SO_ERROR, e);
-		alert(Calert::error, "Link: connect failed: " + Csocket::error2a(e));
+		alert(Calert::error, "connect failed: " + Csocket::error2a(e));
 		return 1;
 	}
 	return FD_ISSET(m_s, fd_read_set) && recv()
@@ -59,7 +59,7 @@ int Chttp_link::recv()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert::debug, "Link: recv failed: " + Csocket::error2a(e));
+			alert(Calert::debug, "recv failed: " + Csocket::error2a(e));
 			return 1;
 		}
 		m_read_b.cb_w(r);
@@ -79,7 +79,7 @@ int Chttp_link::send()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert::debug, "Link: send failed: " + Csocket::error2a(e));
+			alert(Calert::debug, "send failed: " + Csocket::error2a(e));
 			return 1;
 		}
 		m_write_b.cb_r(r);

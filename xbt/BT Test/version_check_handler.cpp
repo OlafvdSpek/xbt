@@ -18,8 +18,10 @@ Cversion_check_handler::Cversion_check_handler(Cserver& server):
 	m_version = 0;
 }
 
-void Cversion_check_handler::alert(const Calert& v)
+void Cversion_check_handler::alert(const Calert& v0)
 {
+	Calert v = v0;
+	v.message("Version check: " + v.message());
 	m_server.alert(v);
 }
 
@@ -27,8 +29,8 @@ void Cversion_check_handler::handle(const string& response)
 {
 	int status_code = get_status_code(response);
 	if (status_code != 200)
-		alert(Calert(Calert::error, "Version check: HTTP error: " + n(status_code)));
+		alert(Calert(Calert::error, "HTTP error: " + n(status_code)));
 	m_version = atoi(get_message_body(response).c_str());
 	if (m_version > m_server.version())
-		alert(Calert(Calert::info, "Version " + xbt_version2a(m_version) + " is now available!"));
+		alert(Calert(Calert::info, xbt_version2a(m_version) + " is now available!"));
 }
