@@ -111,6 +111,10 @@ SOURCE=.\bt_link.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\bt_logger.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\bt_misc.cpp
 # End Source File
 # Begin Source File
