@@ -159,7 +159,7 @@ int Csocket::getsockopt(int level, int name, void* v, socklen_t& cb_v)
 
 int Csocket::getsockopt(int level, int name, int& v)
 {
-	int cb_v = sizeof(int);
+	socklen_t cb_v = sizeof(int);
 	return getsockopt(level, name, &v, cb_v);
 }
 
