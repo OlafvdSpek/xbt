@@ -13,6 +13,10 @@
 class CXBTClientDlg: public ETSLayoutDialog
 {
 public:
+	int GetProfileInt(LPCTSTR Entry, int Default = 0);
+	string GetProfileString(LPCTSTR Entry, LPCTSTR Default = "");
+	BOOL WriteProfileInt(LPCTSTR Entry, int Value);
+	BOOL WriteProfileString(LPCTSTR Entry, const string& Value);
 	void register_hot_key(DWORD v);
 	void unregister_hot_key();
 	void update_global_details();
