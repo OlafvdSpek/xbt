@@ -6,6 +6,7 @@
 #include "XBT ClientDlg.h"
 
 #include "bt_misc.h"
+#include "dlg_options.h"
 #include "resource.h"
 
 #ifdef _DEBUG
@@ -48,6 +49,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_OPEN, OnPopupOpen)
 	ON_COMMAND(ID_POPUP_CLOSE, OnPopupClose)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_CLOSE, OnUpdatePopupClose)
+	ON_COMMAND(ID_POPUP_OPTIONS, OnPopupOptions)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -541,4 +543,11 @@ void CXBTClientDlg::OnPopupClose()
 void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+}
+
+void CXBTClientDlg::OnPopupOptions() 
+{
+	Cdlg_options dlg;
+	if (IDOK != dlg.DoModal())
+		return;	
 }

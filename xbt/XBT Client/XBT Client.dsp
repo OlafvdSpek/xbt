@@ -136,6 +136,10 @@ SOURCE="..\BT Test\data_counter.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE=.\dlg_options.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\ETSLayout.cpp
 # End Source File
 # Begin Source File
@@ -222,6 +226,10 @@ SOURCE="..\BT Test\bt_tracker_link.h"
 # Begin Source File
 
 SOURCE="..\BT Test\data_counter.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_options.h
 # End Source File
 # Begin Source File
 
