@@ -309,7 +309,6 @@ END_MESSAGE_MAP()
 BOOL CXBTClientDlg::OnInitDialog()
 {
 	SetIcon(m_hIcon, true);
-	SetIcon(m_hIcon, false);
 
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
@@ -1626,7 +1625,7 @@ void CXBTClientDlg::register_tray()
 	nid.uID = 0;
 	nid.uFlags = NIF_ICON | NIF_MESSAGE;
 	nid.uCallbackMessage = g_tray_message_id;
-	nid.hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	nid.hIcon = static_cast<HICON>(LoadImage(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR | LR_SHARED));
 	Shell_NotifyIcon(NIM_ADD, &nid);
 }
 
