@@ -22,18 +22,6 @@ Cbt_file::~Cbt_file()
 {
 }
 
-int Cbt_file::torrent(const Cvirtual_binary& v)
-{
-	Cbvalue a;
-	return a.write(v) || torrent(a);
-}
-
-int Cbt_file::info(const Cvirtual_binary& v)
-{
-	Cbvalue a;
-	return a.write(v) || info(a);
-}
-
 int Cbt_file::torrent(const Cbvalue& v)
 {
 	m_trackers.push_back(v.d(bts_announce).s());
