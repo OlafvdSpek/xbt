@@ -1,0 +1,4 @@
+<?php
+	$config['client_host'] = 'localhost';
+	$config['client_port'] = 6879;
+?>
