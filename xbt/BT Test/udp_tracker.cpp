@@ -23,12 +23,6 @@ static T read(const char* r, const char* r_end)
 	return read_int(sizeof(T), r);
 }
 
-template <class T>
-static char* write(char* w, T v)
-{
-	return write_int(sizeof(T), w, v);
-}
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -89,9 +83,9 @@ void Cudp_tracker::send_connect(Csocket& s, sockaddr_in& a, const char* r, const
 {
 	const int cb_d = 2 << 10;
 	char d[cb_d];
-	write<__int32>(d + uto_action, uta_connect);
-	write<__int32>(d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
-	write<__int64>(d + utoc_connection_id, connection_id(a));
+	write_int(4, d + uto_action, uta_connect);
+	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(8, d + utoc_connection_id, connection_id(a));
 	send(s, a, d, utoc_size);
 }
 
@@ -130,11 +124,11 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 	}
 	const int cb_d = 2 << 10;
 	char d[cb_d];
-	write<__int32>(d + uto_action, uta_announce);
-	write<__int32>(d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
-	write<__int32>(d + utoa_interval, m_announce_interval);
-	write<__int32>(d + utoa_leechers, file.leechers);
-	write<__int32>(d + utoa_seeders, file.seeders);
+	write_int(4, d + uto_action, uta_announce);
+	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + utoa_interval, m_announce_interval);
+	write_int(4, d + utoa_leechers, file.leechers);
+	write_int(4, d + utoa_seeders, file.seeders);
 	char* w = d + utoa_size;
 
 	typedef vector<t_peers::const_iterator> t_candidates;
@@ -151,9 +145,8 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 		while (c--)
 		{
 			int i = rand() % candidates.size();
-			write<__int32>(w + 0, ntohl(candidates[i]->first));
-			write<__int16>(w + 4, ntohs(candidates[i]->second.port));
-			w += 6;
+			w = write_int(4, w, ntohl(candidates[i]->first));
+			w = write_int(2, w, ntohs(candidates[i]->second.port));
 			candidates[i] = candidates.back();
 			candidates.pop_back();
 		}
@@ -162,9 +155,8 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 	{
 		for (t_candidates::const_iterator i = candidates.begin(); i != candidates.end(); i++)
 		{
-			write<__int32>(w + 0, ntohl((*i)->first));
-			write<__int16>(w + 4, ntohs((*i)->second.port));
-			w += 6;
+			w = write_int(4, w, ntohl((*i)->first));
+			w = write_int(2, w, ntohs((*i)->second.port));
 		}
 	}
 	send(s, a, d, w - d);
@@ -176,23 +168,23 @@ void Cudp_tracker::send_scrape(Csocket& s, sockaddr_in& a, const char* r, const 
 		return;
 	const int cb_d = 2 << 10;
 	char d[cb_d];
-	write<__int32>(d + uto_action, uta_scrape);
-	write<__int32>(d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_action, uta_scrape);
+	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
 	char* w = d + utos_size;
 	for (; r + 20 <= r_end && w + 12 <= d + cb_d; r += 20)
 	{
 		const t_files::const_iterator file = m_files.find(string(r, 20));
 		if (file == m_files.end())
 		{
-			w = write<__int32>(w, file->second.seeders);
-			w = write<__int32>(w, file->second.completed);
-			w = write<__int32>(w, file->second.leechers);
+			w = write_int(4, w, file->second.seeders);
+			w = write_int(4, w, file->second.completed);
+			w = write_int(4, w, file->second.leechers);
 		}
 		else
 		{
-			w = write<__int32>(w, 0);
-			w = write<__int32>(w, 0);
-			w = write<__int32>(w, 0);
+			w = write_int(4, w, 0);
+			w = write_int(4, w, 0);
+			w = write_int(4, w, 0);
 		}
 	}
 	send(s, a, d, w - d);
@@ -202,8 +194,8 @@ void Cudp_tracker::send_error(Csocket& s, sockaddr_in& a, const char* r, const c
 {
 	const int cb_d = 2 << 10;
 	char d[cb_d];
-	write<__int32>(d + uto_action, uta_error);
-	write<__int32>(d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_action, uta_error);
+	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
 	memcpy(d + utoe_size, msg.c_str(), msg.length());
 	send(s, a, d, utoe_size + msg.length());
 }

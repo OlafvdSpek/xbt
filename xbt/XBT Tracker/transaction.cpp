@@ -16,12 +16,6 @@ static T read(const char* r, const char* r_end)
 	return read_int(sizeof(T), r);
 }
 
-template <class T>
-static char* write(char* w, T v)
-{
-	return write_int(sizeof(T), w, v);
-}
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -125,9 +119,9 @@ void Ctransaction::send_connect(const char* r, const char* r_end)
 		return;
 	const int cb_d = 2 << 10;
 	char d[cb_d];
-	write<__int32>(d + uto_action, uta_connect);
-	write<__int32>(d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
-	write<__int64>(d + utoc_connection_id, connection_id());
+	write_int(4, d + uto_action, uta_connect);
+	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(8, d + utoc_connection_id, connection_id());
 	send(d, utoc_size);
 }
 
@@ -162,11 +156,11 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 	}
 	const int cb_d = 2 << 10;
 	char d[cb_d];
-	write<__int32>(d + uto_action, uta_announce);
-	write<__int32>(d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
-	write<__int32>(d + utoa_interval, m_server.announce_interval());
-	write<__int32>(d + utoa_leechers, file->leechers);
-	write<__int32>(d + utoa_seeders, file->seeders);
+	write_int(4, d + uto_action, uta_announce);
+	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + utoa_interval, m_server.announce_interval());
+	write_int(4, d + utoa_leechers, file->leechers);
+	write_int(4, d + utoa_seeders, file->seeders);
 	Cannounce_output_udp o;
 	o.w(d + utoa_size);
 	file->select_peers(ti, o);
@@ -184,23 +178,23 @@ void Ctransaction::send_scrape(const char* r, const char* r_end)
 	}
 	const int cb_d = 2 << 10;
 	char d[cb_d];
-	write<__int32>(d + uto_action, uta_scrape);
-	write<__int32>(d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_action, uta_scrape);
+	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
 	char* w = d + utos_size;
 	for (; r + 20 <= r_end && w + 12 <= d + cb_d; r += 20)
 	{
 		const Cserver::t_file* file = m_server.file(string(r, 20));
 		if (file)
 		{
-			w = write<__int32>(w, file->seeders);
-			w = write<__int32>(w, file->completed);
-			w = write<__int32>(w, file->leechers);
+			w = write_int(4, w, file->seeders);
+			w = write_int(4, w, file->completed);
+			w = write_int(4, w, file->leechers);
 		}
 		else
 		{
-			w = write<__int32>(w, 0);
-			w = write<__int32>(w, 0);
-			w = write<__int32>(w, 0);
+			w = write_int(4, w, 0);
+			w = write_int(4, w, 0);
+			w = write_int(4, w, 0);
 		}
 	}
 	send(d, w - d);
@@ -210,8 +204,8 @@ void Ctransaction::send_error(const char* r, const char* r_end, const string& ms
 {
 	const int cb_d = 2 << 10;
 	char d[cb_d];
-	write<__int32>(d + uto_action, uta_error);
-	write<__int32>(d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
+	write_int(4, d + uto_action, uta_error);
+	write_int(4, d + uto_transaction_id, read<__int32>(r + uti_transaction_id, r_end));
 	memcpy(d + utoe_size, msg.c_str(), msg.length());
 	send(d, utoe_size + msg.length());
 }
