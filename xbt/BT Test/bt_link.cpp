@@ -48,7 +48,7 @@ int Cbt_link::recv()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert(Calert::debug, m_a, "Link: recv failed: " + Csocket::error2a(e)));
+			alert(Calert::debug, "Link: recv failed: " + Csocket::error2a(e));
 			return 1;
 		}
 		m_read_b.cb_w(r);
@@ -64,6 +64,6 @@ int Cbt_link::recv()
 	return 1;
 }
 
-void Cbt_link::alert(const Calert& v)
+void Cbt_link::alert(Calert::t_level, const string&)
 {
 }
