@@ -18,6 +18,8 @@
 class Cserver  
 {
 public:
+	Cvirtual_binary save_state();
+	void load_state(const Cvirtual_binary&);
 	int close(const string& id);
 	int open(const Cvirtual_binary& info, const string& name);
 	Cvirtual_binary get_status();
@@ -41,6 +43,16 @@ public:
 		return m_admin_port;
 	}
 
+	string dir() const
+	{
+		return m_dir;
+	}
+
+	void dir(const string& v)
+	{
+		m_dir = v;
+	}	
+
 	int peer_port() const
 	{
 		return m_peer_port;
@@ -51,6 +63,7 @@ private:
 	t_links m_links;
 
 	int m_admin_port;
+	string m_dir;
 	int m_peer_port;
 	bool m_run;
 
