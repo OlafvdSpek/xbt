@@ -14,7 +14,6 @@
 Cbt_piece::Cbt_piece()
 {
 	mc_peers = 0;
-	mcb_sub_piece = 32 << 10;
 	m_priority = 0;
 	m_valid = false;
 }
@@ -26,14 +25,14 @@ int Cbt_piece::resize(int v)
 
 void Cbt_piece::write(int offset, const char* s, int cb_s)
 {
-	int b = offset / mcb_sub_piece;
-	if (m_valid || offset < 0 || offset >= size() || offset % mcb_sub_piece || cb_s != cb_sub_piece(b))
+	int b = offset / cb_sub_piece();
+	if (m_valid || offset < 0 || offset >= size() || offset % cb_sub_piece() || cb_s != cb_sub_piece(b))
 		return;
 	if (m_sub_pieces.empty())
 		m_sub_pieces.resize(mc_sub_pieces_left = c_sub_pieces());
 	if (m_sub_pieces[b])
 		return;
-	m_sub_pieces[offset / mcb_sub_piece] = true;
+	m_sub_pieces[b] = true;
 	if (!--mc_sub_pieces_left)
 	{
 		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
@@ -45,12 +44,12 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 
 int Cbt_piece::c_sub_pieces() const
 {
-	return (size() + mcb_sub_piece - 1) / mcb_sub_piece;
+	return (size() + cb_sub_piece() - 1) / cb_sub_piece();
 }
 
 int Cbt_piece::cb_sub_piece(int b)
 {
-	return min(mcb_sub_piece * (b + 1), size()) - mcb_sub_piece * b;
+	return min(cb_sub_piece() * (b + 1), size()) - cb_sub_piece() * b;
 }
 
 int Cbt_piece::pre_dump() const
