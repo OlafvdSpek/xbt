@@ -427,13 +427,25 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		break;
 	}
 	if (udp)
+	{
 		file.announced_udp++;
+		m_stats.announced_udp++;
+	}
 	else if (v.m_compact)
+	{
 		file.announced_http_compact++;
+		m_stats.announced_http_compact++;
+	}
 	else if (v.m_no_peer_id)
+	{
 		file.announced_http_no_peer_id++;
+		m_stats.announced_http_no_peer_id++;
+	}
 	else
+	{
 		file.announced_http++;
+		m_stats.announced_http++;
+	}
 	file.dirty = true;
 }
 
@@ -559,6 +571,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 		if (i != m_files.end())
 		{
 			i->second.scraped_http++;
+			m_stats.scraped_http++;
 			i->second.dirty = true;
 			files.d(i->first, i->second.scrape());
 		}
@@ -934,12 +947,8 @@ string Cserver::debug(const Ctracker_input& ti) const
 				+ "<td>" + (i->second.dirty ? '*' : ' ')
 				+ "<td align=right>" + n(i->second.leechers)
 				+ "<td align=right>" + n(i->second.seeders)
-				+ "<td align=right>" + n(i->second.announced_http)
-				+ "<td align=right>" + n(i->second.announced_http_compact)
-				+ "<td align=right>" + n(i->second.announced_http_no_peer_id)
-				+ "<td align=right>" + n(i->second.announced_udp)
-				+ "<td align=right>" + n(i->second.scraped_http)
-				+ "<td align=right>" + n(i->second.scraped_udp)
+				+ "<td align=right>" + n(i->second.announced_http + i->second.announced_http_compact + i->second.announced_http_no_peer_id + i->second.announced_udp)
+				+ "<td align=right>" + n(i->second.scraped_http + i->second.scraped_udp)
 				+ "<td align=right>" + n(i->second.completed)
 				+ "<td align=right>" + n(i->second.started)
 				+ "<td align=right>" + n(i->second.stopped);
@@ -975,6 +984,15 @@ string Cserver::statistics() const
 		+ "<tr><td>seeders<td align=right>" + n(seeders)
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
 		+ "<tr><td>torrents<td align=right>" + n(torrents)
+		+ "<tr><td>"
+		+ "<tr><td>announced<td align=right>" + n(m_stats.announced())
+		+ "<tr><td>announced http <td align=right>" + n(m_stats.announced_http)
+		+ "<tr><td>announced http compact<td align=right>" + n(m_stats.announced_http_compact)
+		+ "<tr><td>announced http no peer id<td align=right>" + n(m_stats.announced_http_no_peer_id)
+		+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp)
+		+ "<tr><td>scraped<td align=right>" + n(m_stats.scraped())
+		+ "<tr><td>scraped http<td align=right>" + n(m_stats.scraped_http)
+		+ "<tr><td>scraped udp<td align=right>" + n(m_stats.scraped_udp)
 		+ "<tr><td>"
 		+ "<tr><td>up time<td align=right>" + duration2a(time() - m_stats.start_time)
 		+ "<tr><td>"

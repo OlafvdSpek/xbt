@@ -14,6 +14,16 @@ class Cstats
 public:
 	Cstats();
 
+	int announced() const
+	{
+		return announced_http + announced_http_compact + announced_http_no_peer_id + announced_udp;
+	}
+
+	int scraped() const
+	{
+		return scraped_http + scraped_udp;
+	}
+
 	int announced_http;
 	int announced_http_compact;
 	int announced_http_no_peer_id;
