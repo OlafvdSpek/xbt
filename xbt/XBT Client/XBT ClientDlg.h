@@ -17,6 +17,7 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void lower_process_priority(bool);
 	void set_dir(const string&);
 	void insert_columns();
 	void sort_peers();
