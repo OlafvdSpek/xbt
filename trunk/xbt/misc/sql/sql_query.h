@@ -20,12 +20,12 @@ class Csql_query
 public:
 	Csql_result execute() const;
 	string read() const;
-	void write(const string& v);
+	void operator=(const string&);
 	void p(const string& v);
 	void p(int v);
 	void pe(const string& v);
 	void pe(const Cvirtual_binary& v);
-	Csql_query(Cdatabase& database);
+	Csql_query(Cdatabase&, const string& = "");
 private:
 	typedef list<string> t_list;
 

@@ -5,15 +5,17 @@
 #include "stdafx.h"
 #include "sql_query.h"
 
+#include <cstdio>
 #include "database.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-Csql_query::Csql_query(Cdatabase& database):
+Csql_query::Csql_query(Cdatabase& database, const string& v):
 	m_database(database)
 {
+	m_data = v;
 }
 
 Csql_result Csql_query::execute() const
@@ -50,11 +52,13 @@ string Csql_query::read() const
 	return r;
 }
 
-void Csql_query::write(const string& v)
+
+void Csql_query::operator=(const string& v)
 {
 	m_data = v;
 	m_list.clear();
 }
+
 
 void Csql_query::p(const string& v)
 {
@@ -87,4 +91,3 @@ void Csql_query::pe(const Cvirtual_binary& v)
 	p(r);
 	delete[] r;
 }
-
