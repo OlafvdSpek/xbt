@@ -29,8 +29,8 @@
 		printf("<td align=right>%d", $result[completed]);
 		printf("<td align=right>%d", $result[started]);
 		printf("<td align=right>%d", $result[stopped]);
-		printf("<td>%s", date("Y-m-d G:i:s", $result[mtime]));
-		printf("<td>%s", date("Y-m-d G:i:s", $result[ctime]));
+		printf("<td>%s", date("Y-m-d H:i:s", $result[mtime]));
+		printf("<td>%s", date("Y-m-d H:i:s", $result[ctime]));
 	}
 	echo("</table>");
 ?>
