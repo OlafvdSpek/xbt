@@ -2,8 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "xbt client.h"
 #include "dlg_files.h"
+
+#include "../bt test/server.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
