@@ -33,6 +33,7 @@
 #define IDC_USER_STATIC                 1021
 #define IDC_PASS_STATIC                 1022
 #define IDC_SHOW_TRAY_ICON              1023
+#define IDC_SHOW_ADVANCED_COLUMNS       1024
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
