@@ -69,6 +69,7 @@ protected:
 	afx_msg void OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg long OnHotKey(WPARAM, LPARAM);
+	HACCEL m_hAccel;
 	HICON m_hIcon;
 
 	// Generated message map functions

@@ -203,6 +203,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 		<< item (IDC_PEERS, GREEDY)
 		;
 	ETSLayoutDialog::OnInitDialog();
+	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
 
 	m_bottom_view = v_peers;
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
@@ -691,6 +692,11 @@ void CXBTClientDlg::OnSize(UINT nType, int cx, int cy)
 void CXBTClientDlg::fill_peers()
 {
 	m_peers.DeleteAllItems();
+	if (!m_file)
+	{
+		m_peers.auto_size();
+		return;
+	}
 	switch (m_bottom_view)
 	{
 	case v_details:
@@ -1293,36 +1299,16 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 	{
 		switch (pMsg->wParam)
 		{
-		case '1':
-			OnPopupViewDetails();
-			return true;
-		case '2':
-			OnPopupViewEvents();
-			return true;
-		case '3':
-			OnPopupViewFiles();
-			return true;
-		case '4':
-			OnPopupViewPeers();
-			return true;
-		case '5':
-			OnPopupViewTrackers();
-			return true;
 		case VK_CANCEL:
 		case VK_ESCAPE:
 			ShowWindow(SW_HIDE);
-			return true;
-		case VK_DELETE:
-			OnPopupClose();
-			return true;
-		case VK_INSERT:
-			OnPopupOpen();
 			return true;
 		case VK_RETURN:
 			return true;
 		}
 	}
-	return ETSLayoutDialog::PreTranslateMessage(pMsg);
+	return pMsg->message >= WM_KEYFIRST && pMsg->message <= WM_KEYLAST && TranslateAccelerator(m_hWnd, m_hAccel, pMsg) 
+		|| ETSLayoutDialog::PreTranslateMessage(pMsg);
 }
 
 void CXBTClientDlg::OnDestroy()
