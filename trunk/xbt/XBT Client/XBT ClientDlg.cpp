@@ -70,7 +70,7 @@ enum
 	sfc_priority,
 	sfc_hash,
 
-	tv_url,
+	tc_url,
 };
 
 enum
@@ -375,8 +375,30 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	if (!m_file)
+		return;
+	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	m_buffer[++m_buffer_w &= 3].erase();
+	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	*pResult = 0;
+}
+
 void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult) 
 {
+	switch (m_bottom_view)
+	{
+	case v_details:
+		OnGetdispinfoDetails(pNMHDR, pResult);
+		return;
+	case v_files:
+		OnGetdispinfoSubFiles(pNMHDR, pResult);
+		return;
+	case v_trackers:
+		OnGetdispinfoTrackers(pNMHDR, pResult);
+		return;
+	}
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
@@ -444,6 +466,33 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	if (!m_file)
+		return;
+	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	m_buffer[++m_buffer_w &= 3].erase();
+	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	*pResult = 0;
+}
+
+void CXBTClientDlg::OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult)
+{
+	if (!m_file)
+		return;
+	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	m_buffer[++m_buffer_w &= 3].erase();
+	const t_tracker& e = m_file->trackers[pDispInfo->item.lParam];
+	switch (m_peers_columns[pDispInfo->item.iSubItem])
+	{
+	case tc_url:
+		m_buffer[m_buffer_w] = e.url;
+		break;
+	}
+	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	*pResult = 0;
+}
+
 void CXBTClientDlg::auto_size()
 {
 	auto_size_files();
@@ -485,6 +534,8 @@ void CXBTClientDlg::fill_peers()
 			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
 		break;
 	case v_trackers:
+		for (t_trackers::const_iterator i = m_file->trackers.begin(); i != m_file->trackers.end(); i++)
+			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i - m_file->trackers.begin());
 		break;
 	}
 	sort_peers();
@@ -561,7 +612,11 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.info_hash = info_hash;
 	f.trackers.clear();
 	for (int c_trackers = sr.read_int(4); c_trackers--; )
-		f.trackers.push_back(sr.read_string());
+	{
+		t_tracker e;
+		e.url = sr.read_string();
+		f.trackers.push_back(e);
+	}
 	f.downloaded = sr.read_int(8);
 	f.left = sr.read_int(8);
 	f.size = sr.read_int(8);
@@ -607,7 +662,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		{
 			if (i->second.removed)
 			{
-				if (m_file == &f)
+				if (m_bottom_view == v_peers && m_file == &f)
 				{
 					LV_FINDINFO fi;
 					fi.flags = LVFI_PARAM;
@@ -658,7 +713,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	if (i == f.peers.end())
 	{
 		f.peers[id = f.peers.empty() ? 0 : f.peers.rbegin()->first + 1];
-		if (m_file == &f)
+		if (m_bottom_view == v_peers && m_file == &f)
 		{
 			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), id);
 			inserted = true;
@@ -756,7 +811,7 @@ void CXBTClientDlg::OnPopupExploreTracker()
 	const t_file& f = m_files_map.find(m_files.GetItemData(index))->second;
 	if (f.trackers.empty())
 		return;
-	Cbt_tracker_url url = f.trackers.front();
+	Cbt_tracker_url url = f.trackers.front().url;
 	ShellExecute(m_hWnd, "open", ("http://" + url.m_host).c_str(), NULL, NULL, SW_SHOW);
 }
 
@@ -786,7 +841,7 @@ void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl()
 	{
 		const t_file& file = m_files_map.find(m_files.GetItemData(index))->second;
 		if (!file.trackers.empty())
-			set_clipboard(file.trackers.front());
+			set_clipboard(file.trackers.front().url);
 	}
 }
 
@@ -1380,7 +1435,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		}
 		break;
 	case v_trackers:
-		m_peers_columns.push_back(tv_url);
+		m_peers_columns.push_back(tc_url);
 		break;
 	}
 	const char* peers_columns_names[] =
@@ -1510,6 +1565,7 @@ void CXBTClientDlg::OnPopupViewDetails()
 {
 	m_bottom_view = v_details;
 	insert_bottom_columns();
+	fill_peers();
 	auto_size_peers();
 }	
 
@@ -1517,6 +1573,7 @@ void CXBTClientDlg::OnPopupViewFiles()
 {
 	m_bottom_view = v_files;
 	insert_bottom_columns();
+	fill_peers();
 	auto_size_peers();
 }
 
@@ -1524,6 +1581,7 @@ void CXBTClientDlg::OnPopupViewPeers()
 {
 	m_bottom_view = v_peers;
 	insert_bottom_columns();
+	fill_peers();
 	auto_size_peers();
 }
 
@@ -1531,5 +1589,6 @@ void CXBTClientDlg::OnPopupViewTrackers()
 {
 	m_bottom_view = v_trackers;
 	insert_bottom_columns();
+	fill_peers();
 	auto_size_peers();
 }

@@ -71,8 +71,11 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimer(UINT nIDEvent);
@@ -128,8 +131,13 @@ private:
 		bool removed;
 	};
 
+	struct t_tracker
+	{
+		string url;
+	};
+
 	typedef map<int, t_peer> t_peers;
-	typedef vector<string> t_trackers;
+	typedef vector<t_tracker> t_trackers;
 
 	struct t_file
 	{
