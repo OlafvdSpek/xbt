@@ -45,7 +45,8 @@ public:
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-Cserver::Cserver()
+Cserver::Cserver():
+	m_version_check_handler(*this)
 {
 	m_admin_port = m_config.m_admin_port;
 	m_peer_port = m_config.m_peer_port;
@@ -163,6 +164,7 @@ int Cserver::run()
 	if (sigaction(SIGPIPE, &act, NULL))
 		cerr << "sigaction failed" << endl;
 #endif
+	http_request(Csocket::get_host("xbtt.sourceforge.net"), htons(80), "GET /version_check.php?xbtc HTTP/1.0\r\nhost: xbtt.sourceforge.net\r\n\r\n", &m_version_check_handler);
 	m_save_state_time = time();
 	fd_set fd_read_set;
 	fd_set fd_write_set;
@@ -404,7 +406,9 @@ void Cserver::file_dump(Cstream_writer& w, const string& id, int flags) const
 
 int Cserver::pre_dump(int flags) const
 {
-	int size = 4;
+	int size = 8;
+	for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
+		size += i->pre_dump();
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		size += i->pre_dump(flags);
 	return size;
@@ -412,6 +416,9 @@ int Cserver::pre_dump(int flags) const
 
 void Cserver::dump(Cstream_writer& w, int flags) const
 {
+	w.write_int(4, m_alerts.size());
+	for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
+		i->dump(w);
 	w.write_int(4, m_files.size());
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->dump(w, flags);
@@ -1062,4 +1069,14 @@ void Cserver::term()
 int Cserver::version()
 {
 	return 45;
+}
+
+Chttp_link* Cserver::http_request(int h, int p, const string& request, Chttp_response_handler* response_handler)
+{
+	m_http_links.push_back(Chttp_link(this));
+	Chttp_link* l = &m_http_links.back();
+	if (!l->set_request(h, p, request, response_handler))
+		return l;
+	m_http_links.pop_back();
+	return NULL;
 }
