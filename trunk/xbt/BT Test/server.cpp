@@ -850,9 +850,9 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		d.d(bts_seeding_ratio, seeding_ratio());
 		d.d(bts_peer_limit, peer_limit());
 		d.d(bts_torrent_limit, torrent_limit());
-		d.d(bts_completes_dir, completes_dir());
-		d.d(bts_incompletes_dir, incompletes_dir());
-		d.d(bts_torrents_dir, torrents_dir());
+		d.d(bts_completes_dir, native_slashes(completes_dir()));
+		d.d(bts_incompletes_dir, native_slashes(incompletes_dir()));
+		d.d(bts_torrents_dir, native_slashes(torrents_dir()));
 	}
 	else if (action == bts_get_status)
 	{

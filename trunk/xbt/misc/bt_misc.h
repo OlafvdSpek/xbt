@@ -24,6 +24,7 @@ bool is_private_ipa(int a);
 int merkle_tree_size(int v);
 int mkpath(const string& v);
 string n(__int64 v);
+string native_slashes(const string&);
 string hex_decode(const string&);
 string hex_encode(int l, int v);
 string hex_encode(const string& v);
