@@ -1784,7 +1784,7 @@ int CXBTClientDlg::pieces_compare(int id_a, int id_b) const
 	case pic_c_chunks:
 		return compare(b.c_chunks_valid, a.c_chunks_valid);
 	case pic_c_peers:
-		return compare(b.c_peers, a.c_peers);
+		return compare(a.c_peers, b.c_peers);
 	case pic_priority:
 		return compare(a.priority, b.priority);
 	case pic_valid:
