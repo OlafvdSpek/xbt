@@ -41,7 +41,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			m_s.bind(htonl(INADDR_ANY), htons(m_f->local_port()));
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
-			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(WSAGetLastError())));
+			alert(Calert::debug, "Peer: connect failed: " + Csocket::error2a(WSAGetLastError()));
 			close();
 			return 0;
 		}
@@ -76,13 +76,13 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 					return 1;
 				if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
 				{
-					alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(WSAGetLastError())));
+					alert(Calert::debug, "Peer: connect failed: " + Csocket::error2a(WSAGetLastError()));
 					return 1;
 				}
 				return 0;
 			}
 			if (m_f->m_server->log_peer_connect_failures())
-				alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(e)));
+				alert(Calert::debug, "Peer: connect failed: " + Csocket::error2a(e));
 			return 1;
 		}
 	case 3:
@@ -175,6 +175,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				for (int b; mc_local_requests_pending < c_max_requests_pending && (b = piece.next_invalid_sub_piece(this)) != -1; )
 				{
 					t_local_request request(m_f->mcb_piece * a + piece.cb_sub_piece() * b, piece.cb_sub_piece(b));
+					m_local_requests.push_back(request);
 					logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 					if (m_f->m_merkle)
 						write_merkle_request(request.offset, 127);
@@ -203,7 +204,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 	}
 	if (!m_left && !m_f->m_left)
 	{
-		alert(Calert(Calert::debug, m_a, "Peer: seeder to seeder link closed"));
+		alert(Calert::debug, "Peer: seeder to seeder link closed");
 		return 1;
 	}
 	return 0;
@@ -250,7 +251,7 @@ int Cbt_peer_link::recv()
 			if (e == WSAEWOULDBLOCK)
 				return 0;
 			if (m_f->m_server->log_peer_recv_failures())
-				alert(Calert(Calert::debug, m_a, "Peer: recv failed: " + Csocket::error2a(e)));
+				alert(Calert::debug, "Peer: recv failed: " + Csocket::error2a(e));
 			return 1;
 		}
 		m_rtime = time(NULL);
@@ -260,7 +261,7 @@ int Cbt_peer_link::recv()
 	if (!m_read_b.cb_w())
 		return 0;
 	if (m_f->m_server->log_peer_connection_closures())
-		alert(Calert(Calert::debug, m_a, m_local_link ? "Peer: local link closed" : "Peer: remote link closed"));
+		alert(Calert::debug, m_local_link ? "Peer: local link closed" : "Peer: remote link closed");
 	return 1;
 }
 
@@ -276,7 +277,7 @@ int Cbt_peer_link::send()
 			if (e == WSAEWOULDBLOCK)
 				return 0;
 			if (m_f->m_server->log_peer_send_failures())
-				alert(Calert(Calert::debug, m_a, "Peer: send failed: " + Csocket::error2a(e)));
+				alert(Calert::debug, "Peer: send failed: " + Csocket::error2a(e));
 			return 1;
 		}
 		else if (!r)
@@ -367,7 +368,7 @@ int Cbt_peer_link::read_handshake(const char* h)
 		|| memcmp(h + hs_name, "BitTorrent protocol", 19)
 		|| string(h + hs_info_hash, 20) != m_f->m_info_hash)
 	{
-		alert(Calert(Calert::warn, m_a, "Peer: handshake failed"));
+		alert(Calert::warn, "Peer: handshake failed");
 		return 1;
 	}
 	m_get_info_extension = h[hs_reserved + 7] & 1;
@@ -631,7 +632,7 @@ void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, c
 	mc_local_requests_pending--;
 	if (!m_f->test_and_set_hashes(offset, Cmerkle_tree::compute_root(s, s + size), hashes))
 	{
-		alert(Calert(Calert::warn, m_a, "Chunk " + n(offset >> 15) + ": invalid"));
+		alert(Calert::warn, "Chunk " + n(offset >> 15) + ": invalid");
 		return;
 	}
 	m_f->write_data(offset, s, size, this);
@@ -726,12 +727,12 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		read_info(r, r_end);
 		break;
 	case bti_get_peers:
-		alert(Calert(Calert::debug, m_a, "Peer: get_peers"));
+		alert(Calert::debug, "Peer: get_peers");
 		if (r_end - r >= 2 && time(NULL) - m_peers_stime > 300)
 			write_peers();
 		break;
 	case bti_peers:
-		alert(Calert(Calert::debug, m_a, "Peer: " + n((r_end - r - 2) / 6) + " peers"));
+		alert(Calert::debug, "Peer: " + n((r_end - r - 2) / 6) + " peers");
 		if (r_end - r >= 2 && time(NULL) - m_get_peers_stime < 60)
 		{
 			for (r += 2; r + 6 <= r_end; r += 6)
@@ -767,9 +768,9 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(4, m_pieces.size());
 }
 
-void Cbt_peer_link::alert(const Calert& v)
+void Cbt_peer_link::alert(Calert::t_level level, const string& message)
 {
-	m_f->alert(v);
+	m_f->alert(Calert(level, string(inet_ntoa(m_a.sin_addr)) + ':' + n(ntohs(m_a.sin_port)), message));
 }
 
 void Cbt_peer_link::clear_local_requests()
