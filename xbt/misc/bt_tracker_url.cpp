@@ -61,14 +61,16 @@ void Cbt_tracker_url::write(const string& v)
 		return;
 	a += 3;
 	int b = v.find_first_of("/:", a);
-	if (b == string::npos)
-		return;
-	string host = v.substr(a, b - a);
+	string host;
 	int port;
-	if (v[b] == '/')
+	if (b == string::npos || v[b] == '/')
+	{
+		host = v.substr(a);
 		port = protocol == tp_http ? 80 : 2710;
+	}
 	else
 	{
+		host = v.substr(a, b - a);
 		b++;
 		a = v.find('/', b);
 		if (a == string::npos)
