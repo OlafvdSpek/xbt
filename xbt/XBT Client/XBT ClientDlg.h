@@ -6,7 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include "../bt test/server.h"
-#include "ListCtrlEx.h"
+#include "ListCtrlEx1.h"
 #include "resource.h"
 #include "stream_reader.h"
 
@@ -56,8 +56,8 @@ public:
 	//{{AFX_DATA(CXBTClientDlg)
 	enum { IDD = IDD_XBTCLIENT_DIALOG };
 	CTabCtrl	m_tab;
-	CListCtrlEx	m_peers;
-	CListCtrlEx	m_files;
+	CListCtrlEx1	m_peers;
+	CListCtrlEx1	m_files;
 	//}}AFX_DATA
 
 	//{{AFX_VIRTUAL(CXBTClientDlg)
