@@ -137,7 +137,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 	case 1:
 		if (FD_ISSET(m_s, fd_write_set))
 		{
-			strstream os;
+			stringstream os;
 			os << "GET " << m_url.m_path 
 				<< "?info_hash=" << uri_encode(f.m_info_hash) 
 				<< "&peer_id=" << uri_encode(f.m_peer_id) 
@@ -170,7 +170,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				<< "accept-encoding: gzip\r" << endl
 				<< "host: " << m_url.m_host << ':' << m_url.m_port << '\r' << endl
 				<< '\r' << endl;
-			if (m_s.send(os.str(), os.pcount()) != os.pcount())
+			if (m_s.send(os.str().c_str(), os.str().size()) != os.str().size())
 				close(f);
 			else
 				m_state = 2;
