@@ -244,6 +244,8 @@ private:
 		int c_seeders_total;
 		int c_invalid_chunks;
 		int c_invalid_pieces;
+		int c_rejected_chunks;
+		int c_rejected_pieces;
 		int c_valid_chunks;
 		int c_valid_pieces;
 		int cb_chunk;
