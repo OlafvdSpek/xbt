@@ -789,7 +789,10 @@ void CXBTClientDlg::update_tray()
 	nid.hWnd = GetSafeHwnd();
 	nid.uID = 0;
 	nid.uFlags = NIF_TIP;
-	sprintf(nid.szTip, "XBT Client - %d %%, %s left, %d leechers, %d seeders, leeching %d, seeding %d", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders, leeching, seeding);
+	if (size)
+		sprintf(nid.szTip, "XBT Client - %d %%, %s left, %d leechers, %d seeders, leeching %d, seeding %d", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders, leeching, seeding);
+	else
+		strcpy(nid.szTip, "XBT Client");
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
