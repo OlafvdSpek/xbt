@@ -1454,10 +1454,8 @@ void CXBTClientDlg::unregister_tray()
 
 void CXBTClientDlg::update_tray()
 {
-	if (!m_show_tray_icon)
-		return;
-	_int64 left = 0;
-	_int64 size = 0;
+	__int64 left = 0;
+	__int64 size = 0;
 	int leechers = 0;
 	int seeders = 0;
 	for (t_files::const_iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
@@ -1473,9 +1471,12 @@ void CXBTClientDlg::update_tray()
 	nid.uID = 0;
 	nid.uFlags = NIF_TIP;
 	if (size)
-		sprintf(nid.szTip, "XBT Client - %d %%, %s left, %d leechers, %d seeders", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders);
+		sprintf(nid.szTip, "%d %%, %s left, %d leechers, %d seeders - XBT Client", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders);
 	else
 		strcpy(nid.szTip, "XBT Client");
+	SetWindowText(nid.szTip);
+	if (!m_show_tray_icon)
+		return;
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
