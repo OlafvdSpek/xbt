@@ -65,7 +65,8 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti)
 	ti.m_downloaded = uti.downloaded();
 	ti.m_event = static_cast<Ctracker_input::t_event>(uti.event());
 	ti.m_info_hash = uti.info_hash();
-	ti.m_ipa = m_a.sin_addr.s_addr;
+	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
+		ti.m_ipa = m_a.sin_addr.s_addr;
 	ti.m_left = uti.left();
 	ti.m_num_want = uti.num_want();
 	ti.m_peer_id = uti.peer_id();

@@ -104,13 +104,8 @@ void Cconnection::read(const string& v)
 			a = d + 1;
 		}
 	}
-	ti.m_ipa = m_a.sin_addr.s_addr;
-	{
-		static ofstream f("xbt_tracker.log");
-		f << time(NULL) << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) 
-			 << '\t'<< ti.m_event << '\t' << ti.m_downloaded << '\t' << ti.m_uploaded << '\t' << ti.m_left 
-			 << '\t'<< hex_encode(ti.m_info_hash) << '\t' << hex_encode(ti.m_peer_id) << endl;
-	}
+	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
+		ti.m_ipa = m_a.sin_addr.s_addr;
 	Cvirtual_binary s;
 	switch (v.length() >= 5 ? v[5] : 0) 
 	{

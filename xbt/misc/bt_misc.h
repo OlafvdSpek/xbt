@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 string escape_string(const string& v);
+bool is_private_ipa(int a);
 string n(int v);
 string hex_encode(int l, int v);
 string hex_encode(const string& v);
