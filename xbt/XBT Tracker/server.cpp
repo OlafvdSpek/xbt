@@ -213,7 +213,7 @@ void Cserver::run()
 	}
 }
 
-void Cserver::insert_peer(const Ctracker_input& v, bool udp)
+void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp)
 {
 	if (m_log_announce)
 	{
@@ -250,7 +250,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool udp)
 		// peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
 
-		if (!m_listen_check)
+		if (!m_listen_check || !listen_check)
 			peer.listening = true;
 		else if (!peer.listening && time(NULL) - peer.mtime > 900)
 		{

@@ -136,10 +136,9 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 	ti.m_peer_id = uti.peer_id();
 	ti.m_port = uti.port();
 	ti.m_uploaded = uti.uploaded();
-	m_server.insert_peer(ti, true);
-	const Cserver::t_files& files = m_server.files();
-	Cserver::t_files::const_iterator i = files.find(ti.m_info_hash);
-	if (i == files.end())
+	m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true);
+	const Cserver::t_file* file = m_server.file(ti.m_info_hash);
+	if (!file)
 	{
 		send_error(uti, bts_unregistered_torrent);
 		return;
@@ -150,11 +149,11 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 	uto.action(uta_announce);
 	uto.transaction_id(uti.transaction_id());
 	uto.interval(m_server.announce_interval());
-	uto.leechers(i->second.leechers);
-	uto.seeders(i->second.seeders);
+	uto.leechers(file->leechers);
+	uto.seeders(file->seeders);
 	Cannounce_output_udp o;
 	o.w(b + sizeof(t_udp_tracker_output_announce));
-	i->second.select_peers(ti, o);
+	file->select_peers(ti, o);
 	send(b, o.w() - b);
 }
 
@@ -173,11 +172,10 @@ void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti, const char
 	uto.transaction_id(uti.transaction_id());
 	uto.action(uta_scrape);
 	t_udp_tracker_output_file* file = reinterpret_cast<t_udp_tracker_output_file*>(b + sizeof(t_udp_tracker_output_scrape));
-	const Cserver::t_files& files = m_server.files();
 	for (; r + 20 <= r_end && reinterpret_cast<char*>(file + 1) <= b + cb_b; r += 20)
 	{
-		Cserver::t_files::const_iterator i = files.find(string(r, 20));
-		if (i == files.end())
+		const Cserver::t_file* i = m_server.file(string(r, 20));
+		if (!i)
 		{
 			file->complete(0);
 			file->downloaded(0);
@@ -185,9 +183,9 @@ void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti, const char
 		}
 		else
 		{
-			file->complete(i->second.seeders);
-			file->downloaded(i->second.completed);
-			file->incomplete(i->second.leechers);
+			file->complete(i->seeders);
+			file->downloaded(i->completed);
+			file->incomplete(i->leechers);
 		}
 		file++;
 	}
