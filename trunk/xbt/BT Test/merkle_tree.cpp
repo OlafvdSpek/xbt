@@ -11,6 +11,17 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
+string internal_hash(const string& a, const string& b)
+{
+	assert(a.size() == 20);
+	assert(b.size() == 20);
+	char d[41];
+	*d = 1;
+	memcpy(d + 1, a.c_str(), 20);
+	memcpy(d + 21, b.c_str(), 20);
+	return Csha1(d, 41).read();
+}
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -32,11 +43,70 @@ void Cmerkle_tree::invalidate()
 	memset(m_d.data_edit(), 0, m_d.size());
 }
 
+string Cmerkle_tree::get0(int i) const
+{
+	assert(d(i));
+	return string(d(i) + 1, 20);
+}
+
 string Cmerkle_tree::get(int i) const
 {
 	assert(i >= 0);
 	assert(i < m_size);
-	return string(d(i) + 1, 20);
+	return get0(i);
+}
+
+string Cmerkle_tree::get(int i, int c) const
+{
+	assert(i >= 0);
+	assert(i < m_size);
+	string v;
+	int a = 0;
+	int b = m_size;
+	while (b - a >= 2 && c--)
+	{
+		int j = i ^ 1;
+		if (j < b)
+			v += get0(a + j);
+		int c = a;
+		a = b;
+		b += b - c + 1 >> 1;
+		i >>= 1;
+	}
+	return v;
+}
+
+bool Cmerkle_tree::test_and_set(int i, const string& v, const string& w)
+{
+	assert(i >= 0);
+	assert(i < m_size);
+	int a = 0;
+	int b = m_size;
+	int i0 = i;
+	int z = 0;
+	string h = v;
+	while (1)
+	{
+		if (*d(a + i))
+		{
+			if (memcmp(h.c_str(), d(a + i) + 1, 20))
+				return false;
+			set(i0, v, w);
+			return true;
+		}
+		if (b - a < 2 || z + 20 > w.size())
+			return false;
+		int j = i ^ 1;
+		if (j < b)
+		{
+			h = i < j ? internal_hash(h, w.substr(z, 20)) : internal_hash(w.substr(z, 20), h);
+			z += 20;
+		}
+		int c = a;
+		a = b;
+		b += b - c + 1 >> 1;
+		i >>= 1;
+	}
 }
 
 bool Cmerkle_tree::has(int i) const
@@ -46,13 +116,18 @@ bool Cmerkle_tree::has(int i) const
 	return m_d[21 * i];
 }
 
+void Cmerkle_tree::set0(int i, const string& v)
+{
+	assert(v.size() == 20);
+	*d(i) = true;
+	memcpy(d(i) + 1, v.c_str(), 20);
+}
+
 void Cmerkle_tree::set(int i, const string& v)
 {
 	assert(i >= 0);
 	assert(i < m_size);
-	assert(v.size() == 20);
-	*d(i) = true;
-	memcpy(d(i) + 1, v.c_str(), 20);
+	set0(i, v);
 	int a = 0;
 	int b = m_size;
 	while (b - a >= 2)
@@ -69,39 +144,60 @@ void Cmerkle_tree::set(int i, const string& v)
 			break;
 		*d(a + i) = true;
 		if (j < b)
-		{
-			char s[41];
-			*s = 1;
-			memcpy(s + 1, d(c + j - 1) + 1, 20);
-			memcpy(s + 21, d(c + j) + 1, 20);
-			Csha1(s, 41).read(d(a + i) + 1);
-		}
+			set0(a + i, internal_hash(get0(c + j - 1), get0(c + j)));
 		else
-			memcpy(d(a + i) + 1, d(c + j - 1) + 1, 20);
+			set0(a + i, get0(c + j - 1));
 		b += b - c + 1 >> 1;
+	}
+}
+
+void Cmerkle_tree::set(int i, const string& v, const string& w)
+{
+	assert(i >= 0);
+	assert(i < m_size);
+	int a = 0;
+	int b = m_size;
+	int z = 0;
+	string h = v;
+	while (1)
+	{
+		if (*d(a + i))
+			return;
+		set0(a + i, h);
+		if (b - a < 2 || z + 20 > w.size())
+			return;
+		int j = i ^ 1;
+		if (j < b)
+		{
+			set0(a + j, w.substr(z, 20));
+			z += 20;
+		}
+		int c = a;
+		a = b;
+		b += b - c + 1 >> 1;
+		i >>= 1;
 	}
 }
 
 string Cmerkle_tree::root() const
 {
-	return string(reinterpret_cast<const char*>(m_d.data_end()) - 20, 20);
+	return get0(m_d.size() / 21 - 1);
 }
 
 void Cmerkle_tree::root(const string& v)
 {
-	assert(v.size() == 20);
-	char* w = d(m_d.size() / 21 - 1);
-	*w = true;
-	memcpy(w + 1, v.c_str(), 20);
+	set0(m_d.size() / 21 - 1, v);
 }
 
 char* Cmerkle_tree::d(int i)
 {
+	assert(21 * i < m_d.size());
 	return reinterpret_cast<char*>(m_d.data_edit()) + 21 * i;
 }
 
 const char* Cmerkle_tree::d(int i) const
 {
+	assert(21 * i < m_d.size());
 	return reinterpret_cast<const char*>(m_d.data()) + 21 * i;
 }
 

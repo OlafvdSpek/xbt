@@ -23,9 +23,12 @@ public:
 	Cvirtual_binary save() const;
 	ostream& operator<<(ostream& os) const;
 	string get(int i) const;
+	string get(int i, int c) const;
 	bool has(int i) const;
 	void resize(int);
 	void set(int i, const string&);
+	void set(int i, const string&, const string&);
+	bool test_and_set(int i, const string&, const string&);
 	Cmerkle_tree();
 
 	int size() const
@@ -35,6 +38,8 @@ public:
 private:
 	char* d(int);
 	const char* d(int) const;
+	string get0(int) const;
+	void set0(int, const string&);
 
 	Cvirtual_binary m_d;
 	int m_size;
