@@ -36,6 +36,7 @@ enum
 	bti_started,
 	bti_stopped,
 };
+
 const string bts_action = "action";
 const string bts_admin_port = "admin port";
 const string bts_announce = "announce";
@@ -68,9 +69,11 @@ const string bts_peers = "peers";
 const string bts_piece_length = "piece length";
 const string bts_pieces = "pieces";
 const string bts_port = "port";
+const string bts_priority = "priority";
 const string bts_seeding_ratio = "seeding ratio";
 const string bts_set_options = "set options";
 const string bts_size = "size";
+const string bts_state = "state";
 const string bts_torrent = "torrent";
 const string bts_total_downloaded = "total downloaded";
 const string bts_total_uploaded = "total uploaded";
