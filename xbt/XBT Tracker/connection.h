@@ -9,6 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "client.h"
+
 class Cserver;
 
 class Cconnection  
@@ -17,14 +19,15 @@ public:
 	void read(const string&);
 	int recv();
 	int send();
+	virtual int process_events(int);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	Cconnection();
 	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a, bool log_access);
 
-	operator bool() const
+	Csocket& s()
 	{
-		return m_s != INVALID_SOCKET;
+		return m_s;
 	}
 private:
 	typedef vector<char> t_read_b;
