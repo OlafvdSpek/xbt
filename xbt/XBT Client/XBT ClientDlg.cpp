@@ -410,13 +410,13 @@ static string priority2a(int v)
 	switch (v)
 	{
 	case -10:
-		return "E";
+		return "Excluded";
 	case -1:
-		return "L";
+		return "Low";
 	case 0:
 		return "";
 	case 1:
-		return "H";
+		return "High";
 	}
 	return n(v);
 }
@@ -437,7 +437,7 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case fc_left:
 		if (e.m_left)
-			buffer = b2a(e.m_left);
+			buffer = e.m_left == -1 ? "?" : b2a(e.m_left);
 		break;
 	case fc_size:
 		if (e.m_size)
