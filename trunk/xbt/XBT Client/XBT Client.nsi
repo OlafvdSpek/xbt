@@ -1,5 +1,5 @@
 !define UPGRADEDLL_NOREGISTER
-!define VERSION "0.3.4"
+!define VERSION "0.3.5"
 !include "UpgradeDLL.nsh"
 
 Name "XBT Client ${VERSION}"
@@ -15,6 +15,8 @@ Section "Install"
 	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
 	File release\*.exe
+	SetOutPath "$INSTDIR\htdocs"
+	File htdocs\*
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	CreateShortCut "$SMPROGRAMS\XBT Client.lnk" "$INSTDIR\XBT Client.exe"
 	WriteRegStr HKCR ".torrent" "" "bittorrent"
