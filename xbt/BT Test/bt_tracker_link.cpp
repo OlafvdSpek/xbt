@@ -13,7 +13,6 @@
 enum
 {
 	tp_http,
-	tp_tcp,
 	tp_udp,
 	tp_unknown
 };
@@ -48,8 +47,6 @@ static int split_url(const string& url, int& protocol, string& address, int& por
 		return 1;
 	if (url.substr(0, a) == "http")
 		protocol = tp_http;
-	else if (url.substr(0, a) == "tcp")
-		protocol = tp_tcp;
 	else if (url.substr(0, a) == "udp")
 		protocol = tp_udp;
 	else 
@@ -75,32 +72,27 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 	switch (m_state)
 	{
 	case 0:
-		if (m_announce_time > time(NULL))
+		if (!f.m_run || m_announce_time > time(NULL))
 			return 0;
-		m_announce_time = time(NULL) + 300;
 		if (split_url(f.m_trackers.front(), m_protocol, m_host, m_port, m_path))
 			return 0;
 		switch (m_protocol)
 		{
 		case tp_http:
+			f.alert(Calert(Calert::info, "Tracker: URL: http://" + m_host + ':' + n(m_port) + m_path + "?info_hash=" + uri_encode(f.m_info_hash)));		
+			m_announce_time = time(NULL) + 300;
 			if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
 				return 0;
-			cout << "http://";
-			break;
-		case tp_tcp:
-			if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
-				return 0;
-			cout << "tcp://";
 			break;
 		case tp_udp:
+			f.alert(Calert(Calert::info, "Tracker: URL: udp://" + m_host + ':' + n(m_port) + "?info_hash=" + uri_encode(f.m_info_hash)));
+			m_announce_time = time(NULL) + 60;
 			if (m_s.open(SOCK_DGRAM) == INVALID_SOCKET)
 				return 0;
-			cout << "udp://";
 			break;
 		default:
 			return 0;
 		}
-		cout << m_host << ':' << m_port << m_path << "?info_hash=" << uri_encode(f.m_info_hash) << endl;
 		if (m_s.connect(Csocket::get_host(m_host), htons(m_port)) && WSAGetLastError() != WSAEWOULDBLOCK)
 			return 0;
 		if (m_protocol == tp_udp)
@@ -109,7 +101,11 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 			uti.action(uta_connect);
 			uti.transaction_id(m_transaction_id = rand());
 			if (m_s.send(&uti, sizeof(t_udp_tracker_input_connect)) != sizeof(t_udp_tracker_input_connect))
+			{
+				close();
 				return 0;
+			}
+			f.alert(Calert(Calert::debug, "Tracker: UDP: connect send"));
 			m_connect_send = time(NULL);
 			m_state = 3;
 		}
@@ -187,7 +183,6 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				m_w += r;
 			}
 			m_d.size(m_w - m_d);
-			m_d.save("d:/temp/bt/tracker out.txt");
 			read(f, m_d);
 			close();
 		}
@@ -223,6 +218,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 						close();
 						return;
 					}
+					f.alert(Calert(Calert::debug, "Tracker: UDP: announce send"));
 					m_announce_send = time(NULL);
 					m_state = 4;
 				}
@@ -252,7 +248,6 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 						a.sin_addr.s_addr = peer.host();
 						f.insert_peer(a);
 					}
-
 				}
 				close();
 			}
@@ -271,7 +266,10 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 		{
 			int http_result = atoi(string(reinterpret_cast<const char*>(r), d.data_end() - r).c_str());
 			if (http_result != 200)
+			{
+				f.alert(Calert(Calert::error, "Tracker: HTTP error: " + n(http_result)));
 				return 1;
+			}
 			for (const byte* r = d; r + 4 <= d.data_end(); r++)
 			{
 				if (!memcmp(r, "\r\n\r\n", 4))
@@ -281,24 +279,28 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 					if (r[0] == 0x1f && r[1] == 0x8b && r[2] == 8)
 					{
 						if (v.write(xcc_z::gunzip(r, d.data_end() - r)))
+						{
+							f.alert(Calert(Calert::error, "Tracker: gzip decode failed"));
 							return 1;						;
+						}
 					}
 					else if (v.write(r, d.data_end() - r))
+					{
+						f.alert(Calert(Calert::error, "Tracker: bdecode failed"));
 						return 1;
+					}
 					if (v.d(bts_failure_reason).s().empty())
 					{
 						m_announce_time = time(NULL) + max(300, v.d(bts_interval).i());
 						if (v.d(bts_peers).s().empty())
 						{
 							const Cbvalue::t_list& peers = v.d(bts_peers).l();
+							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size()) + " peers"));
 							for (Cbvalue::t_list::const_iterator i = peers.begin(); i != peers.end(); i++)
 							{
 								int ipa = htonl(inet_addr(i->d(bts_ipa).s().c_str()));
 								if (!ipa)
-								{
-									cout << i->d(bts_ipa).s() << endl;
-									ipa = Csocket::get_host(i->d(bts_ipa).s());
-								}
+									continue;
 								sockaddr_in a;
 								a.sin_family = AF_INET;
 								a.sin_port = htons(i->d(bts_port).i());
@@ -309,6 +311,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 						else
 						{
 							string peers = v.d(bts_peers).s();
+							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers"));
 							for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
 							{
 								sockaddr_in a;
@@ -321,7 +324,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 						return 0;
 					}
 					else
-						cout << v.d(bts_failure_reason).s();
+						f.alert(Calert(Calert::error, "Tracker: failure reason: " + v.d(bts_failure_reason).s()));
 				}
 			}
 		}
