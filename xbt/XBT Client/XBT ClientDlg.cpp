@@ -1482,7 +1482,7 @@ void CXBTClientDlg::OnTrayMenu()
 
 void CXBTClientDlg::OnPopupExplore()
 {
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_SELECTED));
 	if (id == -1)
 	{
 		ShellExecute(m_hWnd, "open", backward_slashes(m_server.completes_dir()).c_str(), NULL, NULL, SW_SHOW);
@@ -1501,7 +1501,7 @@ void CXBTClientDlg::OnPopupExplore()
 
 void CXBTClientDlg::OnPopupExploreTracker()
 {
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_SELECTED));
 	if (id == -1)
 		return;
 	const t_file& f = m_files_map.find(id)->second;
@@ -1513,7 +1513,7 @@ void CXBTClientDlg::OnPopupExploreTracker()
 
 void CXBTClientDlg::OnUpdatePopupExploreTracker(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+	pCmdUI->Enable(m_files.GetSelectedCount() == 1);
 }
 
 void CXBTClientDlg::OnPopupAnnounce()
@@ -1552,7 +1552,7 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 
 void CXBTClientDlg::OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+	pCmdUI->Enable(m_files.GetSelectedCount() == 1);
 }
 
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
