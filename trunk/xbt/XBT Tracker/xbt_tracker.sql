@@ -58,6 +58,28 @@ CREATE TABLE xbt_files_updates
   scraped_udp int NOT NULL
 );
 
+CREATE TABLE xbt_files_users
+(
+  info_hash blob NOT NULL,
+  uid int NOT NULL,
+  announced int NOT NULL,
+  completed int NOT NULL,
+  downloaded bigint(20) NOT NULL,
+  uploaded bigint(20) NOT NULL,
+  UNIQUE KEY (info_hash(20), uid),
+  KEY (uid)
+);
+
+CREATE TABLE xbt_files_users_updates
+(
+  info_hash blob NOT NULL,
+  uid int NOT NULL,
+  announced int NOT NULL,
+  completed int NOT NULL,
+  downloaded bigint(20) NOT NULL,
+  uploaded bigint(20) NOT NULL,
+);
+
 CREATE TABLE xbt_ipas
 (
   ipa int NOT NULL,
