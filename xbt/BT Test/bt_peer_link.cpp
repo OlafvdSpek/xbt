@@ -59,7 +59,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		{
 			if (time(NULL) - m_piece_rtime > 120)
 			{
-				m_piece->m_peer = NULL;
+				m_piece->m_peers.erase(this);;
 				m_piece = NULL;
 			}
 		}
@@ -69,7 +69,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			if (a >= 0)
 			{
 				m_piece = &m_f->m_pieces[a];
-				m_piece->m_peer = this;
+				m_piece->m_peers.insert(this);
 				for (int b = 0; b < m_piece->c_sub_pieces(); b++)
 				{
 					if (m_piece->m_sub_pieces.empty() || !m_piece->m_sub_pieces[b])
@@ -161,7 +161,7 @@ void Cbt_peer_link::close()
 {
 	m_s.close();
 	if (m_piece)
-		m_piece->m_peer = NULL;
+		m_piece->m_peers.erase(this);
 	m_read_b.size(0);
 	m_state = -1;
 	for (int i = 0; i < m_remote_pieces.size(); i++)
@@ -409,7 +409,7 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 	case bti_choke:
 		m_remote_choked = true;
 		if (m_piece)
-			m_piece->m_peer = NULL;
+			m_piece->m_peers.erase(this);
 		m_piece = NULL;
 		break;
 	case bti_unchoke:

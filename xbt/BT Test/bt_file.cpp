@@ -298,7 +298,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link::t_remote_pieces& remote_pi
 	invalid_pieces.reserve(c_invalid_pieces());
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
-		if (!m_pieces[i].m_valid && !m_pieces[i].m_peer && remote_pieces[i])
+		if (!m_pieces[i].m_valid && m_pieces[i].m_peers.empty() && remote_pieces[i])
 		{
 			if (!m_pieces[i].m_sub_pieces.empty())
 				return i;

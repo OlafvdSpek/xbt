@@ -19,12 +19,13 @@ public:
 	void write(int offset, const char* s, int cb_s);
 	Cbt_piece();
 
+	typedef set<Cbt_peer_link*> t_peers;
 	typedef vector<bool> t_sub_pieces;
 	
 	Cvirtual_binary m_d;
 	int mcb_d;
 	char m_hash[20];
-	Cbt_peer_link* m_peer;
+	t_peers m_peers;
 	int mc_peers;
 	t_sub_pieces m_sub_pieces;
 	int mc_sub_pieces_left;

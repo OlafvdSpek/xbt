@@ -11,7 +11,6 @@
 
 Cbt_piece::Cbt_piece()
 {
-	m_peer = NULL;
 	mc_peers = 0;
 	mcb_sub_piece = 16 << 10;
 	m_valid = false;
@@ -30,9 +29,9 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 	m_sub_pieces[offset / mcb_sub_piece] = true;
 	if (!--mc_sub_pieces_left)
 	{
-		if (m_peer)
-			m_peer->m_piece = NULL;
-		m_peer = NULL;
+		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+			(*i)->m_piece = NULL;
+		m_peers.clear();
 		m_sub_pieces.clear();
 		if (memcmp(compute_sha1(m_d).c_str(), m_hash, 20))
 		{

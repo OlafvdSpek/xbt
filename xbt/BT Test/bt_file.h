@@ -47,13 +47,13 @@ public:
 		FILE* m_f;
 		string m_full_name;
 		string m_name;
-		int m_size;
+		__int64 m_size;
 
 		t_sub_file()
 		{
 		}
 
-		t_sub_file(const string& name, int size)
+		t_sub_file(const string& name, __int64 size)
 		{
 			m_f = NULL;
 			m_name = name;
@@ -76,7 +76,7 @@ public:
 	t_trackers m_trackers;
 
 	int mcb_piece;
-	int mcb_f;
+	__int64 mcb_f;
 
 	__int64 m_downloaded;
 	__int64 m_left;
