@@ -15,10 +15,6 @@ Cdata_counter::Cdata_counter()
 	m_rate = 0;
 }
 
-Cdata_counter::~Cdata_counter()
-{
-}
-
 void Cdata_counter::add(int s)
 {
 	if (!m_got)
@@ -27,9 +23,9 @@ void Cdata_counter::add(int s)
 	update_rate();
 }
 
-int Cdata_counter::rate()
+int Cdata_counter::rate() const
 {
-	update_rate();
+	const_cast<Cdata_counter*>(this)->update_rate();
 	return m_rate;
 }
 

@@ -13,10 +13,9 @@ class Cdata_counter
 {
 public:
 	void update_rate();
-	int rate();
+	int rate() const;
 	void add(int);
 	Cdata_counter();
-	~Cdata_counter();
 
 	int m_got;
 	int m_rate;
