@@ -17,11 +17,13 @@
 #include "data_counter.h"
 #include "stream_reader.h"
 
+class Cbt_hasher;
 class Cserver;
 
 class Cbt_file  
 {
 public:
+	bool hash();
 	void update_piece_priorities();
 	void sub_file_priority(const string& id, int priority);
 	int local_ipa() const;
@@ -163,6 +165,7 @@ public:
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
 
+	Cbt_hasher* m_hasher;
 	bool m_run;
 	Cserver* m_server;
 };
