@@ -49,7 +49,7 @@ using namespace std;
 #include <unistd.h>
 
 #ifdef BSD
-#define atoll atoi
+#define atoll xbt_atoll
 #endif
 #define O_BINARY 0
 #define _lseeki64 lseek
