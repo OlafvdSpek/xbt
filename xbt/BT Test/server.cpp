@@ -552,7 +552,7 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 		if (i->m_info_hash == f.m_info_hash)
 			return 2;
 	}
-	if (f.open(name))
+	if (f.open(name.empty() ? incompletes_dir() + '\\' + f.m_name : name))
 		return 3;
 	f.m_peer_id = new_peer_id();
 	m_files.push_front(f);
@@ -859,7 +859,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		d.d(bts_files, files);
 	}
 	else if (action == bts_open_torrent) 
-		open(s.d(bts_torrent).read(), incompletes_dir() + '/' + s.d(bts_torrent).d(bts_info).d(bts_name).s());
+		open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), "");
 	else if (action == bts_pause_torrent)
 		stop_file(s.d(bts_hash).s());
 	else if (action == bts_set_options)
