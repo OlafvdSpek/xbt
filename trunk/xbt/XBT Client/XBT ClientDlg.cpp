@@ -794,11 +794,11 @@ void CXBTClientDlg::OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = n(e.c_peers);
 		break;
 	case pic_priority:
-		if (e.priority)
-			m_buffer[m_buffer_w] = priority2a(e.priority);
+		if (e.m_priority)
+			m_buffer[m_buffer_w] = priority2a(e.m_priority);
 		break;
 	case pic_valid:
-		if (e.valid)
+		if (e.m_valid)
 			m_buffer[m_buffer_w] = 'V';
 		break;
 	case pic_rank:
@@ -1058,10 +1058,10 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		e.c_chunks_valid = sr.read_int(1);
 		e.c_peers = sr.read_int(4);
 		e.index = index++;
-		e.priority = static_cast<char>(sr.read_int(1));
+		e.m_priority = static_cast<char>(sr.read_int(1));
 		e.rank = sr.read_int(4);
-		e.valid = sr.read_int(1);
-		if (1 || !e.valid)
+		e.m_valid = sr.read_int(1);
+		if (1 || !e.m_valid)
 			f.pieces.push_back(e);
 	}
 	if (m_file == &f)
@@ -1881,9 +1881,9 @@ int CXBTClientDlg::pieces_compare(int id_a, int id_b) const
 	case pic_c_peers:
 		return compare(a.c_peers, b.c_peers, compare(a.rank, b.rank));
 	case pic_priority:
-		return compare(a.priority, b.priority, compare(a.rank, b.rank));
+		return compare(a.m_priority, b.m_priority, compare(a.rank, b.rank));
 	case pic_valid:
-		return compare(a.valid, b.valid, compare(a.rank, b.rank));
+		return compare(a.m_valid, b.m_valid, compare(a.rank, b.rank));
 	case pic_rank:
 		return compare(a.rank, b.rank);
 	}
