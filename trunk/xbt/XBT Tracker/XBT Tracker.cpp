@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 	Cstatic_config static_config;
 	if (error = static_config.read("xbt_tracker.conf"))
 		cerr << error.message() << endl;
-	else if (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true))
+	if (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true))
 		cerr << error.message() << endl;
 	Cserver(database).run();
 #ifdef WIN32
