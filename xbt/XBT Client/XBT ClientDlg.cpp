@@ -36,6 +36,7 @@ enum
 	fc_leechers,
 	fc_seeders,
 	fc_peers,
+	fc_priority,
 	fc_state,
 	fc_hash,
 };
@@ -62,6 +63,8 @@ enum
 	pc_local_interested,
 	pc_remote_choked,
 	pc_remote_interested,
+	pc_local_requests,
+	pc_remote_requests,
 	pc_host,
 	pc_port,
 	pc_client,
@@ -205,11 +208,17 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE_TRACKER, OnUpdatePopupExploreTracker)
 	ON_COMMAND(ID_POPUP_UPLOAD_RATE_LIMIT, OnPopupUploadRateLimit)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_UPLOAD_RATE_LIMIT, OnUpdatePopupUploadRateLimit)
-	ON_WM_INITMENU()
 	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_EXCLUDE, OnUpdatePopupPriorityExclude)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_HIGH, OnUpdatePopupPriorityHigh)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_LOW, OnUpdatePopupPriorityLow)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_PRIORITY_NORMAL, OnUpdatePopupPriorityNormal)
+	ON_WM_INITMENU()
+	ON_COMMAND(ID_POPUP_TORRENT_PRIORITY_HIGH, OnPopupTorrentPriorityHigh)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_HIGH, OnUpdatePopupTorrentPriorityHigh)
+	ON_COMMAND(ID_POPUP_TORRENT_PRIORITY_LOW, OnPopupTorrentPriorityLow)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_LOW, OnUpdatePopupTorrentPriorityLow)
+	ON_COMMAND(ID_POPUP_TORRENT_PRIORITY_NORMAL, OnPopupTorrentPriorityNormal)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_NORMAL, OnUpdatePopupTorrentPriorityNormal)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -361,6 +370,22 @@ void CXBTClientDlg::open_url(const string& v)
 	m_server.open_url(v);
 }
 
+static string priority2a(int v)
+{
+	switch (v)
+	{
+	case -10:
+		return "E";
+	case -1:
+		return "L";
+	case 0:
+		return "";
+	case 1:
+		return "H";
+	}
+	return n(v);
+}
+
 void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
@@ -418,6 +443,10 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = n(e.c_leechers + e.c_seeders);
 		if (e.c_leechers_total || e.c_seeders_total)
 			m_buffer[m_buffer_w] += " / " + n(e.c_leechers_total + e.c_seeders_total);
+		break;
+	case fc_priority:
+		if (e.priority)
+			m_buffer[m_buffer_w] = priority2a(e.priority);
 		break;
 	case fc_seeders:
 		if (e.c_seeders || e.c_seeders_total)
@@ -649,6 +678,10 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		if (e.local_interested)
 			m_buffer[m_buffer_w] = 'I';
 		break;
+	case pc_local_requests:
+		if (e.c_local_requests)
+			m_buffer[m_buffer_w] = n(e.c_local_requests);
+		break;
 	case pc_remote_choked:
 		if (e.remote_choked)
 			m_buffer[m_buffer_w] = 'C';
@@ -656,6 +689,10 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	case pc_remote_interested:
 		if (e.remote_interested)
 			m_buffer[m_buffer_w] = 'I';
+		break;
+	case pc_remote_requests:
+		if (e.c_remote_requests)
+			m_buffer[m_buffer_w] = n(e.c_remote_requests);
 		break;
 	case pc_peer_id:
 		m_buffer[m_buffer_w] = hex_encode(e.peer_id);
@@ -699,7 +736,7 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case sfc_priority:
 		if (e.priority)
-			m_buffer[m_buffer_w] = n(e.priority);
+			m_buffer[m_buffer_w] = priority2a(e.priority);
 		break;
 	case sfc_hash:
 		m_buffer[m_buffer_w] = hex_encode(e.hash);
@@ -878,6 +915,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.completed_at = sr.read_int(4);
 	f.c_distributed_copies = sr.read_int(4);
 	f.c_distributed_copies_remainder = sr.read_int(4);
+	f.priority = sr.read_int(4);
 	f.removed = false;
 	{
 		int i = f.display_name.rfind('\\');
@@ -980,8 +1018,10 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	p.local_link = sr.read_int(1);
 	p.local_choked = sr.read_int(1);
 	p.local_interested = sr.read_int(1);
+	p.c_local_requests = sr.read_int(4);
 	p.remote_choked = sr.read_int(1);
 	p.remote_interested = sr.read_int(1);
+	p.c_remote_requests = sr.read_int(4);
 	if (p.peer_id.empty())
 		return;
 	t_peers::iterator i;
@@ -1644,10 +1684,14 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 		return compare(a.local_choked, b.local_choked);
 	case pc_local_interested:
 		return compare(a.local_interested, b.local_interested);
+	case pc_local_requests:
+		return compare(b.c_local_requests, a.c_local_requests);
 	case pc_remote_choked:
 		return compare(a.remote_choked, b.remote_choked);
 	case pc_remote_interested:
 		return compare(a.remote_interested, b.remote_interested);
+	case pc_remote_requests:
+		return compare(b.c_remote_requests, a.c_remote_requests);
 	case pc_peer_id:
 		return compare(a.peer_id, b.peer_id);
 	case pc_client:
@@ -1759,6 +1803,7 @@ void CXBTClientDlg::insert_top_columns()
 	m_torrents_columns.push_back(fc_leechers);
 	m_torrents_columns.push_back(fc_seeders);
 	m_torrents_columns.push_back(fc_peers);
+	m_torrents_columns.push_back(fc_priority);
 	m_torrents_columns.push_back(fc_state);
 	if (m_show_advanced_columns)
 	{
@@ -1777,12 +1822,14 @@ void CXBTClientDlg::insert_top_columns()
 		"Leechers",
 		"Seeders",
 		"Peers",
+		"Priority",
 		"State",
 		"Hash"
 	};
 	const int torrents_columns_formats[] =
 	{
 		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
@@ -1840,6 +1887,8 @@ void CXBTClientDlg::insert_bottom_columns()
 		m_peers_columns.push_back(pc_remote_interested);
 		if (m_show_advanced_columns)
 		{
+			m_peers_columns.push_back(pc_local_requests);
+			m_peers_columns.push_back(pc_remote_requests);
 			m_peers_columns.push_back(pc_host);
 			m_peers_columns.push_back(pc_port);
 			m_peers_columns.push_back(pc_peer_id);
@@ -1871,6 +1920,8 @@ void CXBTClientDlg::insert_bottom_columns()
 		"L",
 		"R",
 		"R",
+		"LR",
+		"RR",
 		"Host",
 		"Port",
 		"Client",
@@ -1906,6 +1957,8 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
+		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
 		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
@@ -2231,4 +2284,60 @@ void CXBTClientDlg::OnUpdatePopupUploadRateLimit(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
 	pCmdUI->SetCheck(m_server.upload_rate());
+}
+
+int CXBTClientDlg::get_torrent_priority()
+{
+	int v = 2;
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_file& e = m_files_map[m_files.GetItemData(index)];
+		if (v == 2)
+			v = e.priority;
+		else if (e.priority != v)
+			return 2;
+	}
+	return v;
+}
+
+void CXBTClientDlg::set_torrent_priority(int v)
+{
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_file& e = m_files_map[m_files.GetItemData(index)];
+		m_server.file_priority(m_file->info_hash, v);
+	}
+}
+
+void CXBTClientDlg::OnPopupTorrentPriorityHigh() 
+{
+	set_torrent_priority(1);
+}
+
+void CXBTClientDlg::OnUpdatePopupTorrentPriorityHigh(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+	pCmdUI->SetCheck(get_torrent_priority() == 1);
+}
+
+void CXBTClientDlg::OnPopupTorrentPriorityNormal() 
+{
+	set_torrent_priority(0);
+}
+
+void CXBTClientDlg::OnUpdatePopupTorrentPriorityNormal(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+	pCmdUI->SetCheck(get_torrent_priority() == 0);
+}
+
+void CXBTClientDlg::OnPopupTorrentPriorityLow() 
+{
+	set_torrent_priority(-1);	
+}
+
+void CXBTClientDlg::OnUpdatePopupTorrentPriorityLow(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+	pCmdUI->SetCheck(get_torrent_priority() == -1);
 }

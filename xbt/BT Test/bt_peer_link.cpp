@@ -759,7 +759,7 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 
 int Cbt_peer_link::pre_dump() const
 {
-	int size = m_remote_peer_id.length() + 49;
+	int size = m_remote_peer_id.length() + 57;
 	return size;
 }
 
@@ -776,8 +776,10 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(1, m_local_link);
 	w.write_int(1, m_local_choked);
 	w.write_int(1, m_local_interested);
+	w.write_int(4, mc_local_requests_pending);
 	w.write_int(1, m_remote_choked);
 	w.write_int(1, m_remote_interested);
+	w.write_int(4, m_remote_requests.size());
 }
 
 void Cbt_peer_link::alert(const Calert& v)

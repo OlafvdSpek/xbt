@@ -33,6 +33,7 @@ public:
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	bool below_peer_limit() const;
+	void file_priority(const string& file_id, int priority);
 	void sub_file_priority(const string& file_id, const string& sub_file_id, int priority);
 	string completes_dir() const;
 	string incompletes_dir() const;

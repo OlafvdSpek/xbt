@@ -501,6 +501,18 @@ int Cserver::stop_file(const string& id)
 	return 1;
 }
 
+void Cserver::file_priority(const string& file_id, int priority)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != file_id)
+			continue;
+		i->m_priority = priority;
+		return;
+	}
+}
+
 void Cserver::sub_file_priority(const string& file_id, const string& sub_file_id, int priority)
 {
 	Clock l(m_cs);

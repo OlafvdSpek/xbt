@@ -31,6 +31,7 @@ Cbt_file::Cbt_file()
 	m_hasher = NULL;
 	m_started_at = time(NULL);
 	m_completed_at = 0;
+	m_priority = 0;
 	m_run = true;
 	m_validate = true;
 }
@@ -517,7 +518,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 156;
+	int size = m_info_hash.length() + m_name.length() + 160;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -593,6 +594,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, m_completed_at);
 	w.write_int(4, c_distributed_copies);
 	w.write_int(4, c_distributed_copies_remainder);
+	w.write_int(4, m_priority);
 	if (flags & Cserver::df_peers)
 	{
 		w.write_int(4, m_peers.size());
@@ -667,7 +669,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 			m_pieces[i].m_valid = pieces[i];
 	}
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		i->priority(r.read_int(1));
+		i->priority(static_cast<char>(r.read_int(1)));
 	update_piece_priorities();
 	{
 		for (int c_peers = r.read_int(4); c_peers--; )
