@@ -746,17 +746,29 @@ void Cserver::update_send_quotas()
 
 string Cserver::completes_dir() const
 {
+#ifdef WIN32
 	return m_dir + "\\Completes";
+#else
+	return m_dir + "/Completes";
+#endif
 }
 
 string Cserver::incompletes_dir() const
 {
+#ifdef WIN32
 	return m_dir + "\\Incompletes";
+#else
+	return m_dir + "/Incompletes";
+#endif
 }
 
 string Cserver::torrents_dir() const
 {
+#ifdef WIN32
 	return m_dir + "\\Torrents";
+#else
+	return m_dir + "/Torrents";
+#endif
 }
 
 bool Cserver::below_peer_limit() const
