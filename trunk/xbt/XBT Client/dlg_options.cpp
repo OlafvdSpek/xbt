@@ -33,6 +33,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_tracker_port = 0;
 	m_end_mode = FALSE;
 	m_lower_process_priority = FALSE;
+	m_peer_limit = 0;
 	//}}AFX_DATA_INIT
 }
 
@@ -58,6 +59,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxInt(pDX, m_tracker_port, 0, 65535);
 	DDX_Check(pDX, IDC_END_MODE, m_end_mode);
 	DDX_Check(pDX, IDC_LOWER_PROCESS_PRIORITY, m_lower_process_priority);
+	DDX_Text(pDX, IDC_PEER_LIMIT, m_peer_limit);
 	//}}AFX_DATA_MAP
 }
 
@@ -79,6 +81,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.end_mode = m_end_mode;
 	v.files_location = m_files_location;
 	v.lower_process_priority = m_lower_process_priority;
+	v.peer_limit = m_peer_limit;
 	v.peer_port = m_peer_port;
 	v.public_ipa = m_public_ipa;
 	v.seeding_ratio = m_seeding_ratio;
@@ -98,6 +101,7 @@ void Cdlg_options::set(const t_data& v)
 	m_end_mode = v.end_mode;
 	m_files_location = v.files_location.c_str();
 	m_lower_process_priority = v.lower_process_priority;
+	m_peer_limit = v.peer_limit;
 	m_peer_port = v.peer_port;
 	m_public_ipa = v.public_ipa.c_str();
 	m_seeding_ratio = v.seeding_ratio;
