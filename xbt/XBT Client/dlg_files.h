@@ -48,6 +48,7 @@ protected:
 private:
 	struct t_map_entry
 	{
+		__int64 left;
 		string name;
 		int priority;
 		__int64 size;

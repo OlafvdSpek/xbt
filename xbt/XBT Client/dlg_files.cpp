@@ -64,8 +64,10 @@ BOOL Cdlg_files::OnInitDialog()
 
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_files.InsertColumn(0, "Name");
-	m_files.InsertColumn(1, "Size", LVCFMT_RIGHT);
-	m_files.InsertColumn(2, "Priority");
+	m_files.InsertColumn(1, "%", LVCFMT_RIGHT);
+	m_files.InsertColumn(2, "Left", LVCFMT_RIGHT);
+	m_files.InsertColumn(3, "Size", LVCFMT_RIGHT);
+	m_files.InsertColumn(4, "Priority");
 	load_data();
 	SetTimer(0, 15000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -100,6 +102,7 @@ void Cdlg_files::load_data()
 	for (int i = 0; i < c_files; i++)
 	{
 		t_map_entry& e = m_map[i];
+		e.left = sr.read_int64();
 		e.name = sr.read_string();
 		e.priority = sr.read_int32();
 		e.size = sr.read_int64();
@@ -164,9 +167,16 @@ void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		m_buffer[m_buffer_w] = e.name;
 		break;
 	case 1:
-		m_buffer[m_buffer_w] = n(e.size);
+		if (e.size)
+			m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
 		break;
 	case 2:
+		m_buffer[m_buffer_w] = n(e.left);
+		break;
+	case 3:
+		m_buffer[m_buffer_w] = n(e.size);
+		break;
+	case 4:
 		m_buffer[m_buffer_w] = n(e.priority);
 		break;
 	}
