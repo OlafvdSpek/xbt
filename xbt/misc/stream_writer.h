@@ -9,6 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "stream_int.h"
+#include "virtual_binary.h"
+
 class Cstream_writer  
 {
 public:
@@ -26,17 +29,22 @@ public:
 
 	void write_int8(int v)
 	{
-		*reinterpret_cast<char*>(write(1)) = v;
+		m_w = write_int(1, m_w, v);
+	}
+
+	void write_int16(int v)
+	{
+		m_w = write_int(2, m_w, v);
 	}
 
 	void write_int32(int v)
 	{
-		*reinterpret_cast<int*>(write(4)) = v;
+		m_w = write_int(4, m_w, v);
 	}
 
 	void write_int64(__int64 v)
 	{
-		*reinterpret_cast<__int64*>(write(8)) = v;
+		m_w = write_int(8, m_w, v);
 	}
 
 	void write_data(const Cvirtual_binary& v)
