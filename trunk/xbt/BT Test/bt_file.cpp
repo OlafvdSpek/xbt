@@ -373,7 +373,7 @@ int Cbt_file::c_valid_pieces() const
 	return (mcb_f - m_left + mcb_piece - 1) / mcb_piece;
 }
 
-int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link* peer)
+int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*)
 {
 	if (offset < 0 || cb_s < 0)
 		return 1;
@@ -384,10 +384,6 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 	if (piece.valid() || piece.write(offset % mcb_piece, s, cb_s))
 	{
 		mc_rejected_chunks++;
-		if (offset % piece.cb_sub_piece())
-			peer->alert(Calert::debug, "Piece " + n(a) + ", offset " + n(offset % mcb_piece) + ", size " + b2a(cb_s) + ": rejected (" + peer_id2a(peer->m_remote_peer_id) + ")");
-		else
-			peer->alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(offset % mcb_piece / piece.cb_sub_piece()) + ", size " + b2a(cb_s) + ": rejected (" + peer_id2a(peer->m_remote_peer_id) + ")");
 		return 1;
 	}
 	int size = cb_s;
