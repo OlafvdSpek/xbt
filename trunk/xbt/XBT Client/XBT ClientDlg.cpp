@@ -186,6 +186,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_PRIORITY_NORMAL, OnPopupPriorityNormal)
 	ON_COMMAND(ID_POPUP_VIEW_ADVANCED_COLUMNS, OnPopupViewAdvancedColumns)
 	ON_COMMAND(ID_POPUP_VIEW_TRAY_ICON, OnPopupViewTrayIcon)
+	ON_NOTIFY(NM_DBLCLK, IDC_PEERS, OnDblclkPeers)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1926,6 +1927,15 @@ void CXBTClientDlg::set_priority(int v)
 		const t_sub_file& e = m_file->sub_files[m_peers.GetItemData(index)];
 		m_server.sub_file_priority(m_file->info_hash, e.name, v);
 	}
+}
+
+void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	if (m_bottom_view != v_files || !m_file)
+		return;
+	int index = m_peers.GetNextItem(-1, LVNI_FOCUSED);
+	const t_sub_file& e = m_file->sub_files[m_peers.GetItemData(index)];
+	ShellExecute(m_hWnd, "open", (m_file->name + e.name).c_str(), NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnPopupViewAdvancedColumns() 

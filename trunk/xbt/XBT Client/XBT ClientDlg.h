@@ -121,6 +121,7 @@ protected:
 	afx_msg void OnPopupPriorityNormal();
 	afx_msg void OnPopupViewAdvancedColumns();
 	afx_msg void OnPopupViewTrayIcon();
+	afx_msg void OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
