@@ -158,6 +158,8 @@ enum
 	gdr_peers,
 	gdr_seeders,
 	gdr_size,
+	gdr_torrents_complete,
+	gdr_torrents_incomplete,
 	gdr_uploaded,
 	gdr_up_rate,
 	gdr_count
@@ -721,15 +723,17 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	const char* row_names[] =
 	{
 		"Downloaded",
-		"Down rate",
+		"Down Rate",
 		"Files",
 		"Leechers",
 		"Left",
 		"Peers",
 		"Seeders",
 		"Size",
+		"Torrents Complete",
+		"Torrents Incomplete",
 		"Uploaded",
-		"Up rate",
+		"Up Rate",
 	};
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
@@ -767,6 +771,12 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case gdr_size:
 			buffer = b2a(m_global_details.m_size, "b");
+			break;
+		case gdr_torrents_complete:
+			buffer = n(m_global_details.mc_torrents_complete);
+			break;
+		case gdr_torrents_incomplete:
+			buffer = n(m_global_details.mc_torrents_incomplete);
 			break;
 		case gdr_uploaded:
 			buffer = b2a(m_global_details.m_uploaded, "b");
@@ -3046,6 +3056,8 @@ void CXBTClientDlg::update_global_details()
 	m_global_details.mc_files = 0;
 	m_global_details.mc_leechers = 0;
 	m_global_details.mc_seeders = 0;
+	m_global_details.mc_torrents_complete = 0;
+	m_global_details.mc_torrents_incomplete = 0;
 	for (t_files::const_iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
 	{
 		m_global_details.m_down_rate += i->second.m_down_rate;
@@ -3059,5 +3071,6 @@ void CXBTClientDlg::update_global_details()
 		m_global_details.mc_files += i->second.m_sub_files.size();
 		m_global_details.mc_leechers += i->second.mc_leechers;
 		m_global_details.mc_seeders += i->second.mc_seeders;
+		(i->second.m_left ? m_global_details.mc_torrents_incomplete : m_global_details.mc_torrents_complete)++;
 	}
 }
