@@ -11,6 +11,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+const extern UINT g_are_you_me_message_id;
+
 /////////////////////////////////////////////////////////////////////////////
 // CXBTClientApp
 
