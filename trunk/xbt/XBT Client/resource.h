@@ -143,13 +143,17 @@
 #define ID_POPUP_PROFILES               32821
 #define ID_HELP_ABOUT                   32822
 #define ID_FILE_EXIT                    32823
+#define ID_EDIT_COPY_ANNOUNCE_URL       32824
+#define ID_EDIT_COPY_HASH               32825
+#define ID_EDIT_COPY_URL                32826
+#define ID_EDIT_PASTE_URL               32827
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        144
-#define _APS_NEXT_COMMAND_VALUE         32824
+#define _APS_NEXT_COMMAND_VALUE         32828
 #define _APS_NEXT_CONTROL_VALUE         1065
 #define _APS_NEXT_SYMED_VALUE           105
 #endif

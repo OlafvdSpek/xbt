@@ -32,7 +32,7 @@ STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP |
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
 CAPTION "XBT Client"
 MENU IDR_MAINFRAME
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,114,50
@@ -394,12 +394,11 @@ BEGIN
     BEGIN
         POPUP "Clipboard"
         BEGIN
-            MENUITEM "Copy Announce URL",           ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL
+            MENUITEM "Copy Announce URL",           ID_EDIT_COPY_ANNOUNCE_URL
 
-            MENUITEM "Copy Hash",                   ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH
-
-            MENUITEM "Copy URL",                    ID_POPUP_COPY
-            MENUITEM "Paste URL",                   ID_POPUP_PASTE
+            MENUITEM "Copy Hash",                   ID_EDIT_COPY_HASH
+            MENUITEM "Copy URL\tCtrl+C",            ID_EDIT_COPY_URL
+            MENUITEM "Paste URL\tCtrl+V",           ID_EDIT_PASTE_URL
         END
         POPUP "&Priority"
         BEGIN
@@ -422,10 +421,9 @@ BEGIN
             MENUITEM "Explore",                     ID_POPUP_EXPLORE
             MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
             MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
-            MENUITEM "Open...\tIns",                ID_POPUP_OPEN
-            MENUITEM "&Close\tDel",                 ID_POPUP_CLOSE
+            MENUITEM "Open...\tInsert",             ID_FILE_OPEN
+            MENUITEM "&Close\tDelete",              ID_FILE_CLOSE
             MENUITEM "Delete",                      ID_POPUP_TORRENT_DELETE
-            MENUITEM "Make...\tCtrl+M",             ID_POPUP_MAKE_TORRENT
             MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
         END
         POPUP "&View"
@@ -447,7 +445,6 @@ BEGIN
         MENUITEM "Scheduler...",                ID_POPUP_SCHEDULER
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
-        MENUITEM "About",                       ID_POPUP_ABOUT
     END
 END
 
@@ -482,7 +479,6 @@ BEGIN
         MENUITEM "Scheduler...",                ID_POPUP_SCHEDULER
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
-        MENUITEM "About",                       ID_POPUP_ABOUT
     END
 END
 
@@ -509,7 +505,6 @@ BEGIN
         MENUITEM "Scheduler...",                ID_POPUP_SCHEDULER
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
         MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
-        MENUITEM "About",                       ID_POPUP_ABOUT
     END
 END
 
@@ -517,7 +512,21 @@ IDR_MAINFRAME MENU DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&New...\tCtrl+N",             ID_FILE_NEW
+        MENUITEM "&Open...\tInsert",            ID_FILE_OPEN
+        MENUITEM "&Close\tDelete",              ID_FILE_CLOSE
         MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        POPUP "&Copy"
+        BEGIN
+            MENUITEM "Announce URL",                ID_EDIT_COPY_ANNOUNCE_URL
+
+            MENUITEM "Hash",                        ID_EDIT_COPY_HASH
+            MENUITEM "URL\tCtrl+C",                 ID_EDIT_COPY_URL
+        END
+        MENUITEM "&Paste URL\tCtrl+V",          ID_EDIT_PASTE_URL
     END
     POPUP "&Help"
     BEGIN
@@ -539,15 +548,16 @@ BEGIN
     "4",            ID_POPUP_VIEW_PEERS,    VIRTKEY, NOINVERT
     "5",            ID_POPUP_VIEW_PIECES,   VIRTKEY, NOINVERT
     "6",            ID_POPUP_VIEW_TRACKERS, VIRTKEY, NOINVERT
-    "M",            ID_POPUP_MAKE_TORRENT,  VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY_URL,       VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_POPUP_OPTIONS,       VIRTKEY, CONTROL, NOINVERT
     "O",            ID_POPUP_OPTIONS,       VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
     "P",            ID_POPUP_PROFILES,      VIRTKEY, CONTROL, NOINVERT
     "P",            ID_POPUP_PROFILES,      VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
-    VK_DELETE,      ID_POPUP_CLOSE,         VIRTKEY, NOINVERT
-    VK_INSERT,      ID_POPUP_OPEN,          VIRTKEY, NOINVERT
+    VK_DELETE,      ID_FILE_CLOSE,          VIRTKEY, NOINVERT
+    VK_INSERT,      ID_FILE_OPEN,           VIRTKEY, NOINVERT
 END
 
 

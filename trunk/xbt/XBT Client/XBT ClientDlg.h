@@ -75,12 +75,8 @@ protected:
 	afx_msg void OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnPopupOpen();
-	afx_msg void OnPopupClose();
-	afx_msg void OnUpdatePopupClose(CCmdUI* pCmdUI);
 	afx_msg void OnPopupOptions();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
-	afx_msg void OnPopupExit();
 	afx_msg void OnPopupExplore();
 	afx_msg void OnDestroy();
 	afx_msg void OnWindowPosChanging(WINDOWPOS FAR* lpwndpos);
@@ -88,16 +84,10 @@ protected:
 	afx_msg void OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnPopupCopy();
-	afx_msg void OnPopupPaste();
 	afx_msg void OnPopupTrackers();
 	afx_msg void OnPopupAnnounce();
 	afx_msg void OnPopupExploreTracker();
-	afx_msg void OnPopupAbout();
-	afx_msg void OnPopupMakeTorrent();
 	afx_msg void OnPopupTorrentDelete();
-	afx_msg void OnPopupTorrentClipboardCopyAnnounceUrl();
-	afx_msg void OnPopupTorrentClipboardCopyHash();
 	afx_msg void OnPopupViewDetails();
 	afx_msg void OnPopupViewFiles();
 	afx_msg void OnPopupViewPeers();
@@ -119,9 +109,6 @@ protected:
 	afx_msg void OnUpdatePopupViewPeers(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupViewTrackers(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupTorrentDelete(CCmdUI* pCmdUI);
-	afx_msg void OnUpdatePopupTorrentClipboardCopyAnnounceUrl(CCmdUI* pCmdUI);
-	afx_msg void OnUpdatePopupTorrentClipboardCopyHash(CCmdUI* pCmdUI);
-	afx_msg void OnUpdatePopupCopy(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupAnnounce(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupExploreTracker(CCmdUI* pCmdUI);
 	afx_msg void OnPopupUploadRateLimit();
@@ -154,6 +141,17 @@ protected:
 	afx_msg void OnActivateApp(BOOL bActive, HTASK hTask);
 	afx_msg void OnFileExit();
 	afx_msg void OnHelpAbout();
+	afx_msg void OnFileOpen();
+	afx_msg void OnFileClose();
+	afx_msg void OnUpdateFileClose(CCmdUI* pCmdUI);
+	afx_msg void OnEditCopyAnnounceUrl();
+	afx_msg void OnUpdateEditCopyAnnounceUrl(CCmdUI* pCmdUI);
+	afx_msg void OnEditCopyHash();
+	afx_msg void OnUpdateEditCopyHash(CCmdUI* pCmdUI);
+	afx_msg void OnEditCopyUrl();
+	afx_msg void OnUpdateEditCopyUrl(CCmdUI* pCmdUI);
+	afx_msg void OnEditPasteUrl();
+	afx_msg void OnFileNew();
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
