@@ -92,7 +92,7 @@ string uri_encode(const string& v)
 	for (int i = 0; i < v.length(); i++)
 	{
 		char c = v[i];
-		if (isalpha(c) || isdigit(c))
+		if (isalpha(c & 0xff) || isdigit(c & 0xff))
 			r += c;
 		else
 		{
