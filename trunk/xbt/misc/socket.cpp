@@ -181,3 +181,10 @@ string Csocket::error2a(int v)
 	sprintf(b, "%d", v);
 	return b;
 }
+
+string Csocket::inet_ntoa(int v)
+{
+	in_addr a;
+	a.s_addr = v;
+	return ::inet_ntoa(a);
+}

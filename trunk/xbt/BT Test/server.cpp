@@ -14,6 +14,7 @@ const static int g_state_version = 0;
 
 class Clock
 {
+#ifdef WIN32
 public:
 	Clock(CRITICAL_SECTION& cs)
 	{
@@ -34,6 +35,12 @@ private:
 	}
 
 	CRITICAL_SECTION* m_cs;
+#else
+public:
+	Clock(int)
+	{
+	}
+#endif
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -55,13 +62,17 @@ Cserver::Cserver()
 	m_upload_rate = 0;
 	m_upload_slots = 8;
 
+#ifdef WIN32
 	InitializeCriticalSection(&m_cs);
+#endif
 	srand(time(NULL));
 }
 
 Cserver::~Cserver()
 {
+#ifdef WIN32
 	DeleteCriticalSection(&m_cs);
+#endif
 }
 
 static string new_peer_id()
@@ -190,14 +201,14 @@ int Cserver::run()
 			if (below_peer_limit())
 			{
 				FD_SET(l, &fd_read_set);
-				n = max(n, l);
+				n = max(n, static_cast<SOCKET>(l));
 			}
 			FD_SET(la, &fd_read_set);
-			n = max(n, la);
+			n = max(n, static_cast<SOCKET>(la));
 			FD_SET(lt, &fd_read_set);
-			n = max(n, lt);
+			n = max(n, static_cast<SOCKET>(lt));
 			unlock();
-			TIMEVAL tv;
+			timeval tv;
 			tv.tv_sec = hash ? 1 : 0;
 			tv.tv_usec = 0;
 			if (select(n, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
@@ -207,6 +218,7 @@ int Cserver::run()
 			}
 			if (0)
 			{
+#ifdef WIN32
 				static ofstream f("/temp/select log.txt");
 				f << time(NULL);
 				f << "\tR:";
@@ -219,6 +231,7 @@ int Cserver::run()
 				for (int i = 0; i < fd_except_set.fd_count; i++)
 					f << ' ' << fd_except_set.fd_array[i];
 				f << endl;
+#endif
 			}
 			lock();
 			if (FD_ISSET(l, &fd_read_set))
@@ -385,12 +398,16 @@ void Cserver::insert_peer(const char* r, const sockaddr_in& a, const Csocket& s)
 
 void Cserver::lock()
 {
+#ifdef WIN32
 	EnterCriticalSection(&m_cs);
+#endif
 }
 
 void Cserver::unlock()
 {
+#ifdef WIN32
 	LeaveCriticalSection(&m_cs);
+#endif
 }
 
 Cvirtual_binary Cserver::get_file_status(const string& id, int flags)
@@ -490,8 +507,10 @@ string Cserver::get_url(const string& id)
 
 int Cserver::open(const Cvirtual_binary& info, const string& name)
 {
+#ifdef WIN32
 	while (!m_run)
 		Sleep(100);
+#endif
 	Clock l(m_cs);
 	Cbt_file f;
 	f.m_server = this;
@@ -528,8 +547,10 @@ int Cserver::open_url(const string& v)
 	if (b == string::npos)
 		return 4;
 	string peers = hex_decode(v.substr(b));
+#ifdef WIN32
 	while (!m_run)
 		Sleep(100);
+#endif
 	Clock l(m_cs);
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
