@@ -427,6 +427,21 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 			i->write_have(a);
 	}
+	if (!m_left && m_name.substr(0, m_server->incompletes_dir().size()) == m_server->incompletes_dir())
+	{
+		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+			i->close();
+		string new_name = m_server->completes_dir() + m_name.substr(m_server->incompletes_dir().size());
+#ifdef WIN32
+		CreateDirectory(m_server->completes_dir().c_str(), NULL);
+#else
+		mkdir(m_server->completes_dir().c_str(), 0777);
+#endif
+		if (!rename(m_name.c_str(), new_name.c_str()))
+			m_name = new_name;
+		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+			i->open(m_name, O_RDONLY);
+	}
 	alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
 }
 
