@@ -33,6 +33,7 @@ Cbt_file::Cbt_file()
 	m_session_started_at = time(NULL);
 	m_completed_at = 0;
 	m_priority = 0;
+	m_end_mode = false;
 	m_run = true;
 	m_validate = true;
 }
@@ -501,12 +502,15 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	bool begin_mode = Cbt_file::begin_mode();
 	bool end_mode = Cbt_file::end_mode();
 	int rank = INT_MAX;
+	int c_unrequested_sub_pieces = 0;
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
 		if (m_pieces[i].valid()
 			|| m_pieces[i].priority() == -10
-			|| !peer.m_remote_pieces[i] 
 			|| !m_pieces[i].c_unrequested_sub_pieces())
+			continue;
+		c_unrequested_sub_pieces += m_pieces[i].c_unrequested_sub_pieces();
+		if (!peer.m_remote_pieces[i] )
 			continue;
 		if (begin_mode && !m_pieces[i].sub_pieces().empty())
 			return i;
@@ -518,6 +522,8 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 		rank = piece_rank;
 		invalid_pieces.push_back(i);
 	}
+	if (c_unrequested_sub_pieces < 256)
+		m_end_mode = true;
 	return invalid_pieces.empty() ? -1 : invalid_pieces[rand() % invalid_pieces.size()];
 }
 
@@ -836,5 +842,10 @@ bool Cbt_file::begin_mode() const
 
 bool Cbt_file::end_mode() const
 {
-	return m_server->end_mode() && c_invalid_pieces() < 16;
+	return m_end_mode;
+}
+
+int Cbt_file::c_max_requests_pending() const
+{
+	return end_mode() ? 1 : 8;
 }

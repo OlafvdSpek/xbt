@@ -174,6 +174,8 @@ private:
 		bool remote_interested;
 		int c_remote_requests;
 		int c_pieces;
+		int rtime;
+		int stime;
 		bool removed;
 	};
 
