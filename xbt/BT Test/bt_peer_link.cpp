@@ -37,9 +37,10 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			close();
 			return 0;
 		}
+		if (0)
 		{
-			BOOL v = true;
-			if (!setsockopt(m_s, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(BOOL)))
+			int v = true;
+			if (!setsockopt(m_s, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)))
 				m_s.bind(htonl(INADDR_ANY), htons(m_f->local_port()));
 		}
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
@@ -93,7 +94,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 			m_local_requests.pop_front();
 		}
-		if (m_read_b.cb_w())
+		if (!m_read_b.size() || m_read_b.cb_w())
 			FD_SET(m_s, fd_read_set);
 		if (m_write_b.empty() && time(NULL) - m_stime > 120)
 			write_keepalive();
@@ -166,6 +167,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						break;
 					m_read_b.combine();
 				}
+				if (!m_read_b.cb_r())
+					m_read_b.size(0);
 				break;
 			}					
 		}
@@ -211,6 +214,8 @@ int Cbt_peer_link::cb_write_buffer() const
 
 void Cbt_peer_link::recv()
 {
+	if (!m_read_b.size())
+		m_read_b.size(65 << 10);
 	for (int r; m_read_b.cb_w() && (r = m_s.recv(m_read_b.w(), m_read_b.cb_w())); )
 	{
 		if (r == SOCKET_ERROR)

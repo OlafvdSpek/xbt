@@ -176,6 +176,7 @@ int Cbt_file::open(const string& name, bool validate)
 				m_left += piece.mcb_d;
 		}
 		alert(Calert(Calert::debug, "Torrent: " + n(c_valid_pieces()) + '/' + n(m_pieces.size())));
+		alert(Calert(Calert::debug, "Torrent: " + n(mcb_piece >> 10) + " kb/piece"));
 	}
 	return 0;
 }
@@ -217,9 +218,11 @@ void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd
 	m_tracker.post_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); )
 	{
-		i->post_select(fd_read_set, fd_write_set, fd_except_set);
-		if (i->m_state == -1)
+		if (i->post_select(fd_read_set, fd_write_set, fd_except_set) || i->m_state == -1)
+		{
+			i->close();
 			i = m_peers.erase(i);
+		}
 		else
 			i++;
 	}
@@ -248,7 +251,11 @@ void Cbt_file::insert_peer(const t_bt_handshake& h, const sockaddr_in& a, const 
 	peer.m_s = s;
 	peer.m_local_link = false;
 	peer.m_state = 4;
-	peer.read_handshake(h);
+	if (peer.read_handshake(h))
+	{
+		assert(false);
+		return;
+	}
 	peer.write_handshake();
 	m_peers.push_back(peer);
 }
@@ -294,10 +301,22 @@ void Cbt_file::write_data(__int64 o, const char* s, int cb_s)
 		{
 			if (offset < i->size())
 			{
-				if (!*i && i->size() && i->open(m_name, _O_CREAT))
+				if (!*i && i->size())
 				{
-					char b = 0;
-					i->write(i->size() - 1, &b, 1);
+					string path = m_name + i->name();
+					for (int i = m_name.size(); i < path.size(); )
+					{
+						int a = path.find_first_of("/\\", i);
+						if (a == string::npos)
+							break;
+						CreateDirectory(path.substr(0, a).c_str(), NULL);
+						i = a + 1;
+					}
+					if (i->open(m_name, _O_CREAT))
+					{
+						char b = 0;
+						i->write(i->size() - 1, &b, 1);
+					}
 				}
 				int cb_write = min(size, i->size() - offset);
 				if (i->write(offset, r, cb_write))
@@ -354,42 +373,27 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	vector<int> invalid_pieces;
 
 	invalid_pieces.reserve(c_invalid_pieces());
-	if (invalid_pieces.empty() && c_invalid_pieces() < 4)
+	int rank = INT_MAX;
+	for (int i = 0; i < m_pieces.size(); i++)
 	{
-		for (int i = 0; i < m_pieces.size(); i++)
-		{
-			if (!m_pieces[i].m_valid && peer.m_remote_pieces[i] && m_pieces[i].m_peers.empty() && peer.m_pieces.find(&m_pieces[i]) == peer.m_pieces.end())
-			{
-				if (!m_pieces[i].m_sub_pieces.empty())
-					return i;
-				invalid_pieces.push_back(i);
-			}
-		}
+		if (m_pieces[i].m_valid 
+			|| !peer.m_remote_pieces[i] 
+			|| peer.m_pieces.find(&m_pieces[i]) != peer.m_pieces.end()
+			|| c_invalid_pieces() > 16 && !m_pieces[i].m_peers.empty())
+			continue;
+		if (c_valid_pieces() < 4 && m_pieces[i].m_peers.empty() && !m_pieces[i].m_sub_pieces.empty())
+			return i;
+		int piece_rank = 2560000 * min(m_pieces[i].m_peers.size(), 9)
+			+ -256000 * m_pieces[i].m_priority 
+			+ 256 * min(m_pieces[i].mc_peers, 999)
+			+ m_pieces[i].m_sub_pieces.empty();
+		if (piece_rank > rank)
+			continue;
+		if (piece_rank < rank)
+			invalid_pieces.clear();
+		rank = piece_rank;
+		invalid_pieces.push_back(i);
 	}
-	if (invalid_pieces.empty())
-	{
-		for (int i = 0; i < m_pieces.size(); i++)
-		{
-			if (!m_pieces[i].m_valid && peer.m_remote_pieces[i] && m_pieces[i].m_peers.empty() && peer.m_pieces.find(&m_pieces[i]) == peer.m_pieces.end())
-			{
-				if (!m_pieces[i].m_sub_pieces.empty())
-					return i;
-				invalid_pieces.push_back(i);
-			}
-		}
-	}
-	if (invalid_pieces.empty() && c_invalid_pieces() < 16)
-	{
-		for (int i = 0; i < m_pieces.size(); i++)
-		{
-			if (!m_pieces[i].m_valid && peer.m_remote_pieces[i] && peer.m_pieces.find(&m_pieces[i]) == peer.m_pieces.end())
-			{
-				if (!m_pieces[i].m_sub_pieces.empty())
-					return i;
-				invalid_pieces.push_back(i);
-			}
-		}
-	}	
 	return invalid_pieces.empty() ? -1 : invalid_pieces[rand() % invalid_pieces.size()];
 }
 
@@ -546,6 +550,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 	}
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		i->priority(r.read_int8());
+	update_piece_priorities();
 	{
 		for (int c_peers = r.read_int32(); c_peers--; )
 		{
@@ -643,6 +648,21 @@ void Cbt_file::sub_file_priority(const string& id, int priority)
 		if (i->name() != id)
 			continue;
 		i->priority(priority);
+		update_piece_priorities();
 		return;
+	}
+}
+
+void Cbt_file::update_piece_priorities()
+{
+	for (int i = 0; i < m_pieces.size(); i++)
+		m_pieces[i].m_priority = -128;
+	__int64 offset = 0;
+	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+	{
+		int b = (offset + i->size() - 1) / mcb_piece;
+		for (int a = offset / mcb_piece; a <= b; a++)
+			m_pieces[a].m_priority = max(m_pieces[a].m_priority, i->priority());
+		offset += i->size();
 	}
 }
