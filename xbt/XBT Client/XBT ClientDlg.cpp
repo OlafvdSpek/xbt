@@ -247,9 +247,9 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_TORRENT_OPTIONS, OnPopupTorrentOptions)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_OPTIONS, OnUpdatePopupTorrentOptions)
 	ON_COMMAND(ID_POPUP_SCHEDULER, OnPopupScheduler)
+	ON_COMMAND(ID_POPUP_PROFILES, OnPopupProfiles)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
-	ON_COMMAND(ID_POPUP_PROFILES, OnPopupProfiles)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1397,6 +1397,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
 	data.seeding_ratio = m_server.seeding_ratio();
 	data.show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
+	data.show_confirm_exit_dialog = AfxGetApp()->GetProfileInt(m_reg_key, "show_confirm_exit_dialog", false);
 	data.show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
 	data.start_minimized = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
 	data.torrent_limit = m_server.torrent_limit();
@@ -1436,6 +1437,7 @@ void CXBTClientDlg::OnPopupOptions()
 	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", data.show_advanced_columns);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "show_confirm_exit_dialog", data.show_confirm_exit_dialog);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "start_minimized", data.start_minimized);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "torrent_limit", data.torrent_limit);
@@ -2648,4 +2650,11 @@ void CXBTClientDlg::OnUpdatePopupStateStopped(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
 	pCmdUI->SetRadio(get_torrent_state() == Cbt_file::s_stopped);
+}
+
+void CXBTClientDlg::OnCancel() 
+{
+	if (!AfxGetApp()->GetProfileInt(m_reg_key, "show_confirm_exit_dialog", false)
+		|| IDOK == MessageBox("Would you like to exit XBT Client?", NULL, MB_ICONWARNING | MB_OKCANCEL))
+		ETSLayoutDialog::OnCancel();
 }
