@@ -140,6 +140,7 @@ int Cserver::run()
 	if (l.listen() || la.listen())
 		return alert(Calert(Calert::emerg, "Server", "listen failed" + Csocket::error2a(WSAGetLastError()))), 1;
 	load_state(Cvirtual_binary(state_fname()));
+	m_profiles.load(Cxif_key(Cvirtual_binary(profiles_fname())));
 	m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
 #ifndef WIN32
 	if (daemon(true, false))
@@ -434,6 +435,28 @@ Cvirtual_binary Cserver::get_status(int flags)
 	return d;
 }
 
+void Cserver::load_profile(const Cxif_key& v)
+{
+	Cprofile profile;
+	profile.load(v);
+	m_config.m_seeding_ratio = profile.seeding_ratio_enable ? profile.seeding_ratio : 0;
+	m_config.m_upload_rate = profile.upload_rate_enable ? profile.upload_rate : 0;
+	m_config.m_upload_slots = profile.upload_slots_enable ? profile.upload_slots : 0;
+	m_config.m_peer_limit = profile.peer_limit_enable ? profile.peer_limit : 0;
+	m_config.m_torrent_limit = profile.torrent_limit_enable ? profile.torrent_limit : 0;
+}
+
+Cxif_key Cserver::get_profiles()
+{
+	return m_profiles.save();
+}
+
+void Cserver::set_profiles(const Cxif_key& v)
+{
+	m_profiles.load(v);
+	m_profiles.save().vdata().save(profiles_fname());
+}
+
 Cvirtual_binary Cserver::get_trackers()
 {
 	Clock l(m_cs);
@@ -648,6 +671,11 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	assert(w.w() == d.data_end());
 	m_save_state_time = time();
 	return d;
+}
+
+string Cserver::profiles_fname() const
+{
+	return local_app_data_dir() + "/profiles.xif";
 }
 
 string Cserver::state_fname() const

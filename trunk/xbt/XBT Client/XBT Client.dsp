@@ -212,6 +212,10 @@ SOURCE="..\BT Test\merkle_tree.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\profiles.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\ring_buffer.cpp"
 # End Source File
 # Begin Source File
@@ -398,6 +402,10 @@ SOURCE=.\ListCtrlEx.h
 # Begin Source File
 
 SOURCE="..\BT Test\merkle_tree.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\profiles.h"
 # End Source File
 # Begin Source File
 

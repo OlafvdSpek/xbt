@@ -45,6 +45,7 @@
 #define IDC_TRACKER                     1017
 #define IDC_EDIT                        1017
 #define IDC_USER                        1018
+#define IDC_ACTIVATE                    1018
 #define IDC_PASS                        1019
 #define IDC_TRACKER_STATIC              1020
 #define IDC_USER_STATIC                 1021
