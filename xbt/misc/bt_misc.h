@@ -16,6 +16,17 @@ string hex_encode(const string& v);
 string uri_decode(const string& v);
 string uri_encode(const string& v);
 
+inline __int64 htonll(__int64 v)
+{
+	const unsigned char* a = reinterpret_cast<const unsigned char*>(&v);
+	return a[0] << 56 | a[1] << 48 | a[2] << 40 | a[3] << 32 | a[4] << 24 | a[5] << 16 | a[6] << 8 | a[7];
+}
+
+inline __int64 ntohll(__int64 v)
+{
+	return htonll(v);
+}
+
 enum
 {
 	uta_connect,
@@ -67,14 +78,14 @@ struct t_udp_tracker_input_announce: t_udp_tracker_input
 	char m_info_hash[20];
 	char m_peer_id[20];
 
-	int downloaded() const
+	__int64 downloaded() const
 	{
-		return ntohl(m_downloaded);
+		return ntohll(m_downloaded);
 	}
 
-	void downloaded(int v)
+	void downloaded(__int64 v)
 	{
-		m_downloaded = htonl(v);
+		m_downloaded = htonll(v);
 	}
 
 	int event() const
@@ -112,14 +123,14 @@ struct t_udp_tracker_input_announce: t_udp_tracker_input
 		m_num_want = htonl(v);
 	}
 
-	int left() const
+	__int64 left() const
 	{
-		return ntohl(m_left);
+		return ntohll(m_left);
 	}
 
-	void left(int v)
+	void left(__int64 v)
 	{
-		m_left = htonl(v);
+		m_left = htonll(v);
 	}
 
 	string peer_id() const
@@ -137,14 +148,14 @@ struct t_udp_tracker_input_announce: t_udp_tracker_input
 		m_port = v;
 	}
 
-	int uploaded() const
+	__int64 uploaded() const
 	{
-		return ntohl(m_uploaded);
+		return ntohll(m_uploaded);
 	}
 
-	void uploaded(int v)
+	void uploaded(__int64 v)
 	{
-		m_uploaded = htonl(v);
+		m_uploaded = htonll(v);
 	}
 private:
 	__int64 m_downloaded;
