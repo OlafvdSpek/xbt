@@ -40,8 +40,8 @@ private:
 
 Cserver::Cserver()
 {
-	m_admin_port = 6879;
-	m_peer_port = 6889;
+	m_new_admin_port = 6879;
+	m_new_peer_port = 6889;
 	m_run = false;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time(NULL);
@@ -67,12 +67,17 @@ static string new_peer_id()
 
 void Cserver::admin_port(int v)
 {
-	m_admin_port = v;
+	m_new_admin_port = v;
 }
 
 void Cserver::peer_port(int v)
 {
-	m_peer_port = v;
+	m_new_peer_port = v;
+}
+
+void Cserver::public_ipa(int v)
+{
+	m_public_ipa = v == INADDR_NONE ? 0 : v;
 }
 
 void Cserver::upload_rate(int v)
@@ -82,6 +87,8 @@ void Cserver::upload_rate(int v)
 
 int Cserver::run()
 {
+	m_admin_port = m_new_admin_port;
+	m_peer_port = m_new_peer_port;
 	Csocket l, la;
 	if (l.open(SOCK_STREAM) == INVALID_SOCKET
 		|| la.open(SOCK_STREAM) == INVALID_SOCKET)
@@ -90,8 +97,8 @@ int Cserver::run()
 		m_admin_port++;
 	while (peer_port() < 0x10000 && l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_peer_port++;
-	if (listen(l, SOMAXCONN)
-		|| listen(la, SOMAXCONN))
+	if (l.listen()
+		|| la.listen())
 		return alert(Calert(Calert::emerg, "Server", "listen failed" + n(WSAGetLastError()))), 1;
 	else
 	{
@@ -108,6 +115,31 @@ int Cserver::run()
 		for (m_run = true; m_run; )
 		{
 			lock();
+			if (m_new_admin_port != m_admin_port)
+			{
+				Csocket s;
+				if (s.open(SOCK_STREAM) != INVALID_SOCKET
+					&& !s.bind(htonl(INADDR_LOOPBACK), htons(m_new_admin_port))
+					&& !s.listen())
+				{
+					la = s;
+					m_admin_port = m_new_admin_port;
+				}
+			}
+			if (m_new_peer_port != m_peer_port)
+			{
+				Csocket s;
+				if (s.open(SOCK_STREAM) != INVALID_SOCKET
+					&& !s.bind(htonl(INADDR_ANY), htons(m_new_peer_port))
+					&& !s.listen())
+				{
+					l = s;
+					m_peer_port = m_new_peer_port;
+					for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+						i->m_local_port = peer_port();
+				}
+			}
+			update_send_quotas();
 			FD_ZERO(&fd_read_set);
 			FD_ZERO(&fd_write_set);
 			FD_ZERO(&fd_except_set);
@@ -135,7 +167,6 @@ int Cserver::run()
 					n = max(n, z);
 				}
 			}
-			update_send_quotas();
 			unlock();
 			TIMEVAL tv;
 			tv.tv_sec = 1;
@@ -333,6 +364,17 @@ int Cserver::stop_file(const string& id)
 	return 1;
 }
 
+string Cserver::get_url(const string& id)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash == id)
+			return i->get_url();
+	}
+	return "";
+}
+
 int Cserver::open(const Cvirtual_binary& info, const string& name)
 {
 	while (!m_run)
@@ -348,11 +390,45 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	}
 	if (f.open(name, true))
 		return 3;
+	f.m_local_ipa = public_ipa();
 	f.m_local_port = peer_port();
 	f.m_peer_id = new_peer_id();
 	m_files.push_front(f);
 	save_state(true).save(state_fname());
 	return 0;
+}
+
+int Cserver::open_url(const string& v)
+{
+	int a = v.find("://");
+	if (a == string::npos || v.substr(0, a) != "xbtp")
+		return 1;
+	a += 3;
+	int b = v.find('/', a);
+	if (b == string::npos)
+		return 2;
+	string tracker = v.substr(a, b++ - a);
+	a = v.find('/', b);
+	if (a == string::npos)
+		return 3;
+	string info_hash = hex_decode(v.substr(b, a++ - b));
+	b = v.find('/', a);
+	if (b == string::npos)
+		return 4;
+	string info_hashes_hash = hex_decode(v.substr(a, b++ - a));
+	string peers = hex_decode(v.substr(b));
+	while (!m_run)
+		Sleep(100);
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != info_hash)
+			continue;
+		for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
+			i->insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
+		return 0;
+	}
+	return 5;
 }
 
 int Cserver::close(const string& id)
@@ -382,6 +458,7 @@ void Cserver::load_state(const Cvirtual_binary& d)
 		f.load_state(r);
 		if (f.open(f.m_name, !f.c_valid_pieces()))
 			continue;
+		f.m_local_ipa = public_ipa();
 		f.m_local_port = peer_port();
 		f.m_peer_id = new_peer_id();
 		m_files.push_front(f);
@@ -432,8 +509,7 @@ void Cserver::update_send_quotas()
 				return;
 		}
 		else
-			m_send_quota = 0;
-		int cb = min(t - m_update_send_quotas_time, 3) * m_upload_rate;
+			m_send_quota = min(t - m_update_send_quotas_time, 3) * m_upload_rate;
 		m_update_send_quotas_time = t;
 
 		typedef multimap<int, Cbt_peer_link*> t_links;
@@ -448,11 +524,10 @@ void Cserver::update_send_quotas()
 		}
 		for (t_links::iterator i = links.begin(); i != links.end(); i++)
 		{
-			int q = min(i->first, cb / links.size());
+			int q = min(i->first, m_send_quota / links.size());
 			i->second->send_quota(q);
-			cb -= q;
+			m_send_quota -= q;
 		}
-		m_send_quota = cb;
 	}
 	else
 	{

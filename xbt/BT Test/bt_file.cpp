@@ -127,7 +127,7 @@ int Cbt_file::open(const string& name, bool validate)
 {
 	m_name = name;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		validate |= !i->open(m_name, 0);
+		i->open(m_name, 0);
 	{
 		Cvirtual_binary d;
 		for (int i = 0; i < m_pieces.size(); i++)
@@ -554,4 +554,25 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 void Cbt_file::alert(const Calert& v)
 {
 	m_alerts.push_back(v);
+}
+
+string Cbt_file::get_url() const
+{
+	string v = "xbtp://";
+	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
+		v += uri_encode(*i) + ',';
+	v += '/' + hex_encode(m_info_hash) + '/' + hex_encode(m_info_hashes_hash) + '/';
+	if (m_local_ipa)
+	{
+		v += hex_encode(8, ntohl(m_local_ipa))
+			+ hex_encode(4, m_local_port);
+	}
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	{
+		if (i->m_state != 3)
+			continue;
+		v += hex_encode(8, ntohl(i->m_a.sin_addr.s_addr))
+			+ hex_encode(4, ntohs(i->m_a.sin_port));
+	}
+	return v;
 }

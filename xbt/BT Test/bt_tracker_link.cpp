@@ -95,7 +95,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 			return 0;
 		}
 		{
-			int h = atoi(m_host.c_str()) ? inet_addr(m_host.c_str()) : Csocket::get_host(m_host);
+			int h = Csocket::get_host(m_host);
 			if (h == INADDR_NONE)
 			{
 				f.alert(Calert(Calert::error, "Tracker: gethostbyname failed"));
@@ -316,29 +316,14 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 							const Cbvalue::t_list& peers = v.d(bts_peers).l();
 							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size()) + " peers (" + n(d.size()) + " bytes)"));
 							for (Cbvalue::t_list::const_iterator i = peers.begin(); i != peers.end(); i++)
-							{
-								int ipa = htonl(inet_addr(i->d(bts_ipa).s().c_str()));
-								if (!ipa)
-									continue;
-								sockaddr_in a;
-								a.sin_family = AF_INET;
-								a.sin_port = htons(i->d(bts_port).i());
-								a.sin_addr.s_addr = htonl(ipa);
-								f.insert_peer(a);
-							}
+								f.insert_peer(inet_addr(i->d(bts_ipa).s().c_str()), htons(i->d(bts_port).i()));
 						}
 						else
 						{
 							string peers = v.d(bts_peers).s();
 							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
 							for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
-							{
-								sockaddr_in a;
-								a.sin_family = AF_INET;
-								a.sin_addr.s_addr = *reinterpret_cast<const __int32*>(r);
-								a.sin_port = *reinterpret_cast<const __int16*>(r + 4);
-								f.insert_peer(a);
-							}
+								f.insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
 						}
 						return 0;
 					}
