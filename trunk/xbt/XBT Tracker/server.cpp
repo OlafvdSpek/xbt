@@ -149,6 +149,7 @@ void Cserver::t_file::clean_up(int announce_interval)
 		{
 			(i->second.left ? leechers : seeders)--;
 			peers.erase(i++);
+			dirty = true;
 		}
 		else
 			i++;
@@ -269,12 +270,6 @@ void Cserver::write_db()
 			t_file& file = i->second;
 			if (!file.dirty)
 				continue;
-			int leechers = 0;
-			int seeders = 0;
-			for (t_peers::const_iterator j = file.peers.begin(); j != file.peers.end(); j++)
-				(j->second.left ? leechers : seeders)++;
-			assert(leechers == file.leechers);
-			assert(seeders == file.seeders);
 			Csql_query q(m_database);
 			if (!file.fid)
 			{
@@ -284,8 +279,8 @@ void Cserver::write_db()
 				file.fid = m_database.insert_id();
 			}
 			q.write("update xbt_files set leechers = %s, seeders = %s, completed = %s, started = %s, stopped = %s where fid = %s");
-			q.p(leechers);
-			q.p(seeders);
+			q.p(file.leechers);
+			q.p(file.seeders);
 			q.p(file.completed);
 			q.p(file.started);
 			q.p(file.stopped);
