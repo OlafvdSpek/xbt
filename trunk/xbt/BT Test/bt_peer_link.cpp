@@ -24,7 +24,6 @@ Cbt_peer_link::~Cbt_peer_link()
 
 int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
-	unsigned long p = 1;
 	switch (m_state)
 	{
 	case 1:
@@ -33,9 +32,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			m_state = -1;
 			return 0;
 		}
-		if (ioctlsocket(m_s, FIONBIO, &p))
-			cerr << "ioctlsocket failed" << endl;
-		if (m_s.connect(m_a.sin_addr.S_un.S_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
+		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
 			close();
 			return 0;

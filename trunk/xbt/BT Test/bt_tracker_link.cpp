@@ -99,8 +99,6 @@ int Cbt_tracker_link::write(Cbt_file* f)
 		return 1;
 	if ((m_s.open(SOCK_STREAM)) == INVALID_SOCKET)
 		return 1;
-	unsigned long p = 1;
-	ioctlsocket(m_s, FIONBIO, &p);
 	if (m_s.connect(Csocket::get_host(host), htons(port)) && WSAGetLastError() != WSAEWOULDBLOCK)
 		return 1;
 	m_w = m_d.write_start(16 << 10);
