@@ -95,11 +95,19 @@ SOURCE=..\misc\bvalue.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\connection.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\misc\sql\database.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\epoll.cpp
 # End Source File
 # Begin Source File
 
@@ -140,11 +148,19 @@ SOURCE=.\StdAfx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tcp_listen_socket.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tracker_input.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\transaction.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\udp_listen_socket.cpp
 # End Source File
 # Begin Source File
 
@@ -172,7 +188,15 @@ SOURCE=..\misc\bvalue.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\connection.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\epoll.h
 # End Source File
 # Begin Source File
 
@@ -204,11 +228,19 @@ SOURCE=..\misc\stream_int.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\tcp_listen_socket.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\tracker_input.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\transaction.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\udp_listen_socket.h
 # End Source File
 # Begin Source File
 
