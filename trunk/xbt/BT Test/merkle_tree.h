@@ -28,6 +28,7 @@ public:
 	void resize(int);
 	void set(int i, const string&);
 	void set(int i, const string&, const string&);
+	bool test(int i, const string&, const string&);
 	bool test_and_set(int i, const string&, const string&);
 	Cmerkle_tree();
 
