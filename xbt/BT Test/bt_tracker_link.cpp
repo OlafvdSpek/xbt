@@ -172,7 +172,10 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			m_event = e_none;			
 			os << " HTTP/1.0\r" << endl
 				<< "accept-encoding: gzip\r" << endl
-				<< "host: " << m_url.m_host << ':' << m_url.m_port << '\r' << endl
+				<< "host: " << m_url.m_host;
+			if (m_url.m_port != 80)
+				os << ':' << m_url.m_port;
+			os << '\r' << endl
 				<< '\r' << endl;
 			if (m_s.send(os.str().c_str(), os.str().size()) != os.str().size())
 				close(f);
