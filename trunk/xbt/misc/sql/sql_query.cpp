@@ -45,6 +45,11 @@ string Csql_query::read() const
 				}
 			}
 		}
+		else if (m_data[i] == '?')
+		{
+			assert(l != m_list.end());
+			r += *l++;
+		}
 		else
 			r += m_data[i];
 	}
