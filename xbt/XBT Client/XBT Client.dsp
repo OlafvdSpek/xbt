@@ -188,6 +188,10 @@ SOURCE=.\dlg_scheduler.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\dlg_scheduler_entry.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\dlg_torrent_options.cpp
 # End Source File
 # Begin Source File
@@ -382,6 +386,10 @@ SOURCE=.\dlg_profiles.h
 # Begin Source File
 
 SOURCE=.\dlg_scheduler.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_scheduler_entry.h
 # End Source File
 # Begin Source File
 
