@@ -163,39 +163,25 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				clear_local_requests();
 			while (m_local_interested && m_f->m_run && !m_remote_choked && mc_local_requests_pending < 8)
 			{
-				if (m_local_requests.empty())
+				int a = m_f->next_invalid_piece(*this);
+				if (a < 0)
 				{
-					int a = m_f->next_invalid_piece(*this);
-					if (a >= 0)
-					{
-						Cbt_piece* piece = &m_f->m_pieces[a];
-						if (m_pieces.empty())
-							m_piece_rtime = time(NULL);
-						m_pieces.insert(piece);
-						piece->m_peers.insert(this);
-						vector<int> sub_pieces;
-						for (int b = 0; b < piece->c_sub_pieces(); b++)
-						{
-							if (piece->m_sub_pieces.empty() || !piece->m_sub_pieces[b].valid())
-								sub_pieces.push_back(b);
-						}
-						if (piece->m_peers.size() > 1)
-							random_shuffle(sub_pieces.begin(), sub_pieces.end());
-						for (vector<int>::const_iterator i = sub_pieces.begin(); i != sub_pieces.end(); i++)
-							m_local_requests.push_back(t_local_request(m_f->mcb_piece * a + piece->cb_sub_piece() * *i, piece->cb_sub_piece(*i)));
-					}
-					else
-						interested(false);
-				}
-				if (m_local_requests.empty())
+					interested(false);
 					break;
-				const t_local_request& request = m_local_requests.front();
-				logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
-				if (m_f->m_merkle)
-					write_merkle_request(request.offset, 127);
-				else
-					write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
-				m_local_requests.pop_front();
+				}
+				Cbt_piece* piece = &m_f->m_pieces[a];
+				if (m_pieces.empty())
+					m_piece_rtime = time(NULL);
+				m_pieces.insert(piece);
+				for (int b; mc_local_requests_pending < 8 && (b = piece->next_invalid_sub_piece(this)) != -1; )
+				{
+					t_local_request request(m_f->mcb_piece * a + piece->cb_sub_piece() * b, piece->cb_sub_piece(b));
+					logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
+					if (m_f->m_merkle)
+						write_merkle_request(request.offset, 127);
+					else
+						write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
+				}					
 			}
 			if (m_write_b.empty())
 			{
@@ -790,7 +776,7 @@ void Cbt_peer_link::alert(const Calert& v)
 void Cbt_peer_link::clear_local_requests()
 {
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
-		(*i)->m_peers.erase(this);
+		(*i)->erase_peer(this);
 	m_pieces.clear();
 	m_local_requests.clear();
 	mc_local_requests_pending = 0;
