@@ -21,6 +21,7 @@
 #include "scheduler.h"
 #include "stream_writer.h"
 #include "udp_tracker.h"
+#include "version_check_handler.h"
 
 class Cserver
 {
@@ -35,6 +36,7 @@ public:
 	};
 
 	Cbvalue admin_request(const Cbvalue& s);
+	Chttp_link* http_request(int h, int p, const string& request, Chttp_response_handler*);
 	Cvirtual_binary get_file_status(const string& id, int flags);
 	Cvirtual_binary get_status(int flags);
 	Cvirtual_binary get_trackers();
@@ -268,6 +270,7 @@ private:
 	int m_update_chokes_time;
 	int m_update_send_quotas_time;
 	int m_update_states_time;
+	Cversion_check_handler m_version_check_handler;
 
 #ifdef WIN32
 	CRITICAL_SECTION m_cs;
