@@ -23,6 +23,7 @@ class Cbt_piece;
 class Cbt_peer_link  
 {
 public:
+	int c_max_requests_pending() const;
 	void check_pieces();
 	Cbt_logger& logger();
 	void clear_local_requests();
