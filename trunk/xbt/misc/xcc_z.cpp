@@ -33,6 +33,7 @@ Cvirtual_binary xcc_z::gzip(const byte* s, int cb_s)
 		stream.next_out = w;
 		stream.avail_out = cb_d;
 		deflate(&stream, Z_FINISH);
+		deflateEnd(&stream);
 		w = stream.next_out;
 	}
 	*reinterpret_cast<int*>(w) = crc32(crc32(0, NULL, 0), s, cb_s);

@@ -58,7 +58,6 @@ public:
 		int stopped;
 	};
 
-	typedef list<Cconnection> t_connections;
 	typedef map<string, t_file> t_files;
 
 	void read_config();
@@ -78,6 +77,7 @@ public:
 		return m_files;
 	}
 private:
+	typedef list<Cconnection> t_connections;
 	typedef list<Cpeer_link> t_peer_links;
 
 	int m_clean_up_time;
