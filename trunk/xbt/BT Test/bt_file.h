@@ -24,14 +24,14 @@ public:
 	void load_state(Cstream_reader&);
 	int pre_save_state(bool intermediate) const;
 	void save_state(Cstream_writer&, bool intermediate) const;
-	int size() const;
+	__int64 size() const;
 	int c_seeders() const;
 	int c_leechers() const;
 	int time_remaining() const;
 	int pre_dump(bool full = false) const;
 	void dump(Cstream_writer&, bool full = false) const;
 	ostream& dump(ostream&) const;
-	int next_invalid_piece(const Cbt_peer_link::t_remote_pieces&) const;
+	int next_invalid_piece(const Cbt_peer_link&);
 	int read_piece(int a, byte* d);
 	void write_data(int o, const char* s, int cb_s);
 	void close();
@@ -98,7 +98,7 @@ public:
 	Cvirtual_binary m_info;
 	Cvirtual_binary m_info_hashes;
 
-	int mcb_piece;
+	__int64 mcb_piece;
 	__int64 mcb_f;
 
 	__int64 m_downloaded;

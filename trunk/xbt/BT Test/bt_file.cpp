@@ -125,7 +125,7 @@ int Cbt_file::open(const string& name, bool validate)
 {
 	m_name = name;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		i->open(m_name, 0);
+		validate |= !i->open(m_name, 0);
 	{
 		Cvirtual_binary d;
 		for (int i = 0; i < m_pieces.size(); i++)
@@ -329,25 +329,40 @@ int Cbt_file::read_piece(int a, byte* d)
 	return 0;
 }
 
-int Cbt_file::next_invalid_piece(const Cbt_peer_link::t_remote_pieces& remote_pieces) const
+int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 {
 	vector<int> invalid_pieces;
 
 	invalid_pieces.reserve(c_invalid_pieces());
-	for (int i = 0; i < m_pieces.size(); i++)
+	if (invalid_pieces.empty() && c_invalid_pieces() < 4)
 	{
-		if (!m_pieces[i].m_valid && m_pieces[i].m_peers.empty() && remote_pieces[i])
+		for (int i = 0; i < m_pieces.size(); i++)
 		{
-			if (!m_pieces[i].m_sub_pieces.empty())
-				return i;
-			invalid_pieces.push_back(i);
+			if (!m_pieces[i].m_valid && peer.m_remote_pieces[i] && m_pieces[i].m_peers.empty() && peer.m_pieces.find(&m_pieces[i]) == peer.m_pieces.end())
+			{
+				if (!m_pieces[i].m_sub_pieces.empty())
+					return i;
+				invalid_pieces.push_back(i);
+			}
 		}
 	}
 	if (invalid_pieces.empty())
 	{
 		for (int i = 0; i < m_pieces.size(); i++)
 		{
-			if (!m_pieces[i].m_valid && remote_pieces[i])
+			if (!m_pieces[i].m_valid && peer.m_remote_pieces[i] && m_pieces[i].m_peers.empty() && peer.m_pieces.find(&m_pieces[i]) == peer.m_pieces.end())
+			{
+				if (!m_pieces[i].m_sub_pieces.empty())
+					return i;
+				invalid_pieces.push_back(i);
+			}
+		}
+	}
+	if (invalid_pieces.empty() && c_invalid_pieces() < 16)
+	{
+		for (int i = 0; i < m_pieces.size(); i++)
+		{
+			if (!m_pieces[i].m_valid && peer.m_remote_pieces[i] && peer.m_pieces.find(&m_pieces[i]) == peer.m_pieces.end())
 			{
 				if (!m_pieces[i].m_sub_pieces.empty())
 					return i;
@@ -463,9 +478,9 @@ int Cbt_file::c_seeders() const
 	return c;
 }
 
-int Cbt_file::size() const
+__int64 Cbt_file::size() const
 {
-	int c = 0;
+	__int64 c = 0;
 	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		c += i->m_size;
 	return c;

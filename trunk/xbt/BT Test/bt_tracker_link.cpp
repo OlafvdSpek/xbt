@@ -249,7 +249,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					m_announce_time = time(NULL) + max(300, uto.interval());
 					mc_attempts = 0;
 					f.alert(Calert(Calert::info, "Tracker: " + n((r - sizeof(t_udp_tracker_output_announce)) / 6) + " peers (" + n(r) + " bytes)"));
-					for (int o = sizeof(t_udp_tracker_output_announce); o + sizeof(t_udp_tracker_output_peer) <= r; o += sizeof(t_udp_tracker_output_announce))
+					for (int o = sizeof(t_udp_tracker_output_announce); o + sizeof(t_udp_tracker_output_peer) <= r; o += sizeof(t_udp_tracker_output_peer))
 					{
 						const t_udp_tracker_output_peer& peer = *reinterpret_cast<const t_udp_tracker_output_peer*>(d + o);
 						sockaddr_in a;

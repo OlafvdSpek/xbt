@@ -19,6 +19,7 @@ class Cserver
 {
 public:
 	void update_chokes();
+	void update_send_quotas();
 	void alert(const Calert&);
 	void admin_port(int);
 	void peer_port(int);
@@ -78,8 +79,10 @@ private:
 	int m_admin_port;
 	string m_dir;
 	int m_peer_port;
+	int m_send_quota;
 	bool m_run;
 	int m_update_chokes_time;
+	int m_update_send_quotas_time;
 	int m_upload_rate;
 
 	CRITICAL_SECTION m_cs;

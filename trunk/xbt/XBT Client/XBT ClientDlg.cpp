@@ -463,13 +463,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		inserted = true;
 	}
 	else
-	{
 		id = i->first;
-		LV_FINDINFO fi;
-		fi.flags = LVFI_PARAM;
-		fi.lParam = id;
-		m_files.Update(m_files.FindItem(&fi, -1));
-	}
 	t_file& f = m_files_map.find(id)->second;
 	f.info_hash = info_hash;
 	f.name = sr.read_string();
@@ -593,13 +587,6 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 		p0.local_interested = p1.local_interested;
 		p0.remote_choked = p1.remote_choked;
 		p0.remote_interested = p1.remote_interested;
-		if (m_file == &f)
-		{
-			LV_FINDINFO fi;
-			fi.flags = LVFI_PARAM;
-			fi.lParam = id;
-			m_peers.Update(m_peers.FindItem(&fi, -1));
-		}
 	}
 	p0.removed = false;
 	if (inserted)
@@ -608,7 +595,13 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 
 void CXBTClientDlg::OnTimer(UINT nIDEvent) 
 {
+	m_files.SetRedraw(false);
+	m_peers.SetRedraw(false);
 	read_server_dump(Cstream_reader(m_server.get_status()));
+	m_files.SetRedraw(true);
+	m_peers.SetRedraw(true);
+	m_files.Invalidate();
+	m_peers.Invalidate();
 	update_tray();
 	ETSLayoutDialog::OnTimer(nIDEvent);
 }
@@ -773,16 +766,13 @@ void CXBTClientDlg::update_tray()
 	__int64 left = 0;
 	__int64 size = 0;
 	int leechers = 0;
-	int leeching = 0;
 	int seeders = 0;
-	int seeding = 0;
 	for (t_files::const_iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
 	{
 		left += i->second.left;
 		size += i->second.size;
 		leechers += i->second.c_leechers;
 		seeders += i->second.c_seeders;
-		(i->second.left ? leeching : seeding)++;
 	}
 	NOTIFYICONDATA nid;
 	nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -790,7 +780,7 @@ void CXBTClientDlg::update_tray()
 	nid.uID = 0;
 	nid.uFlags = NIF_TIP;
 	if (size)
-		sprintf(nid.szTip, "XBT Client - %d %%, %s left, %d leechers, %d seeders, leeching %d, seeding %d", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders, leeching, seeding);
+		sprintf(nid.szTip, "XBT Client - %d %%, %s left, %d leechers, %d seeders", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders);
 	else
 		strcpy(nid.szTip, "XBT Client");
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
