@@ -157,10 +157,6 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));	
 	start_server();
-	CCommandLineInfo cmdInfo;
-	AfxGetApp()->ParseCommandLine(cmdInfo);
-	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
-		open(static_cast<string>(cmdInfo.m_strFileName));
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_peers.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	insert_columns();
@@ -174,6 +170,10 @@ BOOL CXBTClientDlg::OnInitDialog()
 	RegisterHotKey(GetSafeHwnd(), 0, MOD_CONTROL | MOD_SHIFT, 'Q');
 	SetTimer(0, 1000, NULL);
 	SetTimer(1, 60000, NULL);
+	CCommandLineInfo cmdInfo;
+	AfxGetApp()->ParseCommandLine(cmdInfo);
+	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
+		open(static_cast<string>(cmdInfo.m_strFileName));
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -213,7 +213,6 @@ HCURSOR CXBTClientDlg::OnQueryDragIcon()
 
 void CXBTClientDlg::open(const string& name)
 {
-	m_initial_hide = false;
 	Cvirtual_binary d(name);
 	Cbt_torrent torrent(d);
 	if (!torrent.valid())
@@ -226,7 +225,10 @@ void CXBTClientDlg::open(const string& name)
 	}
 	string path = m_dir;
 	if (!m_dir.IsEmpty() && !m_ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
+	{
 		path += "\\Incompletes\\" + torrent.name();
+		update_tray("Opened", torrent.name().c_str());
+	}
 	else if (torrent.files().size() == 1)
 	{
 		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
@@ -943,7 +945,7 @@ void CXBTClientDlg::register_tray()
 	if (!m_show_tray_icon)
 		return;
 	NOTIFYICONDATA nid;
-	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.cbSize = NOTIFYICONDATA_V1_SIZE;
 	nid.hWnd = GetSafeHwnd();
 	nid.uID = 0;
 	nid.uFlags = NIF_ICON | NIF_MESSAGE;
@@ -955,7 +957,7 @@ void CXBTClientDlg::register_tray()
 void CXBTClientDlg::unregister_tray()
 {
 	NOTIFYICONDATA nid;
-	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.cbSize = NOTIFYICONDATA_V1_SIZE;
 	nid.hWnd = GetSafeHwnd();
 	nid.uID = 0;
 	nid.uFlags = 0;
@@ -978,7 +980,7 @@ void CXBTClientDlg::update_tray()
 		seeders += i->second.c_seeders;
 	}
 	NOTIFYICONDATA nid;
-	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.cbSize = NOTIFYICONDATA_V1_SIZE;
 	nid.hWnd = GetSafeHwnd();
 	nid.uID = 0;
 	nid.uFlags = NIF_TIP;
@@ -986,6 +988,23 @@ void CXBTClientDlg::update_tray()
 		sprintf(nid.szTip, "XBT Client - %d %%, %s left, %d leechers, %d seeders", static_cast<int>((size - left) * 100 / size), b2a(left).c_str(), leechers, seeders);
 	else
 		strcpy(nid.szTip, "XBT Client");
+	Shell_NotifyIcon(NIM_MODIFY, &nid);
+}
+
+void CXBTClientDlg::update_tray(const char* info_title, const char* info)
+{
+	NOTIFYICONDATA nid;
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = GetSafeHwnd();
+	nid.uID = 0;
+	nid.uFlags = NIF_INFO;
+	nid.dwInfoFlags = NIIF_INFO;
+	if (info_title)
+		strcpy(nid.szInfoTitle, info_title);
+	else
+		*nid.szInfoTitle = 0;
+	strcpy(nid.szInfo, info);
+	nid.uTimeout = 10;
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
