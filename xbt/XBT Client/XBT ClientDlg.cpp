@@ -123,6 +123,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_ABOUT, OnPopupAbout)
 	ON_COMMAND(ID_POPUP_MAKE_TORRENT, OnPopupMakeTorrent)
 	ON_COMMAND(ID_POPUP_TORRENT_DELETE, OnPopupTorrentDelete)
+	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnPopupTorrentClipboardCopyAnnounceUrl)
+	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH, OnPopupTorrentClipboardCopyHash)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -708,25 +710,29 @@ void CXBTClientDlg::OnPopupStop()
 		m_server.stop_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
+void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index != -1)
+	{
+		const t_file& file = m_files_map.find(m_files.GetItemData(index))->second;
+		if (!file.trackers.empty())
+			set_clipboard(file.trackers.front());
+	}
+}
+
+void CXBTClientDlg::OnPopupTorrentClipboardCopyHash() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index != -1)
+		set_clipboard(hex_encode(m_files_map.find(m_files.GetItemData(index))->second.info_hash));
+}
+
 void CXBTClientDlg::OnPopupCopy() 
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
-		return;
-	string v = m_server.get_url(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
-	if (v.empty())
-		return;
-	void* h = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, v.size() + 1);
-	void* p = GlobalLock(h);
-	if (!p)
-		return;
-	memcpy(p, v.c_str(), v.size() + 1);
-	GlobalUnlock(h);
-	if (!OpenClipboard())
-		return;
-	if (EmptyClipboard())
-		SetClipboardData(CF_TEXT, h);
-	CloseClipboard();	
+	if (index != -1)
+		set_clipboard(m_server.get_url(m_files_map.find(m_files.GetItemData(index))->second.info_hash));
 }
 
 void CXBTClientDlg::OnPopupPaste() 
@@ -1267,4 +1273,21 @@ long CXBTClientDlg::OnHotKey(WPARAM, LPARAM)
 	if (IsWindowVisible())
 		SetForegroundWindow();
 	return 0;
+}
+
+void CXBTClientDlg::set_clipboard(const string& v)
+{
+	if (v.empty())
+		return;
+	void* h = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, v.size() + 1);
+	void* p = GlobalLock(h);
+	if (!p)
+		return;
+	memcpy(p, v.c_str(), v.size() + 1);
+	GlobalUnlock(h);
+	if (!OpenClipboard())
+		return;
+	if (EmptyClipboard())
+		SetClipboardData(CF_TEXT, h);
+	CloseClipboard();	
 }
