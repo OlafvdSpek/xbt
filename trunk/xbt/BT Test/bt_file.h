@@ -28,6 +28,8 @@ class Cbt_file: public Cbt_file_data
 {
 public:
 	int seeding_ratio() const;
+	int upload_slots_max() const;
+	int upload_slots_min() const;
 	void state(t_state);
 	void announce();
 	void pause();

@@ -30,11 +30,15 @@ public:
 	__int64 m_uploaded_l5;
 	__int64 mcb_piece;
 	bool m_seeding_ratio_override;
+	bool m_upload_slots_max_override;
+	bool m_upload_slots_min_override;
 	int m_completed_at;
 	int m_priority;
 	int m_seeding_ratio;
 	int m_session_started_at;
 	int m_started_at;
+	int m_upload_slots_max;
+	int m_upload_slots_min;
 	int mc_leechers_total;
 	int mc_rejected_chunks;
 	int mc_rejected_pieces;

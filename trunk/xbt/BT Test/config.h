@@ -31,6 +31,8 @@ public:
 	int m_public_ipa;
 	int m_seeding_ratio;
 	int m_torrent_limit;
+	int m_torrent_upload_slots_max;
+	int m_torrent_upload_slots_min;
 	int m_tracker_port;
 	int m_upload_rate;
 	int m_upload_slots;

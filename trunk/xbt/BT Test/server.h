@@ -36,6 +36,8 @@ public:
 	void clean_scheduler();
 	void run_scheduler();
 	void torrent_seeding_ratio(const string& file_id, bool override, int v);
+	void torrent_upload_slots_max(const string& file_id, bool override, int v);
+	void torrent_upload_slots_min(const string& file_id, bool override, int v);
 	Cbvalue admin_request(const Cbvalue& s);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
@@ -206,6 +208,16 @@ public:
 	void torrent_limit(int v)
 	{
 		m_config.m_torrent_limit = v;
+	}
+
+	int torrent_upload_slots_max() const
+	{
+		return m_config.m_torrent_upload_slots_max;
+	}
+
+	int torrent_upload_slots_min() const
+	{
+		return m_config.m_torrent_upload_slots_min;
 	}
 	
 	const Cbt_tracker_accounts& tracker_accounts()
