@@ -76,14 +76,14 @@ public:
 		return f(i) ? f(i) : d;
 	}
 
-	int f_int(int i) const
+	__int64 f_int(int i) const
 	{
-		return atoi(f(i));
+		return atoll(f(i));
 	}
 
-	int f_int(int i, int d) const
+	__int64 f_int(int i, __int64 d) const
 	{
-		return f(i) ? atoi(f(i)) : d;
+		return f(i) ? atoll(f(i)) : d;
 	}
 
 	Cvirtual_binary f_vdata(int i) const
