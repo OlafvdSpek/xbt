@@ -140,7 +140,7 @@ void Cdlg_make_torrent::insert(const string& name)
 		return;
 	if (b.st_mode & _S_IFDIR)
 	{
-		if (m_map.empty())
+		if (m_name.IsEmpty())
 		{
 			if (GetSafeHwnd())
 				UpdateData(true);
