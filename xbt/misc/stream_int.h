@@ -60,7 +60,7 @@ T write_int_le(int cb, T w0, __int64 v)
 		*w++ = v & 0xff;
 		v >>= 8;
 	}
-	return reinterpret_cast<T>(w + cb);
+	return reinterpret_cast<T>(w);
 }
 
 #endif // !defined(AFX_STREAM_INT_H__57F9BAC0_D02F_4067_9891_5C484F35B67F__INCLUDED_)
