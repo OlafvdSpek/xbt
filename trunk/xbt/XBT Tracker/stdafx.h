@@ -10,8 +10,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define FD_SETSIZE 1024
-
 #pragma warning(disable: 4503 4786 4800)
 
 #include <cassert>
@@ -27,6 +25,8 @@
 using namespace std;
 
 #ifdef WIN32
+#define FD_SETSIZE 1024
+
 #include <windows.h>
 
 #pragma comment(lib, "libmysql.lib")
