@@ -300,7 +300,10 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 	{
 		Cbt_piece& piece = m_pieces[a];
 		if (piece.m_valid)
+		{
+			alert(Calert(Calert::debug, "Piece " + n(a) + ": already valid"));
 			return;
+		}
 		piece.write(offset % mcb_piece, s, cb_s);
 		int size = cb_s;
 		const char* r = s;
@@ -352,7 +355,14 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		piece.m_valid = true;
 		m_left -= piece.mcb_d;
 		if (!m_left)
+		{
 			m_tracker.event(Cbt_tracker_link::t_event::e_completed);
+			for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+			{
+				i->close();
+				i->open(m_name, _O_RDONLY);
+			}
+		}
 		{
 			for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 				i->write_have(a);
