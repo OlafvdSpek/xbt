@@ -9,6 +9,7 @@ CREATE TABLE xbt_announce_log
   downloaded bigint NOT NULL,
   left0 bigint NOT NULL,
   uploaded bigint NOT NULL,
+  uid int NOT NULL,
   mtime int NOT NULL,
   PRIMARY KEY (id)
 );
@@ -46,6 +47,7 @@ CREATE TABLE xbt_scrape_log
   id int NOT NULL auto_increment,
   ipa int NOT NULL,
   info_hash blob,
+  uid int NOT NULL,
   mtime int NOT NULL,
   PRIMARY KEY (id)
 );
@@ -54,5 +56,6 @@ CREATE TABLE xbt_users
 (
   uid int NOT NULL auto_increment,
   name char(8) NOT NULL,
-  pass blob NOT NULL
+  pass blob NOT NULL,
+  PRIMARY KEY (uid)
 );

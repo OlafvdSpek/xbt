@@ -113,6 +113,7 @@ public:
 
 	struct t_user
 	{
+		int uid;
 		string pass;
 	};
 
@@ -124,7 +125,7 @@ public:
 	void read_db_files();
 	void read_db_users();
 	void clean_up();
-	void insert_peer(const Ctracker_input&, bool listen_check, bool udp);
+	void insert_peer(const Ctracker_input&, bool listen_check, bool udp, int uid);
 	void update_peer(const string& file_id, int peer_id, bool listening);
 	string debug(const Ctracker_input&) const;
 	Cbvalue select_peers(const Ctracker_input&);

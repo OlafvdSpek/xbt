@@ -44,22 +44,22 @@ Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 	m_s = s;
 }
 
-const Cserver::t_user* Ctransaction::authenticate(const void* s, const char* a, const char* s_end) const
+const Cserver::t_user* Ctransaction::authenticate(const void* s0, const char* s_end) const
 {
-	if (s_end - a < 17 || ~*a & 1)
+	const char* s = reinterpret_cast<const char*>(s0);
+	if (s_end - s < 16)
 		return NULL;
-	string name(a + 1, 8);
+	string name(s_end - 16, 8);
 	int i = name.find('\0');
 	const Cserver::t_user* user = m_server.find_user(i == string::npos ? name : name.substr(0, i));
 	if (!user)
 		return NULL;
-	SHA1Context context;
-	SHA1Reset(&context);
-	SHA1Input(&context, s, sizeof(t_udp_tracker_input_announce) + s_end - reinterpret_cast<const char*>(s) - 8);
-	SHA1Input(&context, user->pass.c_str(), user->pass.size());
+	Csha1 sha1;
+	sha1.write(s, s_end - s - 8);
+	sha1.write(user->pass.c_str(), user->pass.size());
 	unsigned char hash[20];
-	SHA1Result(&context, hash);
-	return memcmp(a + 9, hash, 8) ? NULL : user;
+	sha1.read(hash);
+	return memcmp(s_end - 8, hash, 8) ? NULL : user;
 }
 
 __int64 Ctransaction::connection_id() const
@@ -106,7 +106,7 @@ void Ctransaction::recv()
 
 void Ctransaction::send_connect(const t_udp_tracker_input_connect& uti, const char* r, const char* r_end)
 {
-	if (!m_server.anonymous_connect() && !authenticate(&uti, r, r_end))
+	if (!m_server.anonymous_connect() && !authenticate(&uti, r_end))
 		return;
 	t_udp_tracker_output_connect uto;
 	uto.action(uta_connect);
@@ -119,7 +119,8 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 {
 	if (uti.m_connection_id != connection_id())
 		return;
-	if (!m_server.anonymous_announce() && !authenticate(&uti, r, r_end))
+	const Cserver::t_user* user = authenticate(&uti, r_end);
+	if (!m_server.anonymous_announce() && !user)
 	{
 		send_error(uti, "access denied");
 		return;
@@ -136,7 +137,7 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 	ti.m_peer_id = uti.peer_id();
 	ti.m_port = uti.port();
 	ti.m_uploaded = uti.uploaded();
-	m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true);
+	m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user ? user->uid : 0);
 	const Cserver::t_file* file = m_server.file(ti.m_info_hash);
 	if (!file)
 	{
@@ -161,7 +162,7 @@ void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti, const char
 {
 	if (uti.m_connection_id != connection_id())
 		return;
-	if (!m_server.anonymous_scrape() && !authenticate(&uti, r, r_end))
+	if (!m_server.anonymous_scrape() && !authenticate(&uti, r_end))
 	{
 		send_error(uti, "access denied");
 		return;

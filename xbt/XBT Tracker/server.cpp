@@ -213,12 +213,12 @@ void Cserver::run()
 	}
 }
 
-void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp)
+void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, int uid)
 {
 	if (m_log_announce)
 	{
 		Csql_query q(m_database);
-		q.write("(%d, %d, %d, %s, %s, %d, %d, %d, %d)");
+		q.write("(%d, %d, %d, %s, %s, %d, %d, %d, %d, %d)");
 		q.p(ntohl(v.m_ipa));
 		q.p(ntohs(v.m_port));
 		q.p(v.m_event);
@@ -227,6 +227,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp)
 		q.p(v.m_downloaded);
 		q.p(v.m_left);
 		q.p(v.m_uploaded);
+		q.p(uid);
 		q.p(time(NULL));
 		if (!m_announce_log_buffer.empty())
 			m_announce_log_buffer += ", ";
@@ -423,6 +424,21 @@ void Cserver::read_db_files()
 	try
 	{
 		Csql_query q(m_database);
+		if (!m_auto_register)
+		{
+			q.write("select info_hash, fid from xbt_files where flags & 1");
+			Csql_result result = q.execute();
+			for (Csql_row row; row = result.fetch_row(); )
+			{
+				if (row.size(0) != 20)
+					continue;
+				m_files.erase(string(row.f(0), 20));
+				q.write("delete from xbt_files where fid = %s");
+				q.p(row.f_int(1));
+				q.execute();
+			}
+
+		}
 		q.write("update xbt_files set leechers = 0, seeders = 0 where fid >= %s");
 		q.p(m_fid_end);
 		q.execute();
@@ -437,7 +453,7 @@ void Cserver::read_db_files()
 				continue;
 			t_file& file = m_files[string(row.f(0), 20)];
 			file.completed = row.f_int(1, 0);
-			file.dirty = false;
+			file.dirty = file.leechers || file.seeders;
 			file.fid = row.f_int(2, 0);
 			file.started = row.f_int(3, 0);
 			file.stopped = row.f_int(4, 0);
@@ -461,16 +477,17 @@ void Cserver::read_db_users()
 	try
 	{
 		Csql_query q(m_database);
-		q.write("select name, pass from xbt_users");
+		q.write("select uid, name, pass from xbt_users");
 		Csql_result result = q.execute();
 		m_users.clear();
 		Csql_row row;
 		while (row = result.fetch_row())
 		{
-			if (row.size(1) != 20)
+			if (row.size(2) != 20)
 				continue;
-			t_user& user = m_users[row.f(0)];
-			user.pass.assign(row.f(1), 20);
+			t_user& user = m_users[row.f(1)];
+			user.uid = row.f_int(0);
+			user.pass.assign(row.f(2), 20);
 		}
 	}
 	catch (Cxcc_error error)
@@ -516,7 +533,7 @@ void Cserver::write_db()
 		}
 		if (!m_announce_log_buffer.empty())
 		{
-			m_database.query("insert delayed into xbt_announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, mtime) values " + m_announce_log_buffer);
+			m_database.query("insert delayed into xbt_announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
 			m_announce_log_buffer.erase();
 		}
 		if (!m_scrape_log_buffer.empty())
