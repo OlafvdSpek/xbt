@@ -536,6 +536,7 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
+        MENUITEM "&Home Page",                  ID_HELP_HOME_PAGE
         MENUITEM "&About",                      ID_HELP_ABOUT
     END
 END

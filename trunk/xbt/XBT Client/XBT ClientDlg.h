@@ -155,6 +155,7 @@ protected:
 	afx_msg void OnSelchangeTab(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnFileDelete();
 	afx_msg void OnUpdateFileDelete(CCmdUI* pCmdUI);
+	afx_msg void OnHelpHomePage();
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
