@@ -144,17 +144,19 @@
 	{
 		$d = '';
 		$d .= '<center>';
-		$d .= '<form action="?" method=post>';
+		$d .= '<form action="?a=set_options" method=post>';
 		$d .= '<table>';
 		$d .= '<caption>Options</caption>';
 		$d .= '<th align=left>Name';
-		$d .= '<th align=left>Value';
-		$d .= sprintf('<tr><td align=left>Admin Port<td align=right>%d', $v['admin port']['value']);
-		$d .= sprintf('<tr><td align=left>Peer Port<td align=right>%d', $v['peer port']['value']);
-		$d .= sprintf('<tr><td align=left>Tracker Port<td align=right>%d', $v['tracker port']['value']);
-		$d .= sprintf('<tr><td align=left>Upload Rate<td align=right>%s', b2a($v['upload rate']['value']));
-		$d .= sprintf('<tr><td align=left>Upload Slots<td align=right>%d', $v['upload slots']['value']);
-		$d .= sprintf('<tr><td align=left>Seeding Ratio<td align=right>%d %%', $v['seeding ratio']['value']);
+		$d .= '<th align=right>Value';
+		$d .= '<th>';
+		$d .= sprintf('<tr><td align=left>Admin Port<td><input type=text name=admin_port value=%d style="text-align: right"><td>', $v['admin port']['value']);
+		$d .= sprintf('<tr><td align=left>Peer Port<td><input type=text name=peer_port value=%d style="text-align: right"><td>', $v['peer port']['value']);
+		$d .= sprintf('<tr><td align=left>Tracker Port<td><input type=text name=tracker_port value=%d style="text-align: right"><td>', $v['tracker port']['value']);
+		$d .= sprintf('<tr><td align=left>Upload Rate<td><input type=text name=upload_rate value=%d style="text-align: right"><td>kb/s', $v['upload rate']['value'] >> 10);
+		$d .= sprintf('<tr><td align=left>Upload Slots<td><input type=text name=upload_slots value=%d style="text-align: right"><td>', $v['upload slots']['value']);
+		$d .= sprintf('<tr><td align=left>Seeding Ratio<td><input type=text name=seeding_ratio value=%d style="text-align: right"><td>%%', $v['seeding ratio']['value']);
+		$d .= '<tr><td><td align=left><input type=submit value="Set"><td>';
 		$d .= '</table>';
 		$d .= '</form>';
 		$d .= '</center>';
