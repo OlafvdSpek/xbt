@@ -86,6 +86,11 @@ static string new_peer_id()
 	v.resize(20);
 	for (size_t i = 8; i < v.size(); i++)
 		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
+#ifndef NDEBUG
+	v[6] = 'd';
+#endif
+	v[17] ^= ~(v[16] ^ v[17]) & 0x18;
+	v[19] ^= (v[18] ^ v[19]) & 0x18;
 	return v;
 }
 
@@ -772,4 +777,37 @@ void Cserver::sig_handler(int v)
 		g_sig_term = true;
 		break;
 	}
+}
+
+Cbvalue Cserver::admin_request(const Cbvalue& s)
+{
+	Cbvalue d;
+	string action = s.d(bts_action).s();
+	if (action == bts_close_torrent)
+		close(s.d(bts_hash).s());
+	else if (action == bts_get_status)
+	{
+		Cbvalue files;
+		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		{
+			Cbvalue file;
+			file.d(bts_complete, i->c_seeders());
+			file.d(bts_incomplete, i->c_leechers());
+			file.d(bts_left, i->m_left);
+			file.d(bts_total_downloaded, i->m_total_downloaded);
+			file.d(bts_total_uploaded, i->m_total_uploaded);
+			file.d(bts_down_rate, i->m_down_counter.rate());
+			file.d(bts_up_rate, i->m_up_counter.rate());
+			file.d(bts_name, i->m_name);
+			files.d(i->m_info_hash, file);
+		}
+		d.d(bts_files, files);
+	}
+	else if (action == bts_open_torrent) 
+		open(d.d(bts_torrent).read(), incompletes_dir());
+	else if (action == bts_pause_torrent)
+		stop_file(s.d(bts_hash).s());
+	else if (action == bts_unpause_torrent)
+		start_file(s.d(bts_hash).s());
+	return d;
 }

@@ -25,7 +25,7 @@ Cbt_admin_link::Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csoc
 	m_close = false;
 	m_ctime = m_mtime = time(NULL);
 
-	m_read_b.size(4 << 10);
+	m_read_b.size(512 << 10);
 	m_write_b.size(64 << 10);
 }
 
@@ -43,7 +43,7 @@ void Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_s
 	if (m_read_b.cb_w() && FD_ISSET(m_s, fd_read_set))
 	{
 		recv();
-#if 1
+#if 0
 		stringstream str;
 		str << "HTTP/1.0 200\r\ncontent-type: text/html\r\n\r\n"
 			<< *m_server;
@@ -147,14 +147,17 @@ void Cbt_admin_link::read_message(const char* r, const char* r_end)
 {
 	switch (*r++)
 	{
-	case bti_get_status:
+	case bti_bvalue:
 		{
-			Cvirtual_binary d;
-			Cstream_writer w(d.write_start(5 + m_server->pre_dump(0)));
-			w.write_int32(d.size());
-			w.write_int8(bti_status);
-			m_server->dump(w, 0);
-			assert(w.w() == d.data_end());
+			Cbvalue v;
+			if (v.write(r, r_end - r))
+				break;
+			Cvirtual_binary d1 = m_server->admin_request(v).read();
+			byte d0[5];
+			*reinterpret_cast<__int32*>(d0) = htonl(d1.size() + 1);
+			d0[4] = bti_bvalue;
+			m_write_b.write(d0, 5);
+			m_write_b.write(d1, d1.size());
 		}
 		break;
 	}
