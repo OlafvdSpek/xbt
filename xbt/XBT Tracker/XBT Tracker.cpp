@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 	else if (l0.bind(htonl(INADDR_ANY), htons(2710))
 		|| l1.bind(htonl(INADDR_ANY), htons(2710)))
 		cerr << "bind failed: " << WSAGetLastError() << endl;
-	else if (listen(l0, SOMAXCONN))
+	else if (l0.listen())
 		cerr << "listen failed: " << WSAGetLastError() << endl;
 	else
 	{

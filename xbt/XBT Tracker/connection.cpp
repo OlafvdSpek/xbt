@@ -124,7 +124,6 @@ void Cconnection::read(const string& v)
 		}
 		break;
 	case 's':
-		gzip = false;
 		s = m_server->scrape(ti).read();
 		break;
 	}
