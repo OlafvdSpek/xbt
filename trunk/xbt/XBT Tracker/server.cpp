@@ -23,20 +23,29 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 	read_db();
 	write_db();
 	fd_set fd_read_set;
+	fd_set fd_except_set;
 	while (1)
 	{
 		FD_ZERO(&fd_read_set);
-		int n = 0;
-		for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); i++)
+		FD_ZERO(&fd_except_set);
+		int n = max(static_cast<SOCKET>(lt), static_cast<SOCKET>(lu));
 		{
-			int z = i->pre_select(&fd_read_set, NULL);
-			n = max(n, z);
+			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); i++)
+			{
+				int z = i->pre_select(&fd_read_set);
+				n = max(n, z);
+			}
+		}
+		{
+			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); i++)
+			{
+				int z = i->pre_select(&fd_read_set, &fd_except_set);
+				n = max(n, z);
+			}
 		}
 		FD_SET(lt, &fd_read_set);
 		FD_SET(lu, &fd_read_set);
-		n = max(n, static_cast<SOCKET>(lt));
-		n = max(n, static_cast<SOCKET>(lu));
-		if (select(n + 1, &fd_read_set, NULL, NULL, NULL) == SOCKET_ERROR)
+		if (select(n + 1, &fd_read_set, NULL, &fd_except_set, NULL) == SOCKET_ERROR)
 			cerr << "select failed: " << WSAGetLastError() << endl;
 		else 
 		{
@@ -52,24 +61,35 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 					unsigned long p = true;
 					if (ioctlsocket(s, FIONBIO, &p))
 						cerr << "ioctlsocket failed: " << WSAGetLastError() << endl;
-					m_connections.push_back(Cconnection(this, s, a));
+					m_connections.push_front(Cconnection(this, s, a));
 				}
 			}
 			if (FD_ISSET(lu, &fd_read_set))
 				udp_recv(lu);
-			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
 			{
-				i->post_select(&fd_read_set, NULL);
-				if (*i)
-					i++;
-				else
-					i = m_connections.erase(i);
+				for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
+				{
+					i->post_select(&fd_read_set);
+					if (*i)
+						i++;
+					else
+						i = m_connections.erase(i);
+				}
+			}
+			{
+				for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
+				{
+					i->post_select(&fd_read_set, &fd_except_set);
+					if (*i)
+						i++;
+					else
+						i = m_peer_links.erase(i);
+				}
 			}
 		}
 		if (time(NULL) - m_read_config_time > m_read_config_interval)
 			read_config();
 	}
-	return;
 }
 
 void Cserver::insert_peer(const Ctracker_input& v)
@@ -85,13 +105,16 @@ void Cserver::insert_peer(const Ctracker_input& v)
 	else
 	{
 		t_peer& peer = file.peers[v.m_ipa];
-		peer.downloaded = v.m_downloaded;
+		// peer.downloaded = v.m_downloaded;
 		peer.left = v.m_left;
 		peer.peer_id = v.m_peer_id;
 		peer.port = v.m_port;
-		peer.uploaded = v.m_uploaded;
+		// peer.uploaded = v.m_uploaded;
 		peer.mtime = time(NULL);
 		(peer.left ? file.leechers : file.seeders)++;
+
+		if (!peer.listening)
+			m_peer_links.push_front(Cpeer_link(inet_addr(v.m_ipa.c_str()), v.m_port, this, v.m_info_hash, v.m_ipa));
 	}
 	switch (v.m_event)
 	{
@@ -108,7 +131,18 @@ void Cserver::insert_peer(const Ctracker_input& v)
 	file.dirty = true;
 }
 
-Cbvalue Cserver::select_peers(const string& info_hash)
+void Cserver::update_peer(const string& file_id, const string& peer_id, bool listening)
+{
+	t_files::iterator i = m_files.find(file_id);
+	if (i == m_files.end())
+		return;
+	t_peers::iterator j = i->second.peers.find(peer_id);
+	if (j == i->second.peers.end())
+		return;
+	j->second.listening = listening;
+}
+
+Cbvalue Cserver::select_peers(const string& info_hash, bool peer_id)
 {
 	if (time(NULL) - m_clean_up_time > m_clean_up_interval)
 		clean_up();
@@ -121,10 +155,15 @@ Cbvalue Cserver::select_peers(const string& info_hash)
 	v.d(bts_interval, m_announce_interval);
 	Cbvalue peers;
 	int c = 50;
-	for (t_peers::const_iterator j = i->second.peers.begin(); c-- && j != i->second.peers.end(); j++)
+	for (t_peers::const_iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
 	{
+		if (!j->second.listening)
+			continue;
+		if (!c--)
+			break;
 		Cbvalue peer;
-		peer.d(bts_peer_id, j->second.peer_id);
+		if (peer_id)
+			peer.d(bts_peer_id, j->second.peer_id);
 		peer.d(bts_ipa, j->first);
 		peer.d(bts_port, j->second.port);
 		peers.l(peer);
@@ -194,7 +233,7 @@ void Cserver::udp_recv(Csocket& s)
 	char b[cb_b];
 	sockaddr_in a;
 	socklen_t cb_a = sizeof(sockaddr_in);
-	int r = recvfrom(s, b, cb_b, MSG_NOSIGNAL, reinterpret_cast<sockaddr*>(&a), &cb_a);
+	int r = s.recvfrom(b, cb_b, reinterpret_cast<sockaddr*>(&a), &cb_a);
 	if (r == SOCKET_ERROR)
 	{
 		cerr << "recv failed: " << WSAGetLastError() << endl;
@@ -208,12 +247,12 @@ void Cserver::udp_recv(Csocket& s)
 	string info_hash(uti.m_info_hash, 20);
 	{
 		t_peer& peer = m_files[info_hash].peers[inet_ntoa(a.sin_addr)];
-		peer.downloaded = ntohl(uti.m_downloaded);
+		// peer.downloaded = ntohl(uti.m_downloaded);
 		// ntohl(uti.m_event);
 		peer.left = ntohl(uti.m_left);
 		peer.peer_id = string(uti.m_peer_id, 20);
 		peer.port = ntohl(uti.m_port);
-		peer.uploaded = ntohl(uti.m_uploaded);
+		// peer.uploaded = ntohl(uti.m_uploaded);
 		peer.mtime = time(NULL);
 	}
 	t_files::const_iterator i = m_files.find(info_hash);
@@ -229,7 +268,7 @@ void Cserver::udp_recv(Csocket& s)
 		peer->m_host = htonl(inet_addr(j->first.c_str()));
 		peer->m_port = htons(j->second.port);
 	}
-	if (sendto(s, b, reinterpret_cast<char*>(peer) - b, MSG_NOSIGNAL, reinterpret_cast<sockaddr*>(&a), cb_a) == SOCKET_ERROR)
+	if (s.sendto(b, reinterpret_cast<char*>(peer) - b, reinterpret_cast<sockaddr*>(&a), cb_a) == SOCKET_ERROR)
 		cerr << "send failed: " << WSAGetLastError() << endl;
 }
 
