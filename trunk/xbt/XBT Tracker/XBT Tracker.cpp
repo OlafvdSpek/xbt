@@ -28,7 +28,10 @@ int main1()
 #endif	
 	if (static_config.mysql_host != "-"
 		&& (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true)))
+	{
 		cerr << error.message() << endl;
+		return 1;
+	}
 	return Cserver(database, static_config.mysql_host != "-").run();
 }
 
