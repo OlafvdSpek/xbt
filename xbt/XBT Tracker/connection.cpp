@@ -186,8 +186,8 @@ void Cconnection::read(const string& v)
 					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 				else
 				{
-					m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
-					s = m_server->select_peers(ti, user).read();
+					string error = m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
+					s = (error.empty() ? m_server->select_peers(ti, user) : Cbvalue().d(bts_failure_reason, error)).read();
 				}
 			}
 		}
