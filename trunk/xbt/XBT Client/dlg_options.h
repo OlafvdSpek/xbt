@@ -19,6 +19,7 @@ public:
 		int admin_port;
 		int peer_port;
 		string public_ipa;
+		int seeding_ratio;
 		int upload_rate;
 		int upload_slots;
 	};
@@ -35,6 +36,7 @@ public:
 	int		m_upload_rate;
 	CString	m_public_ipa;
 	int		m_upload_slots;
+	int		m_seeding_ratio;
 	//}}AFX_DATA
 
 

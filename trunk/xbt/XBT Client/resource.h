@@ -20,6 +20,7 @@
 #define IDC_PUBLIC_IPA                  1010
 #define IDC_UPLOAD_SLOTS                1012
 #define IDC_DECREASE_PRIORITY           1013
+#define IDC_SEEDING_RATIO               1013
 #define IDC_INCREASE_PRIORITY           1014
 #define IDC_LIST                        1014
 #define IDC_INSERT                      1015
