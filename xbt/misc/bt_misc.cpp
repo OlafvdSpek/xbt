@@ -85,3 +85,34 @@ string uri_decode(const string& v)
 	return r;
 };
 
+string uri_encode(const string& v)
+{
+	string r;
+	r.reserve(v.length());
+	for (int i = 0; i < v.length(); i++)
+	{
+		char c = v[i];
+		if (isalpha(c) || isdigit(c))
+			r += c;
+		else
+		{
+			switch (c)
+			{
+			case ' ':
+				r += '+';
+				break;
+			case '-':
+			case ',':
+			case '.':
+			case '@':
+			case '_':
+				r += c;
+				break;
+			default:
+				r += "%" + hex_encode(2, c);
+			}
+		}
+	}
+	return r;
+};
+
