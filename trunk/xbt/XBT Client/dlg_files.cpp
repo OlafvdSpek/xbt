@@ -80,6 +80,7 @@ void Cdlg_files::load_data()
 	string info_hash = sr.read_string();
 	info_hash = info_hash;
 	string name = sr.read_string();
+	sr.read_int32();
 	__int64 downloaded = sr.read_int64();
 	__int64 left = sr.read_int64();
 	__int64 size = sr.read_int64();

@@ -124,6 +124,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_FILES, OnPopupFiles)
 	ON_COMMAND(ID_POPUP_TRACKERS, OnPopupTrackers)
 	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
+	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -495,6 +496,9 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	t_file& f = m_files_map.find(id)->second;
 	f.info_hash = info_hash;
 	f.name = sr.read_string();
+	f.trackers.clear();
+	for (int c_trackers = sr.read_int32(); c_trackers--; )
+		f.trackers.push_back(sr.read_string());
 	f.downloaded = sr.read_int64();
 	f.left = sr.read_int64();
 	f.size = sr.read_int64();
@@ -604,7 +608,7 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 			break;
 		m_files.SetRedraw(false);
 		m_peers.SetRedraw(false);
-		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_peers)));
+		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_peers | Cserver::df_trackers)));
 		sort_files();
 		sort_peers();
 		m_files.SetRedraw(true);
@@ -649,6 +653,18 @@ void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
 void CXBTClientDlg::OnPopupExplore() 
 {
 	ShellExecute(m_hWnd, "open", m_dir, NULL, NULL, SW_SHOW);
+}
+
+void CXBTClientDlg::OnPopupExploreTracker() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index == -1)
+		return;
+	const t_file& f = m_files_map.find(m_files.GetItemData(index))->second;
+	if (f.trackers.empty())
+		return;
+	Cbt_tracker_url url = f.trackers.front();
+	ShellExecute(m_hWnd, "open", ("http://" + url.m_host).c_str(), NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnPopupAnnounce() 
@@ -1072,4 +1088,5 @@ void CXBTClientDlg::sort_peers()
 {
 	m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
 }
+
 
