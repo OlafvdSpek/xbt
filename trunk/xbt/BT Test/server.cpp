@@ -42,6 +42,7 @@ Cserver::Cserver()
 {
 	m_new_admin_port = 6879;
 	m_new_peer_port = 6889;
+	m_new_public_ipa = 0;
 	m_run = false;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time(NULL);
@@ -77,7 +78,7 @@ void Cserver::peer_port(int v)
 
 void Cserver::public_ipa(int v)
 {
-	m_public_ipa = v == INADDR_NONE ? 0 : v;
+	m_new_public_ipa = v == INADDR_NONE ? 0 : v;
 }
 
 void Cserver::upload_rate(int v)
@@ -138,6 +139,12 @@ int Cserver::run()
 					for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 						i->m_local_port = peer_port();
 				}
+			}
+			if (m_new_public_ipa != m_public_ipa)
+			{
+				m_public_ipa = m_new_public_ipa;
+				for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+					i->m_local_ipa = public_ipa();
 			}
 			update_send_quotas();
 			FD_ZERO(&fd_read_set);

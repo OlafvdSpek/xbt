@@ -88,6 +88,7 @@ private:
 	string m_dir;
 	int m_new_admin_port;
 	int m_new_peer_port;
+	int m_new_public_ipa;
 	int m_peer_port;
 	int m_public_ipa;
 	int m_send_quota;
