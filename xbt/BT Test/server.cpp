@@ -53,6 +53,7 @@ Cserver::Cserver():
 	m_peer_port = m_config.m_peer_port;
 	m_run = false;
 	m_run_scheduler_time = 0;
+	m_start_time = ::time(NULL);
 	m_time = ::time(NULL);
 	m_tracker_port = m_config.m_tracker_port;
 	m_update_chokes_time = 0;
@@ -409,7 +410,7 @@ void Cserver::file_dump(Cstream_writer& w, const string& id, int flags) const
 
 int Cserver::pre_dump(int flags) const
 {
-	int size = 8;
+	int size = 12;
 	for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
 		size += i->pre_dump();
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -425,6 +426,7 @@ void Cserver::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, m_files.size());
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->dump(w, flags);
+	w.write_int(4, m_start_time);
 }
 
 void Cserver::insert_peer(const char* r, const sockaddr_in& a, const Csocket& s)

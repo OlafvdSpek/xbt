@@ -258,6 +258,7 @@ private:
 	bool m_run;
 	int m_run_scheduler_time;
 	int m_save_state_time;
+	int m_start_time;
 	int m_time;
 	int m_tracker_port;
 	int m_update_chokes_time;
