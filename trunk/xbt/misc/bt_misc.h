@@ -118,12 +118,12 @@ struct t_udp_tracker_input_announce: t_udp_tracker_input
 
 	int port() const
 	{
-		return ntohl(m_port);
+		return m_port;
 	}
 
 	void port(int v)
 	{
-		m_port = htonl(v);
+		m_port = v;
 	}
 
 	int uploaded() const
@@ -140,7 +140,7 @@ private:
 	int m_event;
 	int m_num_want;
 	__int64 m_left;
-	int m_port;
+	short m_port;
 	__int64 m_uploaded;
 };
 
@@ -267,12 +267,12 @@ struct t_udp_tracker_output_peer
 
 	int port() const
 	{
-		return ntohs(m_port);
+		return m_port;
 	}
 
 	void port(int v)
 	{
-		m_port = htons(v);
+		m_port = v;
 	}
 private:
 	int m_host;

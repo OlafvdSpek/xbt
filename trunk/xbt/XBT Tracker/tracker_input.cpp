@@ -63,7 +63,7 @@ void Ctracker_input::set(const string& name, const string& value)
 		if (name == "peer_id" )
 			m_peer_id = value;
 		else if (name == "port")
-			m_port = atoi(value.c_str());
+			m_port = htons(atoi(value.c_str()));
 		break;
 	case 'u':
 		if (name == "uploaded")
