@@ -21,6 +21,7 @@ public:
 	Csql_result execute() const;
 	string read() const;
 	void operator=(const string&);
+	void operator+=(const string&);
 	void p(const string& v);
 	void p(int v);
 	void pe(const string& v);
