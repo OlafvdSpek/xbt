@@ -407,6 +407,11 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	}
 	if (inserted)
 		auto_size_files();
+	if (!m_file)
+	{
+		m_file = &f;
+		fill_peers();
+	}
 }
 
 void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
