@@ -200,12 +200,16 @@ private:
 		__int64 total_uploaded;
 		int down_rate;
 		int up_rate;
+		int c_distributed_copies;
 		int c_leechers;
 		int c_seeders;
 		int c_leechers_total;
 		int c_seeders_total;
+		int c_invalid_chunks;
 		int c_invalid_pieces;
+		int c_valid_chunks;
 		int c_valid_pieces;
+		int cb_chunk;
 		int cb_piece;
 		int started_at;
 		int completed_at;

@@ -553,7 +553,7 @@ ostream& operator<<(ostream& os, const Cbt_file& v)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 120;
+	int size = m_info_hash.length() + m_name.length() + 136;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -589,6 +589,18 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	}
 	else
 		w.write_int(4, 0);
+	int c_distributed_copies = INT_MAX;
+	int c_invalid_chunks = 0;
+	int c_valid_chunks = 0;
+	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
+	{
+		c_distributed_copies = min(c_distributed_copies, i->mc_peers + i->m_valid);
+		if (!i->m_sub_pieces.empty())
+		{
+			c_invalid_chunks += i->mc_sub_pieces_left;
+			c_valid_chunks += i->c_sub_pieces() - i->mc_sub_pieces_left;
+		}
+	}
 	w.write_int(8, m_downloaded);
 	w.write_int(8, m_left);
 	w.write_int(8, size());
@@ -601,12 +613,16 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, c_seeders());
 	w.write_int(4, mc_leechers_total);
 	w.write_int(4, mc_seeders_total);
+	w.write_int(4, c_invalid_chunks);
 	w.write_int(4, c_invalid_pieces());
+	w.write_int(4, c_valid_chunks);
 	w.write_int(4, c_valid_pieces());
+	w.write_int(4, 32 << 10);
 	w.write_int(4, mcb_piece);
 	w.write_int(4, m_hasher ? 2 : m_run);
 	w.write_int(4, m_started_at);
 	w.write_int(4, m_completed_at);
+	w.write_int(4, c_distributed_copies);
 	if (flags & Cserver::df_peers)
 	{
 		w.write_int(4, m_peers.size());
