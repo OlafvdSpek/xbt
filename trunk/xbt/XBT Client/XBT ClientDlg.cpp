@@ -6,6 +6,7 @@
 #include "XBT ClientDlg.h"
 
 #include "bt_misc.h"
+#include "bt_torrent.h"
 #include "dlg_options.h"
 #include "resource.h"
 
@@ -136,7 +137,8 @@ HCURSOR CXBTClientDlg::OnQueryDragIcon()
 void CXBTClientDlg::open(const string& name)
 {
 	Cvirtual_binary d(name);
-	CFileDialog dlg(false, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
+	Cbt_torrent torrent(d);
+	CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
 	if (IDOK != dlg.DoModal())
 		return;
 	CWaitCursor wc;

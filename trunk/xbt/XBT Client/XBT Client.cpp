@@ -52,9 +52,9 @@ BOOL CXBTClientApp::InitInstance()
 
 	CXBTClientDlg dlg;
 	m_pMainWnd = &dlg;
+	dlg.server(m_server);
 	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen && !cmdInfo.m_strFileName.IsEmpty())
 		dlg.open(static_cast<string>(cmdInfo.m_strFileName));
-	dlg.server(m_server);
 	dlg.DoModal();
 
 	// Since the dialog has been closed, return FALSE so that we exit the
