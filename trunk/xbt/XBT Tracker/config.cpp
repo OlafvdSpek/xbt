@@ -27,6 +27,7 @@ Cconfig::Cconfig()
 	m_log_access = false;
 	m_log_announce = false;
 	m_log_scrape = false;
+	m_pid_file = "xbt_tracker.pid";
 	m_read_config_interval = 300;
 	m_read_db_interval = 60;
 	m_redirect_url.erase();
@@ -39,6 +40,8 @@ void Cconfig::set(const string& name, const string& value)
 {
 	if (name == "listen_ipa" && value != "*")
 		m_listen_ipas.insert(inet_addr(value.c_str()));
+	else if (name == "pid_file")
+		m_pid_file = value;
 	else if (name == "redirect_url")
 		m_redirect_url = value;
 	else

@@ -38,6 +38,7 @@ public:
 	int m_scrape_interval;
 	int m_write_db_interval;
 	int m_update_files_method;
+	string m_pid_file;
 	string m_redirect_url;
 	t_listen_ipas m_listen_ipas;
 	t_listen_ports m_listen_ports;
