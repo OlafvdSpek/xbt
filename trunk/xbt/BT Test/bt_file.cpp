@@ -95,8 +95,13 @@ int Cbt_file::info(const Cbvalue& info)
 void Cbt_file::t_sub_file::close()
 {
 	if (m_f != -1)
-		::_close(m_f);
+		::close(m_f);
 	m_f = -1;
+}
+
+void Cbt_file::t_sub_file::erase(const string& parent_name)
+{
+	::unlink((parent_name + m_name).c_str());
 }
 
 void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
@@ -110,7 +115,7 @@ void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 
 bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 {
-	m_f = ::_open((parent_name + m_name).c_str(), oflag | _O_BINARY, _S_IREAD | _S_IWRITE);
+	m_f = ::open((parent_name + m_name).c_str(), oflag | _O_BINARY, _S_IREAD | _S_IWRITE);
 	return *this;
 }
 
@@ -123,14 +128,14 @@ int Cbt_file::t_sub_file::read(__int64 offset, void* s, int cb_s)
 {
 	return !*this
 		|| _lseeki64(m_f, offset, SEEK_SET) != offset
-		|| ::_read(m_f, s, cb_s) != cb_s;
+		|| ::read(m_f, s, cb_s) != cb_s;
 }
 
 int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 {
 	return !*this
 		|| ::_lseeki64(m_f, offset, SEEK_SET) != offset
-		|| ::_write(m_f, s, cb_s) != cb_s;
+		|| ::write(m_f, s, cb_s) != cb_s;
 }
 
 int Cbt_file::open(const string& name)
@@ -184,6 +189,26 @@ void Cbt_file::close()
 	m_hasher = NULL;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		i->close();
+}
+
+void Cbt_file::erase()
+{
+#ifdef WIN32
+	SHFILEOPSTRUCT op;
+	ZeroMemory(&op, sizeof(SHFILEOPSTRUCT));
+	op.wFunc = FO_DELETE;
+	char b[MAX_PATH];
+	strcpy(b, m_name.c_str());
+	b[m_name.size() + 1] = 0;
+	op.pFrom = b;
+	op.fFlags = FOF_ALLOWUNDO;
+	SHFileOperation(&op);
+#else
+	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+		i->erase(m_name);
+	if (m_sub_files.size() != 1)
+		unlink(m_name.c_str());
+#endif
 }
 
 int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
