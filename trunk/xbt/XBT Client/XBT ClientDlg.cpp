@@ -135,6 +135,12 @@ HCURSOR CXBTClientDlg::OnQueryDragIcon()
 
 void CXBTClientDlg::open(const string& name)
 {
+	Cvirtual_binary d(name);
+	CFileDialog dlg(false, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
+	if (IDOK != dlg.DoModal())
+		return;
+	CWaitCursor wc;
+	m_server->open(d, static_cast<string>(dlg.GetPathName()));
 }
 
 void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -521,16 +527,8 @@ void CXBTClientDlg::OnOK()
 void CXBTClientDlg::OnPopupOpen() 
 {
 	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
-	if (IDOK != dlg.DoModal())
-		return;
-	Cvirtual_binary d(static_cast<string>(dlg.GetPathName()));
-	{
-		CFileDialog dlg(false, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
-		if (IDOK != dlg.DoModal())
-			return;
-		CWaitCursor wc;
-		m_server->open(d, static_cast<string>(dlg.GetPathName()));
-	}
+	if (IDOK == dlg.DoModal())
+		open(static_cast<string>(dlg.GetPathName()));
 }
 
 void CXBTClientDlg::OnPopupClose() 
