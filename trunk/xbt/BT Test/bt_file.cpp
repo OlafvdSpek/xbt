@@ -595,7 +595,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, m_hasher ? 2 : m_run);
 	w.write_int(4, m_started_at);
 	w.write_int(4, m_session_started_at);
-	w.write_int(4, m_completed_at);
+	w.write_int(4, m_left ? 0 : m_completed_at);
 	w.write_int(4, c_distributed_copies);
 	w.write_int(4, c_distributed_copies_remainder);
 	w.write_int(4, m_priority);
