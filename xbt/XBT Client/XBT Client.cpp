@@ -44,6 +44,11 @@ BOOL CXBTClientApp::InitInstance()
 			cds.cbData = cmdInfo.m_strFileName.GetLength();
 			SendMessage(hWnd, WM_COPYDATA, NULL, reinterpret_cast<LPARAM>(&cds));
 		}
+		else
+		{
+			ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+			SetForegroundWindow(hWnd);
+		}
 		return false;
 	}
 	if (!AfxSocketInit())
