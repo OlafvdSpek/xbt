@@ -110,6 +110,7 @@ void Cdlg_files::load_data()
 		e.name = sr.read_string();
 		e.priority = sr.read_int32();
 		e.size = sr.read_int64();
+		e.hash = sr.read_string();
 	}
 	if (m_files.GetItemCount())
 		m_files.Invalidate();
@@ -185,6 +186,9 @@ void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		if (e.priority)
 			m_buffer[m_buffer_w] = n(e.priority);
 		break;
+	case 5:
+		m_buffer[m_buffer_w] = hex_encode(e.hash);
+		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
 	*pResult = 0;
@@ -223,6 +227,8 @@ int Cdlg_files::compare(int id_a, int id_b) const
 		return ::compare(a.size, b.size);
 	case 4:
 		return ::compare(b.priority, a.priority);
+	case 5:
+		return ::compare(a.hash, b.hash);
 	}
 	return 0;
 }

@@ -51,6 +51,7 @@ protected:
 private:
 	struct t_map_entry
 	{
+		string hash;
 		__int64 left;
 		string name;
 		int priority;
