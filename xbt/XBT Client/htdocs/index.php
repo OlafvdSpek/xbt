@@ -52,8 +52,32 @@
 		switch ($_REQUEST['a'])
 		{
 		case 'set_options':
-			send_string($s, sprintf('d6:action%d:%s10:peer limiti%de9:peer porti%de13:seeding ratioi%de13:torrent limiti%de12:tracker porti%de11:upload ratei%de12:upload slotsi%dee',
-				strlen($action), $action, $_REQUEST['peer_limit'], $_REQUEST['peer_port'], $_REQUEST['seeding_ratio'], $_REQUEST['torrent_limit'], $_REQUEST['tracker_port'], $_REQUEST['upload_rate'] << 10, $_REQUEST['upload_slots']));
+			$completes_dir = stripslashes($_REQUEST['completes_dir']);
+			$incompletes_dir = stripslashes($_REQUEST['incompletes_dir']);
+			$torrents_dir = stripslashes($_REQUEST['torrents_dir']);
+			send_string
+			(
+				$s,
+				sprintf
+				(
+					'd6:action%d:%s13:completes dir%d:%s15:incompletes dir%d:%s10:peer limiti%de9:peer porti%de13:seeding ratioi%de13:torrent limiti%de12:torrents dir%d:%s12:tracker porti%de11:upload ratei%de12:upload slotsi%dee',
+					strlen($action),
+					$action,
+					strlen($completes_dir),
+					$completes_dir,
+					strlen($incompletes_dir),
+					$incompletes_dir,
+					$_REQUEST['peer_limit'],
+					$_REQUEST['peer_port'],
+					$_REQUEST['seeding_ratio'],
+					$_REQUEST['torrent_limit'],
+					strlen($torrents_dir),
+					$torrents_dir,
+					$_REQUEST['tracker_port'],
+					$_REQUEST['upload_rate'] << 10,
+					$_REQUEST['upload_slots']
+				)
+			);
 			break;
 		default:
 			foreach ($_REQUEST as $name => $value)
