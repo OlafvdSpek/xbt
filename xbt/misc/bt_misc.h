@@ -326,6 +326,38 @@ private:
 	short m_port;
 };
 
+struct t_bt_handshake
+{
+	string info_hash() const
+	{
+		return string(m_info_hash, 20);
+	}
+
+	void info_hash(const string& v)
+	{
+		assert(v.length() == 20);
+		memcpy(m_info_hash, v.c_str(), 20);
+	}
+
+	string peer_id() const
+	{
+		return string(m_peer_id, 20);
+	}
+
+	void peer_id(const string& v)
+	{
+		assert(v.length() == 20);
+		memcpy(m_peer_id, v.c_str(), 20);
+	}
+
+	unsigned char cb_name;
+	char name[19];
+	char reserved[8];
+private:
+	char m_info_hash[20];
+	char m_peer_id[20];
+};
+
 #ifdef _MSC_VER
 #pragma pack(pop, 1)
 #endif
