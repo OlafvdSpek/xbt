@@ -63,6 +63,7 @@ public:
 		m_level = level;
 		m_message = message;
 		m_source = inet_ntoa(source.sin_addr);
+		m_source += ':' + n(ntohs(source.sin_port));
 	}
 
 	int pre_dump() const;
