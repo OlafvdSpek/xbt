@@ -185,7 +185,8 @@ private:
 	bool m_gzip_debug;
 	bool m_gzip_scrape;
 	bool m_listen_check;
-	bool m_log;
+	bool m_log_announce;
+	bool m_log_scrape;
 	__int64 m_secret;
 	t_connections m_connections;
 	t_listen_ports m_listen_ports;
