@@ -38,12 +38,12 @@ public:
 
 	int read_int8()
 	{
-		return *reinterpret_cast<const __int8*>(read(1));
+		return *reinterpret_cast<const char*>(read(1));
 	}
 
 	int read_int32()
 	{
-		return *reinterpret_cast<const __int32*>(read(4));
+		return *reinterpret_cast<const int*>(read(4));
 	}
 
 	__int64 read_int64()

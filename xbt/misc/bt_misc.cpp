@@ -135,7 +135,8 @@ bool is_private_ipa(int a)
 
 string b2a(__int64 v)
 {
-	for (int l = 0; v > 9999; l++)
+	int l;
+	for (l = 0; v < -9999 || v > 9999; l++)
 		v >>= 10;
 	const char* a[] = {"", " k", " m", " g", " t", " p"};
 	return n(v) + a[l];
