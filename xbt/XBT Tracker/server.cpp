@@ -357,11 +357,13 @@ string Cserver::t_file::debug() const
 string Cserver::debug(const Ctracker_input& ti) const
 {
 	string page;
-	page += "<meta http-equiv=refresh content=1><title>XBT Tracker</title><table>";
+	page += "<meta http-equiv=refresh content=60><title>XBT Tracker</title><table>";
 	if (ti.m_info_hash.empty())
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
+			if (!i->second.leechers && !i->second.seeders)
+				continue;
 			page += "<tr><td>" + n(i->second.fid) 
 				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
 				+ "<td>" + (i->second.dirty ? '*' : ' ')
