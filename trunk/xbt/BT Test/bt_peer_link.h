@@ -136,6 +136,7 @@ public:
 	int m_stime;
 	int m_check_pieces_time;
 	int m_send_quota;
+	int mc_max_requests_pending;
 
 	bool m_local_link;
 	bool m_local_choked;
