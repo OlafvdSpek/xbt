@@ -247,9 +247,12 @@ BEGIN
     BEGIN
         POPUP "&Priority"
         BEGIN
-            MENUITEM "High",                        ID_POPUP_PRIORITY_HIGH
-            MENUITEM "Normal",                      ID_POPUP_PRIORITY_NORMAL
-            MENUITEM "Low",                         ID_POPUP_PRIORITY_LOW
+            MENUITEM "High",                        ID_POPUP_TORRENT_PRIORITY_HIGH
+
+            MENUITEM "Normal",                      ID_POPUP_TORRENT_PRIORITY_NORMAL
+
+            MENUITEM "Low",                         ID_POPUP_TORRENT_PRIORITY_LOW
+
         END
         POPUP "&Torrent"
         BEGIN
@@ -290,6 +293,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
+        MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
         MENUITEM "About",                       ID_POPUP_ABOUT
     END
 END
@@ -321,6 +325,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
+        MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
         MENUITEM "About",                       ID_POPUP_ABOUT
     END
 END
@@ -344,6 +349,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Options...\tCtrl+O",          ID_POPUP_OPTIONS
         MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
+        MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
         MENUITEM "About",                       ID_POPUP_ABOUT
     END
 END
