@@ -16,7 +16,7 @@ CREATE TABLE xbt_announce_log
 CREATE TABLE xbt_config
 (
   name varchar(255) NOT NULL,
-  value varchar(255) NOT NULL,
+  value varchar(255) NOT NULL
 );
 
 CREATE TABLE xbt_files
@@ -34,6 +34,7 @@ CREATE TABLE xbt_files
   completed int NOT NULL,
   started int NOT NULL,
   stopped int NOT NULL,
+  flags int NOT NULL,
   mtime timestamp NOT NULL,
   ctime timestamp NOT NULL,
   PRIMARY KEY (fid),
@@ -51,6 +52,7 @@ CREATE TABLE xbt_scrape_log
 
 CREATE TABLE xbt_users
 (
+  uid int NOT NULL auto_increment,
   name char(8) NOT NULL,
-  pass blob NOT NULL,
+  pass blob NOT NULL
 );
