@@ -382,13 +382,13 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		}
 		{
 			offset = a * mcb_piece;
+			size = cb_s;
 			for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			{
 				if (offset < i->size())
 				{
 					int cb_write = min(size, i->size() - offset);
-					i->left(i->left() - cb_write);
-					if (!i->left())
+					if (!i->left(i->left() - cb_write))
 					{
 						i->close();
 						i->open(m_name, _O_RDONLY);
