@@ -76,6 +76,7 @@ const string bts_total_downloaded = "total downloaded";
 const string bts_total_uploaded = "total uploaded";
 const string bts_tracker_port = "tracker port";
 const string bts_unpause_torrent = "unpause torrent";
+const string bts_unregistered_ipa = "unregistered IP address";
 const string bts_unregistered_torrent = "unregistered torrent";
 const string bts_up_rate = "up rate";
 const string bts_upload_rate = "upload rate";

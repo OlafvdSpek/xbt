@@ -287,7 +287,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	if (v.m_event == Ctracker_input::e_stopped)
 	{
 		file.peers.erase(v.m_ipa);
-		if (uid)
+		if (uid && (v.m_downloaded || v.m_uploaded))
 		{
 			Csql_query q(m_database, "(%d,%d,%d),");
 			q.p(v.m_downloaded);
@@ -652,6 +652,7 @@ void Cserver::write_db_users()
 		try
 		{
 			m_database.query("insert into xbt_users_updates (downloaded, uploaded, uid) values " + m_users_updates_buffer);
+			m_database.query("insert ignore into xbt_users (uid) select uid from xbt_users_updates");
 			m_database.query("update xbt_users u, xbt_users_updates uu"
 				" set u.downloaded = u.downloaded + uu.downloaded, u.uploaded = u.uploaded + uu.uploaded"
 				" where u.uid = uu.uid");
@@ -770,7 +771,8 @@ string Cserver::debug(const Ctracker_input& ti) const
 	int leechers = 0;
 	int seeders = 0;
 	int torrents = 0;
-	if (ti.m_compact)
+	page += "<table>";
+	if (ti.m_info_hash.empty())
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
@@ -779,43 +781,46 @@ string Cserver::debug(const Ctracker_input& ti) const
 			leechers += i->second.leechers;
 			seeders += i->second.seeders;
 			torrents++;
+			page += "<tr><td align=right>" + n(i->second.fid) 
+				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
+				+ "<td>" + (i->second.dirty ? '*' : ' ')
+				+ "<td align=right>" + n(i->second.leechers) 
+				+ "<td align=right>" + n(i->second.seeders) 
+				+ "<td align=right>" + n(i->second.announced_http) 
+				+ "<td align=right>" + n(i->second.announced_http_compact) 
+				+ "<td align=right>" + n(i->second.announced_http_no_peer_id) 
+				+ "<td align=right>" + n(i->second.announced_udp) 
+				+ "<td align=right>" + n(i->second.scraped_http) 
+				+ "<td align=right>" + n(i->second.scraped_udp) 
+				+ "<td align=right>" + n(i->second.completed) 
+				+ "<td align=right>" + n(i->second.started) 
+				+ "<td align=right>" + n(i->second.stopped);
 		}
 	}
-	else 
+	else
 	{
-		page += "<table>";
-		if (ti.m_info_hash.empty())
-		{
-			for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-			{
-				if (!i->second.leechers && !i->second.seeders)
-					continue;
-				leechers += i->second.leechers;
-				seeders += i->second.seeders;
-				torrents++;
-				page += "<tr><td align=right>" + n(i->second.fid) 
-					+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
-					+ "<td>" + (i->second.dirty ? '*' : ' ')
-					+ "<td align=right>" + n(i->second.leechers) 
-					+ "<td align=right>" + n(i->second.seeders) 
-					+ "<td align=right>" + n(i->second.announced_http) 
-					+ "<td align=right>" + n(i->second.announced_http_compact) 
-					+ "<td align=right>" + n(i->second.announced_http_no_peer_id) 
-					+ "<td align=right>" + n(i->second.announced_udp) 
-					+ "<td align=right>" + n(i->second.scraped_http) 
-					+ "<td align=right>" + n(i->second.scraped_udp) 
-					+ "<td align=right>" + n(i->second.completed) 
-					+ "<td align=right>" + n(i->second.started) 
-					+ "<td align=right>" + n(i->second.stopped);
-			}
-		}
-		else
-		{
-			t_files::const_iterator i = m_files.find(ti.m_info_hash);
-			if (i != m_files.end())
-				page += i->second.debug();
-		}
-		page += "</table><hr>";
+		t_files::const_iterator i = m_files.find(ti.m_info_hash);
+		if (i != m_files.end())
+			page += i->second.debug();
+	}
+	page += "</table>";
+	return page;
+}
+
+string Cserver::statistics() const
+{
+	string page;
+	page += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
+	int leechers = 0;
+	int seeders = 0;
+	int torrents = 0;
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (!i->second.leechers && !i->second.seeders)
+			continue;
+		leechers += i->second.leechers;
+		seeders += i->second.seeders;
+		torrents++;
 	}
 	int t = time(NULL);
 	page += "<table><tr><td>leechers<td align=right>" + n(leechers)
@@ -828,6 +833,7 @@ string Cserver::debug(const Ctracker_input& ti) const
 		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_read_config_interval)
 		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_clean_up_interval)
 		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_read_db_interval)
+		+ "<tr><td>read db ipas time<td align=right>" + n(t - m_read_db_ipas_time) + " / " + n(m_read_db_interval)
 		+ "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_read_db_interval)
 		+ "<tr><td>write db files time<td align=right>" + n(t - m_write_db_files_time) + " / " + n(m_write_db_interval)
 		+ "<tr><td>write db users time<td align=right>" + n(t - m_write_db_users_time) + " / " + n(m_write_db_interval)
