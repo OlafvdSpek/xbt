@@ -35,7 +35,6 @@ Cbt_file::Cbt_file()
 	m_session_started_at = time(NULL);
 	m_completed_at = 0;
 	m_priority = 0;
-	m_end_mode = false;
 	m_state = s_queued;
 	m_validate = true;
 }
@@ -525,14 +524,14 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 		rank = piece_rank;
 		invalid_pieces.push_back(i);
 	}
-	if (c_unrequested_sub_pieces < 256)
+	if (c_unrequested_sub_pieces < 256 && m_allow_end_mode)
 		m_end_mode = true;
 	return invalid_pieces.empty() ? -1 : invalid_pieces[rand() % invalid_pieces.size()];
 }
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 200;
+	int size = m_info_hash.length() + m_name.length() + 204;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -617,6 +616,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, c_distributed_copies);
 	w.write_int(4, c_distributed_copies_remainder);
 	w.write_int(4, m_priority);
+	w.write_int(4, m_allow_end_mode);
 	w.write_int(4, seeding_ratio());
 	w.write_int(4, m_seeding_ratio_override);
 	w.write_int(4, upload_slots_max());

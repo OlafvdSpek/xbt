@@ -29,6 +29,8 @@ public:
 	__int64 m_uploaded;
 	__int64 m_uploaded_l5;
 	__int64 mcb_piece;
+	bool m_allow_end_mode;
+	bool m_end_mode;
 	bool m_seeding_ratio_override;
 	bool m_upload_slots_max_override;
 	bool m_upload_slots_min_override;

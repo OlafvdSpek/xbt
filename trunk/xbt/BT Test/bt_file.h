@@ -212,7 +212,6 @@ public:
 	Cdata_counter m_up_counter;
 
 	Cbt_hasher* m_hasher;
-	bool m_end_mode;
 	bool m_merkle;
 	bool m_validate;
 	Cbt_logger* m_logger;
