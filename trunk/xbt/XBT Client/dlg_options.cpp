@@ -26,7 +26,6 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_seeding_ratio = 0;
 	m_show_tray_icon = FALSE;
 	m_show_advanced_columns = FALSE;
-	m_files_location = _T("");
 	m_start_minimized = FALSE;
 	m_ask_for_location = FALSE;
 	m_tracker_port = 0;
@@ -34,6 +33,9 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_lower_process_priority = FALSE;
 	m_peer_limit = 0;
 	m_bind_before_connect = FALSE;
+	m_completes_directory = _T("");
+	m_incompletes_directory = _T("");
+	m_torrents_directory = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -52,7 +54,6 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_SEEDING_RATIO, m_seeding_ratio);
 	DDX_Check(pDX, IDC_SHOW_TRAY_ICON, m_show_tray_icon);
 	DDX_Check(pDX, IDC_SHOW_ADVANCED_COLUMNS, m_show_advanced_columns);
-	DDX_Text(pDX, IDC_FILES_LOCATION, m_files_location);
 	DDX_Check(pDX, IDC_START_MINIMIZED, m_start_minimized);
 	DDX_Check(pDX, IDC_ASK_FOR_LOCATION, m_ask_for_location);
 	DDX_Text(pDX, IDC_TRACKER_PORT, m_tracker_port);
@@ -61,6 +62,9 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_LOWER_PROCESS_PRIORITY, m_lower_process_priority);
 	DDX_Text(pDX, IDC_PEER_LIMIT, m_peer_limit);
 	DDX_Check(pDX, IDC_BIND_BEFORE_CONNECT, m_bind_before_connect);
+	DDX_Text(pDX, IDC_COMPLETES_DIRECTORY, m_completes_directory);
+	DDX_Text(pDX, IDC_INCOMPLETES_DIRECTORY, m_incompletes_directory);
+	DDX_Text(pDX, IDC_TORRENTS_DIRECTORY, m_torrents_directory);
 	//}}AFX_DATA_MAP
 }
 
@@ -80,8 +84,9 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.admin_port = m_admin_port;
 	v.ask_for_location = m_ask_for_location;
 	v.bind_before_connect = m_bind_before_connect;
+	v.completes_directory = m_completes_directory;
 	v.end_mode = m_end_mode;
-	v.files_location = m_files_location;
+	v.incompletes_directory = m_incompletes_directory;
 	v.lower_process_priority = m_lower_process_priority;
 	v.peer_limit = m_peer_limit;
 	v.peer_port = m_peer_port;
@@ -90,6 +95,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.show_advanced_columns = m_show_advanced_columns;
 	v.show_tray_icon = m_show_tray_icon;
 	v.start_minimized = m_start_minimized;
+	v.torrents_directory = m_torrents_directory;
 	v.tracker_port = m_tracker_port;
 	v.upload_rate = m_upload_rate << 10;
 	v.upload_slots = m_upload_slots;
@@ -101,8 +107,9 @@ void Cdlg_options::set(const t_data& v)
 	m_admin_port = v.admin_port;
 	m_ask_for_location = v.ask_for_location;
 	m_bind_before_connect = v.bind_before_connect;
+	m_completes_directory = v.completes_directory.c_str();
 	m_end_mode = v.end_mode;
-	m_files_location = v.files_location.c_str();
+	m_incompletes_directory = v.incompletes_directory.c_str();
 	m_lower_process_priority = v.lower_process_priority;
 	m_peer_limit = v.peer_limit;
 	m_peer_port = v.peer_port;
@@ -111,6 +118,7 @@ void Cdlg_options::set(const t_data& v)
 	m_show_advanced_columns = v.show_advanced_columns;
 	m_show_tray_icon = v.show_tray_icon;
 	m_start_minimized = v.start_minimized;
+	m_torrents_directory = v.torrents_directory.c_str();
 	m_tracker_port = v.tracker_port;
 	m_upload_rate = v.upload_rate >> 10;
 	m_upload_slots = v.upload_slots;

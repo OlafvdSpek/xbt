@@ -23,7 +23,9 @@ public:
 		bool ask_for_location;
 		bool bind_before_connect;
 		bool end_mode;
-		string files_location;
+		string completes_directory;
+		string incompletes_directory;
+		string torrents_directory;
 		bool lower_process_priority;
 		int peer_limit;
 		int peer_port;
@@ -52,7 +54,6 @@ public:
 	int		m_seeding_ratio;
 	BOOL	m_show_tray_icon;
 	BOOL	m_show_advanced_columns;
-	CString	m_files_location;
 	BOOL	m_start_minimized;
 	BOOL	m_ask_for_location;
 	int		m_tracker_port;
@@ -60,6 +61,9 @@ public:
 	BOOL	m_lower_process_priority;
 	int		m_peer_limit;
 	BOOL	m_bind_before_connect;
+	CString	m_completes_directory;
+	CString	m_incompletes_directory;
+	CString	m_torrents_directory;
 	//}}AFX_DATA
 
 
