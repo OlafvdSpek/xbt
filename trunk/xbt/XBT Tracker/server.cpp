@@ -120,8 +120,13 @@ void Cserver::insert_peer(const Ctracker_input& v)
 			m_announce_log_buffer += ", ";
 		m_announce_log_buffer += q.read();
 	}
-	if (time(NULL) - m_read_db_time > m_read_db_interval)
-		read_db();
+	if (!m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
+	{
+		if (time(NULL) - m_read_db_time > m_read_db_interval)
+			read_db();
+		if (m_files.find(v.m_info_hash) == m_files.end())
+			return;
+	}
 	t_file& file = m_files[v.m_info_hash];
 	t_peers::iterator i = file.peers.find(v.m_ipa);
 	if (i != file.peers.end())
@@ -355,6 +360,7 @@ void Cserver::write_db()
 void Cserver::read_config()
 {
 	m_announce_interval = 1800;
+	m_auto_register = true;
 	m_clean_up_interval = 60;
 	m_listen_check = true;
 	m_log = false;
@@ -367,10 +373,10 @@ void Cserver::read_config()
 		Csql_row row;
 		while (row = result.fetch_row())
 		{
-			if (!row.f(1))
-				continue;
 			if (!strcmp(row.f(0), "announce_interval"))
 				m_announce_interval = row.f_int(1);
+			else if (!strcmp(row.f(0), "auto_register"))
+				m_auto_register = row.f_int(1);
 			else if (!strcmp(row.f(0), "listen_check"))
 				m_listen_check = row.f_int(1);
 			else if (!strcmp(row.f(0), "log"))

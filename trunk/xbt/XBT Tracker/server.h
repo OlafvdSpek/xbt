@@ -103,6 +103,7 @@ private:
 	int m_read_db_interval;
 	int m_write_db_interval;
 	int m_fid_end;
+	bool m_auto_register;
 	bool m_listen_check;
 	bool m_log;
 	__int64 m_secret;
