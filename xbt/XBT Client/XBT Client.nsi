@@ -28,6 +28,8 @@ Section "Install"
 SectionEnd
 
 Section "Uninstall"
+	SetShellVarContext all
+	Delete "$SMPROGRAMS\XBT Client.lnk"
 	DeleteRegKey HKCR ".torrent"
 	DeleteRegKey HKCR "MIME\Database\Content Type\application/x-bittorrent"
 	DeleteRegKey HKCR "bittorrent"
