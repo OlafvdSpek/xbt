@@ -15,12 +15,16 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void fill_peers();
+	void auto_size();
+	void open(const string& name);
 	CXBTClientDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(CXBTClientDlg)
 	enum { IDD = IDD_XBTCLIENT_DIALOG };
-		// NOTE: the ClassWizard will add data members here
+	CListCtrl	m_peers;
+	CListCtrl	m_files;
 	//}}AFX_DATA
 
 	// ClassWizard generated virtual function overrides
@@ -38,8 +42,43 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+	afx_msg void OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+private:
+	struct t_peer
+	{
+		string peer_id;
+		__int64 downloaded;
+		__int64 left;
+		__int64 uploaded;
+		int down_rate;
+		int up_rate;
+	};
+
+	typedef map<int, t_peer> t_peers;
+
+	struct t_file
+	{
+		string info_hash;
+		string name;
+		t_peers peers;
+		__int64 downloaded;
+		__int64 left;
+		__int64 uploaded;
+		int down_rate;
+		int up_rate;
+	};
+
+	typedef map<int, t_file> t_files;
+
+	string m_buffer[4];
+	int m_buffer_w;
+	t_file* m_file;
+	t_files m_files_map;
 };
 
 //{{AFX_INSERT_LOCATION}}
