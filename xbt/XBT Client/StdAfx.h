@@ -30,8 +30,8 @@
 #include <map>
 #include <set>
 #include <shlwapi.h>
+#include <sstream>
 #include <string>
-#include <strstream>
 #include <vector>
 #include "ETSLayout.h"
 #include "bt_misc.h"

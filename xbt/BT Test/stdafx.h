@@ -24,8 +24,8 @@
 #include <list>
 #include <map>
 #include <set>
+#include <sstream>
 #include <string>
-#include <strstream>
 #include <vector>
 #include <windows.h>
 
