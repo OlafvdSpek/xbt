@@ -165,6 +165,7 @@ void Cserver::insert_peer(const Ctracker_input& v)
 		file.stopped++;
 		break;
 	}
+	file.announced++;
 	file.dirty = true;
 }
 
@@ -277,9 +278,13 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	}
 	else
 	{
-		t_files::const_iterator i = m_files.find(ti.m_info_hash);
+		t_files::iterator i = m_files.find(ti.m_info_hash);
 		if (i != m_files.end())
+		{
+			i->second.scraped++;
+			i->second.dirty = true;
 			files.d(i->first, i->second.scrape());
+		}
 	}
 	v.d(bts_files, files);
 	return v;
@@ -290,7 +295,7 @@ void Cserver::read_db()
 	try
 	{
 		Csql_query q(m_database);
-		q.write("select info_hash, completed, fid, started, stopped from xbt_files where fid >= %s");
+		q.write("select info_hash, completed, fid, started, stopped, announced, scraped from xbt_files where fid >= %s");
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
 		Csql_row row;
@@ -304,6 +309,8 @@ void Cserver::read_db()
 			file.fid = row.f_int(2, 0);
 			file.started = row.f_int(3, 0);
 			file.stopped = row.f_int(4, 0);
+			file.announced = row.f_int(5, 0);
+			file.scraped = row.f_int(6, 0);
 			m_fid_end = max(m_fid_end, file.fid + 1);
 		}
 	}
@@ -330,12 +337,14 @@ void Cserver::write_db()
 				q.execute();
 				file.fid = m_database.insert_id();
 			}
-			q.write("update xbt_files set leechers = %s, seeders = %s, completed = %s, started = %s, stopped = %s where fid = %s");
+			q.write("update xbt_files set leechers = %s, seeders = %s, completed = %s, started = %s, stopped = %s, announced = %s, scraped = %s where fid = %s");
 			q.p(file.leechers);
 			q.p(file.seeders);
 			q.p(file.completed);
 			q.p(file.started);
 			q.p(file.stopped);
+			q.p(file.announced);
+			q.p(file.scraped);
 			q.p(file.fid);
 			q.execute();
 			file.dirty = false;
@@ -428,6 +437,8 @@ string Cserver::debug(const Ctracker_input& ti) const
 				+ "<td align=right>" + n(i->second.peers.size()) 
 				+ "<td align=right>" + n(i->second.leechers) 
 				+ "<td align=right>" + n(i->second.seeders) 
+				+ "<td align=right>" + n(i->second.announced) 
+				+ "<td align=right>" + n(i->second.scraped) 
 				+ "<td align=right>" + n(i->second.completed) 
 				+ "<td align=right>" + n(i->second.started) 
 				+ "<td align=right>" + n(i->second.stopped);
