@@ -636,6 +636,18 @@ void Cserver::torrent_upload_slots_min(const string& file_id, bool override, int
 	}
 }
 
+void Cserver::torrent_end_mode(const string& file_id, bool v)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != file_id)
+			continue;
+		i->m_allow_end_mode = v;
+		return;
+	}
+}
+
 string Cserver::get_url(const string& id)
 {
 	Clock l(m_cs);

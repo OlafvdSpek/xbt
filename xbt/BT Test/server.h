@@ -83,6 +83,7 @@ public:
 	void set_scheduler(const Cxif_key&);
 	void set_trackers(const Cvirtual_binary& d);
 	void sub_file_priority(const string& file_id, const string& sub_file_id, int priority);
+	void torrent_end_mode(const string& file_id, bool v);
 	void torrent_seeding_ratio(const string& file_id, bool override, int v);
 	void torrent_upload_slots_max(const string& file_id, bool override, int v);
 	void torrent_upload_slots_min(const string& file_id, bool override, int v);
@@ -136,16 +137,6 @@ public:
 		m_config = v;
 	}
 
-	bool end_mode() const
-	{
-		return m_config.m_end_mode;
-	}
-
-	void end_mode(bool v)
-	{
-		m_config.m_end_mode = v;
-	}
-	
 	bool log_peer_connect_failures() const
 	{
 		return m_config.m_log_peer_connect_failures;
