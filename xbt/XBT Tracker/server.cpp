@@ -142,7 +142,7 @@ void Cserver::update_peer(const string& file_id, const string& peer_id, bool lis
 	j->second.listening = listening;
 }
 
-Cbvalue Cserver::select_peers(const string& info_hash, bool peer_id)
+Cbvalue Cserver::select_peers(const string& info_hash, bool peer_id, bool seeders)
 {
 	if (time(NULL) - m_clean_up_time > m_clean_up_interval)
 		clean_up();
@@ -157,7 +157,7 @@ Cbvalue Cserver::select_peers(const string& info_hash, bool peer_id)
 	int c = 50;
 	for (t_peers::const_iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
 	{
-		if (!j->second.listening)
+		if (!seeders && !j->second.left || !j->second.listening)
 			continue;
 		if (!c--)
 			break;

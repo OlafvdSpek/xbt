@@ -128,7 +128,7 @@ void Cconnection::read(const string& v)
 	}
 	if (announce)
 		m_server->insert_peer(ti);
-	Cbvalue s = announce ? m_server->select_peers(ti.m_info_hash, !ti.m_no_peer_id) : m_server->scrape(ti);
+	Cbvalue s = announce ? m_server->select_peers(ti.m_info_hash, !ti.m_no_peer_id, ti.m_left) : m_server->scrape(ti);
 	const char* h = "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\n";
 	Cvirtual_binary d;
 	s.read(strcpy(reinterpret_cast<char*>(d.write_start(strlen(h) + s.pre_read())), h) + strlen(h));
