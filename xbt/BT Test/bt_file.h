@@ -167,6 +167,7 @@ public:
 
 	Cbt_hasher* m_hasher;
 	bool m_run;
+	bool m_validate;
 	Cserver* m_server;
 };
 
