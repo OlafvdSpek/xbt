@@ -24,7 +24,7 @@ public:
 	void set_clipboard(const string&);
 	void lower_process_priority(bool);
 	void set_dir(const string&);
-	void insert_columns();
+	void insert_columns(bool auto_size);
 	void insert_top_columns();
 	void insert_bottom_columns();
 	void sort_events();

@@ -225,7 +225,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	start_server();
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_peers.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	insert_columns();
+	insert_columns(true);
 	m_files_sort_column = fc_name;
 	m_files_sort_reverse = false;
 	m_peers_sort_column = pc_client;
@@ -983,7 +983,7 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 	ETSLayoutDialog::OnTimer(nIDEvent);
 }
 
-void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
+void CXBTClientDlg::OnContextMenu(CWnd* pWnd, CPoint point)
 {
 	if (point.x == -1 && point.y == -1)
 	{
@@ -996,7 +996,19 @@ void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
 	}
 
 	CMenu menu;
-	VERIFY(menu.LoadMenu(CG_IDR_POPUP_XBTCLIENT_DLG));
+	if (pWnd == &m_peers)
+	{
+		switch (m_bottom_view)
+		{
+		case v_files:
+			VERIFY(menu.LoadMenu(IDR_POPUP_BOTTOM_FILES));
+			break;
+		default:
+			VERIFY(menu.LoadMenu(IDR_POPUP_BOTTOM));
+		}
+	}
+	else
+		VERIFY(menu.LoadMenu(CG_IDR_POPUP_XBTCLIENT_DLG));
 
 	CMenu* pPopup = menu.GetSubMenu(0);
 	ASSERT(pPopup != NULL);
@@ -1191,7 +1203,7 @@ void CXBTClientDlg::OnPopupOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "tracker_port", data.tracker_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
-	insert_columns();
+	insert_columns(true);
 	if (m_show_tray_icon)
 		register_tray();
 	else
@@ -1697,7 +1709,6 @@ void CXBTClientDlg::insert_top_columns()
 		m_files.DeleteColumn(0);
 	for (t_columns::const_iterator i = m_torrents_columns.begin(); i != m_torrents_columns.end(); i++)
 		m_files.InsertColumn(99, torrents_columns_names[*i], torrents_columns_formats[*i]);
-	m_files.auto_size();
 }
 
 void CXBTClientDlg::insert_bottom_columns()
@@ -1822,13 +1833,17 @@ void CXBTClientDlg::insert_bottom_columns()
 		m_peers.DeleteColumn(0);
 	for (t_columns::const_iterator i = m_peers_columns.begin(); i != m_peers_columns.end(); i++)
 		m_peers.InsertColumn(99, peers_columns_names[*i], peers_columns_formats[*i]);
-	m_peers.auto_size();
 }
 
-void CXBTClientDlg::insert_columns()
+void CXBTClientDlg::insert_columns(bool auto_size)
 {
 	insert_top_columns();
 	insert_bottom_columns();
+	if (auto_size)
+	{
+		m_files.auto_size();
+		m_peers.auto_size();
+	}
 }
 
 void CXBTClientDlg::set_dir(const string& v)
@@ -1887,7 +1902,6 @@ void CXBTClientDlg::OnPopupViewDetails()
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-	m_peers.auto_size();
 }	
 
 void CXBTClientDlg::OnPopupViewEvents() 
@@ -1896,7 +1910,6 @@ void CXBTClientDlg::OnPopupViewEvents()
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnPopupViewFiles() 
@@ -1905,7 +1918,6 @@ void CXBTClientDlg::OnPopupViewFiles()
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnPopupViewPeers() 
@@ -1914,7 +1926,6 @@ void CXBTClientDlg::OnPopupViewPeers()
 	m_peers_sort_column = pc_client;
 	insert_bottom_columns();
 	fill_peers();
-	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnPopupViewTrackers() 
@@ -1923,7 +1934,6 @@ void CXBTClientDlg::OnPopupViewTrackers()
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
-	m_peers.auto_size();
 }
 
 void CXBTClientDlg::OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult)
@@ -2000,7 +2010,7 @@ void CXBTClientDlg::OnPopupViewAdvancedColumns()
 {
 	m_show_advanced_columns = !AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", m_show_advanced_columns);
-	insert_columns();
+	insert_columns(true);
 }
 
 void CXBTClientDlg::OnPopupViewTrayIcon() 

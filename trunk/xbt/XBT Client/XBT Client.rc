@@ -271,6 +271,130 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\XBT Client.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+CG_IDR_POPUP_XBTCLIENT_DLG MENU DISCARDABLE 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        POPUP "&Priority"
+        BEGIN
+            MENUITEM "High",                        ID_POPUP_PRIORITY_HIGH
+            MENUITEM "Normal",                      ID_POPUP_PRIORITY_NORMAL
+            MENUITEM "Low",                         ID_POPUP_PRIORITY_LOW
+        END
+        POPUP "&Torrent"
+        BEGIN
+            MENUITEM "Alerts",                      ID_POPUP_TORRENT_ALERTS
+            MENUITEM "Explore",                     ID_POPUP_EXPLORE
+            MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
+            MENUITEM "Files...",                    ID_POPUP_FILES
+            MENUITEM SEPARATOR
+            MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
+            MENUITEM "Start",                       ID_POPUP_START
+            MENUITEM "Stop",                        ID_POPUP_STOP
+            MENUITEM SEPARATOR
+            POPUP "Clipboard"
+            BEGIN
+                MENUITEM "Copy Announce URL",           ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL
+
+                MENUITEM "Copy Hash",                   ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH
+
+                MENUITEM "Copy URL",                    ID_POPUP_COPY
+                MENUITEM "Paste URL",                   ID_POPUP_PASTE
+            END
+            MENUITEM "Open...",                     ID_POPUP_OPEN
+            MENUITEM "&Close",                      ID_POPUP_CLOSE
+            MENUITEM "Delete",                      ID_POPUP_TORRENT_DELETE
+            MENUITEM "Make...",                     ID_POPUP_MAKE_TORRENT
+            MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
+        END
+        POPUP "&View"
+        BEGIN
+            MENUITEM "&Details",                    ID_POPUP_VIEW_DETAILS
+            MENUITEM "&Events",                     ID_POPUP_VIEW_EVENTS
+            MENUITEM "&Files",                      ID_POPUP_VIEW_FILES
+            MENUITEM "&Peers",                      ID_POPUP_VIEW_PEERS
+            MENUITEM "&Trackers",                   ID_POPUP_VIEW_TRACKERS
+            MENUITEM SEPARATOR
+            MENUITEM "Advanced columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
+
+            MENUITEM "Tray icon",                   ID_POPUP_VIEW_TRAY_ICON
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Options...",                  ID_POPUP_OPTIONS
+        MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
+        MENUITEM "About",                       ID_POPUP_ABOUT
+    END
+END
+
+IDR_POPUP_BOTTOM_FILES MENU DISCARDABLE 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        POPUP "&Priority"
+        BEGIN
+            MENUITEM "High",                        ID_POPUP_PRIORITY_HIGH
+            MENUITEM "Normal",                      ID_POPUP_PRIORITY_NORMAL
+            MENUITEM "Low",                         ID_POPUP_PRIORITY_LOW
+            MENUITEM "Exclude",                     ID_POPUP_PRIORITY_EXCLUDE
+
+        END
+        POPUP "&View"
+        BEGIN
+            MENUITEM "&Details",                    ID_POPUP_VIEW_DETAILS
+            MENUITEM "&Events",                     ID_POPUP_VIEW_EVENTS
+            MENUITEM "&Files",                      ID_POPUP_VIEW_FILES
+            MENUITEM "&Peers",                      ID_POPUP_VIEW_PEERS
+            MENUITEM "&Trackers",                   ID_POPUP_VIEW_TRACKERS
+            MENUITEM SEPARATOR
+            MENUITEM "Advanced columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
+
+            MENUITEM "Tray icon",                   ID_POPUP_VIEW_TRAY_ICON
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Options...",                  ID_POPUP_OPTIONS
+        MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
+        MENUITEM "About",                       ID_POPUP_ABOUT
+    END
+END
+
+IDR_POPUP_BOTTOM MENU DISCARDABLE 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        POPUP "&View"
+        BEGIN
+            MENUITEM "&Details",                    ID_POPUP_VIEW_DETAILS
+            MENUITEM "&Events",                     ID_POPUP_VIEW_EVENTS
+            MENUITEM "&Files",                      ID_POPUP_VIEW_FILES
+            MENUITEM "&Peers",                      ID_POPUP_VIEW_PEERS
+            MENUITEM "&Trackers",                   ID_POPUP_VIEW_TRACKERS
+            MENUITEM SEPARATOR
+            MENUITEM "Advanced columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
+
+            MENUITEM "Tray icon",                   ID_POPUP_VIEW_TRAY_ICON
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Options...",                  ID_POPUP_OPTIONS
+        MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
+        MENUITEM "About",                       ID_POPUP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -328,78 +452,6 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\XBT Client.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
-CG_IDR_POPUP_XBTCLIENT_DLG MENU DISCARDABLE 
-BEGIN
-    POPUP "_POPUP_"
-    BEGIN
-        POPUP "&Priority"
-        BEGIN
-            MENUITEM "High",                        ID_POPUP_PRIORITY_HIGH
-            MENUITEM "Normal",                      ID_POPUP_PRIORITY_NORMAL
-            MENUITEM "Low",                         ID_POPUP_PRIORITY_LOW
-            MENUITEM "Exclude",                     ID_POPUP_PRIORITY_EXCLUDE
-
-        END
-        POPUP "&Torrent"
-        BEGIN
-            MENUITEM "Alerts",                      ID_POPUP_TORRENT_ALERTS
-            MENUITEM "Explore",                     ID_POPUP_EXPLORE
-            MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
-            MENUITEM "Files...",                    ID_POPUP_FILES
-            MENUITEM SEPARATOR
-            MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
-            MENUITEM "Start",                       ID_POPUP_START
-            MENUITEM "Stop",                        ID_POPUP_STOP
-            MENUITEM SEPARATOR
-            POPUP "Clipboard"
-            BEGIN
-                MENUITEM "Copy Announce URL",           ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL
-
-                MENUITEM "Copy Hash",                   ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH
-
-                MENUITEM "Copy URL",                    ID_POPUP_COPY
-                MENUITEM "Paste URL",                   ID_POPUP_PASTE
-            END
-            MENUITEM "Open...",                     ID_POPUP_OPEN
-            MENUITEM "&Close",                      ID_POPUP_CLOSE
-            MENUITEM "Delete",                      ID_POPUP_TORRENT_DELETE
-            MENUITEM "Make...",                     ID_POPUP_MAKE_TORRENT
-            MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
-        END
-        POPUP "&View"
-        BEGIN
-            MENUITEM "&Details",                    ID_POPUP_VIEW_DETAILS
-            MENUITEM "&Events",                     ID_POPUP_VIEW_EVENTS
-            MENUITEM "&Files",                      ID_POPUP_VIEW_FILES
-            MENUITEM "&Peers",                      ID_POPUP_VIEW_PEERS
-            MENUITEM "&Trackers",                   ID_POPUP_VIEW_TRACKERS
-            MENUITEM SEPARATOR
-            MENUITEM "Advanced columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
-
-            MENUITEM "Tray icon",                   ID_POPUP_VIEW_TRAY_ICON
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "Options...",                  ID_POPUP_OPTIONS
-        MENUITEM "Trackers...",                 ID_POPUP_TRACKERS
-        MENUITEM "About",                       ID_POPUP_ABOUT
-    END
-END
 
 #endif    // Dutch (Netherlands) resources
 /////////////////////////////////////////////////////////////////////////////

@@ -6,6 +6,8 @@
 #define IDP_SOCKETS_INIT_FAILED         103
 #define IDD_OPTIONS                     103
 #define CG_IDR_POPUP_XBTCLIENT_DLG      104
+#define IDR_POPUP_BOTTOM_FILES          105
+#define IDR_POPUP_BOTTOM                106
 #define IDR_MAINFRAME                   128
 #define IDD_TORRENT                     132
 #define IDD_FILES                       133
