@@ -129,7 +129,7 @@ void Cconnection::read(const string& v)
 	if (announce)
 		m_server->insert_peer(ti);
 	Cvirtual_binary d = (announce ? m_server->select_peers(ti.m_info_hash) : m_server->scrape(ti)).read();
-	const char* h = "HTTP/1.0 200 OK\nContent-Type: text/plain\n\n";
+	const char* h = "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\n";
 	if (m_s.send(h, strlen(h)) != strlen(h))
 		cerr << "send failed" << endl;
 	else if (m_s.send(d, d.size()) != d.size())
