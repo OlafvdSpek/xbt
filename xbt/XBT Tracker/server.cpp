@@ -985,15 +985,21 @@ string Cserver::statistics() const
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
 		+ "<tr><td>torrents<td align=right>" + n(torrents)
 		+ "<tr><td>"
-		+ "<tr><td>announced<td align=right>" + n(m_stats.announced())
-		+ "<tr><td>announced http <td align=right>" + n(m_stats.announced_http)
-		+ "<tr><td>announced http compact<td align=right>" + n(m_stats.announced_http_compact)
-		+ "<tr><td>announced http no peer id<td align=right>" + n(m_stats.announced_http_no_peer_id)
-		+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp)
-		+ "<tr><td>scraped<td align=right>" + n(m_stats.scraped())
-		+ "<tr><td>scraped http<td align=right>" + n(m_stats.scraped_http)
-		+ "<tr><td>scraped udp<td align=right>" + n(m_stats.scraped_udp)
-		+ "<tr><td>"
+		+ "<tr><td>announced<td align=right>" + n(m_stats.announced());
+	if (m_stats.announced())
+	{
+		page += "<tr><td>announced http <td align=right>" + n(m_stats.announced_http) + "<td align=right>" + n(m_stats.announced_http * 100 / m_stats.announced()) + " %"
+			+ "<tr><td>announced http compact<td align=right>" + n(m_stats.announced_http_compact) + "<td align=right>" + n(m_stats.announced_http_compact * 100 / m_stats.announced()) + " %"
+			+ "<tr><td>announced http no peer id<td align=right>" + n(m_stats.announced_http_no_peer_id) + "<td align=right>" + n(m_stats.announced_http_no_peer_id * 100 / m_stats.announced()) + " %"
+			+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp) + "<td align=right>" + n(m_stats.announced_udp * 100 / m_stats.announced()) + " %";
+	}
+	page += "<tr><td>scraped<td align=right>" + n(m_stats.scraped());
+	if (m_stats.scraped())
+	{
+		page += "<tr><td>scraped http<td align=right>" + n(m_stats.scraped_http) + "<td align=right>" + n(m_stats.scraped_http * 100 / m_stats.scraped()) + " %"
+			+ "<tr><td>scraped udp<td align=right>" + n(m_stats.scraped_udp) + "<td align=right>" + n(m_stats.scraped_udp * 100 / m_stats.scraped()) + " %";
+	}
+	page += string("<tr><td>")
 		+ "<tr><td>up time<td align=right>" + duration2a(time() - m_stats.start_time)
 		+ "<tr><td>"
 		+ "<tr><td>anonymous connect<td align=right>" + n(m_config.m_anonymous_connect)
