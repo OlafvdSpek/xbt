@@ -442,7 +442,7 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 		if (i->m_info_hash == f.m_info_hash)
 			return 2;
 	}
-	if (f.open(name, true))
+	if (f.open(name))
 		return 3;
 	f.m_peer_id = new_peer_id();
 	m_files.push_front(f);
@@ -524,7 +524,7 @@ void Cserver::load_state(const Cvirtual_binary& d)
 		Cbt_file f;
 		f.m_server = this;
 		f.load_state(r);
-		if (f.open(f.m_name, !f.c_valid_pieces()))
+		if (f.open(f.m_name))
 			continue;
 		f.m_peer_id = new_peer_id();
 		m_files.push_front(f);

@@ -146,8 +146,11 @@ int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 		|| _write(m_f, s, cb_s) != cb_s;
 }
 
-int Cbt_file::open(const string& name, bool validate)
+int Cbt_file::open(const string& name)
 {
+	bool validate = true;
+	for (int i = 0; i < m_pieces.size(); i++)
+		validate &= !m_pieces[i].m_valid;
 	m_name = name;
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
@@ -166,6 +169,8 @@ int Cbt_file::open(const string& name, bool validate)
 		m_left = 0;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->left(0);
+		offset = 0;
+		t_sub_files::iterator sub_file = m_sub_files.begin(); 
 		for (int i = 0; i < m_pieces.size(); i++)
 		{
 			Cbt_piece& piece = m_pieces[i];
@@ -176,17 +181,29 @@ int Cbt_file::open(const string& name, bool validate)
 			}
 			if (!piece.m_valid)
 				m_left += piece.mcb_d;
+			int cb0 = piece.mcb_d;
+			while (cb0)
+			{
+				int cb1 = min(cb0, sub_file->size() - offset);
+				if (!piece.m_valid)
+					sub_file->left(sub_file->left() + cb1);
+				cb0 -= cb1;
+				offset += cb1;
+				if (offset == sub_file->size())
+				{
+					if (!sub_file->left())
+					{
+						sub_file->close();
+						sub_file->open(m_name, _O_RDONLY);
+					}
+					offset = 0;
+					sub_file++;
+				}
+			}
+			
 		}
 		alert(Calert(Calert::debug, "Torrent: " + n(c_valid_pieces()) + '/' + n(m_pieces.size())));
 		alert(Calert(Calert::debug, "Torrent: " + n(mcb_piece >> 10) + " kb/piece"));
-	}
-	if (!m_left)
-	{
-		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		{
-			i->close();
-			i->open(m_name, _O_RDONLY);
-		}
 	}
 	return 0;
 }
@@ -369,6 +386,20 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 			}
 		}
 		{
+			for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+			{
+				if (offset < i->size())
+				{
+					int cb_write = min(size, i->size() - offset);
+					i->left(i->left() - cb_write);
+					size -= cb_write;
+					if (!size)
+						break;
+					offset = 0;
+				}
+				else
+					offset -= i->size();
+			}
 			for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 				i->write_have(a);
 		}

@@ -44,7 +44,7 @@ public:
 	int read_data(__int64 o, byte* d, int cb_d);
 	void write_data(__int64 o, const char* s, int cb_s);
 	void close();
-	int open(const string& name, bool validate);
+	int open(const string& name);
 	int c_invalid_pieces() const;
 	int c_pieces() const;
 	int c_valid_pieces() const;
