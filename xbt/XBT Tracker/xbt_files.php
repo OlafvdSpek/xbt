@@ -3,7 +3,7 @@
 <?
 	mysql_connect("localhost", "xbt", "pass");
 	mysql_select_db("xbt");
-	$results = mysql_query("select *, unix_timestamp(mtime) as mtime, unix_timestamp(ctime) as ctime from xbt_files");
+	$results = mysql_query("select *, unix_timestamp(mtime) as mtime, unix_timestamp(ctime) as ctime from xbt_files order by mtime desc");
 	echo("<table>");
 	echo("<tr>");
 	echo("<th>fid");
