@@ -2,9 +2,11 @@
 !define VERSION "0.0.4"
 !include "UpgradeDLL.nsh"
 
-Name "XBT Client"
+Name "XBT Client ${VERSION}"
 Outfile "XBT_Client-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT"
+Page directory
+Page instfiles
 Section "Install"
 	SetShellVarContext all
 	SetOutPath "$INSTDIR"
