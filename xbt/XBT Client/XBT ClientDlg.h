@@ -182,6 +182,7 @@ private:
 		int c_chunks_invalid;
 		int c_chunks_valid;
 		int c_peers;
+		int index;
 		int priority;
 		int rank;
 		bool valid;

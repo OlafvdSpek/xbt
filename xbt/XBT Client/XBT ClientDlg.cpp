@@ -735,7 +735,7 @@ void CXBTClientDlg::OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case pic_index:
-		m_buffer[m_buffer_w] = n(pDispInfo->item.lParam);
+		m_buffer[m_buffer_w] = n(e.index);
 		break;
 	case pic_c_chunks:
 		if (e.c_chunks_valid)
@@ -1008,16 +1008,18 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		f.sub_files.push_back(e);
 	}
 	f.pieces.clear();
+	int index = 0;
 	for (int c_pieces = sr.read_int(4); c_pieces--; )
 	{
 		t_piece e;
 		e.c_chunks_invalid = sr.read_int(1);
 		e.c_chunks_valid = sr.read_int(1);
 		e.c_peers = sr.read_int(4);
+		e.index = index++;
 		e.priority = static_cast<char>(sr.read_int(1));
 		e.rank = sr.read_int(4);
 		e.valid = sr.read_int(1);
-		if (!e.valid)
+		if (1 || !e.valid)
 			f.pieces.push_back(e);
 	}
 	if (m_file == &f)
@@ -1792,7 +1794,7 @@ int CXBTClientDlg::pieces_compare(int id_a, int id_b) const
 	switch (m_pieces_sort_column)
 	{
 	case pic_index:
-		return compare(id_a, id_b);
+		return compare(a.index, b.index);
 	case pic_c_chunks:
 		return compare(b.c_chunks_valid, a.c_chunks_valid, compare(a.rank, b.rank));
 	case pic_c_peers:
