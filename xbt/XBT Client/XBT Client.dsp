@@ -128,6 +128,10 @@ SOURCE=..\misc\bt_torrent.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\bt_tracker_account.cpp
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_tracker_link.cpp"
 # End Source File
 # Begin Source File
@@ -144,11 +148,23 @@ SOURCE="..\BT Test\data_counter.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE=.\dlg_files.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\dlg_options.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\dlg_torrent.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_tracker.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_trackers.cpp
 # End Source File
 # Begin Source File
 
@@ -253,6 +269,10 @@ SOURCE=..\misc\bt_torrent.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\bt_tracker_account.h
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_tracker_link.h"
 # End Source File
 # Begin Source File
@@ -265,11 +285,23 @@ SOURCE="..\BT Test\data_counter.h"
 # End Source File
 # Begin Source File
 
+SOURCE=.\dlg_files.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\dlg_options.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\dlg_torrent.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_tracker.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_trackers.h
 # End Source File
 # Begin Source File
 
