@@ -35,7 +35,8 @@ BOOL CXBTClientApp::InitInstance()
 	CreateMutex(NULL, true, "9a6bfda6-7733-4b7d-92b0-3046c9191830");
 	if (GetLastError() == ERROR_ALREADY_EXISTS)
 	{
-		HWND hWnd = FindWindow(NULL, "XBT Client");
+		HWND hWnd = NULL;
+		EnumWindows(enumerator, reinterpret_cast<LPARAM>(&hWnd));
 		CCommandLineInfo cmdInfo;
 		ParseCommandLine(cmdInfo);
 		if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
@@ -73,3 +74,12 @@ BOOL CXBTClientApp::InitInstance()
 	return false;
 }
 
+BOOL CALLBACK CXBTClientApp::enumerator(HWND hWnd, LPARAM lParam)
+{
+	DWORD result;
+	if (!SendMessageTimeout(hWnd, g_are_you_me_message_id, 0, 0, SMTO_BLOCK, 200, &result)
+		|| result != g_are_you_me_message_id)
+		return true;
+	*reinterpret_cast<HWND*>(lParam) = hWnd;
+	return false;
+}
