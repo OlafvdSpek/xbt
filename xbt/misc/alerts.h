@@ -57,17 +57,9 @@ public:
 		m_source = source;
 	}
 
-	Calert(t_level level, const sockaddr_in& source, const string& message)
-	{
-		m_time = ::time(NULL);
-		m_level = level;
-		m_message = message;
-		m_source = inet_ntoa(source.sin_addr);
-		m_source += ':' + n(ntohs(source.sin_port));
-	}
-
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
+	Calert(t_level level, const sockaddr_in& source, const string& message);
 private:
 	int m_time;
 	t_level m_level;
