@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wininet.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 wininet.lib zdll.lib /nologo /subsystem:windows /machine:I386
 
 !ELSEIF  "$(CFG)" == "XBT Manager - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wininet.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 wininet.lib zdll.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -130,6 +130,10 @@ SOURCE=".\XBT Manager.rc"
 # Begin Source File
 
 SOURCE=".\XBT ManagerDlg.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\xcc_z.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
