@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../misc/bvalue.h"
+#include "bvalue.h"
 #include "bt_piece.h"
 #include "bt_peer_link.h"
 #include "bt_tracker_link.h"
