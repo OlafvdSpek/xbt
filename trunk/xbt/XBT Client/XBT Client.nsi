@@ -5,10 +5,12 @@
 Name "XBT Client ${VERSION}"
 Outfile "XBT_Client-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT\Client"
+InstallDirRegKey HKLM "Software\XBT\Client" "InstallDir"
 Page directory
 Page instfiles
 UninstPage uninstConfirm
 UninstPage instfiles
+
 Section "Install"
 	SetShellVarContext all
 	SetOutPath "$INSTDIR"
@@ -32,12 +34,15 @@ Section "Install"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client" "DisplayName" "XBT Client ${VERSION}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client" "UninstallString" '"$INSTDIR\Uninstall.exe"'
 	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client" "NoModify" 1
+	WriteRegStr HKLM "Software\XBT\Client" "InstallDir" "$INSTDIR"
 SectionEnd
 
 Section "Uninstall"
 	SetShellVarContext all
 	Delete "$SMPROGRAMS\XBT Client.lnk"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client"
+	DeleteRegKey HKLM "Software\XBT\Client"
+	DeleteRegKey /ifempty HKLM "Software\XBT"
 	RMDir /r "$INSTDIR"
 	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
