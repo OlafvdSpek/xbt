@@ -34,6 +34,8 @@ public:
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CXBTClientDlg)
+	public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	//}}AFX_VIRTUAL
@@ -53,8 +55,6 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimer(UINT nIDEvent);
-	virtual void OnCancel();
-	virtual void OnOK();
 	afx_msg void OnPopupOpen();
 	afx_msg void OnPopupClose();
 	afx_msg void OnUpdatePopupClose(CCmdUI* pCmdUI);
