@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "xbt client.h"
 #include "dlg_about.h"
 
 #ifdef _DEBUG

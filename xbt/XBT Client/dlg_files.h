@@ -4,11 +4,16 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
+
 // dlg_files.h : header file
 //
 
+#include "resource.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_files dialog
+
+class Cserver;
 
 class Cdlg_files : public ETSLayoutDialog
 {
