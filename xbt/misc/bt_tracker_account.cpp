@@ -50,7 +50,7 @@ Cvirtual_binary Cbt_tracker_accounts::dump() const
 		cb_d += i->pre_dump();
 	Cvirtual_binary d;
 	Cstream_writer w(d.write_start(cb_d));
-	w.write_int32(size());
+	w.write_int(4, size());
 	for (const_iterator i = begin(); i != end(); i++)
 		i->dump(w);
 	assert(w.w() == d.data_end());

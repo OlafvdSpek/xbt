@@ -33,8 +33,8 @@ int Calert::pre_dump() const
 
 void Calert::dump(Cstream_writer& w) const
 {
-	w.write_int32(m_time);
-	w.write_int32(m_level);
+	w.write_int(4, m_time);
+	w.write_int(4, m_level);
 	w.write_string(m_message);
 	w.write_string(m_source);
 }
