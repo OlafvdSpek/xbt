@@ -23,14 +23,11 @@
 class CXBTClientApp : public CWinApp
 {
 public:
-	static unsigned int backend_thread(void* p);
-
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CXBTClientApp)
 	public:
 	virtual BOOL InitInstance();
-	virtual int ExitInstance();
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -38,9 +35,6 @@ public:
 	//{{AFX_MSG(CXBTClientApp)
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
-private:
-	Cserver m_server;
-	CWinThread* m_server_thread;
 };
 
 
