@@ -768,3 +768,25 @@ void Cbt_file::update_piece_priorities()
 		offset += i->size();
 	}
 }
+
+string Cbt_file::get_hashes(__int64 offset, int c) const
+{
+	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+	{
+		if (offset >= i->offset() + i->size())
+			continue;
+		return i->merkle_tree().get(offset - i->offset() >> 15, c);
+	}
+	return "";
+}
+
+bool Cbt_file::test_and_set_hashes(__int64 offset, const string& v, const string& w)
+{
+	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+	{
+		if (offset >= i->offset() + i->size())
+			continue;
+		return i->merkle_tree().test_and_set(offset - i->offset() >> 15, v, w);
+	}
+	return false;
+}

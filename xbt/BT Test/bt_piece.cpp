@@ -12,7 +12,7 @@
 Cbt_piece::Cbt_piece()
 {
 	mc_peers = 0;
-	mcb_sub_piece = 16 << 10;
+	mcb_sub_piece = 32 << 10;
 	m_valid = false;
 }
 

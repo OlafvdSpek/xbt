@@ -24,6 +24,8 @@ class Cserver;
 class Cbt_file  
 {
 public:
+	string get_hashes(__int64 offset, int c) const;
+	bool test_and_set_hashes(__int64 offset, const string& v, const string& w);
 	bool hash();
 	void update_piece_priorities();
 	void sub_file_priority(const string& id, int priority);
@@ -136,7 +138,7 @@ public:
 		{
 			m_f = -1;
 			m_merkle_hash = merkle_hash;
-			m_merkle_tree.resize(size + 0x3fff >> 14);
+			m_merkle_tree.resize(size + 0x7fff >> 15);
 			m_name = name;
 			m_offset = offset;
 			m_priority = priority;
