@@ -250,8 +250,7 @@ private:
 		int session_started_at;
 		int completed_at;
 		int priority;
-		bool hashing;
-		bool running;
+		int state;
 		bool removed;
 	};
 
