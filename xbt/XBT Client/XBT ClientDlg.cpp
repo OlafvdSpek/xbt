@@ -11,6 +11,8 @@
 #include "dlg_torrent.h"
 #include "resource.h"
 
+#define for if (0) {} else for
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -118,6 +120,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
 	ON_NOTIFY(LVN_COLUMNCLICK, IDC_PEERS, OnColumnclickPeers)
 	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
+	ON_COMMAND(ID_POPUP_COPY, OnPopupCopy)
+	ON_COMMAND(ID_POPUP_PASTE, OnPopupPaste)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -138,6 +142,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", 6879));
 	m_server.dir(static_cast<string>(m_dir));
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881));
+	m_server.public_ipa(Csocket::get_host(static_cast<string>(AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", ""))));
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
 	start_server();
 	CCommandLineInfo cmdInfo;
@@ -251,6 +256,11 @@ void CXBTClientDlg::open(const string& name)
 	m_server.open(d, path);
 }
 
+void CXBTClientDlg::open_url(const string& v)
+{
+	m_server.open_url(v);
+}
+
 void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
@@ -317,7 +327,7 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		m_buffer[m_buffer_w] = inet_ntoa(e.host);
 		break;
 	case pc_port:
-		m_buffer[m_buffer_w] = n(e.port);
+		m_buffer[m_buffer_w] = n(ntohs(e.port));
 		break;
 	case pc_done:
 		m_buffer[m_buffer_w] = n((m_file->size - e.left) * 100 / m_file->size);
@@ -454,7 +464,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 {
 	bool inserted = false;
 	string info_hash = sr.read_string();
-	for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
+	t_files::iterator i;
+	for (i = m_files_map.begin(); i != m_files_map.end(); i++)
 	{
 		if (i->second.info_hash == info_hash)
 			break;
@@ -494,7 +505,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	}
 	{
 		int c_peers = sr.read_int32();
-		for (int i = 0; i < c_peers; i++)
+		while (c_peers--)
 			read_peer_dump(f, sr);
 	}
 	{
@@ -530,26 +541,26 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 {
 	bool inserted = false;
-	in_addr host;
-	host.s_addr = htonl(sr.read_int32());
-	t_peer p1;
-	p1.port = sr.read_int32();
-	p1.peer_id = sr.read_string();
-	p1.downloaded = sr.read_int64();
-	p1.left = sr.read_int64();
-	p1.uploaded = sr.read_int64();
-	p1.down_rate = sr.read_int32();
-	p1.up_rate = sr.read_int32();
-	p1.local_link = sr.read_int8();
-	p1.local_choked = sr.read_int8();
-	p1.local_interested = sr.read_int8();
-	p1.remote_choked = sr.read_int8();
-	p1.remote_interested = sr.read_int8();
-	if (p1.peer_id.empty())
+	t_peer p;
+	p.host.s_addr = sr.read_int32();
+	p.port = sr.read_int32();
+	p.peer_id = sr.read_string();
+	p.downloaded = sr.read_int64();
+	p.left = sr.read_int64();
+	p.uploaded = sr.read_int64();
+	p.down_rate = sr.read_int32();
+	p.up_rate = sr.read_int32();
+	p.local_link = sr.read_int8();
+	p.local_choked = sr.read_int8();
+	p.local_interested = sr.read_int8();
+	p.remote_choked = sr.read_int8();
+	p.remote_interested = sr.read_int8();
+	if (p.peer_id.empty())
 		return;
-	for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); i++)
+	t_peers::iterator i;
+	for (i = f.peers.begin(); i != f.peers.end(); i++)
 	{
-		if (i->second.host.s_addr == host.s_addr)
+		if (i->second.host.s_addr == p.host.s_addr)
 			break;
 	}
 	int id;
@@ -564,35 +575,8 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	}
 	else
 		id = i->first;
-	t_peer& p0 = f.peers.find(id)->second;
-	p0.host = host;
-	if (p0.port != p1.port
-		|| p0.peer_id != p1.peer_id
-		|| p0.downloaded != p1.downloaded
-		|| p0.left != p1.left
-		|| p0.uploaded != p1.uploaded
-		|| p0.down_rate != p1.down_rate
-		|| p0.up_rate != p1.up_rate
-		|| p0.local_link != p1.local_link
-		|| p0.local_choked != p1.local_choked
-		|| p0.local_interested != p1.local_interested
-		|| p0.remote_choked != p1.remote_choked
-		|| p0.remote_interested != p1.remote_interested)
-	{
-		p0.port = p1.port;
-		p0.peer_id = p1.peer_id;
-		p0.downloaded = p1.downloaded;
-		p0.left = p1.left;
-		p0.uploaded = p1.uploaded;
-		p0.down_rate = p1.down_rate;
-		p0.up_rate = p1.up_rate;
-		p0.local_link = p1.local_link;
-		p0.local_choked = p1.local_choked;
-		p0.local_interested = p1.local_interested;
-		p0.remote_choked = p1.remote_choked;
-		p0.remote_interested = p1.remote_interested;
-	}
-	p0.removed = false;
+	p.removed = false;
+	f.peers.find(id)->second = p;
 	if (inserted)
 		auto_size_peers();
 }
@@ -654,6 +638,38 @@ void CXBTClientDlg::OnPopupStop()
 		m_server.stop_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
+void CXBTClientDlg::OnPopupCopy() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index == -1)
+		return;
+	string v = m_server.get_url(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+	if (v.empty())
+		return;
+	void* h = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, v.size() + 1);
+	void* p = GlobalLock(h);
+	if (!p)
+		return;
+	memcpy(p, v.c_str(), v.size() + 1);
+	GlobalUnlock(h);
+	if (!OpenClipboard())
+		return;
+	if (EmptyClipboard())
+		SetClipboardData(CF_TEXT, h);
+	CloseClipboard();	
+}
+
+void CXBTClientDlg::OnPopupPaste() 
+{
+	if (!OpenClipboard())
+		return;
+	void* h = GetClipboardData(CF_TEXT);
+	void* p = GlobalLock(h);
+	if (p)
+		open_url(reinterpret_cast<char*>(p));
+	CloseClipboard();	
+}
+
 void CXBTClientDlg::OnPopupOpen() 
 {
 	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
@@ -679,6 +695,7 @@ void CXBTClientDlg::OnPopupOptions()
 	Cdlg_options::t_data data;
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", 6879);
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881);
+	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
 	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0);
 	dlg.set(data);
 	if (IDOK != dlg.DoModal())
@@ -686,9 +703,11 @@ void CXBTClientDlg::OnPopupOptions()
 	data = dlg.get();
 	m_server.admin_port(data.admin_port);
 	m_server.peer_port(data.peer_port);
+	m_server.public_ipa(inet_addr(data.public_ipa.c_str()));
 	m_server.upload_rate(data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
+	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 }
 
@@ -920,7 +939,7 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	case pc_host:
 		return compare(ntohl(a.host.s_addr), ntohl(b.host.s_addr));
 	case pc_port:
-		return compare(a.port, b.port);
+		return compare(ntohs(a.port), ntohs(b.port));
 	case pc_done:
 		return compare(b.left, a.left);
 	case pc_left:

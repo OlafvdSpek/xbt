@@ -30,6 +30,7 @@ public:
 	void auto_size();
 	void fill_peers();
 	void open(const string& name);
+	void open_url(const string&);
 	CXBTClientDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
@@ -78,6 +79,8 @@ protected:
 	afx_msg void OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnPopupCopy();
+	afx_msg void OnPopupPaste();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
