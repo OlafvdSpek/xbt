@@ -403,10 +403,10 @@ string Cserver::t_file::debug() const
 		in_addr a;
 		a.s_addr = i->first;
 		page += "<tr><td>" + static_cast<string>(inet_ntoa(a))
-			+ "<td>" + n(ntohs(i->second.port))
+			+ "<td align=right>" + n(ntohs(i->second.port))
 			+ "<td>" + (i->second.listening ? '*' : ' ')
-			+ "<td>" + n(i->second.left)
-			+ "<td>" + n(i->second.mtime)
+			+ "<td align=right>" + n(i->second.left)
+			+ "<td align=right>" + n(i->second.mtime)
 			+ "<td>" + hex_encode(i->second.peer_id);
 	}
 	return page;
@@ -422,15 +422,15 @@ string Cserver::debug(const Ctracker_input& ti) const
 		{
 			if (!i->second.leechers && !i->second.seeders)
 				continue;
-			page += "<tr><td>" + n(i->second.fid) 
+			page += "<tr><td align=right>" + n(i->second.fid) 
 				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
 				+ "<td>" + (i->second.dirty ? '*' : ' ')
-				+ "<td>" + n(i->second.peers.size()) 
-				+ "<td>" + n(i->second.leechers) 
-				+ "<td>" + n(i->second.seeders) 
-				+ "<td>" + n(i->second.completed) 
-				+ "<td>" + n(i->second.started) 
-				+ "<td>" + n(i->second.stopped);
+				+ "<td align=right>" + n(i->second.peers.size()) 
+				+ "<td align=right>" + n(i->second.leechers) 
+				+ "<td align=right>" + n(i->second.seeders) 
+				+ "<td align=right>" + n(i->second.completed) 
+				+ "<td align=right>" + n(i->second.started) 
+				+ "<td align=right>" + n(i->second.stopped);
 		}
 	}
 	else
