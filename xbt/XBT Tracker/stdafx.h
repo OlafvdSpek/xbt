@@ -46,8 +46,9 @@ using namespace std;
 #include <unistd.h>
 
 #ifdef BSD
-#define atoll atoi
+#define atoll xbt_atoll
 #endif
+
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
