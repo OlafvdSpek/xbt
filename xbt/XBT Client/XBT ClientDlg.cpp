@@ -451,7 +451,9 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				m_buffer[m_buffer_w] = time2a(m_file->completed_at);
 			break;
 		case dr_downloaded:
-			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b") + " / " + b2a(m_file->total_downloaded, "b");
+			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b");
+			if (m_file->total_downloaded != m_file->downloaded)
+				m_buffer[m_buffer_w] += " / " + b2a(m_file->total_downloaded, "b");
 			if (m_file->size)
 				m_buffer[m_buffer_w] += " (" + n(m_file->total_downloaded * 100 / m_file->size) + " %)";
 			break;
@@ -494,7 +496,9 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				m_buffer[m_buffer_w] = m_file->trackers.front().url;
 			break;
 		case dr_uploaded:
-			m_buffer[m_buffer_w] = b2a(m_file->uploaded, "b") + " / " + b2a(m_file->total_uploaded, "b");
+			m_buffer[m_buffer_w] = b2a(m_file->uploaded, "b");
+			if (m_file->total_uploaded != m_file->uploaded)
+				m_buffer[m_buffer_w] += " / " + b2a(m_file->total_uploaded, "b");
 			if (m_file->size)
 				m_buffer[m_buffer_w] += " (" + n(m_file->total_uploaded * 100 / m_file->size) + " %)";
 			break;
@@ -1731,7 +1735,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_LEFT,
 
 		LVCFMT_LEFT,
-		LVCFMT_LEFT,
+		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 

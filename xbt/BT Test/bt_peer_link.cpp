@@ -661,6 +661,8 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, true);
 		m_remote_choked = true;
 		// clear_local_requests();
+		m_local_requests.clear();
+		mc_local_requests_pending = 0;
 		break;
 	case bti_unchoke:
 		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, false);
