@@ -655,10 +655,13 @@ int Cbt_peer_link::write_data(__int64 o, const char* s, int cb_s, int latency)
 	Cbt_piece& piece = m_f->m_pieces[a];
 	if (!m_f->write_data(o, s, cb_s, this))
 		return 0;
+	int b = o % m_f->mcb_piece / piece.cb_sub_piece();
 	if (o % piece.cb_sub_piece())
-		alert(Calert::debug, "Piece " + n(a) + ", offset " + n(o % m_f->mcb_piece) + ", size " + b2a(cb_s) + ": invalid offset (" + peer_id2a(m_remote_peer_id) + ")");
+		alert(Calert::debug, "Piece " + n(a) + ", offset " + n(o % m_f->mcb_piece) + ", size: " + b2a(cb_s) + ": invalid offset (" + peer_id2a(m_remote_peer_id) + ")");
+	else if (cb_s != piece.cb_sub_piece(b))
+		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(b) + ", size: " + b2a(cb_s) + ": invalid size (" + peer_id2a(m_remote_peer_id) + ")");
 	else
-		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(o % m_f->mcb_piece / piece.cb_sub_piece()) + ", size " + b2a(cb_s) + ", latency: " + n(latency) + " s: rejected (" + peer_id2a(m_remote_peer_id) + ")");
+		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(b) + ", size: " + b2a(cb_s) + ", latency: " + n(latency) + " s: rejected (" + peer_id2a(m_remote_peer_id) + ")");
 	return 1;
 }
 
