@@ -122,7 +122,7 @@ void Cserver::run()
 					for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); )
 					{
 						i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-						if (i->s())
+						if (i->s() == INVALID_SOCKET)
 							i = m_admins.erase(i);
 						else
 							i++;
