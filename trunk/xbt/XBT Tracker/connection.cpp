@@ -165,8 +165,7 @@ void Cconnection::read(const string& v)
 	}
 	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
 		ti.m_ipa = m_a.sin_addr.s_addr;
-	string h = "HTTP/1.0 200 OK\r\n"
-		"Content-Type: text/html; charset=us-ascii\r\n";
+	string h = "HTTP/1.0 200 OK\r\n";
 	Cvirtual_binary s;
 	bool gzip = true;
 	switch (v.length() >= 6 ? v[5] : 0) 
@@ -189,6 +188,7 @@ void Cconnection::read(const string& v)
 		gzip = m_server->gzip_debug();
 		{
 			string v = m_server->debug(ti);
+			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(v.c_str(), v.length());
 		}
 		break;
@@ -197,6 +197,7 @@ void Cconnection::read(const string& v)
 		{
 			gzip = m_server->gzip_debug();
 			string v = m_server->statistics();
+			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(v.c_str(), v.length());
 		}
 		else
