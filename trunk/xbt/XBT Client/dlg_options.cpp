@@ -17,7 +17,7 @@ static char THIS_FILE[] = __FILE__;
 
 
 Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
-	: CDialog(Cdlg_options::IDD, pParent)
+	: ETSLayoutDialog(Cdlg_options::IDD, pParent, "Cdlg_options")
 {
 	//{{AFX_DATA_INIT(Cdlg_options)
 	m_peer_port = 0;
@@ -40,13 +40,14 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_torrent_limit = 0;
 	m_show_confirm_exit_dialog = FALSE;
 	m_hide_on_deactivate = FALSE;
+	m_send_stop_event = FALSE;
 	//}}AFX_DATA_INIT
 }
 
 
 void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	ETSLayoutDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(Cdlg_options)
 	DDX_Control(pDX, IDC_HOT_KEY, m_hot_key);
 	DDX_Text(pDX, IDC_PEER_PORT, m_peer_port);
@@ -72,6 +73,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_TORRENT_LIMIT, m_torrent_limit);
 	DDX_Check(pDX, IDC_SHOW_CONFIRM_EXIT_DIALOG, m_show_confirm_exit_dialog);
 	DDX_Check(pDX, IDC_HIDE_ON_DEACTIVATE, m_hide_on_deactivate);
+	DDX_Check(pDX, IDC_SEND_STOP_EVENT, m_send_stop_event);
 	//}}AFX_DATA_MAP
 	if (pDX->m_bSaveAndValidate)
 		m_hot_key_value = m_hot_key.GetHotKey();
@@ -80,7 +82,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(Cdlg_options, CDialog)
+BEGIN_MESSAGE_MAP(Cdlg_options, ETSLayoutDialog)
 	//{{AFX_MSG_MAP(Cdlg_options)
 	ON_BN_CLICKED(IDC_COMPLETES_DIRECTORY_BROWSE, OnCompletesDirectoryBrowse)
 	ON_BN_CLICKED(IDC_INCOMPLETES_DIRECTORY_BROWSE, OnIncompletesDirectoryBrowse)
@@ -106,6 +108,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.peer_port = m_peer_port;
 	v.public_ipa = m_public_ipa;
 	v.seeding_ratio = m_seeding_ratio;
+	v.send_stop_event = m_send_stop_event;
 	v.show_advanced_columns = m_show_advanced_columns;
 	v.show_confirm_exit_dialog = m_show_confirm_exit_dialog;
 	v.show_tray_icon = m_show_tray_icon;
@@ -132,6 +135,7 @@ void Cdlg_options::set(const t_data& v)
 	m_peer_port = v.peer_port;
 	m_public_ipa = v.public_ipa.c_str();
 	m_seeding_ratio = v.seeding_ratio;
+	m_send_stop_event = v.send_stop_event;
 	m_show_advanced_columns = v.show_advanced_columns;
 	m_show_confirm_exit_dialog = v.show_confirm_exit_dialog;
 	m_show_tray_icon = v.show_tray_icon;
@@ -168,4 +172,74 @@ void Cdlg_options::OnTorrentsDirectoryBrowse()
 		return;
 	m_torrents_dir = dir.c_str();
 	UpdateData(false);
+}
+
+BOOL Cdlg_options::OnInitDialog() 
+{
+	ETSLayoutDialog::OnInitDialog();
+	CreateRoot(VERTICAL)
+		<< (pane(HORIZONTAL)
+			<< (pane(VERTICAL)
+				<< item(IDC_SEEDING_RATIO_STATIC, NORESIZE)
+				<< item(IDC_UPLOAD_RATE_STATIC, NORESIZE)
+				<< item(IDC_UPLOAD_SLOTS_STATIC, NORESIZE)
+				<< item(IDC_PEER_LIMIT_STATIC, NORESIZE)
+				<< item(IDC_TORRENT_LIMIT_STATIC, NORESIZE)
+				<< item(IDC_COMPLETES_DIRECTORY_STATIC, NORESIZE)
+				<< item(IDC_INCOMPLETES_DIRECTORY_STATIC, NORESIZE)
+				<< item(IDC_TORRENTS_DIRECTORY_STATIC, NORESIZE)
+				<< item(IDC_PUBLIC_IPA_STATIC, NORESIZE)
+				<< item(IDC_ADMIN_PORT_STATIC, NORESIZE)
+				<< item(IDC_PEER_PORT_STATIC, NORESIZE)
+				<< item(IDC_TRACKER_PORT_STATIC, NORESIZE)
+				<< item(IDC_HOT_KEY_STATIC, NORESIZE)
+				)
+			<< (pane(VERTICAL)
+				<< item(IDC_SEEDING_RATIO, ABSOLUTE_VERT)
+				<< item(IDC_UPLOAD_RATE, ABSOLUTE_VERT)
+				<< item(IDC_UPLOAD_SLOTS, ABSOLUTE_VERT)
+				<< item(IDC_PEER_LIMIT, ABSOLUTE_VERT)
+				<< item(IDC_TORRENT_LIMIT, ABSOLUTE_VERT)
+				<< (pane(HORIZONTAL)
+					<< item(IDC_COMPLETES_DIRECTORY, ABSOLUTE_VERT)
+					<< item(IDC_COMPLETES_DIRECTORY_BROWSE, NORESIZE)
+					)
+				<< (pane(HORIZONTAL)
+					<< item(IDC_INCOMPLETES_DIRECTORY, ABSOLUTE_VERT)
+					<< item(IDC_INCOMPLETES_DIRECTORY_BROWSE, NORESIZE)
+					)
+				<< (pane(HORIZONTAL)
+					<< item(IDC_TORRENTS_DIRECTORY, ABSOLUTE_VERT)
+					<< item(IDC_TORRENTS_DIRECTORY_BROWSE, NORESIZE)
+					)
+				<< item(IDC_PUBLIC_IPA, ABSOLUTE_VERT)
+				<< item(IDC_ADMIN_PORT, ABSOLUTE_VERT)
+				<< item(IDC_PEER_PORT, ABSOLUTE_VERT)
+				<< item(IDC_TRACKER_PORT, ABSOLUTE_VERT)
+				<< item(IDC_HOT_KEY, ABSOLUTE_VERT)
+				)
+			)
+		<< (pane(HORIZONTAL)
+			<< (pane(VERTICAL)
+				<< item(IDC_ASK_FOR_LOCATION, NORESIZE)
+				<< item(IDC_BIND_BEFORE_CONNECT, NORESIZE)
+				<< item(IDC_HIDE_ON_DEACTIVATE, NORESIZE)
+				<< item(IDC_LOWER_PROCESS_PRIORITY, NORESIZE)
+				<< item(IDC_SEND_STOP_EVENT, NORESIZE)
+				)
+			<< (pane(VERTICAL)
+				<< item(IDC_SHOW_ADVANCED_COLUMNS, NORESIZE)
+				<< item(IDC_SHOW_CONFIRM_EXIT_DIALOG, NORESIZE)
+				<< item(IDC_SHOW_TRAY_ICON, NORESIZE)
+				<< item(IDC_START_MINIMIZED, NORESIZE)
+				)
+			)
+		<< (pane(HORIZONTAL)
+			<< itemGrowing(HORIZONTAL)
+			<< item(IDOK, NORESIZE)
+			<< item(IDCANCEL, NORESIZE)
+			)
+		;
+	UpdateLayout();
+	return true;
 }
