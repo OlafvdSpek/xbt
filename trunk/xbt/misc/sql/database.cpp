@@ -6,6 +6,7 @@
 #include "database.h"
 
 #include <fstream>
+#include <iostream>
 
 Cxcc_error Cdatabase::open(const char* host, const char* user, const char* password, const char* database, bool echo_errors)
 {
@@ -18,6 +19,16 @@ Cxcc_error Cdatabase::open(const char* host, const char* user, const char* passw
 Cxcc_error Cdatabase::open(const string& host, const string& user, const string& password, const string& database, bool echo_errors)
 {
 	return open(host.c_str(), user.c_str(), password.c_str(), database.c_str(), echo_errors);
+}
+
+Cxcc_error Cdatabase::open(istream& is, bool echo_errors)
+{
+	string host; 
+	string user; 
+	string password; 
+	string database;
+	is >> database >> host >> user >> password;
+	return is ? open(host, user, password, database, echo_errors) : Cxcc_error("Unable to read static config");
 }
 
 Csql_result Cdatabase::query(const string& q)
