@@ -137,6 +137,14 @@ void CXBTManagerDlg::insert(const string& name)
 	Cbvalue v;
 	if (v.write(Cvirtual_binary(name)))
 		return;
+	Cvirtual_binary d = v.d("info").read();
+	char h[20];
+	compute_sha1(d, d.size(), h);
+	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
+	{
+		if (i->second.info_hash == string(h, 20))
+			return;
+	}
 	t_map_entry& e = m_map[m_map.empty() ? 0 : m_map.rbegin()->first + 1];
 	e.fname = name;
 	{
@@ -146,9 +154,6 @@ void CXBTManagerDlg::insert(const string& name)
 		if (i != string::npos)
 			e.name.erase(i);
 	}
-	Cvirtual_binary d = v.d("info").read();
-	char h[20];
-	compute_sha1(d, d.size(), h);
 	e.info_hash.assign(h, 20);
 	e.tracker = v.d(bts_announce).s();
 	e.leechers = -1;
@@ -281,7 +286,10 @@ void CXBTManagerDlg::OnKeydownList(NMHDR* pNMHDR, LRESULT* pResult)
 		{
 			for (int i; (i = m_list.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED)) != -1; )
 			{
-				m_map.erase(m_list.GetItemData(i));
+				t_map::iterator j = m_map.find(m_list.GetItemData(i));
+				if (j->second.s)
+					delete j->second.s;
+				m_map.erase(j);
 				m_list.DeleteItem(i);
 			}
 			save(list_fname);
