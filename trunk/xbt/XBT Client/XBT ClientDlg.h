@@ -168,27 +168,18 @@ private:
 		string source;
 	};
 
-	struct t_peer
+	struct t_peer: public Cbt_peer_data
 	{
-		in_addr host;
-		int port;
-		string peer_id;
-		__int64 downloaded;
-		__int64 left;
-		__int64 uploaded;
-		int down_rate;
-		int up_rate;
-		bool local_link;
-		bool local_choked;
-		bool local_interested;
-		int c_local_requests;
-		bool remote_choked;
-		bool remote_interested;
-		int c_remote_requests;
-		int c_pieces;
-		int rtime;
-		int stime;
-		bool removed;
+		in_addr m_host;
+		int m_port;
+		int m_down_rate;
+		int m_up_rate;
+		int mc_local_requests;
+		int mc_remote_requests;
+		int mc_pieces;
+		int m_rtime;
+		int m_stime;
+		bool m_removed;
 	};
 
 	struct t_piece

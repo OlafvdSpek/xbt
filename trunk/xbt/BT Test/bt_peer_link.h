@@ -140,19 +140,10 @@ public:
 	int m_send_quota;
 	int mc_max_requests_pending;
 
-	bool m_local_link;
-	bool m_local_choked;
-	bool m_local_interested;
 	t_local_requests m_local_requests;
 	int mc_local_requests_pending;
-	bool m_remote_choked;
-	bool m_remote_interested;
-	string m_remote_peer_id;
 	t_remote_pieces m_remote_pieces;
 	t_remote_requests m_remote_requests;
-	__int64 m_downloaded;
-	__int64 m_left;
-	__int64 m_uploaded;
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
 	int m_get_peers_stime;
