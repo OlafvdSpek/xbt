@@ -42,6 +42,11 @@ public:
 		return m_message;
 	}
 
+	void message(const string& v)
+	{
+		m_message = v;
+	}
+
 	Calert(t_level level, const string& message)
 	{
 		m_time = ::time(NULL);
