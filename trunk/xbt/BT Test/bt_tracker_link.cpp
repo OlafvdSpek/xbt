@@ -315,15 +315,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 				{
 					r += *r == '\n' ? 2 : 4;
 					Cbvalue v;
-					if (r + 10 <= d.data_end() && r[0] == 0x1f && r[1] == 0x8b && r[2] == 8)
-					{
-						if (v.write(xcc_z::gunzip(r, d.data_end() - r)))
-						{
-							f.alert(Calert(Calert::error, "Tracker: gzip decode failed"));
-							return 1;						;
-						}
-					}
-					else if (v.write(r, d.data_end() - r))
+					if (v.write(r, d.data_end() - r))
 					{
 						f.alert(Calert(Calert::error, "Tracker: bdecode failed"));
 						return 1;
