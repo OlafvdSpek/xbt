@@ -25,7 +25,7 @@ const static UINT g_tray_message_id = RegisterWindowMessage("XBT Client Tray Mes
 
 enum
 {
-	fc_hash,
+	fc_name,
 	fc_done,
 	fc_left,
 	fc_total_downloaded,
@@ -35,13 +35,12 @@ enum
 	fc_leechers,
 	fc_seeders,
 	fc_state,
-	fc_name,
+	fc_hash,
 };
 
 enum
 {
-	pc_host,
-	pc_port,
+	pc_peer_id,
 	pc_done,
 	pc_left,
 	pc_downloaded,
@@ -53,7 +52,8 @@ enum
 	pc_local_interested,
 	pc_remote_choked,
 	pc_remote_interested,
-	pc_peer_id,
+	pc_host,
+	pc_port,
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -160,32 +160,8 @@ BOOL CXBTClientDlg::OnInitDialog()
 	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
 		open(static_cast<string>(cmdInfo.m_strFileName));
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	m_files.InsertColumn(fc_hash, "Hash");
-	m_files.InsertColumn(fc_done, "%", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_left, "Left", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_total_downloaded, "Downloaded", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_total_uploaded, "Uploaded", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_down_rate, "Down rate", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_up_rate, "Up rate", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_leechers, "Leechers", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_seeders, "Seeders", LVCFMT_RIGHT);
-	m_files.InsertColumn(fc_state, "State");
-	m_files.InsertColumn(fc_name, "Name");
 	m_peers.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-	m_peers.InsertColumn(pc_host, "Host");
-	m_peers.InsertColumn(pc_port, "Port", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_done, "%", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_left, "Left", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_downloaded, "Downloaded", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_uploaded, "Uploaded", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_down_rate, "Down rate", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_up_rate, "Up rate", LVCFMT_RIGHT);
-	m_peers.InsertColumn(pc_link_direction, "D");
-	m_peers.InsertColumn(pc_local_choked, "L");
-	m_peers.InsertColumn(pc_local_interested, "L");
-	m_peers.InsertColumn(pc_remote_choked, "R");
-	m_peers.InsertColumn(pc_remote_interested, "R");
-	m_peers.InsertColumn(pc_peer_id, "Peer ID");
+	insert_columns();
 	m_files_sort_column = -1;
 	m_peers_sort_column = -1;
 	m_file = NULL;
@@ -771,6 +747,7 @@ void CXBTClientDlg::OnPopupOptions()
 	if (!data.public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(data.public_ipa));
 	m_server.seeding_ratio(data.seeding_ratio);
+	m_show_advanced_columns = data.show_advanced_columns;
 	m_show_tray_icon = data.show_tray_icon;
 	m_server.upload_rate(data.upload_rate);
 	m_server.upload_slots(data.upload_slots);
@@ -782,6 +759,8 @@ void CXBTClientDlg::OnPopupOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
+	insert_columns();
+	auto_size();
 	if (m_show_tray_icon)
 		register_tray();
 	else
@@ -1108,4 +1087,39 @@ void CXBTClientDlg::sort_peers()
 	m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
 }
 
-
+void CXBTClientDlg::insert_columns()
+{
+	while (m_files.GetHeaderCtrl()->GetItemCount())
+		m_files.DeleteColumn(0);
+	m_files.InsertColumn(fc_name, "Name");
+	m_files.InsertColumn(fc_done, "%", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_left, "Left", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_total_downloaded, "Downloaded", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_total_uploaded, "Uploaded", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_down_rate, "Down rate", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_up_rate, "Up rate", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_leechers, "Leechers", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_seeders, "Seeders", LVCFMT_RIGHT);
+	m_files.InsertColumn(fc_state, "State");
+	if (m_show_advanced_columns)
+		m_files.InsertColumn(fc_hash, "Hash");
+	while (m_peers.GetHeaderCtrl()->GetItemCount())
+		m_peers.DeleteColumn(0);
+	m_peers.InsertColumn(pc_peer_id, "Peer ID");
+	m_peers.InsertColumn(pc_done, "%", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_left, "Left", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_downloaded, "Downloaded", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_uploaded, "Uploaded", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_down_rate, "Down rate", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_up_rate, "Up rate", LVCFMT_RIGHT);
+	m_peers.InsertColumn(pc_link_direction, "D");
+	m_peers.InsertColumn(pc_local_choked, "L");
+	m_peers.InsertColumn(pc_local_interested, "L");
+	m_peers.InsertColumn(pc_remote_choked, "R");
+	m_peers.InsertColumn(pc_remote_interested, "R");
+	if (m_show_advanced_columns)
+	{
+		m_peers.InsertColumn(pc_host, "Host");
+		m_peers.InsertColumn(pc_port, "Port", LVCFMT_RIGHT);
+	}
+}
