@@ -189,6 +189,9 @@ void Cbt_file::close()
 
 int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
+	if (m_run && !m_left && m_server->seeding_ratio() && m_total_uploaded / m_server->seeding_ratio() > mcb_f)
+		m_run = false;
+	else if (m_run)
 	{
 		for (t_new_peers::const_iterator i = m_new_peers.begin(); i != m_new_peers.end(); i++)
 		{

@@ -36,6 +36,7 @@ public:
 	void admin_port(int);
 	void peer_port(int);
 	void public_ipa(int);
+	void seeding_ratio(int);
 	void upload_rate(int);
 	void upload_slots(int);
 	string state_fname() const;
@@ -96,6 +97,11 @@ public:
 		return m_public_ipa;
 	}
 
+	int seeding_ratio() const
+	{
+		return m_seeding_ratio;
+	}
+
 	const Cbt_tracker_accounts& tracker_accounts()
 	{
 		return m_tracker_accounts;
@@ -125,6 +131,7 @@ private:
 	int m_public_ipa;
 	int m_send_quota;
 	bool m_run;
+	int m_seeding_ratio;
 	int m_update_chokes_time;
 	int m_update_send_quotas_time;
 	int m_upload_rate;

@@ -147,6 +147,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	string public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
 	if (!public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(public_ipa));
+	m_server.seeding_ratio(AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio()));
 	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
 	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));	
 	start_server();
@@ -738,6 +739,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
 	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
+	data.seeding_ratio = AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio());
 	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate());
 	data.upload_slots = AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots());
 	dlg.set(data);
@@ -748,11 +750,13 @@ void CXBTClientDlg::OnPopupOptions()
 	m_server.peer_port(data.peer_port);
 	if (!data.public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(data.public_ipa));
+	m_server.seeding_ratio(data.seeding_ratio);
 	m_server.upload_rate(data.upload_rate);
 	m_server.upload_slots(data.upload_slots);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
 	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
+	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
 }
