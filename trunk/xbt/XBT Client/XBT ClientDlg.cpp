@@ -678,7 +678,6 @@ void CXBTClientDlg::update_tray()
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
-
 LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam) 
 {
 	if (message == g_tray_message_id)
@@ -686,10 +685,9 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		switch (lParam)
 		{
 		case WM_LBUTTONDBLCLK:
+			ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
 			if (IsWindowVisible())
 				SetForegroundWindow();
-			else
-				ShowWindow(SW_RESTORE);
 			return 0;
 		}
 	}
