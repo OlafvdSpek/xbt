@@ -23,10 +23,12 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 	read_db();
 	write_db();
 	fd_set fd_read_set;
+	fd_set fd_write_set;
 	fd_set fd_except_set;
 	while (1)
 	{
 		FD_ZERO(&fd_read_set);
+		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
 		int n = max(static_cast<SOCKET>(lt), static_cast<SOCKET>(lu));
 		{
@@ -39,7 +41,7 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 		{
 			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); i++)
 			{
-				int z = i->pre_select(&fd_read_set, &fd_except_set);
+				int z = i->pre_select(&fd_write_set, &fd_except_set);
 				n = max(n, z);
 			}
 		}
@@ -79,7 +81,7 @@ void Cserver::run(Csocket& lt, Csocket& lu)
 			{
 				for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
 				{
-					i->post_select(&fd_read_set, &fd_except_set);
+					i->post_select(&fd_write_set, &fd_except_set);
 					if (*i)
 						i++;
 					else
@@ -113,7 +115,7 @@ void Cserver::insert_peer(const Ctracker_input& v)
 		(peer.left ? file.leechers : file.seeders)++;
 
 		if (time(NULL) - peer.mtime > 900)
-			m_peer_links.push_front(Cpeer_link(inet_addr(v.m_ipa.c_str()), v.m_port, this, v.m_info_hash, v.m_ipa));
+			m_peer_links.push_front(Cpeer_link(ntohl(inet_addr(v.m_ipa.c_str())), v.m_port, this, v.m_info_hash, v.m_ipa));
 		peer.mtime = time(NULL);
 	}
 	switch (v.m_event)

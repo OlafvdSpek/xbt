@@ -14,8 +14,8 @@ class Cserver;
 class Cpeer_link  
 {
 public:
-	int pre_select(fd_set* fd_read_set, fd_set* fd_except_set);
-	void post_select(fd_set* fd_read_set, fd_set* fd_except_set);
+	int pre_select(fd_set* fd_write_set, fd_set* fd_except_set);
+	void post_select(fd_set* fd_write_set, fd_set* fd_except_set);
 	Cpeer_link();
 	Cpeer_link(int h, int p, Cserver* server, const string& file_id, const string& peer_id);
 
