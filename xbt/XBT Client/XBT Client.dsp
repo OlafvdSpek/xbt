@@ -92,6 +92,10 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=..\misc\alerts.cpp
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_admin_link.cpp"
 # End Source File
 # Begin Source File
@@ -141,6 +145,10 @@ SOURCE="..\BT Test\data_counter.cpp"
 # Begin Source File
 
 SOURCE=.\dlg_options.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_torrent.cpp
 # End Source File
 # Begin Source File
 
@@ -205,6 +213,10 @@ SOURCE=..\misc\xif_value.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\misc\alerts.h
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_admin_link.h"
 # End Source File
 # Begin Source File
@@ -250,6 +262,10 @@ SOURCE="..\BT Test\data_counter.h"
 # Begin Source File
 
 SOURCE=.\dlg_options.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_torrent.h
 # End Source File
 # Begin Source File
 
