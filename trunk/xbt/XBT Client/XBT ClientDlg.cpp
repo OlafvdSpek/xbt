@@ -1004,11 +1004,14 @@ void CXBTClientDlg::update_tray(const char* info_title, const char* info)
 	nid.uID = 0;
 	nid.uFlags = NIF_INFO;
 	nid.dwInfoFlags = NIIF_INFO;
-	if (info_title)
+	if (info_title && strlen(info_title) < sizeof(nid.szInfoTitle))
 		strcpy(nid.szInfoTitle, info_title);
 	else
 		*nid.szInfoTitle = 0;
-	strcpy(nid.szInfo, info);
+	if (info && strlen(info) < sizeof(nid.szInfo))
+		strcpy(nid.szInfo, info);
+	else
+		*nid.szInfo = 0;
 	nid.uTimeout = 10;
 	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
