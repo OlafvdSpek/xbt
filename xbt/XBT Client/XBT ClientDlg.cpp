@@ -141,8 +141,8 @@ enum
 	dr_size,
 	dr_started_at,
 	dr_tracker,
-	dr_upload_slots_max,
 	dr_upload_slots_min,
+	dr_upload_slots_max,
 	dr_uploaded,
 	dr_uploaded_l5_overhead,
 	dr_count
@@ -598,8 +598,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Size",
 		"Started at",
 		"Tracker",
-		"Upload Slots Max",
 		"Upload Slots Min",
+		"Upload Slots Max",
 		"Uploaded",
 		"Uploaded (layer 5 overhead)",
 	};
