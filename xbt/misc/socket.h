@@ -99,7 +99,8 @@ public:
 	int recv(void*, int);
 	int recvfrom(void* d, int cb_d, sockaddr* a, socklen_t* cb_a);
 	int send(const void*, int);
-	int sendto(const void*, int, const sockaddr* a, socklen_t cb_a);	
+	int sendto(const void*, int, const sockaddr* a, socklen_t cb_a);
+	int setsockopt(int level, int name, const void* v, int cb_v);
 	Csocket(SOCKET = INVALID_SOCKET);
 	Csocket(const Csocket&);
 	const Csocket& operator=(const Csocket&);

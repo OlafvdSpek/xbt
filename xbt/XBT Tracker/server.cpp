@@ -104,7 +104,7 @@ int Cserver::run()
 			int v = true;
 			if (l0.open(SOCK_STREAM) == INVALID_SOCKET)			
 				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else if (setsockopt(l0, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
+			else if (l0.setsockopt(SOL_SOCKET, SO_REUSEADDR, &v, sizeof(int)),
 				l0.bind(*j, htons(*i)))			
 				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l0.listen())
@@ -113,7 +113,7 @@ int Cserver::run()
 				lt.push_back(l0);
 			if (l1.open(SOCK_DGRAM) == INVALID_SOCKET)
 				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else if (setsockopt(l1, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(int)),
+			else if (l1.setsockopt(SOL_SOCKET, SO_REUSEADDR, &v, sizeof(int)),
 				l1.bind(*j, htons(*i)))
 				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
