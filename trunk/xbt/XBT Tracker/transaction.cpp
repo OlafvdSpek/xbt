@@ -44,14 +44,14 @@ Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 	m_s = s;
 }
 
-const Cserver::t_user* Ctransaction::authenticate(const void* s0, const char* s_end) const
+Cserver::t_user* Ctransaction::authenticate(const void* s0, const char* s_end) const
 {
 	const char* s = reinterpret_cast<const char*>(s0);
 	if (s_end - s < 16)
 		return NULL;
 	string name(s_end - 16, 8);
 	int i = name.find('\0');
-	const Cserver::t_user* user = m_server.find_user_by_name(i == string::npos ? name : name.substr(0, i));
+	Cserver::t_user* user = m_server.find_user_by_name(i == string::npos ? name : name.substr(0, i));
 	if (!user)
 		return NULL;
 	Csha1 sha1;
@@ -123,7 +123,7 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 {
 	if (read_int(8, r + uti_connection_id, r_end) != connection_id())
 		return;
-	const Cserver::t_user* user = authenticate(r, r_end);
+	Cserver::t_user* user = authenticate(r, r_end);
 	if (!m_server.anonymous_announce() && !user)
 	{
 		send_error(r, r_end, "access denied");

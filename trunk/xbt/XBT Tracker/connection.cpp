@@ -179,7 +179,7 @@ void Cconnection::read(const string& v)
 				s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
 			else
 			{
-				const Cserver::t_user* user = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->find_user_by_torrent_pass(v.substr(7, 32)) : NULL;
+				Cserver::t_user* user = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->find_user_by_torrent_pass(v.substr(7, 32)) : NULL;
 				if (!user)
 					user = m_server->find_user_by_ipa(ntohl(ti.m_ipa));
 				if (!m_server->anonymous_announce() && !user)
