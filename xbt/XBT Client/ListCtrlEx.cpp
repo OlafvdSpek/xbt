@@ -41,3 +41,9 @@ void CListCtrlEx::OnSize(UINT nType, int cx, int cy)
 	CListCtrl::OnSize(nType, cx, cy);
 	auto_size();
 }
+
+void CListCtrlEx::PreSubclassWindow() 
+{
+	CListCtrl::PreSubclassWindow();
+	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT);
+}

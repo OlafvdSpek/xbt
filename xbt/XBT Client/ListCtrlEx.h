@@ -9,6 +9,8 @@ class CListCtrlEx: public CListCtrl
 {
 public:
 	//{{AFX_VIRTUAL(CListCtrlEx)
+	protected:
+	virtual void PreSubclassWindow();
 	//}}AFX_VIRTUAL
 public:
 	void auto_size();

@@ -54,7 +54,6 @@ BOOL Cdlg_torrent::OnInitDialog()
 		;
 	UpdateLayout();
 
-	m_alerts.SetExtendedStyle(m_alerts.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_alerts.InsertColumn(0, "Time");
 	m_alerts.InsertColumn(1, "Level");
 	m_alerts.InsertColumn(2, "Source");

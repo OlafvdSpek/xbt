@@ -97,7 +97,6 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 		;
 	UpdateLayout();
 	
-	m_list.SetExtendedStyle(m_list.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_list.InsertColumn(0, "Name");
 	m_list.InsertColumn(1, "Size", LVCFMT_RIGHT);
 	m_list.InsertColumn(2, "");
