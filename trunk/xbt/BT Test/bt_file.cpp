@@ -678,6 +678,28 @@ int Cbt_file::c_seeders() const
 	return c;
 }
 
+int Cbt_file::c_local_links() const
+{
+	int c = 0;
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	{
+		if (i->m_local_link && i->m_state == 3)
+			c++;
+	}
+	return c;
+}
+
+int Cbt_file::c_remote_links() const
+{
+	int c = 0;
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	{
+		if (!i->m_local_link && i->m_state == 3)
+			c++;
+	}
+	return c;
+}
+
 __int64 Cbt_file::size() const
 {
 	return m_size;

@@ -27,6 +27,8 @@ class Cserver;
 class Cbt_file: public Cbt_file_data
 {
 public:
+	int c_local_links() const;
+	int c_remote_links() const;
 	int seeding_ratio() const;
 	int upload_slots_max() const;
 	int upload_slots_min() const;
