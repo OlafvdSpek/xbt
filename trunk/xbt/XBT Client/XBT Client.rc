@@ -295,10 +295,8 @@ BEGIN
         END
         POPUP "&Torrent"
         BEGIN
-            MENUITEM "Alerts",                      ID_POPUP_TORRENT_ALERTS
             MENUITEM "Explore",                     ID_POPUP_EXPLORE
             MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
-            MENUITEM "Files...",                    ID_POPUP_FILES
             MENUITEM SEPARATOR
             MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
             MENUITEM "Start",                       ID_POPUP_START
