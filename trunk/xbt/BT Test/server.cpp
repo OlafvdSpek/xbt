@@ -46,6 +46,7 @@ Cserver::Cserver()
 	m_peer_port = m_new_peer_port = 6881;
 	m_public_ipa = 0;
 	m_run = false;
+	m_seeding_ratio = 0;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time(NULL);
 	m_upload_rate = 0;
@@ -72,12 +73,12 @@ static string new_peer_id()
 
 void Cserver::admin_port(int v)
 {
-	m_new_admin_port = v;
+	m_new_admin_port = max(0, v);
 }
 
 void Cserver::peer_port(int v)
 {
-	m_new_peer_port = v;
+	m_new_peer_port = max(0, v);
 }
 
 void Cserver::public_ipa(int v)
@@ -85,14 +86,19 @@ void Cserver::public_ipa(int v)
 	m_public_ipa = v == INADDR_NONE ? 0 : v;
 }
 
+void Cserver::seeding_ratio(int v)
+{
+	m_seeding_ratio = max(0, v);
+}
+
 void Cserver::upload_rate(int v)
 {
-	m_upload_rate = v;
+	m_upload_rate = max(0, v);
 }
 
 void Cserver::upload_slots(int v)
 {
-	m_upload_slots = v;
+	m_upload_slots = max(0, v);
 }
 
 int Cserver::run()
@@ -569,7 +575,9 @@ void Cserver::update_chokes()
 	{
 		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
 		{
-			if (j->m_remote_interested && j->m_down_counter.rate())
+			if (!i->m_run)
+				j->choked(true);
+			else if (j->m_remote_interested && j->m_down_counter.rate())
 				links0.insert(t_links0::value_type(j->m_down_counter.rate(), &*j));
 			else
 				links1.push_back(&*j);
