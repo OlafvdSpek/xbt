@@ -46,7 +46,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_torrent message handlers
 
-BOOL Cdlg_torrent::OnInitDialog() 
+BOOL Cdlg_torrent::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
@@ -108,8 +108,8 @@ void Cdlg_torrent::load_data()
 	m_alerts.auto_size();
 }
 
-void Cdlg_torrent::OnTimer(UINT nIDEvent) 
+void Cdlg_torrent::OnTimer(UINT nIDEvent)
 {
-	load_data();	
+	load_data();
 	ETSLayoutDialog::OnTimer(nIDEvent);
 }

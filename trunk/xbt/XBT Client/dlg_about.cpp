@@ -43,22 +43,22 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_about message handlers
 
-void Cdlg_about::OnSite() 
+void Cdlg_about::OnSite()
 {
-	ShellExecute(m_hWnd, "open", "http://xbtt.sourceforge.net/", NULL, NULL, SW_SHOW);	
+	ShellExecute(m_hWnd, "open", "http://xbtt.sourceforge.net/", NULL, NULL, SW_SHOW);
 }
 
-BOOL Cdlg_about::OnInitDialog() 
+BOOL Cdlg_about::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	
+
 	m_license.ModifyStyle(0, SS_NOTIFY);
 	m_site.ModifyStyle(0, SS_NOTIFY);
-	
+
 	return true;
 }
 
-void Cdlg_about::OnLicense() 
+void Cdlg_about::OnLicense()
 {
-	ShellExecute(m_hWnd, "open", "http://gnu.org/copyleft/gpl.html", NULL, NULL, SW_SHOW);	
+	ShellExecute(m_hWnd, "open", "http://gnu.org/copyleft/gpl.html", NULL, NULL, SW_SHOW);
 }

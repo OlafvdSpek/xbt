@@ -67,7 +67,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_make_torrent message handlers
 
-BOOL Cdlg_make_torrent::OnInitDialog() 
+BOOL Cdlg_make_torrent::OnInitDialog()
 {
 	m_tracker = AfxGetApp()->GetProfileString(m_strRegStore, "tracker");
 	m_trackers = AfxGetApp()->GetProfileString(m_strRegStore, "trackers");
@@ -96,7 +96,7 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 			)
 		;
 	UpdateLayout();
-	
+
 	m_list.InsertColumn(0, "Name");
 	m_list.InsertColumn(1, "Size", LVCFMT_RIGHT);
 	m_list.InsertColumn(2, "");
@@ -106,7 +106,7 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
 		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
 	post_insert();
-	
+
 	return true;
 }
 
@@ -116,10 +116,10 @@ static string base_name(const string& v)
 	return i == string::npos ? v : v.substr(i + 1);
 }
 
-void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo) 
+void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo)
 {
 	int c_files = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
-	
+
 	for (int i = 0; i < c_files; i++)
 	{
 		char name[MAX_PATH];
@@ -184,7 +184,7 @@ void Cdlg_make_torrent::post_insert()
 	m_save.EnableWindow(!m_map.empty() && m_map.size() < 256);
 }
 
-void Cdlg_make_torrent::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_make_torrent::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	m_buffer[++m_buffer_w &= 3].erase();
@@ -228,7 +228,7 @@ static Cbvalue parse_trackers(const string& v)
 	return announce_list;
 }
 
-void Cdlg_make_torrent::OnSave() 
+void Cdlg_make_torrent::OnSave()
 {
 	if (!UpdateData())
 		return;
@@ -350,7 +350,7 @@ void Cdlg_make_torrent::OnSave()
 	EndDialog(IDOK);
 }
 
-void Cdlg_make_torrent::OnColumnclickList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_make_torrent::OnColumnclickList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	m_sort_reverse = pNMListView->iSubItem == m_sort_column && !m_sort_reverse;
@@ -388,10 +388,10 @@ static int CALLBACK compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 
 void Cdlg_make_torrent::sort()
 {
-	m_list.SortItems(::compare, reinterpret_cast<DWORD>(this));	
+	m_list.SortItems(::compare, reinterpret_cast<DWORD>(this));
 }
 
-void Cdlg_make_torrent::OnLoadTrackers() 
+void Cdlg_make_torrent::OnLoadTrackers()
 {
 	UpdateData(true);
 	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);

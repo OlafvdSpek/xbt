@@ -48,7 +48,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_trackers message handlers
 
-BOOL Cdlg_trackers::OnInitDialog() 
+BOOL Cdlg_trackers::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
@@ -72,7 +72,7 @@ BOOL Cdlg_trackers::OnInitDialog()
 	return true;
 }
 
-void Cdlg_trackers::OnInsert() 
+void Cdlg_trackers::OnInsert()
 {
 	Cdlg_tracker dlg(this);
 	if (IDOK != dlg.DoModal())
@@ -85,7 +85,7 @@ void Cdlg_trackers::OnInsert()
 	m_list.auto_size();
 }
 
-void Cdlg_trackers::OnEdit() 
+void Cdlg_trackers::OnEdit()
 {
 	int index = m_list.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
@@ -104,7 +104,7 @@ void Cdlg_trackers::OnEdit()
 	m_list.Update(index);
 }
 
-void Cdlg_trackers::OnDelete() 
+void Cdlg_trackers::OnDelete()
 {
 	int index = m_list.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
@@ -121,7 +121,7 @@ void Cdlg_trackers::insert(const t_tracker& e)
 		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), id);
 }
 
-void Cdlg_trackers::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_trackers::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	m_buffer[++m_buffer_w &= 3].erase();
@@ -142,7 +142,7 @@ void Cdlg_trackers::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void Cdlg_trackers::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_trackers::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	OnEdit();
 	*pResult = 0;
