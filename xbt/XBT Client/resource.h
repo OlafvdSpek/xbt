@@ -30,10 +30,13 @@
 #define IDC_INCREASE_PRIORITY           1014
 #define IDC_LIST                        1014
 #define IDC_FILES_LOCATION              1014
+#define IDC_COMPLETES_DIRECTORY         1014
 #define IDC_INSERT                      1015
 #define IDC_OPEN                        1015
+#define IDC_INCOMPLETES_DIRECTORY       1015
 #define IDC_DELETE                      1016
 #define IDC_EXPLORE                     1016
+#define IDC_TORRENTS_DIRECTORY          1016
 #define IDC_TRACKER                     1017
 #define IDC_EDIT                        1017
 #define IDC_USER                        1018
