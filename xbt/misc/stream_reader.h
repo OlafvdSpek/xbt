@@ -37,39 +37,21 @@ public:
 		return v;
 	}
 
-	int read_int8()
+	__int64 read_int(int cb)
 	{
-		m_r++;
-		return read_int(1, m_r - 1);
-	}
-
-	int read_int16()
-	{
-		m_r += 2;
-		return read_int(2, m_r - 2);
-	}
-
-	int read_int32()
-	{
-		m_r += 4;
-		return read_int(4, m_r - 4);
-	}
-
-	__int64 read_int64()
-	{
-		m_r += 8;
-		return read_int(8, m_r - 8);
+		m_r += cb;
+		return ::read_int(cb, m_r - cb);
 	}
 
 	Cvirtual_binary read_data()
 	{
-		int l = read_int32();
+		int l = read_int(4);
 		return Cvirtual_binary(read(l), l);
 	}
 
 	string read_string()
 	{
-		int l = read_int32();
+		int l = read_int(4);
 		return string(reinterpret_cast<const char*>(read(l)), l);
 	}
 

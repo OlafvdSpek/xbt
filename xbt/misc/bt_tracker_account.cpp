@@ -74,7 +74,7 @@ void Cbt_tracker_accounts::load(const Cvirtual_binary& s)
 	if (s.size() < 4)
 		return;
 	Cstream_reader r(s);
-	for (int count = r.read_int32(); count--; )
+	for (int count = r.read_int(4); count--; )
 	{
 		string tracker = r.read_string();
 		string name = r.read_string();

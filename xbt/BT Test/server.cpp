@@ -628,9 +628,9 @@ void Cserver::load_state(const Cvirtual_binary& d)
 {
 	Clock l(m_cs);
 	Cstream_reader r(d);
-	if (d.size() < 8 || r.read_int32() != g_state_version)
+	if (d.size() < 8 || r.read_int(4) != g_state_version)
 		return;
-	for (int c_files = r.read_int32(); c_files--; )
+	for (int c_files = r.read_int(4); c_files--; )
 	{
 		Cbt_file f;
 		f.m_server = this;
