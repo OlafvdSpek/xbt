@@ -229,15 +229,15 @@ string peer_id2a(const string& v)
 string duration2a(int v)
 {
 	if (v < 120)
-		return n(v) + " s";
+		return n(v) + " seconds";
 	v /= 60;
 	if (v < 120)
-		return n(v) + " m";
+		return n(v) + " minutes";
 	v /= 60;
 	if (v < 48)
-		return n(v) + " h";
+		return n(v) + " hours";
 	v /= 24;
-	return n(v) + " d";
+	return n(v) + " days";
 }
 
 string time2a(time_t v)
