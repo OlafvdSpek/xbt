@@ -72,7 +72,7 @@ bool Cbt_hasher::run(Cbt_file& f)
 		{
 			if (f.m_merkle && m_sub_file->merkle_tree().root() != m_sub_file->merkle_hash())
 			{
-				Cbt_piece* piece = f.m_pieces.begin() + m_sub_file->offset() / f.mcb_piece;
+				Cbt_piece* piece = &f.m_pieces.front() + m_sub_file->offset() / f.mcb_piece;
 				for (int i = 0; i < m_sub_file->c_pieces(f.mcb_piece); i++)
 				{
 					if (piece->m_valid)
