@@ -3,6 +3,7 @@
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <link rel=stylesheet href="xbt.css">
+<meta http-equiv=refresh content=60>
 <title>XBT Files</title>
 <?php
 	mysql_connect("localhost", "xbt", "pass");
