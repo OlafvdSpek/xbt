@@ -67,6 +67,11 @@
 		$d .= '<title>XBT Client</title>';
 		$d .= $v['torrents'];
 		$d .= '<hr>';
+		if (strlen($v['torrent_events']))
+		{
+			$d .= $v['torrent_events'];
+			$d .= '<hr>';
+		}
 		$d .= $v['options'];
 		$d .= '<hr>';
 		$d .= '<center>';
@@ -79,8 +84,8 @@
 	{
 		$d = '';
 		$d .= '<tr>';
-		$d .= sprintf('<td><input type=checkbox name="%s">', urlencode($v['info_hash']['value']));
-		$d .= sprintf('<td align=left>%s', htmlspecialchars(strip_name($v['name']['value'])));
+		$d .= sprintf('<td><input type=checkbox name="%s"%s>', urlencode($v['info_hash']['value']), $_REQUEST['torrent'] == $v['info_hash']['value'] ? ' checked' : '');
+		$d .= sprintf('<td align=left><a href="?torrent=%s">%s</a>', urlencode($v['info_hash']['value']), htmlspecialchars(strip_name($v['name']['value'])));
 		$d .= $v['size']['value']
 			? sprintf('<td align=right>%d', ($v['size']['value'] - $v['left']['value']) * 100 / $v['size']['value'])
 			: '<td>';
@@ -143,6 +148,26 @@
 		$d .= '</table>';
 		$d .= '</form>';
 		$d .= '</center>';
+		return $d;
+	}
+
+	function template_torrent_events($v)
+	{
+		$d = '';
+		$d .= '<center>';
+		$d .= '<table>';
+		$d .= '<tr>';
+		$d .= '<th align=left>Time';
+		$d .= '<th align=left>Message';
+		foreach ($v as $event)
+		{
+			$d .= '<tr>';
+			$d .= sprintf('<td align=left>%s', date('H:i:s', $event['value']['time']['value']));
+			$d .= sprintf('<td align=left>%s', htmlspecialchars($event['value']['message']['value']));
+		}
+		$d .= '</table>';
+		$d .= '</center>';
+		$d .= '';
 		return $d;
 	}
 
