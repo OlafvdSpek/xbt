@@ -768,6 +768,7 @@ void CXBTClientDlg::OnPopupOptions()
 	Cdlg_options::t_data data;
 	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
 	data.ask_for_location = AfxGetApp()->GetProfileInt(m_reg_key, "ask_for_location", false);
+	data.end_mode = m_server.end_mode();
 	data.files_location = m_dir;
 	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
 	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
@@ -784,6 +785,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data = dlg.get();
 	m_server.admin_port(data.admin_port);
 	m_ask_for_location = data.ask_for_location;
+	m_server.end_mode(data.end_mode);
 	set_dir(data.files_location);
 	m_server.peer_port(data.peer_port);
 	if (!data.public_ipa.empty())
