@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "xbt client.h"
 #include "dlg_make_torrent.h"
 
 #include "bt_strings.h"
