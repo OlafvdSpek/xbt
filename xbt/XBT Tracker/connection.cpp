@@ -56,9 +56,9 @@ int Cconnection::recv()
 			{
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
-				return 1;;
+				return 1;
 			case WSAEWOULDBLOCK:
-				return 0;;
+				return 0;
 			}
 			cerr << "recv failed: " << error2a(e) << endl;
 			return 1;
