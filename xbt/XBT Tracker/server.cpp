@@ -502,6 +502,8 @@ void Cserver::read_db_files()
 			if (row.size(0) != 20 || m_files.find(string(row.f(0), 20)) != m_files.end())
 				continue;
 			t_file& file = m_files[string(row.f(0), 20)];
+			if (file.fid)
+				continue;
 			file.completed = row.f_int(1, 0);
 			file.dirty = false;
 			file.fid = row.f_int(2, 0);
