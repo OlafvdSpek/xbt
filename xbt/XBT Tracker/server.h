@@ -40,6 +40,7 @@ public:
 	struct t_file
 	{
 		void clean_up(int announce_interval);
+		Cbvalue select_peers(const Ctracker_input& ti) const;
 		Cbvalue scrape() const;
 
 		t_file()
