@@ -204,6 +204,7 @@ private:
 	int m_read_db_interval;
 	int m_write_db_interval;
 	int m_fid_end;
+	int m_update_files_method;
 	bool m_anonymous_connect;
 	bool m_anonymous_announce;
 	bool m_anonymous_scrape;
