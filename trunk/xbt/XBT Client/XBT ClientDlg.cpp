@@ -70,7 +70,7 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
 	m_reg_key = "Options";
-	m_initial_hide = false;
+	m_initial_hide = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
 	m_server_thread = NULL;
 }
 
@@ -728,6 +728,7 @@ void CXBTClientDlg::OnPopupOptions()
 	data.seeding_ratio = AfxGetApp()->GetProfileInt(m_reg_key, "seeding_ratio", m_server.seeding_ratio());
 	data.show_advanced_columns = AfxGetApp()->GetProfileInt(m_reg_key, "show_advanced_columns", false);
 	data.show_tray_icon = AfxGetApp()->GetProfileInt(m_reg_key, "show_tray_icon", true);
+	data.start_minimized = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
 	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate());
 	data.upload_slots = AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots());
 	dlg.set(data);
@@ -751,6 +752,7 @@ void CXBTClientDlg::OnPopupOptions()
 	AfxGetApp()->WriteProfileInt(m_reg_key, "seeding_ratio", data.seeding_ratio);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_advanced_columns", data.show_advanced_columns);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "show_tray_icon", data.show_tray_icon);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "start_minimized", data.start_minimized);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
 	insert_columns();
