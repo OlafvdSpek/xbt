@@ -5,6 +5,8 @@
 #include "xbt client.h"
 #include "dlg_make_torrent.h"
 
+#include "bt_strings.h"
+
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <io.h>
@@ -16,6 +18,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#define for if (0) {} else for
+
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_make_torrent dialog
 
@@ -25,6 +29,7 @@ Cdlg_make_torrent::Cdlg_make_torrent(CWnd* pParent):
 {
 	//{{AFX_DATA_INIT(Cdlg_make_torrent)
 	m_tracker = _T("");
+	m_name = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -36,6 +41,7 @@ void Cdlg_make_torrent::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SAVE, m_save);
 	DDX_Control(pDX, IDC_LIST, m_list);
 	DDX_Text(pDX, IDC_TRACKER, m_tracker);
+	DDX_Text(pDX, IDC_NAME, m_name);
 	//}}AFX_DATA_MAP
 }
 
@@ -55,8 +61,13 @@ END_MESSAGE_MAP()
 
 BOOL Cdlg_make_torrent::OnInitDialog() 
 {
+	m_tracker = AfxGetApp()->GetProfileString(m_strRegStore, "tracker");
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
+		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
+			<< item (IDC_NAME_STATIC, NORESIZE)
+			<< item (IDC_NAME, GREEDY)
+			)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
 			<< item (IDC_TRACKER_STATIC, NORESIZE)
 			<< item (IDC_TRACKER, GREEDY)
@@ -73,7 +84,6 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 	m_list.InsertColumn(0, "Name");
 	m_list.InsertColumn(1, "Size", LVCFMT_RIGHT);
 	m_list.InsertColumn(2, "");
-	m_tracker = AfxGetApp()->GetProfileString(m_strRegStore, "tracker");
 	m_sort_column = 0;
 	m_sort_reverse = false;
 	
@@ -100,13 +110,6 @@ void Cdlg_make_torrent::insert(const string& name)
 	struct stat b;
 	if (stat(name.c_str(), &b) || !b.st_size)
 		return;
-	/*
-	int f = _open(name.c_str(), _O_BINARY | _O_RDONLY);
-	if (!f)
-		return;
-
-	_close(f);
-	*/
 	int id = m_map.empty() ? 0 : m_map.rbegin()->first + 1;
 	t_map_entry& e = m_map[id];
 	e.name = name;
@@ -148,10 +151,70 @@ void Cdlg_make_torrent::OnSize(UINT nType, int cx, int cy)
 
 void Cdlg_make_torrent::OnSave() 
 {
-	CFileDialog dlg(false, "torrent", NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, "Torrents|*.torrent|", this);
+	if (!UpdateData())
+		return;
+	CFileDialog dlg(false, "torrent", m_name, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
 	AfxGetApp()->WriteProfileString(m_strRegStore, "tracker", m_tracker);
+	__int64 cb_total = 0;
+	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
+		cb_total += i->second.size;
+	int cb_piece = 256 << 10;
+	while (cb_total / cb_piece > 4 << 10)
+		cb_piece <<= 1;
+	Cbvalue files;
+	string pieces;
+	Cvirtual_binary d;
+	byte* w = d.write_start(cb_piece);
+	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
+	{
+		int f = _open(i->second.name.c_str(), _O_BINARY | _O_RDONLY);
+		if (!f)
+			continue;
+		__int64 cb_f = 0;
+		int cb_d;
+		while (cb_d = _read(f, w, d.data_end() - w))
+		{
+			if (cb_d < 0)
+				break;
+			w += cb_d;
+			if (w == d.data_end())
+			{
+				pieces += Csha1(d, w - d).read();
+				w = d.data_edit();
+			}
+			cb_f += cb_d;
+		}
+		_close(f);
+		string name = i->second.name;
+		int j = name.rfind('\\');
+		if (j != string::npos)
+			name.erase(0, j + 1);
+		Cbvalue file;
+		file.d(bts_length, cb_f);
+		file.d(bts_path, Cbvalue().l(name));
+		files.l(file);
+	}
+	if (w != d)
+		pieces += Csha1(d, w - d).read();
+	Cbvalue info;
+	info.d(bts_piece_length, cb_piece);
+	info.d(bts_pieces, pieces);
+	if (m_map.size() == 1)
+	{
+		info.d(bts_length, files.l().front().d(bts_length).i());
+		info.d(bts_name, files.l().front().d(bts_path).l().front().s());
+	}
+	else
+	{
+		info.d(bts_files, files);
+		info.d(bts_name, static_cast<string>(m_name));
+	}
+	Cbvalue torrent;
+	torrent.d(bts_announce, static_cast<string>(m_tracker));
+	torrent.d(bts_info, info);
+	torrent.read().save(static_cast<string>(dlg.GetPathName()));
 	EndDialog(IDOK);
 }
 

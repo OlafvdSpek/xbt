@@ -225,7 +225,7 @@ void CXBTClientDlg::open(const string& name)
 		d.save(path);
 	}
 	strcpy(path, m_dir);
-	if (*path && !m_ask_for_location)
+	if (*path && !m_ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
 	{
 		strcat(path, "\\Incompletes\\");
 		strcat(path, torrent.name().c_str());
