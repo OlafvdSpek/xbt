@@ -542,8 +542,8 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 {
 	bool inserted = false;
 	t_peer p;
-	p.host.s_addr = sr.read_int32();
-	p.port = sr.read_int32();
+	p.host.s_addr = htonl(sr.read_int32());
+	p.port = htons(sr.read_int32());
 	p.peer_id = sr.read_string();
 	p.downloaded = sr.read_int64();
 	p.left = sr.read_int64();
