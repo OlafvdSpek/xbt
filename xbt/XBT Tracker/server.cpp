@@ -529,6 +529,7 @@ void Cserver::write_db()
 {
 	try
 	{
+		string buffer;
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			t_file& file = i->second;
@@ -542,9 +543,14 @@ void Cserver::write_db()
 				q.execute();
 				file.fid = m_database.insert_id();
 			}
-			q = "update xbt_files"
-				" set leechers = %s, seeders = %s, completed = %s, started = %s, stopped = %s, announced_http = %s, announced_http_compact = %s, announced_http_no_peer_id = %s, announced_udp = %s, scraped_http = %s, scraped_udp = %s"
-				" where fid = %s";
+			if (m_update_files_method)
+				q = "(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d),";
+			else
+			{
+				q = "update xbt_files"
+					" set leechers = %s, seeders = %s, completed = %s, started = %s, stopped = %s, announced_http = %s, announced_http_compact = %s, announced_http_no_peer_id = %s, announced_udp = %s, scraped_http = %s, scraped_udp = %s"
+					" where fid = %s";
+			}
 			q.p(file.leechers);
 			q.p(file.seeders);
 			q.p(file.completed);
@@ -557,8 +563,16 @@ void Cserver::write_db()
 			q.p(file.scraped_http);
 			q.p(file.scraped_udp);
 			q.p(file.fid);
-			q.execute();
+			if (m_update_files_method)
+				buffer += q.read();
+			else
+				q.execute();
 			file.dirty = false;
+		}
+		if (!buffer.empty())
+		{
+			buffer.erase(buffer.size() - 1);
+			m_database.query("insert into xbt_files_updates (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " + buffer);
 		}
 	}
 	catch (Cxcc_error error)
@@ -612,6 +626,7 @@ void Cserver::read_config()
 	m_read_config_interval = 300;
 	m_read_db_interval = 60;
 	m_redirect_url.erase();
+	m_update_files_method = 0;
 	m_write_db_interval = 60;
 	try
 	{
@@ -654,6 +669,8 @@ void Cserver::read_config()
 				m_read_db_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "redirect_url"))
 				m_redirect_url = row.f(1);
+			else if (!strcmp(row.f(0), "m_update_files_method"))
+				m_update_files_method = row.f_int(1);
 			else if (!strcmp(row.f(0), "write_db_interval"))
 				m_write_db_interval = row.f_int(1);
 		}
