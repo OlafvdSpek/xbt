@@ -218,11 +218,13 @@ Cvirtual_binary Cmerkle_tree::save() const
 	return m_d;
 }
 
-string Cmerkle_tree::compute_root(const byte* s, const byte* s_end)
+string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 {
 	typedef map<int, string> t_map;
 	
 	t_map map;
+	const byte* s = reinterpret_cast<const byte*>(s0);
+	const byte* s_end = reinterpret_cast<const byte*>(s_end0);
 	char d[1025];
 	for (const byte* r = s; r < s_end; r += 1024)
 	{
