@@ -57,13 +57,14 @@ BOOL Cdlg_files::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
-		<< item (IDC_FILES, GREEDY)
+		<< item(IDC_FILES, GREEDY)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
 			<< itemGrowing(HORIZONTAL)
-			<< item (IDC_EXPLORE, NORESIZE)
-			<< item (IDC_OPEN, NORESIZE)
-			<< item (IDC_DECREASE_PRIORITY, NORESIZE)
-			<< item (IDC_INCREASE_PRIORITY, NORESIZE)
+			<< item(IDC_EXPLORE, NORESIZE)
+			<< item(IDC_OPEN, NORESIZE)
+			<< item(IDC_EXCLUDE, NORESIZE)
+			<< item(IDC_DECREASE_PRIORITY, NORESIZE)
+			<< item(IDC_INCREASE_PRIORITY, NORESIZE)
 			)
 		;
 	UpdateLayout();
