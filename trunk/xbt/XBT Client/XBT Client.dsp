@@ -7,19 +7,19 @@
 CFG=XBT Client - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "XBT Client.mak".
-!MESSAGE
+!MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "XBT Client.mak" CFG="XBT Client - Win32 Debug"
-!MESSAGE
+!MESSAGE 
 !MESSAGE Possible choices for configuration are:
-!MESSAGE
+!MESSAGE 
 !MESSAGE "XBT Client - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "XBT Client - Win32 Debug" (based on "Win32 (x86) Application")
-!MESSAGE
+!MESSAGE 
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -81,7 +81,7 @@ LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 zdll.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
-!ENDIF
+!ENDIF 
 
 # Begin Target
 
@@ -160,19 +160,11 @@ SOURCE=.\dlg_about.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\dlg_files.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\dlg_make_torrent.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\dlg_options.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\dlg_torrent.cpp
 # End Source File
 # Begin Source File
 

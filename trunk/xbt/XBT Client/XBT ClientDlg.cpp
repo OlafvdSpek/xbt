@@ -8,10 +8,8 @@
 #include "bt_misc.h"
 #include "bt_torrent.h"
 #include "dlg_about.h"
-#include "dlg_files.h"
 #include "dlg_make_torrent.h"
 #include "dlg_options.h"
-#include "dlg_torrent.h"
 #include "dlg_trackers.h"
 #include "resource.h"
 
@@ -165,7 +163,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
 	ON_COMMAND(ID_POPUP_COPY, OnPopupCopy)
 	ON_COMMAND(ID_POPUP_PASTE, OnPopupPaste)
-	ON_COMMAND(ID_POPUP_FILES, OnPopupFiles)
 	ON_COMMAND(ID_POPUP_TRACKERS, OnPopupTrackers)
 	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
 	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
@@ -174,7 +171,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_TORRENT_DELETE, OnPopupTorrentDelete)
 	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnPopupTorrentClipboardCopyAnnounceUrl)
 	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH, OnPopupTorrentClipboardCopyHash)
-	ON_COMMAND(ID_POPUP_TORRENT_ALERTS, OnPopupTorrentAlerts)
 	ON_COMMAND(ID_POPUP_VIEW_DETAILS, OnPopupViewDetails)
 	ON_COMMAND(ID_POPUP_VIEW_FILES, OnPopupViewFiles)
 	ON_COMMAND(ID_POPUP_VIEW_PEERS, OnPopupViewPeers)
@@ -187,6 +183,23 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_VIEW_ADVANCED_COLUMNS, OnPopupViewAdvancedColumns)
 	ON_COMMAND(ID_POPUP_VIEW_TRAY_ICON, OnPopupViewTrayIcon)
 	ON_NOTIFY(NM_DBLCLK, IDC_PEERS, OnDblclkPeers)
+	ON_WM_INITMENUPOPUP()
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_ADVANCED_COLUMNS, OnUpdatePopupViewAdvancedColumns)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_TRAY_ICON, OnUpdatePopupViewTrayIcon)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_DETAILS, OnUpdatePopupViewDetails)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_EVENTS, OnUpdatePopupViewEvents)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_FILES, OnUpdatePopupViewFiles)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_PEERS, OnUpdatePopupViewPeers)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_TRACKERS, OnUpdatePopupViewTrackers)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_DELETE, OnUpdatePopupTorrentDelete)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnUpdatePopupTorrentClipboardCopyAnnounceUrl)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH, OnUpdatePopupTorrentClipboardCopyHash)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_COPY, OnUpdatePopupCopy)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_START, OnUpdatePopupStart)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_STOP, OnUpdatePopupStop)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_ANNOUNCE, OnUpdatePopupAnnounce)
+	ON_WM_INITMENU()
+	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE_TRACKER, OnUpdatePopupExploreTracker)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1059,11 +1072,20 @@ void CXBTClientDlg::OnPopupExploreTracker()
 	ShellExecute(m_hWnd, "open", ("http://" + url.m_host).c_str(), NULL, NULL, SW_SHOW);
 }
 
+void CXBTClientDlg::OnUpdatePopupExploreTracker(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
+}
+
 void CXBTClientDlg::OnPopupAnnounce()
 {
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
-	if (id != -1)
-		m_server.announce(m_files_map.find(id)->second.info_hash);
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+		m_server.announce(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+}
+
+void CXBTClientDlg::OnUpdatePopupAnnounce(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
 }
 
 void CXBTClientDlg::OnPopupStart()
@@ -1072,10 +1094,20 @@ void CXBTClientDlg::OnPopupStart()
 		m_server.start_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
+void CXBTClientDlg::OnUpdatePopupStart(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
+}
+
 void CXBTClientDlg::OnPopupStop()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.stop_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+}
+
+void CXBTClientDlg::OnUpdatePopupStop(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
 }
 
 void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl()
@@ -1088,6 +1120,11 @@ void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl()
 		set_clipboard(file.trackers.front().url);
 }
 
+void CXBTClientDlg::OnUpdatePopupTorrentClipboardCopyAnnounceUrl(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);	
+}
+
 void CXBTClientDlg::OnPopupTorrentClipboardCopyHash()
 {
 	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
@@ -1095,11 +1132,21 @@ void CXBTClientDlg::OnPopupTorrentClipboardCopyHash()
 		set_clipboard(hex_encode(m_files_map.find(id)->second.info_hash));
 }
 
+void CXBTClientDlg::OnUpdatePopupTorrentClipboardCopyHash(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);	
+}
+
 void CXBTClientDlg::OnPopupCopy()
 {
 	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
 	if (id != -1)
 		set_clipboard(m_server.get_url(m_files_map.find(id)->second.info_hash));
+}
+
+void CXBTClientDlg::OnUpdatePopupCopy(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);	
 }
 
 void CXBTClientDlg::OnPopupPaste()
@@ -1126,22 +1173,20 @@ void CXBTClientDlg::OnPopupClose()
 		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
+void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+}
+
 void CXBTClientDlg::OnPopupTorrentDelete()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash, true);
 }
 
-void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
+void CXBTClientDlg::OnUpdatePopupTorrentDelete(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
-}
-
-void CXBTClientDlg::OnPopupFiles()
-{
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
-	if (id != -1)
-		Cdlg_files(this, m_server, m_files_map.find(id)->second.info_hash).DoModal();
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
 }
 
 void CXBTClientDlg::OnPopupMakeTorrent()
@@ -1250,13 +1295,6 @@ void CXBTClientDlg::OnPopupExit()
 void CXBTClientDlg::OnPopupAbout()
 {
 	Cdlg_about().DoModal();
-}
-
-void CXBTClientDlg::OnPopupTorrentAlerts()
-{
-	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
-	if (id != -1)
-		Cdlg_torrent(this, m_server, m_files_map.find(id)->second.info_hash).DoModal();
 }
 
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
@@ -2034,4 +2072,55 @@ void CXBTClientDlg::OnPopupViewTrayIcon()
 		register_tray();
 	else
 		unregister_tray();
+}
+
+void CXBTClientDlg::OnInitMenuPopup(CMenu* pMenu, UINT nIndex, BOOL bSysMenu)
+{
+	ETSLayoutDialog::OnInitMenuPopup(pMenu, nIndex, bSysMenu);
+	if (!pMenu || bSysMenu)
+		return;
+	CCmdUI state;
+	state.m_pMenu = pMenu;
+	state.m_pSubMenu = NULL;
+	for (state.m_nIndex = 0; state.m_nIndex < pMenu->GetMenuItemCount(); state.m_nIndex++)
+	{
+		state.m_nID = pMenu->GetMenuItemID(state.m_nIndex);
+		state.m_nIndexMax = pMenu->GetMenuItemCount();
+		state.DoUpdate(this, true);
+	}
+}
+
+void CXBTClientDlg::OnUpdatePopupViewAdvancedColumns(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck(m_show_advanced_columns);	
+}
+
+void CXBTClientDlg::OnUpdatePopupViewTrayIcon(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck(m_show_tray_icon);	
+}
+
+void CXBTClientDlg::OnUpdatePopupViewDetails(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetRadio(m_bottom_view == v_details);
+}
+
+void CXBTClientDlg::OnUpdatePopupViewEvents(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetRadio(m_bottom_view == v_events);
+}
+
+void CXBTClientDlg::OnUpdatePopupViewFiles(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetRadio(m_bottom_view == v_files);
+}
+
+void CXBTClientDlg::OnUpdatePopupViewPeers(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetRadio(m_bottom_view == v_peers);
+}
+
+void CXBTClientDlg::OnUpdatePopupViewTrackers(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetRadio(m_bottom_view == v_trackers);
 }
