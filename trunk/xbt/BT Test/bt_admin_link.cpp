@@ -23,7 +23,7 @@ Cbt_admin_link::Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csoc
 	m_s = s;
 	m_server = server;
 	m_close = false;
-	m_ctime = m_mtime = time(NULL);
+	m_ctime = m_mtime = m_server->time();
 
 	m_read_b.size(512 << 10);
 	m_write_b.size(64 << 10);
@@ -67,7 +67,7 @@ int Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 	}
 	if (m_write_b.cb_r() && FD_ISSET(m_s, fd_write_set) && send())
 		return 1;
-	if (0 && time(NULL) - m_ctime > 60)
+	if (0 && m_server->time() - m_ctime > 60)
 		return 1;
 	return m_close;
 }
@@ -85,7 +85,7 @@ int Cbt_admin_link::recv()
 			return 1;
 		}
 		m_read_b.cb_w(r);
-		m_mtime = time(NULL);
+		m_mtime = m_server->time();
 	}
 	m_close = true;
 	return 0;
@@ -104,7 +104,7 @@ int Cbt_admin_link::send()
 			return 1;
 		}
 		m_write_b.cb_r(r);
-		m_mtime = time(NULL);
+		m_mtime = m_server->time();
 	}
 	return m_close;
 }

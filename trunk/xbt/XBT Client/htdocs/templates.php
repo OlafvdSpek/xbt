@@ -52,7 +52,7 @@
 	{
 		$i = strrpos($v, '/');
 		if ($i !== false)
-		$v = substr($v, $i + 1);
+			$v = substr($v, $i + 1);
 		$i = strrpos($v, '\\');
 		return $i === false ? $v : substr($v, $i + 1);
 
@@ -94,7 +94,7 @@
 		$d = '';
 		$d .= '<tr>';
 		$d .= sprintf('<td><input type=checkbox name="%s"%s>', urlencode($v['info_hash']['value']), $_REQUEST['torrent'] == $v['info_hash']['value'] ? ' checked' : '');
-		$d .= sprintf('<td align=left><a href="?torrent=%s">%s</a>', urlencode($v['info_hash']['value']), htmlspecialchars(strip_name($v['name']['value'])));
+		$d .= sprintf('<td align=left><a href="?torrent=%s">%s</a>', implode('', unpack('H40', $v['info_hash']['value'])), htmlspecialchars(strip_name($v['name']['value'])));
 		$d .= $v['size']['value']
 			? sprintf('<td align=right>%d', ($v['size']['value'] - $v['left']['value']) * 100 / $v['size']['value'])
 			: '<td>';

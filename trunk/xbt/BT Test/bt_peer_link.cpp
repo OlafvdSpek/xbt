@@ -146,7 +146,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			return 1;
 		if (m_state == 3)
 		{
-			if (time(NULL) - m_check_pieces_time > (m_f->end_mode() ? 5 : 30))
+			if (m_f->m_server->time() - m_check_pieces_time > (m_f->end_mode() ? 5 : 30))
 			{
 				check_pieces();
 				if (!m_local_interested && m_f->next_invalid_piece(*this) != -1)
@@ -188,7 +188,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			}
 			if (!m_write_b.empty())
 				write_haves();
-			else if (time(NULL) - m_stime > 120)
+			else if (m_f->m_server->time() - m_stime > 120)
 			{
 				write_haves();
 				if (m_write_b.empty())
@@ -199,7 +199,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 	}
 	if (!m_left && !m_f->m_left)
 	{
-		alert(Calert::debug, "Peer: seeder to seeder link closed");
+		if (m_f->m_server->log_peer_connection_closures())
+			alert(Calert::debug, "Peer: seeder to seeder link closed");
 		return 1;
 	}
 	return 0;
@@ -249,7 +250,7 @@ int Cbt_peer_link::recv()
 				alert(Calert::debug, "Peer: recv failed: " + Csocket::error2a(e));
 			return 1;
 		}
-		m_rtime = time(NULL);
+		m_rtime = m_f->m_server->time();
 		m_read_b.cb_w(r);
 		m_f->m_downloaded_l5 += r;
 	}
@@ -286,7 +287,7 @@ int Cbt_peer_link::send()
 			m_f->m_total_uploaded += r;
 		}
 		m_send_quota -= r;
-		m_stime = time(NULL);
+		m_stime = m_f->m_server->time();
 		d.m_r += r;
 		if (d.m_r == d.m_s_end)
 			m_write_b.pop_front();
@@ -385,7 +386,7 @@ void Cbt_peer_link::write_handshake()
 	m_get_peers_stime = 0;
 	mc_local_requests_pending = 0;
 	m_peers_stime = 0;
-	m_check_pieces_time = m_rtime = m_stime = time(NULL);
+	m_check_pieces_time = m_rtime = m_stime = m_f->m_server->time();
 }
 
 void Cbt_peer_link::write_keepalive()
@@ -590,7 +591,7 @@ void Cbt_peer_link::write_get_peers()
 	*w++ = bti_get_peers;
 	w = write16(w, m_f->local_port());
 	write(d);
-	m_get_peers_stime = time(NULL);
+	m_get_peers_stime = m_f->m_server->time();
 }
 
 void Cbt_peer_link::write_peers()
@@ -606,7 +607,7 @@ void Cbt_peer_link::write_peers()
 		w = write16(w, ntohs(i->m_a.sin_port));
 	}
 	write(d);
-	m_peers_stime = time(NULL);
+	m_peers_stime = m_f->m_server->time();
 }
 
 void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
@@ -723,12 +724,12 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		break;
 	case bti_get_peers:
 		alert(Calert::debug, "Peer: get_peers");
-		if (r_end - r >= 2 && time(NULL) - m_peers_stime > 300)
+		if (r_end - r >= 2 && m_f->m_server->time() - m_peers_stime > 300)
 			write_peers();
 		break;
 	case bti_peers:
 		alert(Calert::debug, "Peer: " + n((r_end - r - 2) / 6) + " peers");
-		if (r_end - r >= 2 && time(NULL) - m_get_peers_stime < 60)
+		if (r_end - r >= 2 && m_f->m_server->time() - m_get_peers_stime < 60)
 		{
 			for (r += 2; r + 6 <= r_end; r += 6)
 				m_f->insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
@@ -788,12 +789,12 @@ void Cbt_peer_link::check_pieces()
 {
 	for (t_pieces::iterator i = m_pieces.begin(); i != m_pieces.end(); )
 	{
-		if ((*i)->check_peer(this, m_f->end_mode() && m_f->m_server->end_mode() ? 15 : time(NULL) - m_rtime > 30 ? 60 : 600))
+		if ((*i)->check_peer(this, m_f->end_mode() && m_f->m_server->end_mode() ? 15 : m_f->m_server->time() - m_rtime > 30 ? 60 : 600))
 			i++;
 		else
 			m_pieces.erase(i++);
 	}
-	m_check_pieces_time = time(NULL);
+	m_check_pieces_time = m_f->m_server->time();
 }
 
 int Cbt_peer_link::c_max_requests_pending() const

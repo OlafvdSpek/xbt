@@ -112,7 +112,7 @@
 	foreach ($v['value']['files']['value'] as $info_hash => $file)
 	{
 		$rows .= template_torrent(array_merge($file['value'], array('info_hash' => array('value' => $info_hash))));
-		if ($info_hash == $_REQUEST['torrent'])
+		if ($info_hash == pack('H*', $_REQUEST['torrent']))
 			$torrent_events .= template_torrent_events($file['value']['events']['value']);
 	}
 	$torrents = template_torrents(array('rows' => $rows));
