@@ -49,7 +49,12 @@ Cvirtual_binary xcc_z::gzip(const void* s0, int cb_s)
 	*w++ = 0x1f;
 	*w++ = 0x8b;
 	*w++ = Z_DEFLATED;
-	*w++ = *w++ = *w++ = *w++ = *w++ = *w++ = 0;
+	*w++ = 0;
+	*w++ = 0;
+	*w++ = 0;
+	*w++ = 0;
+	*w++ = 0;
+	*w++ = 0;
 	*w++ = 3;
 	{
 		z_stream stream;
