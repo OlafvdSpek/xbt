@@ -101,6 +101,10 @@ SOURCE=..\misc\sql\database.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\peer_link.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\server.cpp
 # End Source File
 # Begin Source File
@@ -151,6 +155,10 @@ SOURCE=..\misc\bvalue.h
 # Begin Source File
 
 SOURCE=.\connection.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\peer_link.h
 # End Source File
 # Begin Source File
 

@@ -11,6 +11,7 @@
 
 #include "sql/database.h"
 #include "connection.h"
+#include "peer_link.h"
 #include "tracker_input.h"
 
 class Cserver  
@@ -18,12 +19,19 @@ class Cserver
 public:
 	struct t_peer
 	{
-		int downloaded;
+		t_peer()
+		{
+			listening = false;
+			mtime = 0;
+		}
+
+		// int downloaded;
 		int left;
 		string peer_id;
 		int port;
-		int uploaded;
+		// int uploaded;
 
+		bool listening;
 		int mtime;
 	};
 
@@ -58,7 +66,8 @@ public:
 	void read_db();
 	void clean_up();
 	void insert_peer(const Ctracker_input&);
-	Cbvalue select_peers(const string&);
+	void update_peer(const string& file_id, const string& peer_id, bool listening);
+	Cbvalue select_peers(const string&, bool peer_id);
 	Cbvalue scrape(const Ctracker_input&);
 	void run(Csocket& lt, Csocket& lu);
 	void udp_recv(Csocket& s);
@@ -69,6 +78,8 @@ public:
 		return m_files;
 	}
 private:
+	typedef list<Cpeer_link> t_peer_links;
+
 	int m_clean_up_time;
 	int m_read_config_time;
 	int m_read_db_time;
@@ -80,6 +91,7 @@ private:
 	int m_write_db_interval;
 	int m_fid_end;
 	t_connections m_connections;
+	t_peer_links m_peer_links;
 	Cdatabase& m_database;
 	t_files m_files;
 };

@@ -32,6 +32,7 @@ public:
 	int m_left;
 	int m_port;
 	int m_uploaded;
+	bool m_no_peer_id;
 };
 
 #endif // !defined(AFX_TRACKER_INPUT_H__E4F9E6ED_97B7_4526_B310_82F149E42EA8__INCLUDED_)

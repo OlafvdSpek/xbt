@@ -16,6 +16,7 @@ Ctracker_input::Ctracker_input()
 	m_left = 0;
 	m_port = 0;
 	m_uploaded = 0;
+	m_no_peer_id = false;
 }
 
 void Ctracker_input::set(const string& name, const string& value)
@@ -48,6 +49,10 @@ void Ctracker_input::set(const string& name, const string& value)
 	case 'l':
 		if (name == "left")
 			m_left = atoi(value.c_str());
+		break;
+	case 'n':
+		if (name == "no_peer_id")
+			m_no_peer_id = atoi(value.c_str());
 		break;
 	case 'p':
 		if (name == "peer_id" )

@@ -23,9 +23,6 @@ int main(int argc, char* argv[])
 	if (l0.open(SOCK_STREAM) == INVALID_SOCKET
 		|| l1.open(SOCK_DGRAM) == INVALID_SOCKET)
 		cerr << "socket failed: " << WSAGetLastError() << endl;
-	else if (ioctlsocket(l0, FIONBIO, &p)
-		|| ioctlsocket(l1, FIONBIO, &p))
-		cerr << "ioctlsocket failed: " << WSAGetLastError() << endl;
 	else if (l0.bind(INADDR_ANY, htons(2710))
 		|| l1.bind(INADDR_ANY, htons(2710)))
 		cerr << "bind failed: " << WSAGetLastError() << endl;
