@@ -81,7 +81,7 @@ int Cbt_admin_link::recv()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert(Calert::debug, m_a, "Admin: recv failed: " + Csocket::error2a(e)));
+			alert(Calert::debug, "Admin: recv failed: " + Csocket::error2a(e));
 			return 1;
 		}
 		m_read_b.cb_w(r);
@@ -100,7 +100,7 @@ int Cbt_admin_link::send()
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
 				return 0;
-			alert(Calert(Calert::debug, m_a, "Admin: send failed: " + Csocket::error2a(e)));
+			alert(Calert::debug, "Admin: send failed: " + Csocket::error2a(e));
 			return 1;
 		}
 		m_write_b.cb_r(r);
@@ -140,6 +140,6 @@ void Cbt_admin_link::read_message(const char* r, const char* r_end)
 	}
 }
 
-void Cbt_admin_link::alert(const Calert& v)
+void Cbt_admin_link::alert(Calert::t_level, const string&)
 {
 }
