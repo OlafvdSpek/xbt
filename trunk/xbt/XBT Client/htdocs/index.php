@@ -2,6 +2,11 @@
 	require_once('common.php');
 	require_once('templates.php');
 
+	if ($config['users'][$_SERVER['PHP_AUTH_USER']] != $_SERVER['PHP_AUTH_PW'])
+	{
+		header('www-authenticate: basic realm="XBT Client"');
+		return;
+	}
 	set_time_limit(5);
 	$s = fsockopen($config['client_host'], $config['client_port']);
 	if ($s === false)
@@ -9,7 +14,7 @@
 	if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name']))
 	{
 		$d = file_get_contents($_FILES['file']['tmp_name']);
-		send_string($s, sprintf('d6:action12:open torrent7:torrent%se', $d));
+		send_string($s, sprintf('d6:action12:open torrent7:torrent%d:%se', strlen($d), $d));
 		recv_string($s);
 	}
 	$actions = array
@@ -23,8 +28,6 @@
 	);
 	switch ($_REQUEST['a'])
 	{
-	case 'open':
-		break;
 	default:
 		if (array_key_exists($_REQUEST['a'], $actions))
 		{
