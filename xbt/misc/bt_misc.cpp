@@ -263,6 +263,15 @@ string forward_slashes(string v)
 	return v;
 }
 
+string native_slashes(const string& v)
+{
+#ifdef WIN32
+	return backward_slashes(v);
+#else
+	return forward_slashes(v);
+#endif
+}
+
 int mkpath(const string& v)
 {
 	for (int i = 0; i < v.size(); )
