@@ -77,6 +77,7 @@ enum
 enum
 {
 	v_details,
+	v_events,
 	v_files,
 	v_peers,
 	v_trackers,
@@ -169,6 +170,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_VIEW_FILES, OnPopupViewFiles)
 	ON_COMMAND(ID_POPUP_VIEW_PEERS, OnPopupViewPeers)
 	ON_COMMAND(ID_POPUP_VIEW_TRACKERS, OnPopupViewTrackers)
+	ON_COMMAND(ID_POPUP_VIEW_EVENTS, OnPopupViewEvents)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -428,6 +430,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		{
 		case dr_downloaded:
 			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b") + " / " + b2a(m_file->total_downloaded, "b");
+			if (m_file->size)
+				m_buffer[m_buffer_w] += " (" + n(m_file->total_downloaded * 100 / m_file->size) + " %)";
 			break;
 		case dr_hash:
 			m_buffer[m_buffer_w] = hex_encode(m_file->info_hash);
@@ -465,10 +469,22 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case dr_uploaded:
 			m_buffer[m_buffer_w] = b2a(m_file->uploaded, "b") + " / " + b2a(m_file->total_uploaded, "b");
+			if (m_file->size)
+				m_buffer[m_buffer_w] += " (" + n(m_file->total_uploaded * 100 / m_file->size) + " %)";
 			break;
 		}
 		break;
 	}
+	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	*pResult = 0;
+}
+
+void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	if (!m_file)
+		return;
+	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	m_buffer[++m_buffer_w &= 3].erase();
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
 	*pResult = 0;
 }
@@ -479,6 +495,9 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 	case v_details:
 		OnGetdispinfoDetails(pNMHDR, pResult);
+		return;
+	case v_events:
+		OnGetdispinfoEvents(pNMHDR, pResult);
 		return;
 	case v_files:
 		OnGetdispinfoSubFiles(pNMHDR, pResult);
@@ -616,6 +635,8 @@ void CXBTClientDlg::fill_peers()
 	case v_details:
 		for (int i = 0; i < dr_count; i++)
 			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i);
+		break;
+	case v_events:
 		break;
 	case v_files:
 		break;
@@ -1505,6 +1526,8 @@ void CXBTClientDlg::insert_bottom_columns()
 		m_peers_columns.push_back(dc_name);
 		m_peers_columns.push_back(dc_value);
 		break;
+	case v_events:
+		break;
 	case v_files:
 		m_peers_columns.push_back(sfc_name);
 		m_peers_columns.push_back(sfc_done);
@@ -1667,6 +1690,14 @@ void CXBTClientDlg::OnPopupViewDetails()
 	fill_peers();
 	auto_size_peers();
 }	
+
+void CXBTClientDlg::OnPopupViewEvents() 
+{
+	m_bottom_view = v_events;
+	insert_bottom_columns();
+	fill_peers();
+	auto_size_peers();
+}
 
 void CXBTClientDlg::OnPopupViewFiles() 
 {
