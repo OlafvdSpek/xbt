@@ -155,6 +155,7 @@ private:
 	int m_peers_sort_column;
 	bool m_files_sort_reverse;
 	bool m_peers_sort_reverse;
+	bool m_show_tray_icon;
 };
 
 //{{AFX_INSERT_LOCATION}}
