@@ -56,6 +56,9 @@ Cserver::Cserver()
 	m_bind_before_connect = false;
 	m_dir = ".";
 	m_end_mode = true;
+	m_log_peer_connect_failures = false;
+	m_log_peer_recv_failures = false;
+	m_log_peer_send_failures = true;
 	m_peer_limit = 0;
 	m_peer_port = m_new_peer_port = 6881;
 	m_public_ipa = 0;
