@@ -36,6 +36,7 @@ public:
 	};
 
 	Cbvalue admin_request(const Cbvalue& s);
+	void check_remote_links();
 	Chttp_link* http_request(int h, int p, const string& request, Chttp_response_handler*);
 	Cvirtual_binary get_file_status(const string& id, int flags);
 	Cvirtual_binary get_status(int flags);
@@ -262,6 +263,7 @@ private:
 	int m_admin_port;
 	int m_peer_port;
 	int m_send_quota;
+	int m_check_remote_links_time;
 	bool m_run;
 	int m_run_scheduler_time;
 	int m_save_state_time;
