@@ -6,6 +6,7 @@
 #include "XBT ClientDlg.h"
 
 #include "bt_misc.h"
+#include "resource.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -35,6 +36,7 @@ void CXBTClientDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
+	ON_WM_CONTEXTMENU()
 	//{{AFX_MSG_MAP(CXBTClientDlg)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -43,6 +45,9 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_WM_SIZE()
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_FILES, OnItemchangedFiles)
 	ON_WM_TIMER()
+	ON_COMMAND(ID_POPUP_OPEN, OnPopupOpen)
+	ON_COMMAND(ID_POPUP_CLOSE, OnPopupClose)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_CLOSE, OnUpdatePopupClose)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -90,7 +95,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_peers.InsertColumn(13, "Peer ID");
 	m_file = NULL;
 	auto_size();
-	SetTimer(0, 250, NULL);
+	SetTimer(0, 1000, NULL);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -299,9 +304,31 @@ void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
 		for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
 			i->second.removed = true;
 	}
-	int c_files = sr.read_int32();
-	for (int i = 0; i < c_files; i++)
-		read_file_dump(sr);
+	{
+		int c_files = sr.read_int32();
+		for (int i = 0; i < c_files; i++)
+			read_file_dump(sr);
+	}
+	{
+		for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); )
+		{
+			if (i->second.removed)
+			{
+				if (m_file == &i->second)
+				{
+					m_peers.DeleteAllItems();
+					m_file = NULL;
+				}
+				LV_FINDINFO fi;
+				fi.flags = LVFI_PARAM;
+				fi.lParam = i->first;
+				m_files.DeleteItem(m_files.FindItem(&fi, -1));
+				i = m_files_map.erase(i);
+			}
+			else
+				i++;
+		}
+	}
 }
 
 void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
@@ -449,6 +476,72 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 
 void CXBTClientDlg::OnTimer(UINT nIDEvent) 
 {
-	read_server_dump(Cstream_reader(Cvirtual_binary("d:/temp/xbt/dump.bin")));
+	read_server_dump(Cstream_reader(m_server->get_status()));
 	ETSLayoutDialog::OnTimer(nIDEvent);
+}
+
+void CXBTClientDlg::server(Cserver& server)
+{
+	m_server = &server;
+}
+
+void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
+{
+	if (point.x == -1 && point.y == -1)
+	{
+		CRect rect;
+		GetClientRect(rect);
+		ClientToScreen(rect);
+
+		point = rect.TopLeft();
+		point.Offset(5, 5);
+	}
+
+	CMenu menu;
+	VERIFY(menu.LoadMenu(CG_IDR_POPUP_XBTCLIENT_DLG));
+
+	CMenu* pPopup = menu.GetSubMenu(0);
+	ASSERT(pPopup != NULL);
+	CWnd* pWndPopupOwner = this;
+
+	while (pWndPopupOwner->GetStyle() & WS_CHILD)
+		pWndPopupOwner = pWndPopupOwner->GetParent();
+
+	pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, point.x, point.y, pWndPopupOwner);
+}
+
+void CXBTClientDlg::OnCancel() 
+{
+	ETSLayoutDialog::OnCancel();
+}
+
+void CXBTClientDlg::OnOK() 
+{
+}
+
+void CXBTClientDlg::OnPopupOpen() 
+{
+	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
+	if (IDOK != dlg.DoModal())
+		return;
+	Cvirtual_binary d(static_cast<string>(dlg.GetPathName()));
+	{
+		CFileDialog dlg(false, NULL, NULL, OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
+		if (IDOK != dlg.DoModal())
+			return;
+		CWaitCursor wc;
+		m_server->open(d, static_cast<string>(dlg.GetPathName()));
+	}
+}
+
+void CXBTClientDlg::OnPopupClose() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index != -1)
+		m_server->close(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+}
+
+void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
 }

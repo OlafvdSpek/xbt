@@ -247,8 +247,12 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 			else
 				offset -= i->m_size;
 		}
+		m_tracker.event(Cbt_tracker_link::t_event::e_completed);
 		piece.m_d.clear();
-		write_have(a);
+		{
+			for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+				i->write_have(a);
+		}
 	}
 }
 
@@ -299,13 +303,19 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link::t_remote_pieces& remote_pi
 			invalid_pieces.push_back(i);
 		}
 	}
+	if (invalid_pieces.empty())
+	{
+		for (int i = 0; i < m_pieces.size(); i++)
+		{
+			if (!m_pieces[i].m_valid && remote_pieces[i])
+			{
+				if (!m_pieces[i].m_sub_pieces.empty())
+					return i;
+				invalid_pieces.push_back(i);
+			}
+		}
+	}	
 	return invalid_pieces.empty() ? -1 : invalid_pieces[rand() % invalid_pieces.size()];
-}
-
-void Cbt_file::write_have(int a)
-{
-	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
-		i->write_have(a);
 }
 
 ostream& Cbt_file::dump(ostream& os) const

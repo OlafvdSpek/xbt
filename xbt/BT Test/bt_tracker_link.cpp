@@ -29,7 +29,7 @@ enum
 Cbt_tracker_link::Cbt_tracker_link()
 {
 	m_announce_time = 0;
-	m_event = e_none;
+	m_event = e_started;
 	m_state = 0;
 }
 
@@ -338,3 +338,8 @@ void Cbt_tracker_link::dump(Cstream_writer& w) const
 {
 }
 
+void Cbt_tracker_link::event(int v)
+{
+	m_event = v;
+	m_announce_time = 0;
+}

@@ -5,6 +5,30 @@
 #include "stdafx.h"
 #include "server.h"
 
+class Clock
+{
+public:
+	Clock(CRITICAL_SECTION& cs)
+	{
+		EnterCriticalSection(m_cs = &cs);
+	}
+
+	~Clock()
+	{
+		LeaveCriticalSection(m_cs);
+	}
+private:
+	Clock(const Clock&)
+	{
+	}
+
+	operator=(const Clock&)
+	{
+	}	
+
+	CRITICAL_SECTION* m_cs;
+};
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -13,10 +37,13 @@ Cserver::Cserver()
 {
 	m_admin_port = 6880;
 	m_peer_port = 6889;
+
+	InitializeCriticalSection(&m_cs);
 }
 
 Cserver::~Cserver()
 {
+	DeleteCriticalSection(&m_cs);
 }
 
 static string new_peer_id()
@@ -43,14 +70,6 @@ void Cserver::run()
 		cerr << "listen failed" << endl;
 	else
 	{
-		m_files.push_back(Cbt_file());
-		Cbt_file& f = m_files.front();
-		if (f.info(Cvirtual_binary("d:/temp/test.torrent")))
-			return;
-		if (f.open("d:/temp/xbt/f.bin"))
-			return;
-		f.m_local_port = peer_port();
-		f.m_peer_id = new_peer_id();
 #ifndef WIN32
 		if (daemon(true, false))
 			cerr << "daemon failed" << endl;
@@ -61,6 +80,7 @@ void Cserver::run()
 		fd_set fd_except_set;
 		for (m_run = true; m_run; )
 		{
+			lock();
 			FD_ZERO(&fd_read_set);
 			FD_ZERO(&fd_write_set);
 			FD_ZERO(&fd_except_set);
@@ -88,13 +108,7 @@ void Cserver::run()
 					n = max(n, z);
 				}
 			}
-			{
-				Cvirtual_binary d;
-				Cstream_writer w(d.write_start(pre_dump()));
-				dump(w);
-				assert(w.w() == d.data_end());
-				d.save("d:/temp/xbt/dump.bin");
-			}
+			unlock();
 			TIMEVAL tv;
 			tv.tv_sec = 1;
 			tv.tv_usec = 0;
@@ -103,6 +117,7 @@ void Cserver::run()
 				cerr << "select failed: " << WSAGetLastError() << endl;
 				break;
 			}
+			lock();
 			if (FD_ISSET(l, &fd_read_set))
 			{
 				sockaddr_in a;
@@ -155,6 +170,7 @@ void Cserver::run()
 				for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 			}
+			unlock();
 		}
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 			i->close();
@@ -205,4 +221,57 @@ void Cserver::insert_peer(const t_bt_handshake& handshake, const sockaddr_in& a,
 		if (i->m_info_hash == handshake.info_hash())
 			i->insert_peer(handshake, a, s);
 	}
+}
+
+void Cserver::lock()
+{
+	EnterCriticalSection(&m_cs);
+}
+
+void Cserver::unlock()
+{
+	LeaveCriticalSection(&m_cs);
+}
+
+Cvirtual_binary Cserver::get_status()
+{
+	Clock l(m_cs);
+	Cvirtual_binary d;
+	Cstream_writer w(d.write_start(pre_dump()));
+	dump(w);
+	assert(w.w() == d.data_end());
+	return d;
+}
+
+int Cserver::open(const Cvirtual_binary& info, const string& name)
+{
+	Clock l(m_cs);
+	Cbt_file f;
+	if (f.info(info))
+		return 1;
+	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash == f.m_info_hash)
+			return 2;
+	}
+	if (f.open(name))
+		return 3;
+	f.m_local_port = peer_port();
+	f.m_peer_id = new_peer_id();
+	m_files.push_front(f);
+	return 0;
+}
+
+int Cserver::close(const string& id)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != id)
+			continue;
+		i->close();
+		m_files.erase(i);
+		return 0;
+	}
+	return 1;
 }

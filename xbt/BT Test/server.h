@@ -18,6 +18,11 @@
 class Cserver  
 {
 public:
+	int close(const string& id);
+	int open(const Cvirtual_binary& info, const string& name);
+	Cvirtual_binary get_status();
+	void unlock();
+	void lock();
 	typedef list<Cbt_admin_link> t_admins;
 	typedef list<Cbt_file> t_files;
 	typedef list<Cbt_link> t_links;
@@ -48,6 +53,8 @@ private:
 	int m_admin_port;
 	int m_peer_port;
 	bool m_run;
+
+	CRITICAL_SECTION m_cs;
 };
 
 ostream& operator<<(ostream&, const Cserver&);

@@ -25,6 +25,7 @@ public:
 		e_stopped,
 	};
 
+	void event(int);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	ostream& dump(ostream&) const;
@@ -46,10 +47,10 @@ public:
 	int m_announce_time;
 	__int64 m_connection_id;
 	int m_transaction_id;
-	int m_event;
 private:
-	int m_connect_send;
 	int m_announce_send;
+	int m_connect_send;
+	int m_event;
 };
 
 ostream& operator<<(ostream&, const Cbt_tracker_link&);

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\misc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x413 /d "NDEBUG" /d "_AFXDLL"
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\misc" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x413 /d "_DEBUG" /d "_AFXDLL"
@@ -97,6 +97,10 @@ SOURCE="..\BT Test\bt_admin_link.cpp"
 # Begin Source File
 
 SOURCE="..\BT Test\bt_file.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_link.cpp"
 # End Source File
 # Begin Source File
 
@@ -189,6 +193,14 @@ SOURCE="..\BT Test\bt_file.h"
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\bt_link.h"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\bt_misc.h
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_peer_link.h"
 # End Source File
 # Begin Source File
@@ -198,6 +210,10 @@ SOURCE="..\BT Test\bt_piece.h"
 # Begin Source File
 
 SOURCE="..\BT Test\bt_pl_write_data.h"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\bt_strings.h
 # End Source File
 # Begin Source File
 
@@ -225,6 +241,14 @@ SOURCE=.\StdAfx.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\stream_reader.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\stream_writer.h
+# End Source File
+# Begin Source File
+
 SOURCE=".\XBT Client.h"
 # End Source File
 # Begin Source File
@@ -246,3 +270,6 @@ SOURCE=".\res\XBT Client.rc2"
 # End Group
 # End Target
 # End Project
+# Section XBT Client : {72ADFD6C-2C39-11D0-9903-00A0C91BC942}
+# 	1:26:CG_IDR_POPUP_XBTCLIENT_DLG:104
+# End Section
