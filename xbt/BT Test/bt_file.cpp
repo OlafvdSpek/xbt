@@ -373,15 +373,17 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	vector<int> invalid_pieces;
 
 	invalid_pieces.reserve(c_invalid_pieces());
+	bool begin_mode = c_valid_pieces() < 4;
+	bool end_mode = c_invalid_pieces() < 16;
 	int rank = INT_MAX;
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
 		if (m_pieces[i].m_valid 
 			|| !peer.m_remote_pieces[i] 
 			|| peer.m_pieces.find(&m_pieces[i]) != peer.m_pieces.end()
-			|| c_invalid_pieces() > 16 && !m_pieces[i].m_peers.empty())
+			|| !end_mode && !m_pieces[i].m_peers.empty())
 			continue;
-		if (c_valid_pieces() < 4 && m_pieces[i].m_peers.empty() && !m_pieces[i].m_sub_pieces.empty())
+		if (begin_mode && m_pieces[i].m_peers.empty() && !m_pieces[i].m_sub_pieces.empty())
 			return i;
 		int piece_rank = 2560000 * min(m_pieces[i].m_peers.size(), 9)
 			+ -256000 * m_pieces[i].m_priority 
