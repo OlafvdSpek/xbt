@@ -70,7 +70,11 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
 	m_reg_key = "Options";
+#ifdef _DEBUG
+	m_initial_hide = false;
+#else
 	m_initial_hide = AfxGetApp()->GetProfileInt(m_reg_key, "start_minimized", false);
+#endif
 	m_server_thread = NULL;
 }
 
@@ -219,19 +223,30 @@ void CXBTClientDlg::open(const string& name)
 		d.save(path);
 	}
 	strcpy(path, m_dir);
-	if (*path)
+	if (*path && !m_ask_for_location)
 	{
 		strcat(path, "\\Incompletes\\");
 		strcat(path, torrent.name().c_str());
 	}
 	else
 	{
-		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
-		if (path)
-			dlg.m_ofn.lpstrInitialDir = path;
-		if (IDOK != dlg.DoModal())
+		BROWSEINFO bi;
+		ZeroMemory(&bi, sizeof(BROWSEINFO));
+		bi.hwndOwner = GetSafeHwnd();
+		bi.lpszTitle = torrent.name().c_str();
+		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
+		ITEMIDLIST* idl = SHBrowseForFolder(&bi);
+		if (!idl)
 			return;
-		strcpy(path, dlg.GetPathName());
+		if (!SHGetPathFromIDList(idl, path))
+			*path = 0;
+		LPMALLOC lpm;
+		if (SHGetMalloc(&lpm) == NOERROR)
+			lpm->Free(idl);
+		if (!*path)
+			return;
+		strcat(path, "\\");
+		strcat(path, torrent.name().c_str());
 	}
 	CWaitCursor wc;
 	m_server.open(d, path);

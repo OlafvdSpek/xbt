@@ -15,6 +15,7 @@
 #include "bt_tracker_account.h"
 #include "bt_tracker_link.h"
 #include "stream_writer.h"
+#include "udp_tracker.h"
 
 class Cserver  
 {
@@ -129,6 +130,7 @@ private:
 	t_files m_files;
 	t_links m_links;
 	Cbt_tracker_accounts m_tracker_accounts;
+	Cudp_tracker m_udp_tracker;
 
 	int m_admin_port;
 	string m_dir;

@@ -180,7 +180,8 @@ int Cserver::run()
 			FD_ZERO(&fd_except_set);
 			FD_SET(l, &fd_read_set);
 			FD_SET(la, &fd_read_set);
-			int n = max(l, la);
+			FD_SET(lt, &fd_read_set);
+			int n = max(l, max(la, lt));
 			{
 				for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); i++)
 				{
@@ -239,6 +240,10 @@ int Cserver::run()
 						alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + ::n(WSAGetLastError())));
 					m_admins.push_back(Cbt_admin_link(this, a, s));
 				}
+			}
+			if (FD_ISSET(lt, &fd_read_set))
+			{
+				m_udp_tracker.recv(lt);
 			}
 			{
 				for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); )
