@@ -103,8 +103,8 @@ CAPTION "Trackers"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | 
-                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,268,63
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,7,7,268,63
     PUSHBUTTON      "&Insert...",IDC_INSERT,9,75,50,14
     PUSHBUTTON      "&Edit...",IDC_EDIT,65,74,50,14
     PUSHBUTTON      "&Delete",IDC_DELETE,120,74,50,14
@@ -182,8 +182,8 @@ CAPTION "Scheduler"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOCOLUMNHEADER | 
-                    WS_BORDER | WS_TABSTOP,7,7,268,63
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,7,7,268,63
     PUSHBUTTON      "&Insert...",IDC_INSERT,9,75,50,14
     PUSHBUTTON      "&Edit...",IDC_EDIT,65,74,50,14
     PUSHBUTTON      "&Delete",IDC_DELETE,120,74,50,14
@@ -243,10 +243,13 @@ STYLE DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Scheduler Entry"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Time:",IDC_TIME_STATIC,7,7,18,12
-    CONTROL         "DateTimePicker1",IDC_TIME,"SysDateTimePick32",
-                    DTS_RIGHTALIGN | DTS_UPDOWN | WS_TABSTOP | 0x8,63,7,48,
-                    12
+    LTEXT           "Time (h:m:s):",IDC_TIME_STATIC,7,7,41,8
+    EDITTEXT        IDC_HOURS,63,7,13,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_MINUTES,80,7,13,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_SECONDS,98,7,13,14,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_NUMBER
     LTEXT           "Profile:",IDC_PROFILE_STATIC,7,26,22,12
     COMBOBOX        IDC_PROFILE,63,25,48,289,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
