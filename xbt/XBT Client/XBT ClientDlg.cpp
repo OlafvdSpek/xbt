@@ -559,7 +559,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				m_buffer[m_buffer_w] += " / " + n(m_file->c_leechers_total);
 			break;
 		case dr_left:
-			m_buffer[m_buffer_w] = b2a(m_file->left, "b");
+			if (m_file->left)
+				m_buffer[m_buffer_w] = b2a(m_file->left, "b");
 			break;
 		case dr_name:
 			m_buffer[m_buffer_w] = m_file->name;
