@@ -18,6 +18,11 @@ public:
 	void size(int cb_d);
 	void write(const void* d, int cb_d);
 
+	int size() const
+	{
+		return m_d.size();
+	}
+
 	const char* r() const
 	{
 		return m_r;

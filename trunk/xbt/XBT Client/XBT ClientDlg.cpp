@@ -82,9 +82,6 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 		m_torrents_dir = path;
 		m_torrents_dir += "\\Torrents";
 		CreateDirectory(path, NULL);
-		CreateDirectory(m_completes_dir, NULL);
-		CreateDirectory(m_incompletes_dir, NULL);
-		CreateDirectory(m_torrents_dir, NULL);
 	}
 }
 
@@ -126,6 +123,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_PASTE, OnPopupPaste)
 	ON_COMMAND(ID_POPUP_FILES, OnPopupFiles)
 	ON_COMMAND(ID_POPUP_TRACKERS, OnPopupTrackers)
+	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -238,6 +236,7 @@ void CXBTClientDlg::open(const string& name)
 	strcpy(path, m_torrents_dir);
 	if (*path)
 	{
+		CreateDirectory(m_torrents_dir, NULL);
 		strcat(path, "\\");
 		strcat(path, torrent.name().c_str());
 		strcat(path, ".torrent");
@@ -258,8 +257,6 @@ void CXBTClientDlg::open(const string& name)
 			return;
 		strcpy(path, dlg.GetPathName());
 	}
-	if (!torrent.files().front().name().empty())
-		CreateDirectory(path, NULL);
 	CWaitCursor wc;
 	m_server.open(d, path);
 }
@@ -651,6 +648,13 @@ void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
 void CXBTClientDlg::OnPopupExplore() 
 {
 	ShellExecute(m_hWnd, "open", m_dir, NULL, NULL, SW_SHOW);
+}
+
+void CXBTClientDlg::OnPopupAnnounce() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index != -1)
+		m_server.announce(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
 }
 
 void CXBTClientDlg::OnPopupStart() 
@@ -1067,3 +1071,4 @@ void CXBTClientDlg::sort_peers()
 {
 	m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
 }
+

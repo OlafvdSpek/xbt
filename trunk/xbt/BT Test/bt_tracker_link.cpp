@@ -37,11 +37,15 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 			return 0;
 		m_url = f.m_trackers[m_current_tracker];
 		if (!m_url.valid())
+		{
+			mc_attempts++;
+			close(f);
 			return 0;
+		}
 		switch (m_url.m_protocol)
 		{
 		case Cbt_tracker_url::tp_http:
-			f.alert(Calert(Calert::info, "Tracker: URL: http://" + m_url.m_host + ':' + n(m_url.m_port) + m_url.m_path + "?info_hash=" + uri_encode(f.m_info_hash)));		
+			f.alert(Calert(Calert::info, "Tracker: URL: http://" + m_url.m_host + ':' + n(m_url.m_port) + m_url.m_path + "?info_hash=" + uri_encode(f.m_info_hash)));
 			m_announce_time = time(NULL) + (300 << mc_attempts++);
 			if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
 				return 0;
@@ -252,11 +256,8 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					f.mc_seeders_total = uto.seeders();
 					mc_attempts = 0;
 					f.alert(Calert(Calert::info, "Tracker: " + n((r - sizeof(t_udp_tracker_output_announce)) / 6) + " peers (" + n(r) + " bytes)"));
-					for (int o = sizeof(t_udp_tracker_output_announce); o + sizeof(t_udp_tracker_output_peer) <= r; o += sizeof(t_udp_tracker_output_peer))
-					{
-						const t_udp_tracker_output_peer& peer = *reinterpret_cast<const t_udp_tracker_output_peer*>(d + o);
-						f.insert_peer(peer.host(), peer.port());
-					}
+					for (int o = sizeof(t_udp_tracker_output_announce); o + 6 <= r; o += 6)
+						f.insert_peer(*reinterpret_cast<const __int32*>(d + o), *reinterpret_cast<__int16*>(d + o + 4));
 					close(f);
 				}
 				else if (r >= sizeof(t_udp_tracker_output_error) 

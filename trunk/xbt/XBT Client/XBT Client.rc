@@ -102,6 +102,22 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,225,74,50,14
 END
 
+IDD_TRACKER DIALOG DISCARDABLE  0, 0, 119, 82
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Tracker"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_TRACKER,48,7,64,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USER,48,23,64,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PASS,48,41,64,14,ES_PASSWORD | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,7,61,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,62,61,50,14
+    LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,7,37,8
+    LTEXT           "User name:",IDC_USER_STATIC,7,23,37,8
+    LTEXT           "Password:",IDC_PASS_STATIC,7,41,37,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -156,6 +172,17 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 88
     END
+
+    IDD_TRACKER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 112
+        VERTGUIDE, 48
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 75
+        HORZGUIDE, 23
+        HORZGUIDE, 41
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -182,50 +209,6 @@ END
 LANGUAGE LANG_DUTCH, SUBLANG_DUTCH
 #pragma code_page(1252)
 #endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_TRACKER DIALOG DISCARDABLE  0, 0, 119, 82
-STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | 
-    WS_CAPTION | WS_SYSMENU
-CAPTION "Tracker"
-FONT 8, "MS Sans Serif"
-BEGIN
-    EDITTEXT        IDC_TRACKER,48,7,64,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_USER,48,23,64,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_PASS,48,41,64,14,ES_PASSWORD | ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,7,61,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,62,61,50,14
-    LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,7,37,8
-    LTEXT           "User name:",IDC_USER_STATIC,7,23,37,8
-    LTEXT           "Password:",IDC_PASS_STATIC,7,41,37,8
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_TRACKER, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 112
-        VERTGUIDE, 48
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 75
-        HORZGUIDE, 23
-        HORZGUIDE, 41
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -286,6 +269,7 @@ BEGIN
         MENUITEM "Explore",                     ID_POPUP_EXPLORE
         MENUITEM "Files...",                    ID_POPUP_FILES
         MENUITEM SEPARATOR
+        MENUITEM "Announce",                    ID_POPUP_ANNOUNCE
         MENUITEM "Start",                       ID_POPUP_START
         MENUITEM "Stop",                        ID_POPUP_STOP
         MENUITEM SEPARATOR
