@@ -103,6 +103,10 @@ SOURCE=..\misc\sql\database.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\windows\nt_service.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\peer_link.cpp
 # End Source File
 # Begin Source File
@@ -169,6 +173,10 @@ SOURCE=..\misc\bvalue.h
 # Begin Source File
 
 SOURCE=.\connection.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\windows\nt_service.h
 # End Source File
 # Begin Source File
 
