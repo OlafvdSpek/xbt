@@ -81,6 +81,7 @@ CREATE TABLE xbt_users
   uid int NOT NULL auto_increment,
   name char(8) NOT NULL,
   pass blob NOT NULL,
+  torrent_pass char(32) NOT NULL,
   downloaded bigint NOT NULL,
   uploaded bigint NOT NULL,
   PRIMARY KEY (uid)
