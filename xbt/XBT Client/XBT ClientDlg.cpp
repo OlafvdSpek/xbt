@@ -152,8 +152,10 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_peers.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	insert_columns();
-	m_files_sort_column = -1;
-	m_peers_sort_column = -1;
+	m_files_sort_column = fc_name;
+	m_files_sort_reverse = false;
+	m_peers_sort_column = pc_peer_id;
+	m_peers_sort_reverse = false;
 	m_file = NULL;
 	auto_size();
 	register_tray();
