@@ -432,12 +432,12 @@ BEGIN
         END
         POPUP "&Torrent"
         BEGIN
-            MENUITEM "Explore",                     ID_POPUP_EXPLORE
+            MENUITEM "Explore\tEnter",              ID_POPUP_EXPLORE
             MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
             MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
             MENUITEM "&Close\tDelete",              ID_FILE_CLOSE
             MENUITEM "&Delete",                     ID_FILE_DELETE
-            MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
+            MENUITEM "Options...\tAlt+Enter",       ID_POPUP_TORRENT_OPTIONS
         END
         POPUP "&View"
         BEGIN
@@ -600,6 +600,8 @@ BEGIN
                                                     NOINVERT
     VK_DELETE,      ID_FILE_CLOSE,          VIRTKEY, NOINVERT
     VK_INSERT,      ID_FILE_OPEN,           VIRTKEY, NOINVERT
+    VK_RETURN,      ID_POPUP_EXPLORE,       VIRTKEY, NOINVERT
+    VK_RETURN,      ID_POPUP_TORRENT_OPTIONS, VIRTKEY, ALT, NOINVERT
 END
 
 
