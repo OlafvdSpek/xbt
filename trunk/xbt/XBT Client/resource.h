@@ -96,6 +96,7 @@
 #define IDC_UPLOAD_SLOTS_MIN_OVERRIDE   1064
 #define IDC_MAX_UPLOAD_SLOTS_OVERRIDE   1065
 #define IDC_UPLOAD_SLOTS_MAX_OVERRIDE   1065
+#define IDC_TAB                         1066
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -158,7 +159,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        144
 #define _APS_NEXT_COMMAND_VALUE         32835
-#define _APS_NEXT_CONTROL_VALUE         1065
+#define _APS_NEXT_CONTROL_VALUE         1067
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

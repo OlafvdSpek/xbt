@@ -47,6 +47,7 @@ public:
 
 	//{{AFX_DATA(CXBTClientDlg)
 	enum { IDD = IDD_XBTCLIENT_DIALOG };
+	CTabCtrl	m_tab;
 	CListCtrlEx	m_peers;
 	CListCtrlEx	m_files;
 	//}}AFX_DATA
@@ -153,6 +154,7 @@ protected:
 	afx_msg void OnToolsProfiles();
 	afx_msg void OnToolsScheduler();
 	afx_msg void OnToolsTrackers();
+	afx_msg void OnSelchangeTab(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);

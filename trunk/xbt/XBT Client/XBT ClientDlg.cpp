@@ -156,6 +156,7 @@ void CXBTClientDlg::DoDataExchange(CDataExchange* pDX)
 {
 	ETSLayoutDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CXBTClientDlg)
+	DDX_Control(pDX, IDC_TAB, m_tab);
 	DDX_Control(pDX, IDC_PEERS, m_peers);
 	DDX_Control(pDX, IDC_FILES, m_files);
 	//}}AFX_DATA_MAP
@@ -246,14 +247,15 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_EDIT_PASTE_URL, OnEditPasteUrl)
 	ON_COMMAND(ID_FILE_NEW, OnFileNew)
 	ON_COMMAND(ID_EDIT_SELECT_ALL, OnEditSelectAll)
-	ON_WM_SIZE()
-	ON_WM_INITMENU()
-	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
-	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
 	ON_COMMAND(ID_TOOLS_OPTIONS, OnToolsOptions)
 	ON_COMMAND(ID_TOOLS_PROFILES, OnToolsProfiles)
 	ON_COMMAND(ID_TOOLS_SCHEDULER, OnToolsScheduler)
 	ON_COMMAND(ID_TOOLS_TRACKERS, OnToolsTrackers)
+	ON_WM_SIZE()
+	ON_WM_INITMENU()
+	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
+	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB, OnSelchangeTab)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -265,11 +267,20 @@ BOOL CXBTClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, true);
 	SetIcon(m_hIcon, false);
 
-	CreateRoot(VERTICAL)
-		<< item (IDC_FILES, GREEDY)
-		<< item (IDC_PEERS, GREEDY)
-		;
 	ETSLayoutDialog::OnInitDialog();
+	CreateRoot(VERTICAL)
+		<< item(IDC_FILES)
+		<< (paneTab(&m_tab, HORIZONTAL)
+			<< item(IDC_PEERS)
+			)
+		;
+	m_tab.InsertItem(v_details, "Details");
+	m_tab.InsertItem(v_events, "Events");
+	m_tab.InsertItem(v_files, "Files");
+	m_tab.InsertItem(v_peers, "Peers");
+	m_tab.InsertItem(v_pieces, "Pieces");
+	m_tab.InsertItem(v_trackers, "Trackers");
+	UpdateLayout();
 	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
 
 	m_bottom_view = AfxGetApp()->GetProfileInt(m_reg_key, "bottom_view", v_peers);
@@ -2088,6 +2099,7 @@ void CXBTClientDlg::set_bottom_view(int v)
 	m_bottom_view = v;
 	insert_bottom_columns();
 	fill_peers();
+	m_tab.SetCurSel(v);
 }
 
 void CXBTClientDlg::OnPopupViewDetails()
@@ -2687,4 +2699,10 @@ void CXBTClientDlg::OnToolsTrackers()
 void CXBTClientDlg::OnHelpAbout() 
 {
 	Cdlg_about().DoModal();
+}
+
+void CXBTClientDlg::OnSelchangeTab(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	set_bottom_view(m_tab.GetCurSel());
+	*pResult = 0;
 }
