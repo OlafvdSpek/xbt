@@ -32,6 +32,7 @@ public:
 		string public_ipa;
 		int seeding_ratio;
 		bool show_advanced_columns;
+		bool show_confirm_exit_dialog;
 		bool show_tray_icon;
 		bool start_minimized;
 		int torrent_limit;
@@ -66,6 +67,7 @@ public:
 	CString	m_incompletes_dir;
 	CString	m_torrents_dir;
 	int		m_torrent_limit;
+	BOOL	m_show_confirm_exit_dialog;
 	//}}AFX_DATA
 
 

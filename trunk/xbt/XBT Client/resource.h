@@ -83,6 +83,7 @@
 #define IDC_PROFILE                     1060
 #define IDC_MINUTES                     1061
 #define IDC_HOURS                       1062
+#define IDC_SHOW_CONFIRM_EXIT_DIALOG    1062
 #define IDC_SECONDS                     1063
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
@@ -136,7 +137,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        143
 #define _APS_NEXT_COMMAND_VALUE         32822
-#define _APS_NEXT_CONTROL_VALUE         1062
+#define _APS_NEXT_CONTROL_VALUE         1063
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

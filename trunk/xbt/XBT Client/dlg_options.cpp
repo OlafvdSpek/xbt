@@ -39,6 +39,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_incompletes_dir = _T("");
 	m_torrents_dir = _T("");
 	m_torrent_limit = 0;
+	m_show_confirm_exit_dialog = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -69,6 +70,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_INCOMPLETES_DIRECTORY, m_incompletes_dir);
 	DDX_Text(pDX, IDC_TORRENTS_DIRECTORY, m_torrents_dir);
 	DDX_Text(pDX, IDC_TORRENT_LIMIT, m_torrent_limit);
+	DDX_Check(pDX, IDC_SHOW_CONFIRM_EXIT_DIALOG, m_show_confirm_exit_dialog);
 	//}}AFX_DATA_MAP
 }
 
@@ -99,6 +101,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.public_ipa = m_public_ipa;
 	v.seeding_ratio = m_seeding_ratio;
 	v.show_advanced_columns = m_show_advanced_columns;
+	v.show_confirm_exit_dialog = m_show_confirm_exit_dialog;
 	v.show_tray_icon = m_show_tray_icon;
 	v.start_minimized = m_start_minimized;
 	v.torrent_limit = m_torrent_limit;
@@ -123,6 +126,7 @@ void Cdlg_options::set(const t_data& v)
 	m_public_ipa = v.public_ipa.c_str();
 	m_seeding_ratio = v.seeding_ratio;
 	m_show_advanced_columns = v.show_advanced_columns;
+	m_show_confirm_exit_dialog = v.show_confirm_exit_dialog;
 	m_show_tray_icon = v.show_tray_icon;
 	m_start_minimized = v.start_minimized;
 	m_torrent_limit = v.torrent_limit;
