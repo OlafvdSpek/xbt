@@ -358,45 +358,39 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	t_file& file = m_files[v.m_info_hash];
 	if (v.m_left && user && user->fid_end && file.fid > user->fid_end)
 		return;
-	if (m_use_sql && user)
-	{
-		Csql_query q(m_database, "(1,?,?,?,?,?),");
-		switch (v.m_event)
-		{
-		case Ctracker_input::e_completed:
-			q.p(1);
-			q.p(0);
-			q.p(0);
-			break;
-		case Ctracker_input::e_stopped:
-			q.p(0);
-			q.p(v.m_downloaded);
-			q.p(v.m_uploaded);
-			break;
-		default:
-			q.p(0);
-			q.p(0);
-			q.p(0);
-		}
-		q.pe(v.m_info_hash);
-		q.p(user->uid);
-		m_files_users_updates_buffer += q.read();
-	}
 	t_peers::iterator i = file.peers.find(v.m_ipa);
 	if (i != file.peers.end())
 		(i->second.left ? file.leechers : file.seeders)--;
-	if (v.m_event == Ctracker_input::e_stopped)
+	if (m_use_sql && user)
 	{
-		file.peers.erase(v.m_ipa);
-		if (m_use_sql && user && (v.m_downloaded || v.m_uploaded))
+		__int64 downloaded = 0;
+		__int64 uploaded = 0;
+		if (i != file.peers.end() 
+			&& i->second.peer_id == v.m_peer_id
+			&& v.m_downloaded >= i->second.downloaded
+			&& v.m_uploaded >= i->second.uploaded)
+		{
+			downloaded = v.m_downloaded - i->second.downloaded;
+			uploaded = v.m_uploaded - i->second.uploaded;
+		}
+		Csql_query q(m_database, "(1,?,?,?,?,?),");
+		q.p(v.m_event == Ctracker_input::e_completed);
+		q.p(downloaded);
+		q.p(uploaded);
+		q.pe(v.m_info_hash);
+		q.p(user->uid);
+		m_files_users_updates_buffer += q.read();
+		if (downloaded || uploaded)
 		{
 			Csql_query q(m_database, "(?,?,?),");
-			q.p(v.m_downloaded);
-			q.p(v.m_uploaded);
+			q.p(downloaded);
+			q.p(uploaded);
 			q.p(user->uid);
 			m_users_updates_buffer += q.read();
 		}
 	}
+	if (v.m_event == Ctracker_input::e_stopped)
+		file.peers.erase(v.m_ipa);
 	else
 	{
 		t_peer& peer = file.peers[v.m_ipa];
