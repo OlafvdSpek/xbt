@@ -123,6 +123,10 @@ SOURCE=..\misc\bt_misc.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\bt_peer_data.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\bt_peer_link.cpp
 # End Source File
 # Begin Source File
@@ -245,6 +249,10 @@ SOURCE=.\bt_link.h
 # Begin Source File
 
 SOURCE=..\misc\bt_misc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\bt_peer_data.h
 # End Source File
 # Begin Source File
 

@@ -11,6 +11,7 @@
 
 #include "alerts.h"
 #include "bt_logger.h"
+#include "bt_peer_data.h"
 #include "bt_pl_write_data.h"
 #include "data_counter.h"
 #include "ring_buffer.h"
@@ -20,7 +21,7 @@
 class Cbt_file;
 class Cbt_piece;
 
-class Cbt_peer_link
+class Cbt_peer_link: public Cbt_peer_data
 {
 public:
 	int write_data(__int64 o, const char* s, int cb_s, int latency);

@@ -412,68 +412,68 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	switch (m_torrents_columns[pDispInfo->item.iSubItem])
 	{
 	case fc_hash:
-		m_buffer[m_buffer_w] = hex_encode(e.info_hash);
+		m_buffer[m_buffer_w] = hex_encode(e.m_info_hash);
 		break;
 	case fc_done:
-		if (e.size)
-			m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
+		if (e.m_size)
+			m_buffer[m_buffer_w] = n((e.m_size - e.m_left) * 100 / e.m_size);
 		break;
 	case fc_left:
-		if (e.left)
-			m_buffer[m_buffer_w] = b2a(e.left);
+		if (e.m_left)
+			m_buffer[m_buffer_w] = b2a(e.m_left);
 		break;
 	case fc_size:
-		if (e.size)
-			m_buffer[m_buffer_w] = b2a(e.size);
+		if (e.m_size)
+			m_buffer[m_buffer_w] = b2a(e.m_size);
 		break;
 	case fc_total_downloaded:
-		if (e.total_downloaded)
+		if (e.m_total_downloaded)
 		{
-			m_buffer[m_buffer_w] = b2a(e.total_downloaded);
-			if (e.size)
-				m_buffer[m_buffer_w] += " (" + n(e.total_downloaded * 100 / e.size) + " %)";
+			m_buffer[m_buffer_w] = b2a(e.m_total_downloaded);
+			if (e.m_size)
+				m_buffer[m_buffer_w] += " (" + n(e.m_total_downloaded * 100 / e.m_size) + " %)";
 		}
 		break;
 	case fc_total_uploaded:
-		if (e.total_uploaded)
+		if (e.m_total_uploaded)
 		{
-			m_buffer[m_buffer_w] = b2a(e.total_uploaded);
-			if (e.size)
-				m_buffer[m_buffer_w] += " (" + n(e.total_uploaded * 100 / e.size) + " %)";
+			m_buffer[m_buffer_w] = b2a(e.m_total_uploaded);
+			if (e.m_size)
+				m_buffer[m_buffer_w] += " (" + n(e.m_total_uploaded * 100 / e.m_size) + " %)";
 		}
 		break;
 	case fc_down_rate:
-		if (e.down_rate)
-			m_buffer[m_buffer_w] = b2a(e.down_rate);
+		if (e.m_down_rate)
+			m_buffer[m_buffer_w] = b2a(e.m_down_rate);
 		break;
 	case fc_up_rate:
-		if (e.up_rate)
-			m_buffer[m_buffer_w] = b2a(e.up_rate);
+		if (e.m_up_rate)
+			m_buffer[m_buffer_w] = b2a(e.m_up_rate);
 		break;
 	case fc_leechers:
-		if (e.c_leechers || e.c_leechers_total)
-			m_buffer[m_buffer_w] = n(e.c_leechers);
-		if (e.c_leechers_total)
-			m_buffer[m_buffer_w] += " / " + n(e.c_leechers_total);
+		if (e.mc_leechers || e.mc_leechers_total)
+			m_buffer[m_buffer_w] = n(e.mc_leechers);
+		if (e.mc_leechers_total)
+			m_buffer[m_buffer_w] += " / " + n(e.mc_leechers_total);
 		break;
 	case fc_peers:
-		if (e.c_leechers || e.c_leechers_total || e.c_seeders || e.c_seeders_total)
-			m_buffer[m_buffer_w] = n(e.c_leechers + e.c_seeders);
-		if (e.c_leechers_total || e.c_seeders_total)
-			m_buffer[m_buffer_w] += " / " + n(e.c_leechers_total + e.c_seeders_total);
+		if (e.mc_leechers || e.mc_leechers_total || e.mc_seeders || e.mc_seeders_total)
+			m_buffer[m_buffer_w] = n(e.mc_leechers + e.mc_seeders);
+		if (e.mc_leechers_total || e.mc_seeders_total)
+			m_buffer[m_buffer_w] += " / " + n(e.mc_leechers_total + e.mc_seeders_total);
 		break;
 	case fc_priority:
-		if (e.priority)
-			m_buffer[m_buffer_w] = priority2a(e.priority);
+		if (e.m_priority)
+			m_buffer[m_buffer_w] = priority2a(e.m_priority);
 		break;
 	case fc_seeders:
-		if (e.c_seeders || e.c_seeders_total)
-			m_buffer[m_buffer_w] = n(e.c_seeders);
-		if (e.c_seeders_total)
-			m_buffer[m_buffer_w] += " / " + n(e.c_seeders_total);
+		if (e.mc_seeders || e.mc_seeders_total)
+			m_buffer[m_buffer_w] = n(e.mc_seeders);
+		if (e.mc_seeders_total)
+			m_buffer[m_buffer_w] += " / " + n(e.mc_seeders_total);
 		break;
 	case fc_state:
-		switch (e.state)
+		switch (e.m_state)
 		{
 		case Cbt_file::s_queued:
 			m_buffer[m_buffer_w] = 'Q';
@@ -493,7 +493,7 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		}
 		break;
 	case fc_name:
-		m_buffer[m_buffer_w] = e.display_name;
+		m_buffer[m_buffer_w] = e.m_display_name;
 		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
@@ -539,94 +539,94 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		switch (pDispInfo->item.iItem)
 		{
 		case dr_chunks:
-			if (!m_file->c_valid_chunks)
+			if (!m_file->mc_valid_chunks)
 				break;
-			m_buffer[m_buffer_w] = n(m_file->c_valid_chunks) + " / " + n(m_file->c_invalid_chunks + m_file->c_valid_chunks) + " x " + b2a(m_file->cb_chunk, "b")
-				+ " = " + b2a(m_file->c_valid_chunks * m_file->cb_chunk, "b") + " / " + b2a((m_file->c_invalid_chunks + m_file->c_valid_chunks) * m_file->cb_chunk, "b");
+			m_buffer[m_buffer_w] = n(m_file->mc_valid_chunks) + " / " + n(m_file->mc_invalid_chunks + m_file->mc_valid_chunks) + " x " + b2a(m_file->mcb_chunk, "b")
+				+ " = " + b2a(m_file->mc_valid_chunks * m_file->mcb_chunk, "b") + " / " + b2a((m_file->mc_invalid_chunks + m_file->mc_valid_chunks) * m_file->mcb_chunk, "b");
 			break;
 		case dr_completed_at:
-			if (m_file->completed_at)
-				m_buffer[m_buffer_w] = time2a(m_file->completed_at);
-			else if (m_file->downloaded && m_file->left && time(NULL) - m_file->session_started_at > 300)
-				m_buffer[m_buffer_w] = time2a(m_file->left * (time(NULL) - m_file->session_started_at) / m_file->downloaded + time(NULL)) + " (estimated)";
+			if (m_file->m_completed_at)
+				m_buffer[m_buffer_w] = time2a(m_file->m_completed_at);
+			else if (m_file->m_downloaded && m_file->m_left && time(NULL) - m_file->m_session_started_at > 300)
+				m_buffer[m_buffer_w] = time2a(m_file->m_left * (time(NULL) - m_file->m_session_started_at) / m_file->m_downloaded + time(NULL)) + " (estimated)";
 			break;
 		case dr_distributed_copies:
-			if (m_file->c_distributed_copies || m_file->c_distributed_copies_remainder)
-				m_buffer[m_buffer_w] = n(m_file->c_distributed_copies) + " + " + n(m_file->c_distributed_copies_remainder) + " / " + n(m_file->c_invalid_pieces + m_file->c_valid_pieces);
+			if (m_file->mc_distributed_copies || m_file->mc_distributed_copies_remainder)
+				m_buffer[m_buffer_w] = n(m_file->mc_distributed_copies) + " + " + n(m_file->mc_distributed_copies_remainder) + " / " + n(m_file->mc_invalid_pieces + m_file->mc_valid_pieces);
 			break;
 		case dr_downloaded:
-			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b");
-			if (m_file->total_downloaded != m_file->downloaded)
-				m_buffer[m_buffer_w] += " / " + b2a(m_file->total_downloaded, "b");
-			if (m_file->size)
-				m_buffer[m_buffer_w] += " (" + n(m_file->total_downloaded * 100 / m_file->size) + " %)";
+			m_buffer[m_buffer_w] = b2a(m_file->m_downloaded, "b");
+			if (m_file->m_total_downloaded != m_file->m_downloaded)
+				m_buffer[m_buffer_w] += " / " + b2a(m_file->m_total_downloaded, "b");
+			if (m_file->m_size)
+				m_buffer[m_buffer_w] += " (" + n(m_file->m_total_downloaded * 100 / m_file->m_size) + " %)";
 			break;
 		case dr_downloaded_l5_overhead:
-			m_buffer[m_buffer_w] = b2a(m_file->downloaded_l5 - m_file->downloaded, "b");
+			m_buffer[m_buffer_w] = b2a(m_file->m_downloaded_l5 - m_file->m_downloaded, "b");
 			break;
 		case dr_files:
-			m_buffer[m_buffer_w] = n(m_file->sub_files.size());
+			m_buffer[m_buffer_w] = n(m_file->m_sub_files.size());
 			break;
 		case dr_hash:
-			m_buffer[m_buffer_w] = hex_encode(m_file->info_hash);
+			m_buffer[m_buffer_w] = hex_encode(m_file->m_info_hash);
 			break;
 		case dr_leechers:
-			m_buffer[m_buffer_w] = n(m_file->c_leechers);
-			if (m_file->c_leechers_total)
-				m_buffer[m_buffer_w] += " / " + n(m_file->c_leechers_total);
+			m_buffer[m_buffer_w] = n(m_file->mc_leechers);
+			if (m_file->mc_leechers_total)
+				m_buffer[m_buffer_w] += " / " + n(m_file->mc_leechers_total);
 			break;
 		case dr_left:
-			if (m_file->left)
-				m_buffer[m_buffer_w] = b2a(m_file->left, "b");
+			if (m_file->m_left)
+				m_buffer[m_buffer_w] = b2a(m_file->m_left, "b");
 			break;
 		case dr_name:
-			m_buffer[m_buffer_w] = m_file->name;
+			m_buffer[m_buffer_w] = m_file->m_name;
 			break;
 		case dr_peers:
-			m_buffer[m_buffer_w] = n(m_file->c_leechers + m_file->c_seeders);
-			if (m_file->c_leechers_total + m_file->c_seeders_total)
-				m_buffer[m_buffer_w] += " / " + n(m_file->c_leechers_total + m_file->c_seeders_total);
+			m_buffer[m_buffer_w] = n(m_file->mc_leechers + m_file->mc_seeders);
+			if (m_file->mc_leechers_total + m_file->mc_seeders_total)
+				m_buffer[m_buffer_w] += " / " + n(m_file->mc_leechers_total + m_file->mc_seeders_total);
 			break;
 		case dr_pieces:
-			m_buffer[m_buffer_w] = n(m_file->c_valid_pieces) + " / " + n(m_file->c_invalid_pieces + m_file->c_valid_pieces) + " x " + b2a(m_file->cb_piece, "b");
+			m_buffer[m_buffer_w] = n(m_file->mc_valid_pieces) + " / " + n(m_file->mc_invalid_pieces + m_file->mc_valid_pieces) + " x " + b2a(m_file->mcb_piece, "b");
 			break;
 		case dr_rejected_chunks:
-			if (m_file->c_rejected_chunks)
-				m_buffer[m_buffer_w] = n(m_file->c_rejected_chunks) + " x " + b2a(m_file->cb_chunk, "b") + " = " + b2a(m_file->c_rejected_chunks * m_file->cb_chunk, "b");
+			if (m_file->mc_rejected_chunks)
+				m_buffer[m_buffer_w] = n(m_file->mc_rejected_chunks) + " x " + b2a(m_file->mcb_chunk, "b") + " = " + b2a(m_file->mc_rejected_chunks * m_file->mcb_chunk, "b");
 			break;
 		case dr_rejected_pieces:
-			if (m_file->c_rejected_pieces)
-				m_buffer[m_buffer_w] = n(m_file->c_rejected_pieces) + " x " + b2a(m_file->cb_piece, "b") + " = " + b2a(m_file->c_rejected_pieces * m_file->cb_piece, "b");
+			if (m_file->mc_rejected_pieces)
+				m_buffer[m_buffer_w] = n(m_file->mc_rejected_pieces) + " x " + b2a(m_file->mcb_piece, "b") + " = " + b2a(m_file->mc_rejected_pieces * m_file->mcb_piece, "b");
 			break;
 		case dr_seeders:
-			m_buffer[m_buffer_w] = n(m_file->c_seeders);
-			if (m_file->c_seeders_total)
-				m_buffer[m_buffer_w] += " / " + n(m_file->c_seeders_total);
+			m_buffer[m_buffer_w] = n(m_file->mc_seeders);
+			if (m_file->mc_seeders_total)
+				m_buffer[m_buffer_w] += " / " + n(m_file->mc_seeders_total);
 			break;
 		case dr_seeding_ratio:
-			if (m_file->seeding_ratio)
-				m_buffer[m_buffer_w] = n(m_file->seeding_ratio) + " %";
+			if (m_file->m_seeding_ratio)
+				m_buffer[m_buffer_w] = n(m_file->m_seeding_ratio) + " %";
 			break;
 		case dr_size:
-			m_buffer[m_buffer_w] = b2a(m_file->size, "b");
+			m_buffer[m_buffer_w] = b2a(m_file->m_size, "b");
 			break;
 		case dr_started_at:
-			if (m_file->started_at)
-				m_buffer[m_buffer_w] = time2a(m_file->started_at);
+			if (m_file->m_started_at)
+				m_buffer[m_buffer_w] = time2a(m_file->m_started_at);
 			break;
 		case dr_tracker:
-			if (!m_file->trackers.empty())
-				m_buffer[m_buffer_w] = m_file->trackers.front().url;
+			if (!m_file->m_trackers.empty())
+				m_buffer[m_buffer_w] = m_file->m_trackers.front().url;
 			break;
 		case dr_uploaded:
-			m_buffer[m_buffer_w] = b2a(m_file->uploaded, "b");
-			if (m_file->total_uploaded != m_file->uploaded)
-				m_buffer[m_buffer_w] += " / " + b2a(m_file->total_uploaded, "b");
-			if (m_file->size)
-				m_buffer[m_buffer_w] += " (" + n(m_file->total_uploaded * 100 / m_file->size) + " %)";
+			m_buffer[m_buffer_w] = b2a(m_file->m_uploaded, "b");
+			if (m_file->m_total_uploaded != m_file->m_uploaded)
+				m_buffer[m_buffer_w] += " / " + b2a(m_file->m_total_uploaded, "b");
+			if (m_file->m_size)
+				m_buffer[m_buffer_w] += " (" + n(m_file->m_total_uploaded * 100 / m_file->m_size) + " %)";
 			break;
 		case dr_uploaded_l5_overhead:
-			m_buffer[m_buffer_w] = b2a(m_file->uploaded_l5 - m_file->uploaded, "b");
+			m_buffer[m_buffer_w] = b2a(m_file->m_uploaded_l5 - m_file->m_uploaded, "b");
 			break;
 		}
 		break;
@@ -702,8 +702,8 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		m_buffer[m_buffer_w] = n(ntohs(e.port));
 		break;
 	case pc_done:
-		if (m_file->size)
-			m_buffer[m_buffer_w] = n((m_file->size - e.left) * 100 / m_file->size);
+		if (m_file->m_size)
+			m_buffer[m_buffer_w] = n((m_file->m_size - e.left) * 100 / m_file->m_size);
 		break;
 	case pc_left:
 		if (e.left)
@@ -816,14 +816,14 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
-	const t_sub_file& e = m_file->sub_files[pDispInfo->item.lParam];
+	const t_sub_file& e = m_file->m_sub_files[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case sfc_name:
 		if (e.name.empty())
 		{
-			int i = m_file->name.rfind('\\');
-			m_buffer[m_buffer_w] = i == string::npos ? m_file->name : m_file->name.substr(i + 1);
+			int i = m_file->m_name.rfind('\\');
+			m_buffer[m_buffer_w] = i == string::npos ? m_file->m_name : m_file->m_name.substr(i + 1);
 		}
 		else
 			m_buffer[m_buffer_w] = e.name;
@@ -857,7 +857,7 @@ void CXBTClientDlg::OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	m_buffer[++m_buffer_w &= 3].erase();
-	const t_tracker& e = m_file->trackers[pDispInfo->item.lParam];
+	const t_tracker& e = m_file->m_trackers[pDispInfo->item.lParam];
 	switch (m_peers_columns[pDispInfo->item.iSubItem])
 	{
 	case tc_url:
@@ -887,7 +887,7 @@ void CXBTClientDlg::fill_peers()
 			m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_files:
-		for (int i = 0; i < m_file->sub_files.size(); i++)
+		for (int i = 0; i < m_file->m_sub_files.size(); i++)
 			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_peers:
@@ -899,8 +899,8 @@ void CXBTClientDlg::fill_peers()
 			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_trackers:
-		for (t_trackers::const_iterator i = m_file->trackers.begin(); i != m_file->trackers.end(); i++)
-			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i - m_file->trackers.begin());
+		for (t_trackers::const_iterator i = m_file->m_trackers.begin(); i != m_file->m_trackers.end(); i++)
+			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i - m_file->m_trackers.begin());
 		break;
 	}
 	sort_peers();
@@ -924,7 +924,7 @@ void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
 		return;
 	{
 		for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
-			i->second.removed = true;
+			i->second.m_removed = true;
 	}
 	{
 		int c_files = sr.read_int(4);
@@ -934,7 +934,7 @@ void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
 	{
 		for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); )
 		{
-			if (i->second.removed)
+			if (i->second.m_removed)
 			{
 				if (m_file == &i->second)
 				{
@@ -960,7 +960,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	t_files::iterator i;
 	for (i = m_files_map.begin(); i != m_files_map.end(); i++)
 	{
-		if (i->second.info_hash == info_hash)
+		if (i->second.m_info_hash == info_hash)
 			break;
 	}
 	int id;
@@ -973,51 +973,51 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	else
 		id = i->first;
 	t_file& f = m_files_map.find(id)->second;
-	f.display_name = f.name = backward_slashes(sr.read_string());
-	f.info_hash = info_hash;
-	f.trackers.clear();
+	f.m_display_name = f.m_name = backward_slashes(sr.read_string());
+	f.m_info_hash = info_hash;
+	f.m_trackers.clear();
 	for (int c_trackers = sr.read_int(4); c_trackers--; )
 	{
 		t_tracker e;
 		e.url = sr.read_string();
-		f.trackers.push_back(e);
+		f.m_trackers.push_back(e);
 	}
-	f.downloaded = sr.read_int(8);
-	f.downloaded_l5 = sr.read_int(8);
-	f.left = sr.read_int(8);
-	f.size = sr.read_int(8);
-	f.uploaded = sr.read_int(8);
-	f.uploaded_l5 = sr.read_int(8);
-	f.total_downloaded = sr.read_int(8);
-	f.total_uploaded = sr.read_int(8);
-	f.down_rate = sr.read_int(4);
-	f.up_rate = sr.read_int(4);
-	f.c_leechers = sr.read_int(4);
-	f.c_seeders = sr.read_int(4);
-	f.c_leechers_total = sr.read_int(4);
-	f.c_seeders_total = sr.read_int(4);
-	f.c_invalid_chunks = sr.read_int(4);
-	f.c_invalid_pieces = sr.read_int(4);
-	f.c_rejected_chunks = sr.read_int(4);
-	f.c_rejected_pieces = sr.read_int(4);
-	f.c_valid_chunks = sr.read_int(4);
-	f.c_valid_pieces = sr.read_int(4);
-	f.cb_chunk = sr.read_int(4);
-	f.cb_piece = sr.read_int(4);
-	f.state = static_cast<Cbt_file::t_state>(sr.read_int(4));
-	f.started_at = sr.read_int(4);
-	f.session_started_at = sr.read_int(4);
-	f.completed_at = sr.read_int(4);
-	f.c_distributed_copies = sr.read_int(4);
-	f.c_distributed_copies_remainder = sr.read_int(4);
-	f.priority = sr.read_int(4);
-	f.seeding_ratio = sr.read_int(4);
-	f.seeding_ratio_override = sr.read_int(4);
-	f.removed = false;
+	f.m_downloaded = sr.read_int(8);
+	f.m_downloaded_l5 = sr.read_int(8);
+	f.m_left = sr.read_int(8);
+	f.m_size = sr.read_int(8);
+	f.m_uploaded = sr.read_int(8);
+	f.m_uploaded_l5 = sr.read_int(8);
+	f.m_total_downloaded = sr.read_int(8);
+	f.m_total_uploaded = sr.read_int(8);
+	f.m_down_rate = sr.read_int(4);
+	f.m_up_rate = sr.read_int(4);
+	f.mc_leechers = sr.read_int(4);
+	f.mc_seeders = sr.read_int(4);
+	f.mc_leechers_total = sr.read_int(4);
+	f.mc_seeders_total = sr.read_int(4);
+	f.mc_invalid_chunks = sr.read_int(4);
+	f.mc_invalid_pieces = sr.read_int(4);
+	f.mc_rejected_chunks = sr.read_int(4);
+	f.mc_rejected_pieces = sr.read_int(4);
+	f.mc_valid_chunks = sr.read_int(4);
+	f.mc_valid_pieces = sr.read_int(4);
+	f.mcb_chunk = sr.read_int(4);
+	f.mcb_piece = sr.read_int(4);
+	f.m_state = static_cast<Cbt_file::t_state>(sr.read_int(4));
+	f.m_started_at = sr.read_int(4);
+	f.m_session_started_at = sr.read_int(4);
+	f.m_completed_at = sr.read_int(4);
+	f.mc_distributed_copies = sr.read_int(4);
+	f.mc_distributed_copies_remainder = sr.read_int(4);
+	f.m_priority = sr.read_int(4);
+	f.m_seeding_ratio = sr.read_int(4);
+	f.m_seeding_ratio_override = sr.read_int(4);
+	f.m_removed = false;
 	{
-		int i = f.display_name.rfind('\\');
+		int i = f.m_display_name.rfind('\\');
 		if (i != string::npos)
-			f.display_name.erase(0, i + 1);
+			f.m_display_name.erase(0, i + 1);
 	}
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); i++)
@@ -1038,7 +1038,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		e.source = sr.read_string();
 		f.events.push_back(e);
 	}
-	f.sub_files.clear();
+	f.m_sub_files.clear();
 	for (int c_files = sr.read_int(4); c_files--; )
 	{
 		t_sub_file e;
@@ -1047,7 +1047,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		e.priority = sr.read_int(4);
 		e.size = sr.read_int(8);
 		e.hash = sr.read_string();
-		f.sub_files.push_back(e);
+		f.m_sub_files.push_back(e);
 	}
 	f.pieces.clear();
 	int index = 0;
@@ -1079,7 +1079,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 				m_peers.DeleteItem(0);
 			break;
 		case v_files:
-			while (m_peers.GetItemCount() < f.sub_files.size())
+			while (m_peers.GetItemCount() < f.m_sub_files.size())
 			{
 				int id = m_peers.GetItemCount();
 				m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), id);
@@ -1238,7 +1238,7 @@ void CXBTClientDlg::OnPopupExplore()
 		ShellExecute(m_hWnd, "open", backward_slashes(m_server.completes_dir()).c_str(), NULL, NULL, SW_SHOW);
 		return;
 	}
-	string name = m_files_map.find(id)->second.name;
+	string name = m_files_map.find(id)->second.m_name;
 	struct _stati64 b;
 	if (_stati64(name.c_str(), &b) || ~b.st_mode & S_IFDIR)
 	{
@@ -1255,9 +1255,9 @@ void CXBTClientDlg::OnPopupExploreTracker()
 	if (id == -1)
 		return;
 	const t_file& f = m_files_map.find(id)->second;
-	if (f.trackers.empty())
+	if (f.m_trackers.empty())
 		return;
-	Cbt_tracker_url url = f.trackers.front().url;
+	Cbt_tracker_url url = f.m_trackers.front().url;
 	ShellExecute(m_hWnd, "open", ("http://" + url.m_host).c_str(), NULL, NULL, SW_SHOW);
 }
 
@@ -1269,7 +1269,7 @@ void CXBTClientDlg::OnUpdatePopupExploreTracker(CCmdUI* pCmdUI)
 void CXBTClientDlg::OnPopupAnnounce()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.announce(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+		m_server.announce(m_files_map.find(m_files.GetItemData(index))->second.m_info_hash);
 }
 
 void CXBTClientDlg::OnUpdatePopupAnnounce(CCmdUI* pCmdUI)
@@ -1283,8 +1283,8 @@ void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl()
 	if (id == -1)
 		return;
 	const t_file& file = m_files_map.find(id)->second;
-	if (!file.trackers.empty())
-		set_clipboard(file.trackers.front().url);
+	if (!file.m_trackers.empty())
+		set_clipboard(file.m_trackers.front().url);
 }
 
 void CXBTClientDlg::OnUpdatePopupTorrentClipboardCopyAnnounceUrl(CCmdUI* pCmdUI)
@@ -1296,7 +1296,7 @@ void CXBTClientDlg::OnPopupTorrentClipboardCopyHash()
 {
 	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
 	if (id != -1)
-		set_clipboard(hex_encode(m_files_map.find(id)->second.info_hash));
+		set_clipboard(hex_encode(m_files_map.find(id)->second.m_info_hash));
 }
 
 void CXBTClientDlg::OnUpdatePopupTorrentClipboardCopyHash(CCmdUI* pCmdUI)
@@ -1308,7 +1308,7 @@ void CXBTClientDlg::OnPopupCopy()
 {
 	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
 	if (id != -1)
-		set_clipboard(m_server.get_url(m_files_map.find(id)->second.info_hash));
+		set_clipboard(m_server.get_url(m_files_map.find(id)->second.m_info_hash));
 }
 
 void CXBTClientDlg::OnUpdatePopupCopy(CCmdUI* pCmdUI)
@@ -1337,7 +1337,7 @@ void CXBTClientDlg::OnPopupOpen()
 void CXBTClientDlg::OnPopupClose()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.m_info_hash);
 }
 
 void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
@@ -1348,7 +1348,7 @@ void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
 void CXBTClientDlg::OnPopupTorrentDelete()
 {
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.info_hash, true);
+		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.m_info_hash, true);
 }
 
 void CXBTClientDlg::OnUpdatePopupTorrentDelete(CCmdUI* pCmdUI)
@@ -1369,13 +1369,13 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 	t_file& f = m_files_map.find(m_files.GetItemData(index))->second;
 	Cdlg_torrent_options dlg;
 	Cdlg_torrent_options::t_data data;
-	data.seeding_ratio = f.seeding_ratio;
-	data.seeding_ratio_override = f.seeding_ratio_override;
+	data.seeding_ratio = f.m_seeding_ratio;
+	data.seeding_ratio_override = f.m_seeding_ratio_override;
 	dlg.set(data);
 	if (IDOK != dlg.DoModal())
 		return;
 	data = dlg.get();
-	m_server.torrent_seeding_ratio(f.info_hash, data.seeding_ratio_override, data.seeding_ratio);
+	m_server.torrent_seeding_ratio(f.m_info_hash, data.seeding_ratio_override, data.seeding_ratio);
 }
 
 void CXBTClientDlg::OnUpdatePopupTorrentOptions(CCmdUI* pCmdUI)
@@ -1608,16 +1608,16 @@ void CXBTClientDlg::update_tray()
 {
 	if (!m_show_tray_icon)
 		return;
-	__int64 left = 0;
-	__int64 size = 0;
+	_int64 left = 0;
+	_int64 size = 0;
 	int leechers = 0;
 	int seeders = 0;
 	for (t_files::const_iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
 	{
-		left += i->second.left;
-		size += i->second.size;
-		leechers += i->second.c_leechers;
-		seeders += i->second.c_seeders;
+		left += i->second.m_left;
+		size += i->second.m_size;
+		leechers += i->second.mc_leechers;
+		seeders += i->second.mc_seeders;
 	}
 	NOTIFYICONDATA nid;
 	nid.cbSize = NOTIFYICONDATA_V1_SIZE;
@@ -1745,31 +1745,31 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	switch (m_torrents_sort_column)
 	{
 	case fc_hash:
-		return compare(a.info_hash, b.info_hash);
+		return compare(a.m_info_hash, b.m_info_hash);
 	case fc_done:
-		return compare(b.left * 1000 / b.size, a.left * 1000 / a.size);
+		return compare(b.m_left * 1000 / b.m_size, a.m_left * 1000 / a.m_size);
 	case fc_left:
-		return compare(a.left, b.left);
+		return compare(a.m_left, b.m_left);
 	case fc_size:
-		return compare(a.size, b.size);
+		return compare(a.m_size, b.m_size);
 	case fc_total_downloaded:
-		return compare(b.total_downloaded, a.total_downloaded);
+		return compare(b.m_total_downloaded, a.m_total_downloaded);
 	case fc_total_uploaded:
-		return compare(b.total_uploaded, a.total_uploaded);
+		return compare(b.m_total_uploaded, a.m_total_uploaded);
 	case fc_down_rate:
-		return compare(b.down_rate, a.down_rate);
+		return compare(b.m_down_rate, a.m_down_rate);
 	case fc_up_rate:
-		return compare(b.up_rate, a.up_rate);
+		return compare(b.m_up_rate, a.m_up_rate);
 	case fc_leechers:
-		return compare(a.c_leechers, b.c_leechers);
+		return compare(a.mc_leechers, b.mc_leechers);
 	case fc_seeders:
-		return compare(a.c_seeders, b.c_seeders);
+		return compare(a.mc_seeders, b.mc_seeders);
 	case fc_peers:
-		return compare(a.c_leechers + a.c_seeders, b.c_leechers + b.c_seeders);
+		return compare(a.mc_leechers + a.mc_seeders, b.mc_leechers + b.mc_seeders);
 	case fc_state:
-		return compare(a.state, b.state);
+		return compare(a.m_state, b.m_state);
 	case fc_name:
-		return compare(a.display_name, b.display_name);
+		return compare(a.m_display_name, b.m_display_name);
 	}
 	return 0;
 }
@@ -1896,8 +1896,8 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 		return 0;
 	if (m_files_sort_reverse)
 		swap(id_a, id_b);
-	const t_sub_file& a = m_file->sub_files[id_a];
-	const t_sub_file& b = m_file->sub_files[id_b];
+	const t_sub_file& a = m_file->m_sub_files[id_a];
+	const t_sub_file& b = m_file->m_sub_files[id_b];
 	switch (m_files_sort_column)
 	{
 	case sfc_name:
@@ -2419,7 +2419,7 @@ int CXBTClientDlg::get_priority()
 	int v = 2;
 	for (int index = -1; (index = m_peers.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
-		const t_sub_file& e = m_file->sub_files[m_peers.GetItemData(index)];
+		const t_sub_file& e = m_file->m_sub_files[m_peers.GetItemData(index)];
 		if (v == 2)
 			v = e.priority;
 		else if (e.priority != v)
@@ -2434,8 +2434,8 @@ void CXBTClientDlg::set_priority(int v)
 		return;
 	for (int index = -1; (index = m_peers.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
-		const t_sub_file& e = m_file->sub_files[m_peers.GetItemData(index)];
-		m_server.sub_file_priority(m_file->info_hash, e.name, v);
+		const t_sub_file& e = m_file->m_sub_files[m_peers.GetItemData(index)];
+		m_server.sub_file_priority(m_file->m_info_hash, e.name, v);
 	}
 }
 
@@ -2446,8 +2446,8 @@ void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	int id = m_peers.GetItemData(m_peers.GetNextItem(-1, LVNI_FOCUSED));
 	if (id == -1)
 		return;
-	const t_sub_file& e = m_file->sub_files[id];
-	ShellExecute(m_hWnd, "open", (m_file->name + e.name).c_str(), NULL, NULL, SW_SHOW);
+	const t_sub_file& e = m_file->m_sub_files[id];
+	ShellExecute(m_hWnd, "open", (m_file->m_name + e.name).c_str(), NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnPopupViewAdvancedColumns()
@@ -2541,8 +2541,8 @@ int CXBTClientDlg::get_torrent_priority()
 	{
 		const t_file& e = m_files_map[m_files.GetItemData(index)];
 		if (v == 2)
-			v = e.priority;
-		else if (e.priority != v)
+			v = e.m_priority;
+		else if (e.m_priority != v)
 			return 2;
 	}
 	return v;
@@ -2553,7 +2553,7 @@ void CXBTClientDlg::set_torrent_priority(int v)
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
 		const t_file& e = m_files_map[m_files.GetItemData(index)];
-		m_server.file_priority(e.info_hash, v);
+		m_server.file_priority(e.m_info_hash, v);
 	}
 }
 
@@ -2597,8 +2597,8 @@ Cbt_file::t_state CXBTClientDlg::get_torrent_state()
 	{
 		const t_file& e = m_files_map[m_files.GetItemData(index)];
 		if (v == Cbt_file::s_unknown)
-			v = e.state;
-		else if (e.state != v)
+			v = e.m_state;
+		else if (e.m_state != v)
 			return Cbt_file::s_unknown;
 	}
 	return v;
@@ -2609,7 +2609,7 @@ void CXBTClientDlg::set_torrent_state(Cbt_file::t_state v)
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 	{
 		const t_file& e = m_files_map[m_files.GetItemData(index)];
-		m_server.file_state(e.info_hash, v);
+		m_server.file_state(e.m_info_hash, v);
 	}
 }
 

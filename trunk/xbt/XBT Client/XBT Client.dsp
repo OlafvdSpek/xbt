@@ -128,6 +128,10 @@ SOURCE=..\misc\bt_misc.cpp
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\bt_peer_data.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE="..\BT Test\bt_peer_link.cpp"
 # End Source File
 # Begin Source File
@@ -326,6 +330,10 @@ SOURCE=..\misc\bt_logger.h
 # Begin Source File
 
 SOURCE=..\misc\bt_misc.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_peer_data.h"
 # End Source File
 # Begin Source File
 

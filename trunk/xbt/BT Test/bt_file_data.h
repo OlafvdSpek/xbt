@@ -8,19 +8,30 @@
 class Cbt_file_data  
 {
 public:
+	enum t_state
+	{
+		s_queued,
+		s_hashing,
+		s_running,
+		s_paused,
+		s_stopped,
+		s_unknown,
+	};
+
 	Cbt_file_data();
 
 	__int64 m_downloaded;
 	__int64 m_downloaded_l5;
 	__int64 m_left;
+	__int64 m_size;
 	__int64 m_total_downloaded;
 	__int64 m_total_uploaded;
 	__int64 m_uploaded;
 	__int64 m_uploaded_l5;
-	__int64 mcb_f;
 	__int64 mcb_piece;
 	bool m_seeding_ratio_override;
 	int m_completed_at;
+	int m_priority;
 	int m_seeding_ratio;
 	int m_session_started_at;
 	int m_started_at;
@@ -28,6 +39,10 @@ public:
 	int mc_rejected_chunks;
 	int mc_rejected_pieces;
 	int mc_seeders_total;
+	string m_info_hash;
+	string m_name;
+	string m_peer_id;
+	t_state m_state;
 };
 
 #endif // !defined(AFX_BT_FILE_DATA_H__2F382742_37BF_4FA1_9DD5_8973FC283EA5__INCLUDED_)
