@@ -498,10 +498,9 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 		if (m_pieces[i].m_valid 
 			|| m_pieces[i].m_priority == -10
 			|| !peer.m_remote_pieces[i] 
-			|| peer.m_pieces.find(&m_pieces[i]) != peer.m_pieces.end()
-			|| !end_mode && !m_pieces[i].m_peers.empty())
+			|| !m_pieces[i].c_unrequested_sub_pieces())
 			continue;
-		if (begin_mode && m_pieces[i].m_peers.empty() && !m_pieces[i].m_sub_pieces.empty())
+		if (begin_mode && !m_pieces[i].m_sub_pieces.empty())
 			return i;
 		int piece_rank = m_pieces[i].rank();
 		if (piece_rank > rank)
@@ -564,7 +563,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
 	{
 		c_distributed_copies = min(c_distributed_copies, i->mc_peers + i->m_valid);
-		if (!i->m_sub_pieces.empty())
+		if (!i->m_sub_pieces.empty() && i->c_sub_pieces_left() != i->c_sub_pieces())
 		{
 			c_invalid_chunks += i->c_sub_pieces_left();
 			c_valid_chunks += i->c_sub_pieces() - i->c_sub_pieces_left();

@@ -15,6 +15,12 @@
 class Cbt_sub_piece
 {
 public:
+	typedef set<Cbt_peer_link*> t_peers;
+
+	void erase_peers(Cbt_piece* piece);
+
+	t_peers m_peers;
+
 	Cbt_sub_piece()
 	{
 		m_valid = false;
@@ -27,6 +33,8 @@ public:
 
 	bool valid(bool v)
 	{
+		if (v)
+			m_peers.clear();
 		return m_valid = v;
 	}
 private:
@@ -39,6 +47,8 @@ public:
 	int resize(int);
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;
+	void erase_peer(Cbt_peer_link*);
+	int next_invalid_sub_piece(Cbt_peer_link*);
 	void load_state(Cstream_reader&);
 	int pre_save_state() const;
 	void save_state(Cstream_writer&) const;
@@ -53,6 +63,11 @@ public:
 		return mc_sub_pieces_left;
 	}
 
+	int c_unrequested_sub_pieces() const
+	{
+		return mc_unrequested_sub_pieces;
+	}
+
 	int cb_sub_piece() const
 	{
 		return 32 << 10;
@@ -63,17 +78,16 @@ public:
 		return m_size;
 	}	
 
-	typedef set<Cbt_peer_link*> t_peers;
 	typedef vector<Cbt_sub_piece> t_sub_pieces;
 	
 	char m_hash[20];
-	t_peers m_peers;
 	int mc_peers;
 	t_sub_pieces m_sub_pieces;
 	bool m_valid;
 	char m_priority;
 private:
 	int mc_sub_pieces_left;
+	int mc_unrequested_sub_pieces;
 	int m_size;
 };
 
