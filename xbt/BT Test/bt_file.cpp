@@ -351,23 +351,23 @@ int Cbt_file::c_valid_pieces() const
 	return (mcb_f - m_left + mcb_piece - 1) / mcb_piece;
 }
 
-void Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link* peer)
+int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link* peer)
 {
 	if (offset < 0 || cb_s < 0)
-		return;
+		return 1;
 	int a = offset / mcb_piece;
 	if (a >= m_pieces.size())
-		return;
+		return 1;
 	Cbt_piece& piece = m_pieces[a];
 	if (piece.valid())
 	{
 		alert(Calert(Calert::debug, peer->m_a, "Piece " + n(a) + ": already valid"));
-		return;
+		return 1;
 	}
 	if (piece.write(offset % mcb_piece, s, cb_s))
 	{
-		alert(Calert(Calert::debug, peer->m_a, "Piece " + n(a) + ", offset " + n(mcb_piece) + ", size " + n(cb_s) + ": rejected"));
-		return;
+		alert(Calert(Calert::debug, peer->m_a, "Piece " + n(a) + ", offset " + n(offset % mcb_piece) + ", size " + n(cb_s) + ": rejected"));
+		return 1;
 	}
 	int size = cb_s;
 	const char* r = s;
@@ -409,14 +409,14 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link
 		r += cb_write;
 	}
 	if (piece.c_sub_pieces_left())
-		return;
+		return 0;
 	Cvirtual_binary d;
 	read_data(a * mcb_piece, d.write_start(piece.size()), piece.size());
 	if (!m_merkle && memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
 	{
 		alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
 		logger().invalid(m_info_hash, false, a);
-		return;
+		return 0;
 	}
 	piece.valid(true);
 	m_left -= piece.size();
@@ -463,6 +463,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link
 	}
 	alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
 	logger().valid(m_info_hash, false, a);
+	return 0;
 }
 
 int Cbt_file::read_data(__int64 offset, byte* d, int cb_d)
