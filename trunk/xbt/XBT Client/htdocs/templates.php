@@ -52,7 +52,7 @@
 	{
 		$i = strrpos($v, '/');
 		if ($i !== false)
-			$v = substr($v, $i + 1);
+		$v = substr($v, $i + 1);
 		$i = strrpos($v, '\\');
 		return $i === false ? $v : substr($v, $i + 1);
 
@@ -118,6 +118,7 @@
 		$d .= '<form action="?" method=post>';
 		$d .= '<table>';
 		$d .= '<caption>Torrents</caption>';
+		$d .= '<tr>';
 		$d .= '<th>';
 		$d .= '<th align=left>Name';
 		$d .= '<th align=right>%';
@@ -132,6 +133,23 @@
 		$d .= '<th align=right>Priority';
 		$d .= '<th align=right>State';
 		$d .= $v['rows'];
+		if ($v['aggregate']['size'])
+		{
+			$d .= '<tr>';
+			$d .= '<th>';
+			$d .= '<th>';
+			$d .= sprintf('<th align=right>%d', ($v['aggregate']['size'] - $v['aggregate']['left']) * 100 / $v['aggregate']['size']);
+			$d .= sprintf('<th align=right>%s', b2a($v['aggregate']['left']));
+			$d .= sprintf('<th align=right>%s', b2a($v['aggregate']['size']));
+			$d .= sprintf('<th align=right>%s', b2a($v['aggregate']['total downloaded']));
+			$d .= sprintf('<th align=right>%s', b2a($v['aggregate']['total uploaded']));
+			$d .= sprintf('<th align=right>%s', b2a($v['aggregate']['down rate']));
+			$d .= sprintf('<th align=right>%s', b2a($v['aggregate']['up rate']));
+			$d .= sprintf('<th align=right>%s', nz($v['aggregate']['incomplete']));
+			$d .= sprintf('<th align=right>%s', nz($v['aggregate']['complete']));
+			$d .= '<th>';
+			$d .= '<th>';
+		}
 		$d .= '</table>';
 		$d .= '<br>';
 		$d .= '<select name="a" onchange="this.form.submit();">';

@@ -108,14 +108,23 @@
 	send_string($s, 'd6:action10:get statuse');
 	$v = recv_string($s);
 	$v = bdec($v);
+	$aggregate = array();
 	$rows = '';
 	foreach ($v['value']['files']['value'] as $info_hash => $file)
 	{
+		$aggregate['left'] += $file['value']['left']['value'];
+		$aggregate['size'] += $file['value']['size']['value'];
+		$aggregate['total downloaded'] += $file['value']['total downloaded']['value'];
+		$aggregate['total uploaded'] += $file['value']['total uploaded']['value'];
+		$aggregate['down rate'] += $file['value']['down rate']['value'];
+		$aggregate['up rate'] += $file['value']['up rate']['value'];
+		$aggregate['incomplete'] += $file['value']['incomplete']['value'];
+		$aggregate['complete'] += $file['value']['complete']['value'];
 		$rows .= template_torrent(array_merge($file['value'], array('info_hash' => array('value' => $info_hash))));
 		if ($info_hash == pack('H*', $_REQUEST['torrent']))
 			$torrent_events .= template_torrent_events($file['value']['events']['value']);
 	}
-	$torrents = template_torrents(array('rows' => $rows));
+	$torrents = template_torrents(array('aggregate' => $aggregate, 'rows' => $rows));
 	send_string($s, 'd6:action11:get optionse');
 	$v = recv_string($s);
 	$v = bdec($v);
