@@ -31,9 +31,7 @@ void CListCtrlEx1::OnContextMenu(CWnd* pWnd, CPoint point)
 {
 	if (pWnd != GetHeaderCtrl())
 	{
-		CWnd* parent = pWnd->GetParent();		
-		if (parent)
-			parent->SendMessage(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(pWnd), MAKELPARAM(point.x, point.y));
+		DefWindowProc(WM_CONTEXTMENU, reinterpret_cast<WPARAM>(pWnd->GetSafeHwnd()), MAKELPARAM(point.x, point.y));
 		return;
 	}
 	CMenu menu;
