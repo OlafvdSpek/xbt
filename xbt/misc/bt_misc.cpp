@@ -165,7 +165,7 @@ static string peer_id2a(const string& name, const string& peer_id, int i)
 	int j;
 	for (j = i; j < 7; j++)
 	{
-		if (!isdigit(peer_id[j]))
+		if (!isalnum(peer_id[j]))
 			break;
 	}
 	return name + peer_id.substr(i, j - i) + " - " + hex_encode(peer_id.substr(8));

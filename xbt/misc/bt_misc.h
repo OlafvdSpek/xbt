@@ -26,6 +26,13 @@ string peer_id2a(const string& v);
 string uri_decode(const string& v);
 string uri_encode(const string& v);
 
+inline string compute_sha1(const void* s, int cb_s)
+{
+	char d[20];
+	compute_sha1(s, cb_s, d);
+	return string(d, 20);
+}
+
 inline void compute_sha1(const Cvirtual_binary& s, void* d)
 {
 	compute_sha1(s, s.size(), d);
@@ -33,9 +40,7 @@ inline void compute_sha1(const Cvirtual_binary& s, void* d)
 
 inline string compute_sha1(const Cvirtual_binary& s)
 {
-	char d[20];
-	compute_sha1(s, d);
-	return string(d, 20);
+	return compute_sha1(s, s.size());
 }
 
 inline __int64 htonll(__int64 v)
@@ -192,12 +197,6 @@ private:
 
 struct t_udp_tracker_input_scrape: t_udp_tracker_input
 {
-	char m_info_hash[20];
-
-	string info_hash() const
-	{
-		return string(m_info_hash, 20);
-	}
 };
 
 struct t_udp_tracker_output
@@ -242,8 +241,30 @@ struct t_udp_tracker_output_announce: t_udp_tracker_output
 	{
 		m_interval = htonl(v);
 	}
+
+	int leechers() const
+	{
+		return ntohl(m_leechers);
+	}
+
+	void leechers(int v)
+	{
+		m_leechers = htonl(v);
+	}
+
+	int seeders() const
+	{
+		return ntohl(m_seeders);
+	}
+
+	void seeders(int v)
+	{
+		m_seeders = htonl(v);
+	}
 private:
 	int m_interval;
+	int m_leechers;
+	int m_seeders;
 };
 
 struct t_udp_tracker_output_scrape: t_udp_tracker_output
@@ -256,17 +277,6 @@ struct t_udp_tracker_output_error: t_udp_tracker_output
 
 struct t_udp_tracker_output_file
 {
-	string info_hash() const
-	{
-		return string(m_info_hash, 20);
-	}
-
-	void info_hash(const string& v)
-	{
-		assert(v.length() == 20);
-		memcpy(m_info_hash, v.c_str(), 20);
-	}
-
 	int complete() const
 	{
 		return ntohl(m_complete);
@@ -297,7 +307,6 @@ struct t_udp_tracker_output_file
 		m_incomplete = htonl(v);
 	}
 private:
-	char m_info_hash[20];
 	int m_complete;
 	int m_downloaded;
 	int m_incomplete;
@@ -342,23 +351,11 @@ struct t_bt_handshake
 		memcpy(m_info_hash, v.c_str(), 20);
 	}
 
-	string peer_id() const
-	{
-		return string(m_peer_id, 20);
-	}
-
-	void peer_id(const string& v)
-	{
-		assert(v.length() == 20);
-		memcpy(m_peer_id, v.c_str(), 20);
-	}
-
 	unsigned char cb_name;
 	char name[19];
 	char reserved[8];
 private:
 	char m_info_hash[20];
-	char m_peer_id[20];
 };
 
 #ifdef _MSC_VER
