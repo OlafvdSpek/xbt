@@ -377,6 +377,7 @@ BEGIN
         POPUP "&View"
         BEGIN
             MENUITEM "&Details",                    ID_POPUP_VIEW_DETAILS
+            MENUITEM "&Events",                     ID_POPUP_VIEW_EVENTS
             MENUITEM "&Files",                      ID_POPUP_VIEW_FILES
             MENUITEM "&Peers",                      ID_POPUP_VIEW_PEERS
             MENUITEM "&Trackers",                   ID_POPUP_VIEW_TRACKERS

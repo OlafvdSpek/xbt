@@ -72,6 +72,7 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult);
@@ -110,6 +111,7 @@ protected:
 	afx_msg void OnPopupViewFiles();
 	afx_msg void OnPopupViewPeers();
 	afx_msg void OnPopupViewTrackers();
+	afx_msg void OnPopupViewEvents();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
