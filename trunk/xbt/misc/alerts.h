@@ -80,7 +80,7 @@ public:
 	void push_back(const value_type& v)
 	{
 		list<value_type>::push_back(v);
-		while (size() > 125)
+		while (size() > 250)
 			erase(begin());
 	}
 };
