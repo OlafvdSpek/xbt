@@ -712,6 +712,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 			m_old_peers[h] = m_new_peers[h] = r.read_int(4);
 		}
 	}
+	r.read(64);
 	if (!is_open())
 		return;
 	m_state = s_stopped;
@@ -720,7 +721,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + m_sub_files.size() + 8 * m_old_peers.size() + 69;
+	int c = m_info.size() + m_name.size() + m_sub_files.size() + 8 * m_old_peers.size() + 133;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
@@ -757,6 +758,7 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 		w.write_int(4, i->first);
 		w.write_int(4, i->second);
 	}
+	w.write(64);
 }
 
 void Cbt_file::alert(const Calert& v)
