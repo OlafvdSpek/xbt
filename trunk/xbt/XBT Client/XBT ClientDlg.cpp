@@ -257,7 +257,7 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 			lpm->Free(idl);
 		if (!*path1)
 			return;
-		path += static_cast<string>(path1) + "\\" + torrent.name();
+		path = static_cast<string>(path1) + "\\" + torrent.name();
 	}
 	CWaitCursor wc;
 	if (!m_server.open(d, path))
