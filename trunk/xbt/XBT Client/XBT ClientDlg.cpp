@@ -1270,6 +1270,7 @@ void CXBTClientDlg::OnTrayMenu()
 {
 	CPoint point;
 	GetCursorPos(&point);
+	SetForegroundWindow();
 
 	CMenu menu;
 	VERIFY(menu.LoadMenu(IDR_TRAY));
