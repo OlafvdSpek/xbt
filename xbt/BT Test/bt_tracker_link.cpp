@@ -319,7 +319,7 @@ void Cbt_tracker_link::close(Cbt_file& f)
 	else if (++m_current_tracker < f.m_trackers.size())
 	{
 		m_announce_time = 0;
-		mc_attempts = 0;
+		mc_attempts--;
 	}
 	else
 		m_current_tracker = 0;

@@ -34,10 +34,7 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 		m_peers.clear();
 		m_sub_pieces.clear();
 		if (memcmp(compute_sha1(m_d).c_str(), m_hash, 20))
-		{
 			m_d.clear();
-			cout << "invalid" << endl;
-		}
 		else
 			m_valid = true;
 	}

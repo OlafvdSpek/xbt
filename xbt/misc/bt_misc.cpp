@@ -158,7 +158,8 @@ string b2a(__int64 v, const char* postfix)
 
 static string peer_id2a(const string& name, const string& peer_id, int i)
 {
-	for (int j = i; j < 7; j++)
+	int j;
+	for (j = i; j < 7; j++)
 	{
 		if (!isdigit(peer_id[j]))
 			break;
