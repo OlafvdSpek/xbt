@@ -73,9 +73,7 @@ void Cbt_tracker_url::write(const string& v)
 		host = v.substr(a, b - a);
 		b++;
 		a = v.find('/', b);
-		if (a == string::npos)
-			return;
-		port = atoi(v.substr(b, a - b).c_str());
+		port = atoi((a == string::npos ? v.substr(b) : v.substr(b, a - b)).c_str());
 		if (port == 2710)
 			protocol = tp_udp;
 		b = a;
@@ -83,5 +81,8 @@ void Cbt_tracker_url::write(const string& v)
 	m_protocol = protocol;
 	m_host = host;
 	m_port = port;
-	m_path = v.substr(b);
+	if (b == string::npos)
+		m_path.erase();
+	else
+		m_path = v.substr(b);
 }
