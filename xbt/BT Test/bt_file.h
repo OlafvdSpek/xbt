@@ -22,6 +22,7 @@ class Cserver;
 class Cbt_file  
 {
 public:
+	void update_piece_priorities();
 	void sub_file_priority(const string& id, int priority);
 	int local_ipa() const;
 	int local_port() const;
