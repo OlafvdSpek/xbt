@@ -681,10 +681,23 @@ void Cbt_file::load_state(Cstream_reader& r)
 	m_validate = r.read_int(4);
 	m_completed_at = r.read_int(4);
 	m_started_at = r.read_int(4);
+	m_priority = static_cast<char>(r.read_int(1));
 	{
 		Cvirtual_binary pieces = r.read_data();
 		for (int i = 0; i < min(pieces.size(), m_pieces.size()); i++)
 			m_pieces[i].m_valid = pieces[i];
+	}
+	for (int c_chunks = r.read_int(4); c_chunks--; )
+	{
+		int piece = r.read_int(4);
+		int chunk = r.read_int(1);
+		if (piece >= 0 && piece < m_pieces.size() && chunk >= 0 && chunk < m_pieces[piece].c_sub_pieces())
+		{
+			if (m_pieces[piece].m_sub_pieces.empty())
+				m_pieces[piece].m_sub_pieces.resize(m_pieces[piece].mc_sub_pieces_left = m_pieces[piece].c_sub_pieces());
+			m_pieces[piece].m_sub_pieces[chunk] = true;
+			m_pieces[piece].mc_sub_pieces_left--;			
+		}
 	}
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		i->priority(static_cast<char>(r.read_int(1)));
@@ -700,9 +713,17 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 48;
+	int c = m_info.size() + m_name.size() + m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 53;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
+	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
+	{
+		for (Cbt_piece::t_sub_pieces::const_iterator j = i->m_sub_pieces.begin(); j != i->m_sub_pieces.end(); j++)
+		{
+			if (*j)
+				c += 5;
+		}
+	}
 	return c;
 }
 
@@ -718,9 +739,27 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	w.write_int(4, intermediate && m_left || m_validate);
 	w.write_int(4, m_completed_at);
 	w.write_int(4, m_started_at);
+	w.write_int(1, m_priority);
 	w.write_int(4, m_pieces.size());
-	for (int j = 0; j < m_pieces.size(); j++)
-		w.write_int(1, m_pieces[j].m_valid);
+	int c_chunks = 0;
+	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
+	{
+		w.write_int(1, i->m_valid);
+		for (Cbt_piece::t_sub_pieces::const_iterator j = i->m_sub_pieces.begin(); j != i->m_sub_pieces.end(); j++)
+			c_chunks += *j;
+	}
+	w.write_int(4, c_chunks);
+	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
+	{
+		for (Cbt_piece::t_sub_pieces::const_iterator j = i->m_sub_pieces.begin(); j != i->m_sub_pieces.end(); j++)
+		{
+			if (*j)
+			{
+				w.write_int(4, &*i - &m_pieces.front());
+				w.write_int(1, &*j - &i->m_sub_pieces.front());
+			}
+		}
+	}
 	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		w.write_int(1, i->priority());
 	w.write_int(4, m_old_peers.size());
