@@ -78,12 +78,12 @@ void Cserver::run()
 		for (t_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 		{
 			FD_SET(*i, &fd_read_set);
-			n = max(n, *i);
+			n = max(n, static_cast<SOCKET>(*i));
 		}
 		for (t_sockets::iterator i = lu.begin(); i != lu.end(); i++)
 		{
 			FD_SET(*i, &fd_read_set);
-			n = max(n, *i);
+			n = max(n, static_cast<SOCKET>(*i));
 		}
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, NULL) == SOCKET_ERROR)
 			cerr << "select failed: " << WSAGetLastError() << endl;
