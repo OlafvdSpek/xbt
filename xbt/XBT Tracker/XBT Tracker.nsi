@@ -15,13 +15,12 @@ Section "Install"
 	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
 	File release\*.exe
-	File xbt.css
-	File xbt_config.php
-	File xbt_files.php
 	File xbt_tracker.conf.default
 	File xbt_tracker.sql
 	SetOverwrite off
 	File /oname=xbt_tracker.conf xbt_tracker.conf.default
+	SetOutPath "$INSTDIR\htdocs"
+	File htdocs\*
 	Exec "$INSTDIR\XBT Tracker.exe --install"
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	CreateShortCut "$SMPROGRAMS\XBT Tracker.lnk" "$INSTDIR\XBT Tracker.exe"
@@ -32,7 +31,8 @@ SectionEnd
 
 Section "Uninstall"
 	SetShellVarContext all
-	Exec "$INSTDIR\XBT Tracker.exe --uninstall"
+	ExecWait 'net stop "XBT Tracker"'
+	ExecWait "$INSTDIR\XBT Tracker.exe --uninstall"
 	Delete "$SMPROGRAMS\XBT Tracker.lnk"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker"
 	RMDir /r "$INSTDIR"
