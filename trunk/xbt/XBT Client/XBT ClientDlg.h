@@ -241,8 +241,6 @@ private:
 	bool m_ask_for_location;
 	bool m_hide_on_deactivate;
 	bool m_initial_hide;
-	string m_buffer[4];
-	int m_buffer_w;
 	t_columns m_torrents_columns;
 	t_columns m_peers_columns;
 	t_file* m_file;

@@ -82,3 +82,8 @@ void CListCtrlEx::select_all()
 	for (int i = 0; i < GetItemCount(); i++)
 		SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
 }
+
+std::string& CListCtrlEx::get_buffer()
+{
+	return m_buffer[++m_buffer_w &= 3].erase();
+}
