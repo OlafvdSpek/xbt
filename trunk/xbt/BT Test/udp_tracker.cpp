@@ -46,6 +46,7 @@ Cudp_tracker::Cudp_tracker()
 	m_announce_interval = 1800;
 	for (int i = 0; i < 8; i++)
 		m_secret = m_secret << 8 ^ rand();
+	clean_up();
 }
 
 void Cudp_tracker::recv(Csocket& s)
@@ -74,6 +75,8 @@ void Cudp_tracker::recv(Csocket& s)
 			send_scrape(s, a, b, b + r);
 		break;
 	}
+	if (time(NULL) - m_clean_up_time > 60)
+		clean_up();
 }
 
 __int64 Cudp_tracker::connection_id(sockaddr_in& a) const
@@ -101,20 +104,6 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 {
 	if (read<__int64>(r + uti_connection_id, r_end) != connection_id(a))
 		return;
-	/*
-	Ctracker_input ti;
-	ti.m_downloaded = read<__int64>(r + utia_downloaded, r_end);
-	ti.m_event = static_cast<Ctracker_input::t_event>(read<__int32>(r + utia_event, r_end));
-	ti.m_info_hash.assign(r + utia_info_hash, 20);
-	ti.m_ipa = read<__int32>(r + utia_ipa, r_end) && is_private_ipa(m_a.sin_addr.s_addr)
-		? htonl(read<__int32>(r + utia_ipa, r_end))
-		: m_a.sin_addr.s_addr;
-	ti.m_left = read<__int64>(r + utia_left, r_end);
-	ti.m_num_want = read<__int32>(r + utia_num_want, r_end);
-	ti.m_peer_id.assign(r + utia_peer_id, 20);
-	ti.m_port = htons(read<__int16>(r + utia_port, r_end));
-	ti.m_uploaded = read<__int64>(r + utia_uploaded, r_end);
-	*/
 	t_file& file = m_files[string(r + utia_info_hash, 20)];
 	int ipa = read<__int32>(r + utia_ipa, r_end) && is_private_ipa(a.sin_addr.s_addr)
 		? htonl(read<__int32>(r + utia_ipa, r_end))
@@ -161,15 +150,27 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 		if (read<__int64>(r + utia_left, r_end) || i->second.left)
 			candidates.push_back(i);
 	}
-	int c = read<__int32>(r + utia_num_want, r_end) < 0 ? 50 : min(read<__int32>(r + utia_num_want, r_end), 50);
-	while (c--)
+	int c = read<__int32>(r + utia_num_want, r_end) < 0 ? 100 : min(read<__int32>(r + utia_num_want, r_end), 200);
+	if (candidates.size() > c)	
 	{
-		int i = rand() % candidates.size();
-		write<__int32>(d + 0, ntohl(candidates[i]->first));
-		write<__int16>(d + 4, ntohs(candidates[i]->second.port));
-		w += 6;
-		candidates[i] = candidates.back();
-		candidates.pop_back();
+		while (c--)
+		{
+			int i = rand() % candidates.size();
+			write<__int32>(w + 0, ntohl(candidates[i]->first));
+			write<__int16>(w + 4, ntohs(candidates[i]->second.port));
+			w += 6;
+			candidates[i] = candidates.back();
+			candidates.pop_back();
+		}
+	}
+	else
+	{
+		for (t_candidates::const_iterator i = candidates.begin(); i != candidates.end(); i++)
+		{
+			write<__int32>(w + 0, ntohl((*i)->first));
+			write<__int16>(w + 4, ntohs((*i)->second.port));
+			w += 6;
+		}
 	}
 	send(s, a, d, w - d);
 }
@@ -215,4 +216,25 @@ void Cudp_tracker::send_error(Csocket& s, sockaddr_in& a, const char* r, const c
 void Cudp_tracker::send(Csocket& s, sockaddr_in& a, const void* b, int cb_b)
 {
 	s.sendto(b, cb_b, reinterpret_cast<const sockaddr*>(&a), sizeof(sockaddr_in));
+}
+
+void Cudp_tracker::t_file::clean_up(int t)
+{
+	for (t_peers::iterator i = peers.begin(); i != peers.end(); )
+	{
+		if (i->second.mtime < t)
+		{
+			(i->second.left ? leechers : seeders)--;
+			peers.erase(i++);
+		}
+		else
+			i++;
+	}
+}
+
+void Cudp_tracker::clean_up()
+{
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		i->second.clean_up(time(NULL) - static_cast<int>(1.5 * m_announce_interval));
+	m_clean_up_time = time(NULL);
 }

@@ -307,7 +307,7 @@ BEGIN
         MENUITEM "Explore tracker",             ID_POPUP_EXPLORE_TRACKER
         MENUITEM "Files...",                    ID_POPUP_FILES
         MENUITEM SEPARATOR
-        MENUITEM "Announce",                    ID_POPUP_ANNOUNCE
+        MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
         MENUITEM "Start",                       ID_POPUP_START
         MENUITEM "Stop",                        ID_POPUP_STOP
         MENUITEM SEPARATOR
