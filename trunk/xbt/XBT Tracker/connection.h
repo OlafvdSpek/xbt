@@ -36,7 +36,7 @@ private:
 	Cserver* m_server;
 	int m_state;
 	t_read_b m_read_b;
-	t_read_b m_write_b;
+	t_write_b m_write_b;
 	int m_r;
 	int m_w;
 	bool m_log_access;
