@@ -518,7 +518,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int32(c_seeders());
 	w.write_int32(mc_leechers_total);
 	w.write_int32(mc_seeders_total);
-	w.write_int32(m_run);
+	w.write_int32(m_hasher ? 2 : m_run);
 	if (flags & Cserver::df_peers)
 	{
 		w.write_int32(m_peers.size());

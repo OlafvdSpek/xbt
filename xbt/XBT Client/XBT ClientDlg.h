@@ -136,7 +136,8 @@ private:
 		int c_seeders;
 		int c_leechers_total;
 		int c_seeders_total;
-		bool run;
+		bool hashing;
+		bool running;
 		bool removed;
 	};
 

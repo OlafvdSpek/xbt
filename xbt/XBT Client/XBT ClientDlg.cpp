@@ -325,7 +325,9 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] += " / " + n(e.c_seeders_total);
 		break;
 	case fc_state:
-		if (e.run)
+		if (e.hashing)
+			m_buffer[m_buffer_w] = 'H';
+		else if (e.running)
 			m_buffer[m_buffer_w] = 'R';
 		break;
 	case fc_name:
@@ -521,7 +523,17 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.c_seeders = sr.read_int32();
 	f.c_leechers_total = sr.read_int32();
 	f.c_seeders_total = sr.read_int32();
-	f.run = sr.read_int32();
+	f.hashing = false;
+	f.running = false;
+	switch (sr.read_int32())
+	{
+	case 1:
+		f.running = true;
+		break;
+	case 2:
+		f.hashing = true;
+		break;
+	}
 	f.removed = false;
 	{
 		int i = f.name.rfind('\\');
@@ -1077,7 +1089,7 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	case fc_seeders:
 		return compare(a.c_seeders, b.c_seeders);
 	case fc_state:
-		return compare(a.run, b.run);
+		return compare(a.running, b.running);
 	case fc_name:
 		return compare(a.name, b.name);
 	}
