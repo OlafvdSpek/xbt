@@ -2,7 +2,7 @@
 
 /*
 +--------------------------------------------------------------------------
-|   Invision Power Board v2.0.0
+|   Invision Power Board v2.0.3
 |   =============================================
 |   by Matthew Mecham
 |   (c) 2001 - 2004 Invision Power Services, Inc.
@@ -471,9 +471,12 @@ class post {
 										  )
 									);
 
+		$email_message = $this->email->message;
+
 		foreach( explode( ",", $tmp['notify_modq_emails'] ) as $email )
 		{
-			$this->email->to = trim($email);
+			$this->email->message = $email_message;
+			$this->email->to      = trim($email);
 			$this->email->send_mail();
 		}
 	}
@@ -518,6 +521,20 @@ class post {
 
 			while ( $r = $DB->fetch_row($outer) )
 			{
+				//-----------------------------------------
+				// Test for group permissions
+				//-----------------------------------------
+
+				$perm_id = ( $r['org_perm_id'] ) ? $r['org_perm_id'] : $ibforums->cache['group_cache'][ $r['mgroup'] ]['g_perm_id'];
+
+				if ( $this->forum['read_perms'] != '*' )
+				{
+					if ( ! preg_match("/(^|,)".str_replace( ",", '|', $perm_id )."(,|$)/", $this->forum['read_perms'] ) )
+        			{
+        				continue;
+       				}
+				}
+
 				$count++;
 
 				$r['language'] = $r['language'] ? $r['language'] : 'en';
@@ -725,6 +742,12 @@ class post {
 		{
 			$std->Error( array( LEVEL => 1, MSG => 'post_too_long') );
 		}
+
+		//-----------------------------------------
+		// Remove board tags
+		//-----------------------------------------
+
+		$ibforums->input['Post'] = $std->remove_tags( $ibforums->input['Post'] );
 
 		$post = array(
 						'author_id'   => $ibforums->member['id'] ? $ibforums->member['id'] : 0,
@@ -1284,7 +1307,7 @@ class post {
 
 	function moderate_log($title = 'unknown', $topic_title)
 	{
-		global $std, $ibforums, $DB, $HTTP_REFERER, $QUERY_STRING;
+		global $std, $ibforums, $DB;
 
 		$DB->do_insert( 'moderator_logs', array (
 												'forum_id'    => $ibforums->input['f'],
@@ -1293,11 +1316,11 @@ class post {
 												'member_id'   => $ibforums->member['id'],
 												'member_name' => $ibforums->member['name'],
 												'ip_address'  => $ibforums->input['IP_ADDRESS'],
-												'http_referer'=> $HTTP_REFERER,
+												'http_referer'=> $_SERVER['HTTP_REFERER'],
 												'ctime'       => time(),
 												'topic_title' => $topic_title,
 												'action'      => $title,
-												'query_string'=> $QUERY_STRING,
+												'query_string'=> $_SERVER['QUERY_STRING'],
 										     ) );
 	}
 
@@ -1762,7 +1785,7 @@ class post {
 
 		$std->update_forum_cache();
 
-		$std->update_cache( array( 'name' => 'stats'      , 'array' => 1, 'deletefirst' => 0, 'donow' => 1 ) );
+		$std->update_cache( array( 'name' => 'stats', 'array' => 1, 'deletefirst' => 0, 'donow' => 1 ) );
 	}
 
 	/*-------------------------------------------------------------------------*/
@@ -1939,7 +1962,9 @@ class post {
 				$DB->simple_construct( array( 'select' => 'trid', 'from' => 'tracker', 'where' => "topic_id=".intval($tid)." AND member_id=".$ibforums->member['id'] ) );
 				$DB->simple_exec();
 
-				if ( $DB->get_num_rows() )
+				$test = $DB->fetch_row();
+
+				if ( $test['trid'] )
 				{
 					//-----------------------------------------
 					// Already tracking...
@@ -1994,7 +2019,7 @@ class post {
 
 		if ( ! $ibforums->input['qpid'] )
 		{
-			$ibforums->input['qpid'] = preg_replace( "/[^,\d]/", "", trim($std->my_getcookie('mqtids')) );
+			$ibforums->input['qpid'] = $std->my_getcookie('mqtids');
 
 			if ($ibforums->input['qpid'] == ",")
 			{
@@ -2010,6 +2035,7 @@ class post {
 			$ibforums->input['parent_id'] = $ibforums->input['qpid'];
 		}
 
+		$ibforums->input['qpid'] = preg_replace( "/[^,\d]/", "", trim($ibforums->input['qpid']) );
 
 		if ( $ibforums->input['qpid'] )
 		{

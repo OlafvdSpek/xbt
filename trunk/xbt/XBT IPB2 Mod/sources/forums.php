@@ -2,7 +2,7 @@
 
 /*
 +--------------------------------------------------------------------------
-|   Invision Power Board v2.0.0
+|   Invision Power Board v2.0.3
 |   =============================================
 |   by Matthew Mecham
 |   (c) 2001 - 2004 Invision Power Services, Inc.
@@ -161,7 +161,7 @@ class forums {
 
 				$DB->obj['use_shutdown'] = 0;
 
-				$std->update_cache( array( 'name' => 'forum_cache', 'array' => 1, 'deletefirst' => 0 ) );
+				$std->update_forum_cache();
 
 				//-----------------------------------------
 				// Boink!
@@ -733,9 +733,9 @@ class forums {
 
 		if ( ($ibforums->vars['show_user_posted'] == 1) and ($ibforums->member['id']) and ( count($topic_ids) ) and ( $parse_dots ) )
 		{
-			$DB->simple_construct( array( 'select' => 'topic_id, author_id',
+			$DB->simple_construct( array( 'select' => 'author_id, topic_id',
 										  'from'   => 'posts',
-										  'where'  => "topic_id IN(".implode( ",", $topic_ids ).") AND author_id=".$ibforums->member['id'],
+										  'where'  => "author_id=".$ibforums->member['id']." AND topic_id IN(".implode( ",", $topic_ids ).")",
 								)      );
 
 			$DB->simple_exec();
@@ -848,7 +848,7 @@ class forums {
 		// If all the new topics have been read in this forum..
 		//-----------------------------------------
 
-		if ($this->new_posts < 1)
+		if ($this->new_posts < 1 and ! $ibforums->input['st'] )
 		{
 			$ibforums->forum_read[ $this->forum['id'] ] = time();
 
@@ -876,13 +876,14 @@ class forums {
 			// ACTIVE USERS
 			//-----------------------------------------
 
+			$ar_time = time();
 			$cached = array();
 			$active = array( 'guests' => 0, 'anon' => 0, 'members' => 0, 'names' => "");
-			$rows   = array( 0 => array( 'login_type'   => substr($ibforums->member['login_anonymous'],0, 1),
-										 'running_time' => time(),
-										 'member_id'    => $ibforums->member['id'],
-										 'member_name'  => $ibforums->member['name'],
-										 'member_group' => $ibforums->member['mgroup'] ) );
+			$rows   = array( $ar_time => array( 'login_type'   => substr($ibforums->member['login_anonymous'],0, 1),
+												'running_time' => $ar_time,
+												'member_id'    => $ibforums->member['id'],
+												'member_name'  => $ibforums->member['name'],
+												'member_group' => $ibforums->member['mgroup'] ) );
 
 			//-----------------------------------------
 			// FETCH...
@@ -890,8 +891,10 @@ class forums {
 
 			while ($r = $DB->fetch_row() )
 			{
-				$rows[] = $r;
+				$rows[ $r['running_time'].'.'.$r['id'] ] = $r;
 			}
+
+			krsort( $rows );
 
 			//-----------------------------------------
 			// PRINT...
