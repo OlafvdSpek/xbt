@@ -965,7 +965,7 @@ void Cbt_file::trackers(const string& v)
 	m_trackers.clear();
 	for (int i = 0; i < v.length(); )
 	{
-		int j = v.find_first_of("\n\r ", i);
+		int j = v.find_first_of("\t\n\r ", i);
 		if (i == j)
 		{
 			i++;
