@@ -13,6 +13,9 @@
 
 namespace xcc_z
 {
+	Cvirtual_binary gunzip(const void* s, int cb_s);
+	Cvirtual_binary gunzip(const string& v);
+	Cvirtual_binary gunzip(const Cvirtual_binary&);
 	Cvirtual_binary gzip(const byte* s, int cb_s);
 	Cvirtual_binary gzip(const string& v);
 	Cvirtual_binary gzip(const Cvirtual_binary&);

@@ -8,6 +8,7 @@
 #include "bt_file.h"
 #include "bt_misc.h"
 #include "bt_strings.h"
+#include "xcc_z.h"
 
 enum
 {
@@ -134,7 +135,7 @@ void Cbt_tracker_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd
 				<< "&left=" << m_f->m_left
 				// << "&event=" << uri_encode("started") 
 				<< " HTTP/1.0" << endl
-				// << "accept-encoding: gzip" << endl
+				<< "accept-encoding: gzip" << endl
 				<< "host: " << m_host << ':' << m_port << endl
 				<< endl;
 			if (m_s.send(os.str(), os.pcount()) != os.pcount())
@@ -187,7 +188,12 @@ int Cbt_tracker_link::read(const Cvirtual_binary& d)
 				{
 					r += 4;
 					Cbvalue v;
-					if (v.write(r, d.data_end() - r))
+					if (r[0] == 0x1f && r[1] == 0x8b)
+					{
+						if (v.write(xcc_z::gunzip(r, d.data_end() - r)))
+							return 1;						;
+					}
+					else if (v.write(r, d.data_end() - r))
 						return 1;
 					if (v.d(bts_failure_reason).s().empty())
 					{
