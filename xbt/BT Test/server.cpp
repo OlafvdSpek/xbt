@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <algorithm>
 #include <signal.h>
 #include "bt_strings.h"
 #include "stream_reader.h"
@@ -859,6 +860,8 @@ void Cserver::update_chokes()
 				j->choked(true);
 		}
 	}
+	random_shuffle(links1.begin(), links1.end());
+	random_shuffle(links2.begin(), links2.end());
 	int slots_left = max(4, m_config.m_upload_slots);
 	for (t_links0::iterator i = links0.begin(); i != links0.end(); i++)
 	{
@@ -871,26 +874,26 @@ void Cserver::update_chokes()
 		else
 			i->second->choked(true);
 	}
-	while (slots_left && !links1.empty())
-	{
-		slots_left--;
-		int i = rand() % links1.size();
-		links1[i]->choked(false);
-		links1[i] = links1.back();
-		links1.pop_back();
-	}
-	while (slots_left && !links2.empty())
-	{
-		slots_left--;
-		int i = rand() % links2.size();
-		links2[i]->choked(false);
-		links2[i] = links2.back();
-		links2.pop_back();
-	}
 	for (t_links1::const_iterator i = links1.begin(); i != links1.end(); i++)
-		(*i)->choked(true);
+	{
+		if (slots_left)
+		{
+			slots_left--;
+			(*i)->choked(false);
+		}
+		else
+			(*i)->choked(true);
+	}
 	for (t_links1::const_iterator i = links2.begin(); i != links2.end(); i++)
-		(*i)->choked(true);
+	{
+		if (slots_left)
+		{
+			slots_left--;
+			(*i)->choked(false);
+		}
+		else
+			(*i)->choked(true);
+	}
 	m_update_chokes_time = time();
 }
 
