@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #ifdef _MSC_VER
-#include <windows.h>
+#include <winsock2.h>
 #include <mysql.h>
 #else
 #include <mysql/mysql.h>
