@@ -120,6 +120,7 @@ enum
 	dr_rejected_chunks,
 	dr_rejected_pieces,
 	dr_seeders,
+	dr_seeding_ratio,
 	dr_size,
 	dr_started_at,
 	dr_tracker,
@@ -514,6 +515,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Rejected Chunks",
 		"Rejected Pieces",
 		"Seeders",
+		"Seeding Ratio",
 		"Size",
 		"Started at",
 		"Tracker",
@@ -589,6 +591,10 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = n(m_file->c_seeders);
 			if (m_file->c_seeders_total)
 				m_buffer[m_buffer_w] += " / " + n(m_file->c_seeders_total);
+			break;			
+		case dr_seeding_ratio:
+			if (m_file->seeding_ratio)
+				m_buffer[m_buffer_w] = n(m_file->seeding_ratio) + " %";
 			break;
 		case dr_size:
 			m_buffer[m_buffer_w] = b2a(m_file->size, "b");
