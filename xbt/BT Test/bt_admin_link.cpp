@@ -47,7 +47,7 @@ void Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_s
 		strstream str;
 		str << "HTTP/1.0 200\r\ncontent-type: text/html\r\n\r\n"
 			<< *m_server;
-		m_write_b.write(str.str(), str.pcount());
+		m_write_b.write(str.str(), min(str.pcount(), m_write_b.size()));
 		m_close = true;
 #endif
 		while (1)

@@ -23,6 +23,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(Cdlg_about)
 	enum { IDD = IDD_ABOUT };
+	CURLStatic	m_license;
 	CURLStatic	m_site;
 	//}}AFX_DATA
 
@@ -41,6 +42,7 @@ protected:
 	//{{AFX_MSG(Cdlg_about)
 	afx_msg void OnSite();
 	virtual BOOL OnInitDialog();
+	afx_msg void OnLicense();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
