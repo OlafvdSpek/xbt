@@ -68,7 +68,7 @@ __int64 Ctransaction::connection_id() const
 	*reinterpret_cast<__int64*>(s) = m_server.secret();
 	*reinterpret_cast<int*>(s + 8) = m_a.sin_addr.s_addr;
 	char d[20];
-	compute_sha1(&s, cb_s, d);
+	Csha1(&s, cb_s).read(d);
 	return *reinterpret_cast<__int64*>(d);
 }
 
