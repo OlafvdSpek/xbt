@@ -33,6 +33,7 @@ public:
 	int m_port;
 	__int64 m_uploaded;
 	int m_num_want;
+	bool m_compact;
 	bool m_no_peer_id;
 };
 

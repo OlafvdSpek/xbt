@@ -192,8 +192,16 @@ Cbvalue Cserver::t_file::select_peers(const Ctracker_input& ti) const
 				candidates.push_back(i);
 		}
 	}
-	Cbvalue peers(Cbvalue::vt_list);
 	int c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
+	if (ti.m_compact)
+	{
+		string peers;
+		for (t_candidates::const_iterator i = candidates.begin(); c-- && i != candidates.end(); i++)
+			peers += string(reinterpret_cast<const char*>(&(*i)->first), 4)
+				+ string(reinterpret_cast<const char*>(&(*i)->second.port), 2);
+		return peers;
+	}
+	Cbvalue peers(Cbvalue::vt_list);
 	for (t_candidates::const_iterator i = candidates.begin(); c-- && i != candidates.end(); i++)
 	{
 		Cbvalue peer;
