@@ -689,6 +689,8 @@ void Cserver::update_chokes()
 	{
 		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
 		{
+			if (j->m_state != 3)
+				continue;
 			if (!i->m_run || !j->m_left)
 				j->choked(true);
 			else if (!m_upload_slots)
