@@ -7,6 +7,8 @@ Outfile "XBT_Client-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT\Client"
 Page directory
 Page instfiles
+UninstPage uninstConfirm
+UninstPage instfiles
 Section "Install"
 	SetShellVarContext all
 	SetOutPath "$INSTDIR"
