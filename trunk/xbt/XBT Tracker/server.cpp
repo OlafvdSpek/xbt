@@ -123,8 +123,21 @@ int Cserver::run()
 	if (lt.empty() || lu.empty())
 		return 1;
 #ifndef WIN32
+#if 1
 	if (m_daemon && daemon(true, false))
 		cerr << "daemon failed" << endl;
+#else
+	switch (fork())
+	{
+	case -1:
+		cerr << "fork failed" << endl;
+		break;
+	case 0:
+		break;
+	default:
+		exit(0);
+	}
+#endif
 	ofstream(g_pid_fname) << getpid() << endl;
 	struct sigaction act;
 	act.sa_handler = sig_handler;
