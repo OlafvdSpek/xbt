@@ -79,13 +79,14 @@ void insert(const string& name)
 
 int main(int argc, char* argv[])
 {
+	int t = time(NULL);
 	if (argc < 2)
 	{
-		cerr << "Usage: " << argv[0] << " <file> <tracker>" << endl;
+		cerr << "Usage: " << argv[0] << " <file> <tracker> [--v1]" << endl;
 		return 1;
 	}
 	string tracker = argc >= 3 ? argv[2] : "udp://localhost:2710";
-	bool use_merkle = true; // set to false for a non-merkle torrent
+	bool use_merkle = argc >= 4 ? strcmp(argv[3], "--v1") : true; // set to false for a non-merkle torrent
 	insert(argv[1]);
 	// use 1 mbyte pieces by default
 	int cb_piece = 1 << 20;
@@ -197,5 +198,6 @@ int main(int argc, char* argv[])
 	if (use_merkle)
 		s = gzip(s);
 	s.save(g_name + ".torrent");
+	cout << time(NULL) - t << " s" << endl;
 	return 0;
 }
