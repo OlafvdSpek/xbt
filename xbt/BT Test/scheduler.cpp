@@ -51,3 +51,18 @@ Cxif_key Cscheduler::save() const
 		v.open_key_edit(i->first) = i->second.save();
 	return v;
 }
+
+int Cscheduler::find_active_profile(int time) const
+{
+	int profile = -1;
+	int profile_time = 0;
+	for (const_iterator i = begin(); i != end(); i++)
+	{
+		if (profile_time < i->second.time && i->second.time < time)
+		{
+			profile = i->second.profile;
+			profile_time = i->second.time;
+		}
+	}
+	return profile == -1 && time != INT_MAX ? find_active_profile(INT_MAX) : profile;
+}

@@ -28,6 +28,7 @@ public:
 class Cscheduler: public map<int, Cscheduler_entry>  
 {
 public:
+	int find_active_profile(int time) const;
 	Cscheduler& load(const Cxif_key&);
 	Cxif_key save() const;
 };

@@ -50,6 +50,7 @@ Cserver::Cserver()
 	m_admin_port = m_config.m_admin_port;
 	m_peer_port = m_config.m_peer_port;
 	m_run = false;
+	m_run_scheduler_time = 0;
 	m_time = ::time(NULL);
 	m_tracker_port = m_config.m_tracker_port;
 	m_update_chokes_time = 0;
@@ -144,6 +145,7 @@ int Cserver::run()
 	m_scheduler.load(Cxif_key(Cvirtual_binary(scheduler_fname())));
 	m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
 	clean_scheduler();
+	run_scheduler();
 #ifndef WIN32
 	if (daemon(true, false))
 		alert(Calert(Calert::error, "Server", "daemon failed" + n(errno)));
@@ -293,6 +295,8 @@ int Cserver::run()
 			update_states();
 		else if (time() - m_save_state_time > 60)
 			save_state(true).save(state_fname());
+		else if (time() - m_run_scheduler_time > 60)
+			run_scheduler();
 		unlock();
 	}
 	save_state(false).save(state_fname());
@@ -439,13 +443,16 @@ Cvirtual_binary Cserver::get_status(int flags)
 
 void Cserver::load_profile(const Cxif_key& v)
 {
-	Cprofile profile;
-	profile.load(v);
-	m_config.m_seeding_ratio = profile.seeding_ratio_enable ? profile.seeding_ratio : 0;
-	m_config.m_upload_rate = profile.upload_rate_enable ? profile.upload_rate : 0;
-	m_config.m_upload_slots = profile.upload_slots_enable ? profile.upload_slots : 0;
-	m_config.m_peer_limit = profile.peer_limit_enable ? profile.peer_limit : 0;
-	m_config.m_torrent_limit = profile.torrent_limit_enable ? profile.torrent_limit : 0;
+	load_profile(Cprofile().load(v));
+}
+
+void Cserver::load_profile(const Cprofile& v)
+{
+	m_config.m_seeding_ratio = v.seeding_ratio_enable ? v.seeding_ratio : 0;
+	m_config.m_upload_rate = v.upload_rate_enable ? v.upload_rate : 0;
+	m_config.m_upload_slots = v.upload_slots_enable ? v.upload_slots : 0;
+	m_config.m_peer_limit = v.peer_limit_enable ? v.peer_limit : 0;
+	m_config.m_torrent_limit = v.torrent_limit_enable ? v.torrent_limit : 0;
 }
 
 Cxif_key Cserver::get_profiles()
@@ -482,6 +489,19 @@ void Cserver::clean_scheduler()
 		else
 			i = m_scheduler.erase(i);
 	}
+}
+
+void Cserver::run_scheduler()
+{
+	time_t t0 = m_run_scheduler_time;
+	tm t1 = *localtime(&t0);
+	t0 = time();
+	tm t2 = *localtime(&t0);
+	int old_profile = m_run_scheduler_time ? m_scheduler.find_active_profile(hms2i(t1.tm_hour, t1.tm_min, t1.tm_sec)) : -1;
+	int new_profile = m_scheduler.find_active_profile(hms2i(t2.tm_hour, t2.tm_min, t2.tm_sec));
+	if (new_profile != old_profile)
+		load_profile(m_profiles.find(new_profile)->second);
+	m_run_scheduler_time = time();
 }
 
 Cvirtual_binary Cserver::get_trackers()
