@@ -47,6 +47,11 @@ enum
 	dc_name,
 	dc_value,
 
+	ec_time,
+	ec_level,
+	ec_source,
+	ec_message,
+
 	pc_peer_id,
 	pc_done,
 	pc_left,
@@ -485,6 +490,29 @@ void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 		return;
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	m_buffer[++m_buffer_w &= 3].erase();
+	const t_event& e = m_file->events[pDispInfo->item.lParam];
+	switch (m_peers_columns[pDispInfo->item.iSubItem])
+	{
+	case ec_time:
+		{
+			tm* time = localtime(&e.time);
+			if (!time)
+				break;
+			char time_string[16];
+			sprintf(time_string, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
+			m_buffer[m_buffer_w] = time_string;
+		}
+		break;
+	case ec_level:
+		m_buffer[m_buffer_w] = n(e.level);
+		break;
+	case ec_source:
+		m_buffer[m_buffer_w] = e.source;
+		break;
+	case ec_message:
+		m_buffer[m_buffer_w] = e.message;
+		break;
+	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
 	*pResult = 0;
 }
@@ -637,6 +665,8 @@ void CXBTClientDlg::fill_peers()
 			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_events:
+		for (int i = 0; i < m_file->events.size(); i++)
+			m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_files:
 		break;
@@ -769,7 +799,26 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		while (c_peers--)
 			read_peer_dump(f, sr);
 	}
-	sr.read_int(4);
+	f.events.clear();
+	for (int c_alerts = sr.read_int(4); c_alerts--; )
+	{
+		t_event e;
+		e.time = sr.read_int(4);
+		e.level = sr.read_int(4);
+		e.message = sr.read_string();
+		e.source = sr.read_string();
+		f.events.push_back(e);
+	}
+	if (m_bottom_view == v_events)
+	{
+		while (m_peers.GetItemCount() < f.events.size())
+		{
+			m_peers.SetItemData(m_peers.InsertItem(0, LPSTR_TEXTCALLBACK), m_peers.GetItemCount());
+			inserted = true;
+		}
+		while (m_peers.GetItemCount() > f.events.size())
+			m_peers.DeleteItem(m_peers.GetItemCount() - 1);
+	}
 	sr.read_int(4);
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); )
@@ -851,7 +900,7 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 			break;
 		m_files.SetRedraw(false);
 		m_peers.SetRedraw(false);
-		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_peers | Cserver::df_trackers)));
+		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_alerts | Cserver::df_peers | Cserver::df_trackers)));
 		sort_files();
 		sort_peers();
 		m_files.SetRedraw(true);
@@ -1527,6 +1576,10 @@ void CXBTClientDlg::insert_bottom_columns()
 		m_peers_columns.push_back(dc_value);
 		break;
 	case v_events:
+		m_peers_columns.push_back(ec_time);
+		m_peers_columns.push_back(ec_level);
+		m_peers_columns.push_back(ec_source);
+		m_peers_columns.push_back(ec_message);
 		break;
 	case v_files:
 		m_peers_columns.push_back(sfc_name);
@@ -1565,6 +1618,11 @@ void CXBTClientDlg::insert_bottom_columns()
 		"Name",
 		"Value",
 
+		"Time",
+		"Level",
+		"Source",
+		"Message",
+
 		"Peer ID",
 		"%",
 		"Left",
@@ -1592,6 +1650,11 @@ void CXBTClientDlg::insert_bottom_columns()
 	};
 	const int peers_columns_formats[] =
 	{
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
+
+		LVCFMT_LEFT,
+		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 

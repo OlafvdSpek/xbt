@@ -115,6 +115,14 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
+	struct t_event
+	{
+		time_t time;
+		int level;
+		string message;
+		string source;
+	};
+
 	struct t_peer
 	{
 		in_addr host;
@@ -138,6 +146,7 @@ private:
 		string url;
 	};
 
+	typedef vector<t_event> t_events;
 	typedef map<int, t_peer> t_peers;
 	typedef vector<t_tracker> t_trackers;
 
@@ -146,6 +155,7 @@ private:
 		string display_name;
 		string info_hash;
 		string name;
+		t_events events;
 		t_trackers trackers;
 		t_peers peers;
 		__int64 downloaded;
