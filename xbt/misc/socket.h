@@ -96,10 +96,10 @@ public:
 	int connect(int h, int p);
 	int listen();
 	const Csocket& open(int t, bool blocking = false);
-	int recv(void*, int);
-	int recvfrom(void* d, int cb_d, sockaddr* a, socklen_t* cb_a);
-	int send(const void*, int);
-	int sendto(const void*, int, const sockaddr* a, socklen_t cb_a);
+	int recv(void*, int) const;
+	int recvfrom(void* d, int cb_d, sockaddr* a, socklen_t* cb_a) const;
+	int send(const void*, int) const;
+	int sendto(const void*, int, const sockaddr* a, socklen_t cb_a) const;
 	int setsockopt(int level, int name, const void* v, int cb_v);
 	int setsockopt(int level, int name, int v);
 	Csocket(SOCKET = INVALID_SOCKET);
