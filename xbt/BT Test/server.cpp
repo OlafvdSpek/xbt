@@ -962,7 +962,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 			file.d(bts_incomplete, i->c_leechers());
 			file.d(bts_left, i->m_left);
 			file.d(bts_priority, i->priority());
-			file.d(bts_size, i->mcb_f);
+			file.d(bts_size, i->m_size);
 			file.d(bts_state, i->state());
 			file.d(bts_total_downloaded, i->m_total_downloaded);
 			file.d(bts_total_uploaded, i->m_total_uploaded);

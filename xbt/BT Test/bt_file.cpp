@@ -69,7 +69,7 @@ int Cbt_file::info(const Cbvalue& info)
 	m_merkle = info.d(bts_pieces).s().empty();
 	mcb_piece = info.d(bts_piece_length).i();
 	{
-		mcb_f = 0;
+		m_size = 0;
 		__int64 offset = 0;
 		const Cbvalue::t_list& files = info.d(bts_files).l();
 		for (Cbvalue::t_list::const_iterator i = files.begin(); i != files.end(); i++)
@@ -83,7 +83,7 @@ int Cbt_file::info(const Cbvalue& info)
 			__int64 size = i->d(bts_length).i();
 			if (name.empty() || size < 0)
 				return 1;
-			mcb_f += size;
+			m_size += size;
 			m_sub_files.push_back(t_sub_file(i->d(bts_merkle_hash).s(), name, offset, 0, size));
 			offset += size;
 			if (m_merkle)
@@ -91,8 +91,8 @@ int Cbt_file::info(const Cbvalue& info)
 		}
 	}
 	if (m_sub_files.empty())
-		m_sub_files.push_back(t_sub_file(info.d(bts_merkle_hash).s(), "", 0, 0, mcb_f = info.d(bts_length).i()));
-	if (mcb_f < 1 
+		m_sub_files.push_back(t_sub_file(info.d(bts_merkle_hash).s(), "", 0, 0, m_size = info.d(bts_length).i()));
+	if (m_size < 1 
 		|| mcb_piece < 16 << 10
 		|| mcb_piece > 16 << 20)
 		return 1;
@@ -116,13 +116,13 @@ int Cbt_file::info(const Cbvalue& info)
 		assert(piece - &m_pieces.front() == m_pieces.size());
 		return 0;
 	}
-	m_pieces.resize((mcb_f + mcb_piece - 1) / mcb_piece);
+	m_pieces.resize((m_size + mcb_piece - 1) / mcb_piece);
 	string piece_hashes = info.d(bts_pieces).s();
 	if (piece_hashes.length() != 20 * m_pieces.size())
 		return 1;
 	for (int i = 0; i < m_pieces.size(); i++)
 	{
-		m_pieces[i].resize(min(mcb_f - mcb_piece * i, mcb_piece));
+		m_pieces[i].resize(min(m_size - mcb_piece * i, mcb_piece));
 		memcpy(m_pieces[i].m_hash, piece_hashes.c_str() + 20 * i, 20);
 	}
 	return 0;
@@ -263,7 +263,7 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 {
 	if (m_hasher)
 		return 0;
-	if (state() == s_running && !m_left && seeding_ratio() && 100 * m_total_uploaded / seeding_ratio() > mcb_f)
+	if (state() == s_running && !m_left && seeding_ratio() && 100 * m_total_uploaded / seeding_ratio() > m_size)
 	{
 		alert(Calert(Calert::notice, "Seeding ratio reached"));
 		close();
@@ -370,7 +370,7 @@ int Cbt_file::c_invalid_pieces() const
 
 int Cbt_file::c_valid_pieces() const
 {
-	return (mcb_f - m_left + mcb_piece - 1) / mcb_piece;
+	return (m_size - m_left + mcb_piece - 1) / mcb_piece;
 }
 
 int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*)
@@ -678,7 +678,7 @@ int Cbt_file::c_seeders() const
 
 __int64 Cbt_file::size() const
 {
-	return mcb_f;
+	return m_size;
 }
 
 void Cbt_file::load_state(Cstream_reader& r)

@@ -26,16 +26,6 @@ class Cserver;
 class Cbt_file: public Cbt_file_data
 {
 public:
-	enum t_state
-	{
-		s_queued,
-		s_hashing,
-		s_running,
-		s_paused,
-		s_stopped,
-		s_unknown,
-	};
-
 	int seeding_ratio() const;
 	void state(t_state);
 	void announce();
@@ -208,9 +198,6 @@ public:
 	typedef vector<Cbt_piece> t_pieces;
 	typedef vector<string> t_trackers;
 
-	string m_info_hash;
-	string m_name;
-	string m_peer_id;
 	t_info_blocks_valid m_info_blocks_valid;
 	t_sub_files m_sub_files;
 	t_old_peers m_old_peers;
@@ -231,9 +218,6 @@ public:
 	bool m_validate;
 	Cbt_logger* m_logger;
 	Cserver* m_server;
-private:
-	int m_priority;
-	t_state m_state;
 };
 
 #endif // !defined(AFX_BT_FILE_H__E64A5C96_20E5_4C90_8267_F9BC96F99888__INCLUDED_)

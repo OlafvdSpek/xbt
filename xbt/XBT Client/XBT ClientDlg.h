@@ -222,48 +222,26 @@ private:
 	typedef vector<t_sub_file> t_sub_files;
 	typedef vector<t_tracker> t_trackers;
 
-	struct t_file
+	struct t_file: public Cbt_file_data
 	{
-		string display_name;
-		string info_hash;
-		string name;
+		string m_display_name;
 		t_events events;
-		t_trackers trackers;
+		t_trackers m_trackers;
 		t_peers peers;
 		t_pieces pieces;
-		t_sub_files sub_files;
-		__int64 downloaded;
-		__int64 downloaded_l5;
-		__int64 left;
-		__int64 size;
-		__int64 uploaded;
-		__int64 uploaded_l5;
-		__int64 total_downloaded;
-		__int64 total_uploaded;
-		int down_rate;
-		int up_rate;
-		int c_distributed_copies;
-		int c_distributed_copies_remainder;
-		int c_leechers;
-		int c_seeders;
-		int c_leechers_total;
-		int c_seeders_total;
-		int c_invalid_chunks;
-		int c_invalid_pieces;
-		int c_rejected_chunks;
-		int c_rejected_pieces;
-		int c_valid_chunks;
-		int c_valid_pieces;
-		int cb_chunk;
-		int cb_piece;
-		int started_at;
-		int session_started_at;
-		int completed_at;
-		int priority;
-		int seeding_ratio;
-		bool seeding_ratio_override;
-		Cbt_file::t_state state;
-		bool removed;
+		t_sub_files m_sub_files;
+		int m_down_rate;
+		int m_up_rate;
+		int mc_distributed_copies;
+		int mc_distributed_copies_remainder;
+		int mc_leechers;
+		int mc_seeders;
+		int mc_invalid_chunks;
+		int mc_invalid_pieces;
+		int mc_valid_chunks;
+		int mc_valid_pieces;
+		int mcb_chunk;
+		bool m_removed;
 	};
 
 	typedef vector<int> t_columns;
