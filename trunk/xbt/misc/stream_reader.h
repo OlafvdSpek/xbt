@@ -32,9 +32,8 @@ public:
 
 	const byte* read(int size)
 	{
-		const byte* v = r();
-		skip(size);
-		return v;
+		m_r += size;
+		return m_r - size;
 	}
 
 	__int64 read_int(int cb)
@@ -53,11 +52,6 @@ public:
 	{
 		int l = read_int(4);
 		return string(reinterpret_cast<const char*>(read(l)), l);
-	}
-
-	void skip(int o)
-	{
-		m_r += o;
 	}
 
 	Cstream_reader()
