@@ -205,6 +205,10 @@ SOURCE="..\BT Test\udp_tracker.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE=.\URLStatic.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\virtual_binary.cpp
 # End Source File
 # Begin Source File
@@ -350,6 +354,10 @@ SOURCE=..\misc\stream_writer.h
 # Begin Source File
 
 SOURCE="..\BT Test\udp_tracker.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\URLStatic.h
 # End Source File
 # Begin Source File
 
