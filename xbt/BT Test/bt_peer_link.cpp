@@ -125,6 +125,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			getsockopt(m_s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&e), &size);
 			if (e == WSAEADDRINUSE)
 			{
+				if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
+					return 1;
 				if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
 				{
 					alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + error2a(WSAGetLastError())));
