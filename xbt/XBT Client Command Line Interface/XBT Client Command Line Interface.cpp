@@ -28,12 +28,17 @@ string strip_name(const string& v)
 
 ostream& show_options(ostream& os, const Cbvalue& v)
 {
-	cout << "admin port: \t" << static_cast<int>(v.d(bts_admin_port).i()) << endl
-		<< "peer port: \t" << static_cast<int>(v.d(bts_peer_port).i()) << endl
-		<< "tracker port: \t" << static_cast<int>(v.d(bts_tracker_port).i()) << endl
-		<< "upload rate: \t" << static_cast<int>(v.d(bts_upload_rate).i()) << endl
-		<< "upload slots: \t" << static_cast<int>(v.d(bts_upload_slots).i()) << endl
-		<< "seeding ratio: \t" << static_cast<int>(v.d(bts_seeding_ratio).i()) << endl;
+	cout 
+		<< "admin port:      " << static_cast<int>(v.d(bts_admin_port).i()) << endl
+		<< "peer port:       " << static_cast<int>(v.d(bts_peer_port).i()) << endl
+		<< "tracker port:    " << static_cast<int>(v.d(bts_tracker_port).i()) << endl
+		<< "upload rate:     " << static_cast<int>(v.d(bts_upload_rate).i()) << endl
+		<< "upload slots:    " << static_cast<int>(v.d(bts_upload_slots).i()) << endl
+		<< "seeding ratio:   " << static_cast<int>(v.d(bts_seeding_ratio).i()) << endl
+		<< "completes dir:   " << v.d(bts_completes_dir).s() << endl
+		<< "incompletes dir: " << v.d(bts_incompletes_dir).s() << endl
+		<< "torrents dir:    " << v.d(bts_torrents_dir).s() << endl
+		;
 	return os;
 }
 
