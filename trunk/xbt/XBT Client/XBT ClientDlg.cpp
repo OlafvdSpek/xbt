@@ -1020,13 +1020,13 @@ void CXBTClientDlg::OnContextMenu(CWnd* pWnd, CPoint point)
 
 void CXBTClientDlg::OnPopupExplore()
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id == -1)
 	{
 		ShellExecute(m_hWnd, "open", m_dir, NULL, NULL, SW_SHOW);
 		return;
 	}
-	string name = m_files_map.find(m_files.GetItemData(index))->second.name;
+	string name = m_files_map.find(id)->second.name;
 	for (int i = 0; (i = name.find('/', i)) != string::npos; i++)
 		name[i] = '\\';
 	struct _stati64 b;
@@ -1041,10 +1041,10 @@ void CXBTClientDlg::OnPopupExplore()
 
 void CXBTClientDlg::OnPopupExploreTracker()
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id == -1)
 		return;
-	const t_file& f = m_files_map.find(m_files.GetItemData(index))->second;
+	const t_file& f = m_files_map.find(id)->second;
 	if (f.trackers.empty())
 		return;
 	Cbt_tracker_url url = f.trackers.front().url;
@@ -1053,9 +1053,9 @@ void CXBTClientDlg::OnPopupExploreTracker()
 
 void CXBTClientDlg::OnPopupAnnounce()
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index != -1)
-		m_server.announce(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id != -1)
+		m_server.announce(m_files_map.find(id)->second.info_hash);
 }
 
 void CXBTClientDlg::OnPopupStart()
@@ -1072,27 +1072,26 @@ void CXBTClientDlg::OnPopupStop()
 
 void CXBTClientDlg::OnPopupTorrentClipboardCopyAnnounceUrl()
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index != -1)
-	{
-		const t_file& file = m_files_map.find(m_files.GetItemData(index))->second;
-		if (!file.trackers.empty())
-			set_clipboard(file.trackers.front().url);
-	}
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id == -1)
+		return;
+	const t_file& file = m_files_map.find(id)->second;
+	if (!file.trackers.empty())
+		set_clipboard(file.trackers.front().url);
 }
 
 void CXBTClientDlg::OnPopupTorrentClipboardCopyHash()
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index != -1)
-		set_clipboard(hex_encode(m_files_map.find(m_files.GetItemData(index))->second.info_hash));
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id != -1)
+		set_clipboard(hex_encode(m_files_map.find(id)->second.info_hash));
 }
 
 void CXBTClientDlg::OnPopupCopy()
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index != -1)
-		set_clipboard(m_server.get_url(m_files_map.find(m_files.GetItemData(index))->second.info_hash));
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id != -1)
+		set_clipboard(m_server.get_url(m_files_map.find(id)->second.info_hash));
 }
 
 void CXBTClientDlg::OnPopupPaste()
@@ -1132,11 +1131,9 @@ void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnPopupFiles()
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
-		return;
-	Cdlg_files dlg(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash);
-	dlg.DoModal();
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id != -1)
+		Cdlg_files(this, m_server, m_files_map.find(id)->second.info_hash).DoModal();
 }
 
 void CXBTClientDlg::OnPopupMakeTorrent()
@@ -1249,10 +1246,9 @@ void CXBTClientDlg::OnPopupAbout()
 
 void CXBTClientDlg::OnPopupTorrentAlerts()
 {
-	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
-		return;
-	Cdlg_torrent(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash).DoModal();
+	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_FOCUSED));
+	if (id != -1)
+		Cdlg_torrent(this, m_server, m_files_map.find(id)->second.info_hash).DoModal();
 }
 
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
@@ -2014,8 +2010,10 @@ void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	if (m_bottom_view != v_files || !m_file)
 		return;
-	int index = m_peers.GetNextItem(-1, LVNI_FOCUSED);
-	const t_sub_file& e = m_file->sub_files[m_peers.GetItemData(index)];
+	int id = m_peers.GetItemData(m_peers.GetNextItem(-1, LVNI_FOCUSED));
+	if (id == -1)
+		return;
+	const t_sub_file& e = m_file->sub_files[id];
 	ShellExecute(m_hWnd, "open", (m_file->name + e.name).c_str(), NULL, NULL, SW_SHOW);
 }
 

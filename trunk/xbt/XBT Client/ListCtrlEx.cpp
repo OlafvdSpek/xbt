@@ -22,6 +22,11 @@ void CListCtrlEx::auto_size()
 		SetColumnWidth(i, LVSCW_AUTOSIZE_USEHEADER);
 }
 
+DWORD CListCtrlEx::GetItemData(int nItem) const
+{
+	return nItem == -1 ? -1 : CListCtrl::GetItemData(nItem);
+}
+
 void CListCtrlEx::OnCustomDraw(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NMLVCUSTOMDRAW* pCustomDraw = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
