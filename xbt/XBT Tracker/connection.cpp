@@ -222,7 +222,7 @@ void Cconnection::read(const string& v)
 		else
 		{
 			h = "HTTP/1.0 302 Found\r\n"
-				"Location: " + m_server->redirect_url() + "\r\n";
+				"Location: " + m_server->redirect_url() + (ti.m_info_hash.empty() ? "" : "?info_hash=" + uri_encode(ti.m_info_hash)) + "\r\n";
 		}
 	}
 	else if (gzip)
