@@ -34,11 +34,11 @@ CAPTION "XBT Client by Olaf van der Spek"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,7,7,114,50
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | 
+                    WS_BORDER | WS_TABSTOP,7,7,114,50
     CONTROL         "List1",IDC_PEERS,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,7,65,114,50
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | 
+                    WS_BORDER | WS_TABSTOP,7,65,114,50
 END
 
 
