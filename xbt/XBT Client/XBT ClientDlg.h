@@ -151,6 +151,7 @@ protected:
 	afx_msg void OnPopupScheduler();
 	afx_msg void OnPopupProfiles();
 	virtual void OnCancel();
+	afx_msg void OnActivateApp(BOOL bActive, HTASK hTask);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
@@ -273,6 +274,7 @@ private:
 	void read_server_dump(Cstream_reader& sr);
 
 	bool m_ask_for_location;
+	bool m_hide_on_deactivate;
 	bool m_initial_hide;
 	string m_buffer[4];
 	int m_buffer_w;
