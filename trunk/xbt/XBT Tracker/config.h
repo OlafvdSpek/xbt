@@ -15,6 +15,8 @@ public:
 	typedef set<int> t_listen_ipas;
 	typedef set<int> t_listen_ports;
 
+	void set(const string& name, const string& value);
+	void set(const string& name, int value);
 	Cconfig();
 
 	bool m_anonymous_connect;
