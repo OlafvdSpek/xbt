@@ -61,6 +61,7 @@ private:
 
 	typedef map<string, t_file> t_files;
 
+	void clean_up();
 	__int64 connection_id(sockaddr_in&) const;
 	void send(Csocket&, sockaddr_in&, const void* d, int cb_d);
 	void send_announce(Csocket&, sockaddr_in&, const char* r, const char* r_end);
@@ -69,6 +70,7 @@ private:
 	void send_error(Csocket&, sockaddr_in&, const char* r, const char* r_end, const string& msg);
 
 	int m_announce_interval;
+	int m_clean_up_time;
 	t_files m_files;
 	__int64 m_secret;
 };
