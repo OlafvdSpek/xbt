@@ -446,8 +446,8 @@ string Cserver::t_file::debug() const
 		in_addr a;
 		a.s_addr = i->first;
 		page += "<tr><td>" + static_cast<string>(inet_ntoa(a))
-			+ "<td>" + n(i->second.port)
-			+ "<td>" + n(i->second.listening)
+			+ "<td>" + n(ntohs(i->second.port))
+			+ "<td>" + (i->second.listening ? '*' : ' ')
 			+ "<td>" + n(i->second.left)
 			+ "<td>" + n(i->second.mtime)
 			+ "<td>" + hex_encode(i->second.peer_id);
@@ -458,14 +458,14 @@ string Cserver::t_file::debug() const
 string Cserver::debug(const Ctracker_input& ti) const
 {
 	string page;
-	page += "<table>";
+	page += "<meta http-equiv=refresh content=1><title>XBT Tracker</title><table>";
 	if (ti.m_info_hash.empty())
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			page += "<tr><td>" + n(i->second.fid) 
 				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
-				+ "<td>" + (i->second.dirty ? 'd' : ' ')
+				+ "<td>" + (i->second.dirty ? '*' : ' ')
 				+ "<td>" + n(i->second.peers.size()) 
 				+ "<td>" + n(i->second.leechers) 
 				+ "<td>" + n(i->second.seeders) 
@@ -480,6 +480,10 @@ string Cserver::debug(const Ctracker_input& ti) const
 		if (i != m_files.end())
 			page += i->second.debug();
 	}
-	page += "</table>";
+	page += "</table><hr><table><tr><td>read config time<td>" + n(m_read_config_time) 
+		+ "<tr><td>clean up time<td>" + n(m_clean_up_time) 
+		+ "<tr><td>read db time<td>" + n(m_read_db_time) 
+		+ "<tr><td>write db time<td>" + n(m_write_db_time) 
+		+ "<tr><td>time<td>" + n(time(NULL)) + "</table>";
 	return page;
 }
