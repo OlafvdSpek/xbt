@@ -37,12 +37,8 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			close();
 			return 0;
 		}
-		if (m_f->m_server->bind_before_connect())
-		{
-			int v = true;
-			if (!m_s.setsockopt(SOL_SOCKET, SO_REUSEADDR, &v, sizeof(int)))
-				m_s.bind(htonl(INADDR_ANY), htons(m_f->local_port()));
-		}
+		if (m_f->m_server->bind_before_connect() && !m_s.setsockopt(SOL_SOCKET, SO_REUSEADDR, true))
+			m_s.bind(htonl(INADDR_ANY), htons(m_f->local_port()));
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
 			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + Csocket::error2a(WSAGetLastError())));
