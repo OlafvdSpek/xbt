@@ -27,10 +27,24 @@
 		'set_priority_high' => 'set priority',
 		'set_priority_normal' => 'set priority',
 		'set_priority_low' => 'set priority',
+		'set_state_queued' => 'set state',
+		'set_state_started' => 'set state',
+		'set_state_paused' => 'set state',
+		'set_state_stopped' => 'set state',
 		'set_options' => 'set options',
 		'start' => 'start torrent',
 		'stop' => 'stop torrent',
 		'unpause' => 'unpause torrent',
+	);
+	$arguments = array
+	(
+		'set_priority_high' => 1,
+		'set_priority_normal' => 0,
+		'set_priority_low' => -1,
+		'set_state_queued' => 0,
+		'set_state_started' => 2,
+		'set_state_paused' => 3,
+		'set_state_stopped' => 4,
 	);
 	if (array_key_exists($_REQUEST['a'], $actions))
 	{
@@ -47,16 +61,13 @@
 				$name = urldecode($name);
 				if (strlen($name) != 20 || $value != 'on')
 					continue;
-				switch ($_REQUEST['a'])
+				switch ($action)
 				{
-				case 'set_priority_high':
-					send_string($s, sprintf('d6:action%d:%s4:hash20:%s8:priorityi1ee', strlen($action), $action, $name));
+				case 'set priority':
+					send_string($s, sprintf('d6:action%d:%s4:hash20:%s8:priorityi%dee', strlen($action), $action, $name, $arguments[$_REQUEST['a']]));
 					break;
-				case 'set_priority_normal':
-					send_string($s, sprintf('d6:action%d:%s4:hash20:%s8:priorityi0ee', strlen($action), $action, $name));
-					break;
-				case 'set_priority_low':
-					send_string($s, sprintf('d6:action%d:%s4:hash20:%s8:priorityi-1ee', strlen($action), $action, $name));
+				case 'set state':
+					send_string($s, sprintf('d6:action%d:%s4:hash20:%s5:statei%dee', strlen($action), $action, $name, $arguments[$_REQUEST['a']]));
 					break;
 				default:
 					send_string($s, sprintf('d6:action%d:%s4:hash20:%se', strlen($action), $action, $name));
