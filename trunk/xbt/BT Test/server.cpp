@@ -725,6 +725,8 @@ void Cserver::update_chokes()
 	}
 	for (t_links1::const_iterator i = links1.begin(); i != links1.end(); i++)
 		(*i)->choked(true);
+	for (t_links1::const_iterator i = links2.begin(); i != links2.end(); i++)
+		(*i)->choked(true);
 	m_update_chokes_time = time(NULL);
 }
 
