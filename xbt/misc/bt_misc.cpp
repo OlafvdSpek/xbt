@@ -214,6 +214,9 @@ string peer_id2a(const string& v)
 		if (v[1] == 5 && v[2] == 7 && v[3] >= 0 && v[3] < 10)
 			return "Shadow 57" + n(v[3]) + " - " + hex_encode(v.substr(4));
 		break;
+	case 'e':
+		if (v[1] == 'x' && v[2] == 'b' && v[3] == 'c')
+			return peer_id2a("BitComet", v, 4);
 	}
 	return hex_encode(v);
 }
