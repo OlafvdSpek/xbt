@@ -126,9 +126,10 @@
 			$torrent_events .= template_torrent_events($file['value']['events']['value']);
 	}
 	$torrents = template_torrents(array('aggregate' => $aggregate, 'rows' => $rows));
+	$version = $v['value']['version']['value'];
 	send_string($s, 'd6:action11:get optionse');
 	$v = recv_string($s);
 	$v = bdec($v);
 	$options = template_options($v['value']);
-	echo(template_page(array('options' => $options, 'torrent_events' => $torrent_events, 'torrents' => $torrents)));
+	echo(template_page(array('options' => $options, 'torrent_events' => $torrent_events, 'torrents' => $torrents, 'version' => $version)));
 ?>

@@ -76,7 +76,10 @@ Cserver::~Cserver()
 static string new_peer_id()
 {
 	string v;
-	v = "XBT043--";
+	v = "XBT-----";
+	v[3] = '0' + Cserver::version() / 100 % 10;
+	v[4] = '0' + Cserver::version() / 10 % 10;
+	v[5] = '0' + Cserver::version() % 10;
 	v.resize(20);
 	for (size_t i = 8; i < v.size(); i++)
 		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
@@ -998,6 +1001,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 			files.d(i->m_info_hash, file);
 		}
 		d.d(bts_files, files);
+		d.d(bts_version, xbt_version2a(version()));
 	}
 	else if (action == bts_open_torrent) 
 		open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), "");
@@ -1034,4 +1038,9 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 void Cserver::term()
 {
 	g_sig_term = true;
+}
+
+int Cserver::version()
+{
+	return 43;
 }
