@@ -891,6 +891,7 @@ void CXBTClientDlg::fill_peers()
 		m_peers.auto_size();
 		return;
 	}
+	m_peers.SetRedraw(false);
 	switch (m_bottom_view)
 	{
 	case v_details:
@@ -920,6 +921,8 @@ void CXBTClientDlg::fill_peers()
 	}
 	sort_peers();
 	m_peers.auto_size();
+	m_peers.SetRedraw(true);
+	m_peers.Invalidate();
 }
 
 void CXBTClientDlg::OnItemchangedFiles(NMHDR* pNMHDR, LRESULT* pResult)
