@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "dlg_about.h"
 
+#include "../bt test/server.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -18,7 +20,7 @@ Cdlg_about::Cdlg_about(CWnd* pParent /*=NULL*/)
 	: CDialog(Cdlg_about::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(Cdlg_about)
-		// NOTE: the ClassWizard will add member initialization here
+	m_version = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -29,6 +31,7 @@ void Cdlg_about::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(Cdlg_about)
 	DDX_Control(pDX, IDC_LICENSE, m_license);
 	DDX_Control(pDX, IDC_SITE, m_site);
+	DDX_Text(pDX, IDC_VERSION, m_version);
 	//}}AFX_DATA_MAP
 }
 
@@ -50,6 +53,8 @@ void Cdlg_about::OnSite()
 
 BOOL Cdlg_about::OnInitDialog()
 {
+	m_version = ("Version: " + xbt_version2a(Cserver::version())).c_str();
+
 	CDialog::OnInitDialog();
 
 	m_license.ModifyStyle(0, SS_NOTIFY);
