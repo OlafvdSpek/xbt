@@ -206,20 +206,13 @@ string peer_id2a(const string& v)
 		if (v[1] == 'G' && v[2] == '3')
 			return peer_id2a("G3 ", v, 3);
 		break;
-	case 0:
-		{
-			int i = v.find_first_not_of('\0');
-			if (i != string::npos)
-				return i < 20 ? "0 - " + hex_encode(v.substr(i)) : "0";
-		}
-		break;
 	case 'S':
 		if (v[1] == 5 && v[2] == 7 && v[3] >= 0 && v[3] < 10)
-			return "Shadow 57" + n(v[3]) + " - " + hex_encode(v.substr(4));
+			return "Shadow 57" + n(v[3]);
 		break;
 	case 'e':
 		if (v[1] == 'x' && v[2] == 'b' && v[3] == 'c')
-			return "BitComet - " + hex_encode(v.substr(4));
+			return "BitComet";
 	}
 	return "Unknown";
 }
