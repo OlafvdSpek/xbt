@@ -110,6 +110,7 @@ public:
 	};
 
 	typedef map<string, t_file> t_files;
+	typedef map<int, int> t_ipas;
 
 	struct t_user
 	{
@@ -120,9 +121,12 @@ public:
 	typedef map<string, t_user> t_users;
 
 	const t_user* find_user(const string&) const;
+	int get_user_id(int) const;
 	void read_config();
-	void write_db();
+	void write_db_files();
+	void write_db_users();
 	void read_db_files();
+	void read_db_ipas();
 	void read_db_users();
 	void clean_up();
 	void insert_peer(const Ctracker_input&, bool listen_check, bool udp, int uid);
@@ -196,8 +200,10 @@ private:
 	int m_clean_up_time;
 	int m_read_config_time;
 	int m_read_db_files_time;
+	int m_read_db_ipas_time;
 	int m_read_db_users_time;
-	int m_write_db_time;
+	int m_write_db_files_time;
+	int m_write_db_users_time;
 	int m_announce_interval;
 	int m_clean_up_interval;
 	int m_read_config_interval;
@@ -224,10 +230,12 @@ private:
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
 	t_files m_files;
+	t_ipas m_ipas;
 	t_users m_users;
 	string m_announce_log_buffer;
 	string m_scrape_log_buffer;
 	string m_redirect_url;
+	string m_users_updates_buffer;
 };
 
 #endif // !defined(AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_)

@@ -149,8 +149,10 @@ int Cserver::run()
 #endif
 	clean_up();
 	read_db_files();
+	read_db_ipas();
 	read_db_users();
-	write_db();
+	write_db_files();
+	write_db_users();
 	fd_set fd_read_set;
 	fd_set fd_write_set;
 	fd_set fd_except_set;
@@ -244,12 +246,17 @@ int Cserver::run()
 			clean_up();
 		else if (time(NULL) - m_read_db_files_time > m_read_db_interval)
 			read_db_files();
+		else if (time(NULL) - m_read_db_ipas_time > m_read_db_interval)
+			read_db_ipas();
 		else if (time(NULL) - m_read_db_users_time > m_read_db_interval)
 			read_db_users();
-		else if (time(NULL) - m_write_db_time > m_write_db_interval)
-			write_db();
+		else if (time(NULL) - m_write_db_files_time > m_write_db_interval)
+			write_db_files();
+		else if (time(NULL) - m_write_db_users_time > m_write_db_interval)
+			write_db_users();
 	}
-	write_db();
+	write_db_files();
+	write_db_users();
 	unlink(g_pid_fname);
 	return 0;
 }
@@ -278,7 +285,17 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 	if (i != file.peers.end())
 		(i->second.left ? file.leechers : file.seeders)--;
 	if (v.m_event == Ctracker_input::e_stopped)
+	{
 		file.peers.erase(v.m_ipa);
+		if (uid)
+		{
+			Csql_query q(m_database, "(%d,%d,%d),");
+			q.p(v.m_downloaded);
+			q.p(v.m_uploaded);
+			q.p(uid);
+			m_users_updates_buffer += q.read();
+		}
+	}
 	else
 	{
 		t_peer& peer = file.peers[v.m_ipa];
@@ -503,6 +520,22 @@ void Cserver::read_db_files()
 	}
 }
 
+void Cserver::read_db_ipas()
+{
+	try
+	{
+		Csql_query q(m_database, "select ipa, uid from xbt_ipas");
+		Csql_result result = q.execute();
+		m_ipas.clear();
+		for (Csql_row row; row = result.fetch_row(); )
+			m_ipas[row.f_int(0)] = row.f_int(1);
+	}
+	catch (Cxcc_error error)
+	{
+	}
+	m_read_db_ipas_time = time(NULL);
+}
+
 void Cserver::read_db_users()
 {
 	try
@@ -525,7 +558,7 @@ void Cserver::read_db_users()
 	m_read_db_users_time = time(NULL);
 }
 
-void Cserver::write_db()
+void Cserver::write_db_files()
 {
 	try
 	{
@@ -608,7 +641,28 @@ void Cserver::write_db()
 		}
 		m_scrape_log_buffer.erase();
 	}
-	m_write_db_time = time(NULL);
+	m_write_db_files_time = time(NULL);
+}
+
+void Cserver::write_db_users()
+{
+	if (!m_users_updates_buffer.empty())
+	{
+		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
+		try
+		{
+			m_database.query("insert into xbt_users_updates (downloaded, uploaded, uid) values " + m_users_updates_buffer);
+			m_database.query("update xbt_users u, xbt_users_updates uu"
+				" set u.downloaded = u.downloaded + uu.downloaded, u.uploaded = u.uploaded + uu.uploaded"
+				" where u.uid = uu.uid");
+			m_database.query("delete from xbt_users_updates");
+		}
+		catch (Cxcc_error error)
+		{
+		}
+		m_users_updates_buffer.erase();
+	}
+	m_write_db_users_time = time(NULL);
 }
 
 void Cserver::read_config()
@@ -775,7 +829,8 @@ string Cserver::debug(const Ctracker_input& ti) const
 		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_clean_up_interval)
 		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_read_db_interval)
 		+ "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_read_db_interval)
-		+ "<tr><td>write db time<td align=right>" + n(t - m_write_db_time) + " / " + n(m_write_db_interval)
+		+ "<tr><td>write db files time<td align=right>" + n(t - m_write_db_files_time) + " / " + n(m_write_db_interval)
+		+ "<tr><td>write db users time<td align=right>" + n(t - m_write_db_users_time) + " / " + n(m_write_db_interval)
 		+ "</table>";
 	return page;
 }
@@ -784,6 +839,12 @@ const Cserver::t_user* Cserver::find_user(const string& v) const
 {
 	t_users::const_iterator i = m_users.find(v);
 	return i == m_users.end() ? NULL : &i->second;
+}
+
+int Cserver::get_user_id(int v) const
+{
+	t_ipas::const_iterator i = m_ipas.find(v);
+	return i == m_ipas.end() ? 0 : i->second;
 }
 
 void Cserver::sig_handler(int v)
