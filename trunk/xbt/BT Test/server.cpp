@@ -159,6 +159,9 @@ int Cserver::run()
 	act.sa_flags = 0;
 	if (sigaction(SIGTERM, &act, NULL))
 		cerr << "sigaction failed" << endl;
+	act.sa_handler = SIG_IGN;
+	if (sigaction(SIGPIPE, &act, NULL))
+		cerr << "sigaction failed" << endl;
 #endif
 	m_save_state_time = time();
 	fd_set fd_read_set;
