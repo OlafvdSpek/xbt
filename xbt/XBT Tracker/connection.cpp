@@ -164,7 +164,7 @@ void Cconnection::read(const string& v)
 		"Content-Type: text/html; charset=us-ascii\r\n";
 	Cvirtual_binary s;
 	bool gzip = true;
-	switch (v.length() >= 5 ? v[5] : 0) 
+	switch (5 < v.length() ? v[5] : 0) 
 	{
 	case 'a':
 		gzip = m_server->gzip_announce() && !ti.m_compact;

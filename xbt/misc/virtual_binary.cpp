@@ -21,7 +21,7 @@ void Cvirtual_binary_source::detach()
 {
 	if (!--mc_references)
 	{
-		delete m_data;
+		delete[] m_data;
 		delete this;
 	}
 }
