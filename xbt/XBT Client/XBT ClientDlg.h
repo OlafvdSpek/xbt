@@ -58,6 +58,7 @@ protected:
 	afx_msg void OnPopupOpen();
 	afx_msg void OnPopupClose();
 	afx_msg void OnUpdatePopupClose(CCmdUI* pCmdUI);
+	afx_msg void OnPopupOptions();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:

@@ -56,17 +56,15 @@ END_MESSAGE_MAP()
 
 BOOL CXBTClientDlg::OnInitDialog()
 {
-	ETSLayoutDialog::OnInitDialog();
-
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+	
 	CreateRoot(VERTICAL)
 		<< item (IDC_FILES, GREEDY)
 		<< item (IDC_PEERS, GREEDY)
 		;
-	UpdateLayout();
+	ETSLayoutDialog::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
 	m_files.SetExtendedStyle(m_files.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
 	m_files.InsertColumn(0, "Hash");
 	m_files.InsertColumn(1, "%", LVCFMT_RIGHT);
@@ -96,7 +94,6 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_file = NULL;
 	auto_size();
 	SetTimer(0, 1000, NULL);
-
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
