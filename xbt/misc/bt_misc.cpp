@@ -156,10 +156,38 @@ string b2a(__int64 v, const char* postfix)
 	return n(v) + a[l];
 }
 
+static string peer_id2a(const string& name, const string& peer_id, int i)
+{
+	for (int j = i; j < 7; j++)
+	{
+		if (!isdigit(peer_id[j]))
+			break;
+	}
+	return name + peer_id.substr(i, j - i) + " - " + hex_encode(peer_id.substr(8));
+}
+
 string peer_id2a(const string& v)
 {
 	if (v.length() != 20)
 		return hex_encode(v);
+	if (v[7] == '-')
+	{
+		switch (v[0])
+		{
+		case '-':
+			if (v[1] == 'A' && v[2] == 'Z')
+				return peer_id2a("Azureus ", v, 3);
+			break;
+		case 'S':
+			return peer_id2a("Shadow ", v, 1);
+		case 'T':
+			return peer_id2a("BitTornado ", v, 1);
+		case 'X':
+			if (v[1] == 'B' && v[2] == 'T')
+				return peer_id2a("XBT Client ", v, 3);
+			break;
+		}
+	}
 	switch (v[0])
 	{
 	case 0:
@@ -169,67 +197,9 @@ string peer_id2a(const string& v)
 				return i < 20 ? "0 - " + hex_encode(v.substr(i)) : "0";
 		}
 		break;
-	case '-':
-		if (v[1] == 'A' && v[2] == 'Z' && v[7] == '-')
-		{
-			int i;
-			for (i = 3; i < 7; i++)
-			{
-				if (!isdigit(v[i]))
-					break;
-			}
-			return "Azureus " + v.substr(3, i - 3) + " - " + hex_encode(v.substr(i));
-		}
-		break;
 	case 'S':
 		if (v[1] == 5 && v[2] == 7 && v[3] >= 0 && v[3] < 10)
 			return "Shadow 57" + n(v[3]) + " - " + hex_encode(v.substr(4));
-		else if (v[1] == '5' && v[7] == '-')
-		{
-			int i;
-			for (i = 1; i < 7; i++)
-			{
-				if (!isalnum(v[i]))
-					break;
-			}
-			return "Shadow " + v.substr(1, i - 1) + " - " + hex_encode(v.substr(i));
-		}
-		break;
-	case 'T':
-		if (v[7] == '-')
-		{
-			int i;
-			for (i = 1; i < 7; i++)
-			{
-				if (!isalnum(v[i]))
-					break;
-			}
-			return "BitTornado " + v.substr(1, i - 1) + " - " + hex_encode(v.substr(i));
-		}
-		break;
-	case 'U':
-		if (v[7] == '-')
-		{
-			int i;
-			for (i = 1; i < 7; i++)
-			{
-				if (!isalnum(v[i]))
-					break;
-			}
-			return "U " + v.substr(1, i - 1) + " - " + hex_encode(v.substr(i));
-		}
-		break;
-	case 'X':
-		if (v[1] == 'B' && v[2] == 'T')
-		{
-			int i;
-			for (i = 3; i < 6; i++)
-			{
-				if (!isalnum(v[i]))
-					break;
-			}
-			return "XBT Client " + v.substr(3, i - 3) + " - " + hex_encode(v.substr(i));
-		}
 		break;
 	}
 	return hex_encode(v);
