@@ -7,8 +7,10 @@
 
 #include "bt_misc.h"
 #include "bt_torrent.h"
+#include "dlg_files.h"
 #include "dlg_options.h"
 #include "dlg_torrent.h"
+#include "dlg_trackers.h"
 #include "resource.h"
 
 #define for if (0) {} else for
@@ -122,6 +124,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
 	ON_COMMAND(ID_POPUP_COPY, OnPopupCopy)
 	ON_COMMAND(ID_POPUP_PASTE, OnPopupPaste)
+	ON_COMMAND(ID_POPUP_FILES, OnPopupFiles)
+	ON_COMMAND(ID_POPUP_TRACKERS, OnPopupTrackers)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -139,11 +143,14 @@ BOOL CXBTClientDlg::OnInitDialog()
 		;
 	ETSLayoutDialog::OnInitDialog();
 
-	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", 6879));
+	m_server.admin_port(AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port()));
 	m_server.dir(static_cast<string>(m_dir));
-	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881));
-	m_server.public_ipa(Csocket::get_host(static_cast<string>(AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", ""))));
-	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0));
+	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port()));
+	string public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
+	if (!public_ipa.empty())
+		m_server.public_ipa(Csocket::get_host(public_ipa));
+	m_server.upload_rate(AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate()));
+	m_server.upload_slots(AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots()));	
 	start_server();
 	CCommandLineInfo cmdInfo;
 	AfxGetApp()->ParseCommandLine(cmdInfo);
@@ -182,6 +189,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	auto_size();
 	register_tray();
 	SetTimer(0, 1000, NULL);
+	SetTimer(1, 60000, NULL);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -272,7 +280,8 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		m_buffer[m_buffer_w] = hex_encode(e.info_hash);
 		break;
 	case fc_done:
-		m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
+		if (e.size)
+			m_buffer[m_buffer_w] = n((e.size - e.left) * 100 / e.size);
 		break;
 	case fc_left:
 		if (e.left)
@@ -295,12 +304,16 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 			m_buffer[m_buffer_w] = b2a(e.up_rate);
 		break;
 	case fc_leechers:
-		if (e.c_leechers)
+		if (e.c_leechers || e.c_leechers_total)
 			m_buffer[m_buffer_w] = n(e.c_leechers);
+		if (e.c_leechers_total)
+			m_buffer[m_buffer_w] += " / " + n(e.c_leechers_total);
 		break;
 	case fc_seeders:
-		if (e.c_seeders)
+		if (e.c_seeders || e.c_seeders_total)
 			m_buffer[m_buffer_w] = n(e.c_seeders);
+		if (e.c_seeders_total)
+			m_buffer[m_buffer_w] += " / " + n(e.c_seeders_total);
 		break;
 	case fc_state:
 		if (e.run)
@@ -330,7 +343,8 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 		m_buffer[m_buffer_w] = n(ntohs(e.port));
 		break;
 	case pc_done:
-		m_buffer[m_buffer_w] = n((m_file->size - e.left) * 100 / m_file->size);
+		if (m_file->size)
+			m_buffer[m_buffer_w] = n((m_file->size - e.left) * 100 / m_file->size);
 		break;
 	case pc_left:
 		if (e.left)
@@ -411,6 +425,7 @@ void CXBTClientDlg::fill_peers()
 	m_peers.DeleteAllItems();
 	for (t_peers::const_iterator i = m_file->peers.begin(); i != m_file->peers.end(); i++)
 		m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
+	sort_peers();
 	auto_size_peers();
 }
 
@@ -492,6 +507,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.up_rate = sr.read_int32();
 	f.c_leechers = sr.read_int32();
 	f.c_seeders = sr.read_int32();
+	f.c_leechers_total = sr.read_int32();
+	f.c_seeders_total = sr.read_int32();
 	f.run = sr.read_int32();
 	f.removed = false;
 	{
@@ -508,6 +525,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 		while (c_peers--)
 			read_peer_dump(f, sr);
 	}
+	sr.read_int32();
+	sr.read_int32();
 	{
 		for (t_peers::iterator i = f.peers.begin(); i != f.peers.end(); )
 		{
@@ -525,9 +544,6 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 			else
 				i++;
 		}
-	}
-	{
-		int c_alerts = sr.read_int32();
 	}
 	if (inserted)
 		auto_size_files();
@@ -583,14 +599,27 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 
 void CXBTClientDlg::OnTimer(UINT nIDEvent) 
 {
-	m_files.SetRedraw(false);
-	m_peers.SetRedraw(false);
-	read_server_dump(Cstream_reader(m_server.get_status()));
-	m_files.SetRedraw(true);
-	m_peers.SetRedraw(true);
-	m_files.Invalidate();
-	m_peers.Invalidate();
-	update_tray();
+	switch (nIDEvent)
+	{
+	case 0:
+		if (!IsWindowVisible())
+			break;
+		m_files.SetRedraw(false);
+		m_peers.SetRedraw(false);
+		read_server_dump(Cstream_reader(m_server.get_status(Cserver::df_peers)));
+		sort_files();
+		sort_peers();
+		m_files.SetRedraw(true);
+		m_peers.SetRedraw(true);
+		m_files.Invalidate();
+		m_peers.Invalidate();
+		update_tray();
+		break;
+	case 1:
+		read_server_dump(Cstream_reader(m_server.get_status(0)));
+		update_tray();
+		break;
+	}
 	ETSLayoutDialog::OnTimer(nIDEvent);
 }
 
@@ -621,7 +650,7 @@ void CXBTClientDlg::OnContextMenu(CWnd*, CPoint point)
 
 void CXBTClientDlg::OnPopupExplore() 
 {
-	ShellExecute(m_hWnd, "open", m_incompletes_dir, NULL, NULL, SW_SHOW);
+	ShellExecute(m_hWnd, "open", m_dir, NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnPopupStart() 
@@ -689,26 +718,68 @@ void CXBTClientDlg::OnUpdatePopupClose(CCmdUI* pCmdUI)
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_FOCUSED) != -1);
 }
 
+void CXBTClientDlg::OnPopupFiles() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index == -1)
+		return;
+	Cdlg_files dlg(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+	dlg.DoModal();
+}
+
 void CXBTClientDlg::OnPopupOptions() 
 {
 	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
-	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", 6879);
-	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", 6881);
+	data.admin_port = AfxGetApp()->GetProfileInt(m_reg_key, "admin_port", m_server.admin_port());
+	data.peer_port = AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port());
 	data.public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
-	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", 0);
+	data.upload_rate = AfxGetApp()->GetProfileInt(m_reg_key, "upload_rate", m_server.upload_rate());
+	data.upload_slots = AfxGetApp()->GetProfileInt(m_reg_key, "upload_slots", m_server.upload_slots());
 	dlg.set(data);
 	if (IDOK != dlg.DoModal())
 		return;
 	data = dlg.get();
 	m_server.admin_port(data.admin_port);
 	m_server.peer_port(data.peer_port);
-	m_server.public_ipa(inet_addr(data.public_ipa.c_str()));
+	if (!data.public_ipa.empty())
+		m_server.public_ipa(Csocket::get_host(data.public_ipa));
 	m_server.upload_rate(data.upload_rate);
+	m_server.upload_slots(data.upload_slots);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "admin_port", data.admin_port);
 	AfxGetApp()->WriteProfileInt(m_reg_key, "peer_port", data.peer_port);
 	AfxGetApp()->WriteProfileString(m_reg_key, "public_ipa", data.public_ipa.c_str());
 	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_rate", data.upload_rate);
+	AfxGetApp()->WriteProfileInt(m_reg_key, "upload_slots", data.upload_slots);
+}
+
+void CXBTClientDlg::OnPopupTrackers() 
+{
+	Cdlg_trackers dlg(this);
+	Cstream_reader r(m_server.get_trackers());
+	for (int count = r.read_int32(); count--; )
+	{
+		Cdlg_trackers::t_tracker e;
+		e.m_tracker = r.read_string();
+		e.m_user = r.read_string();
+		e.m_pass = r.read_string();
+		dlg.insert(e);
+	}
+	if (IDOK != dlg.DoModal())
+		return;
+	int cb_d = 4;
+	for (Cdlg_trackers::t_trackers::const_iterator i = dlg.trackers().begin(); i != dlg.trackers().end(); i++)
+		cb_d += i->second.m_tracker.size() + i->second.m_user.size() + i->second.m_pass.size() + 12;
+	Cvirtual_binary d;
+	Cstream_writer w(d.write_start(cb_d));
+	w.write_int32(dlg.trackers().size());
+	for (Cdlg_trackers::t_trackers::const_iterator i = dlg.trackers().begin(); i != dlg.trackers().end(); i++)
+	{
+		w.write_string(i->second.m_tracker);
+		w.write_string(i->second.m_user);
+		w.write_string(i->second.m_pass);
+	}
+	m_server.set_trackers(d);
 }
 
 void CXBTClientDlg::OnPopupExit() 
@@ -924,7 +995,7 @@ void CXBTClientDlg::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	m_files_sort_column = pNMListView->iSubItem;
-	m_files.SortItems(::files_compare, reinterpret_cast<DWORD>(this));	
+	sort_files();
 	*pResult = 0;
 }
 
@@ -977,6 +1048,16 @@ void CXBTClientDlg::OnColumnclickPeers(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
 	m_peers_sort_column = pNMListView->iSubItem;
-	m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));		
+	sort_peers();	
 	*pResult = 0;
+}
+
+void CXBTClientDlg::sort_files()
+{
+	m_files.SortItems(::files_compare, reinterpret_cast<DWORD>(this));	
+}
+
+void CXBTClientDlg::sort_peers()
+{
+	m_peers.SortItems(::peers_compare, reinterpret_cast<DWORD>(this));
 }

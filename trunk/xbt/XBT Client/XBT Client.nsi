@@ -1,9 +1,9 @@
 !define UPGRADEDLL_NOREGISTER
-!define VERSION "0.0.0"
+!define VERSION "0.0.1"
 !include "UpgradeDLL.nsh"
 
 Name "XBT Client"
-Outfile "XBT Client ${VERSION}.exe"
+Outfile "XBT_Client-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT"
 Section "Install"
 	SetShellVarContext all

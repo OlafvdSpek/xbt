@@ -66,11 +66,10 @@ BOOL Cdlg_torrent::OnInitDialog()
 
 void Cdlg_torrent::load_data()
 {
-	Cstream_reader sr(m_server.get_file_status(m_info_hash));
+	Cstream_reader sr(m_server.get_file_status(m_info_hash, Cserver::df_alerts));
 	if (sr.d() == sr.d_end())
 		return;
 	string info_hash = sr.read_string();
-	info_hash = info_hash;
 	string name = sr.read_string();
 	__int64 downloaded = sr.read_int64();
 	__int64 left = sr.read_int64();
@@ -82,33 +81,24 @@ void Cdlg_torrent::load_data()
 	int up_rate = sr.read_int32();
 	int c_leechers = sr.read_int32();
 	int c_seeders = sr.read_int32();
+	sr.read_int32();
+	sr.read_int32();
 	bool run = sr.read_int32();
-	{
-		int c_peers = sr.read_int32();
-		for (int i = 0; i < c_peers; i++)
-		{
-			sr.skip(8);
-			sr.read_string();
-			sr.skip(37);
-		}
-	}
+	sr.read_int32();
 	m_alerts.DeleteAllItems();
+	for (int c_alerts = sr.read_int32(); c_alerts--; )
 	{
-		int c_alerts = sr.read_int32();
-		for (int i = 0; i < c_alerts; i++)
-		{
-			time_t timer = sr.read_int32();
-			tm* time = localtime(&timer);
-			int level = sr.read_int32();
-			string message = sr.read_string();
-			string source = sr.read_string();
-			char time_string[16];
-			sprintf(time_string, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
-			int index = m_alerts.InsertItem(0, time_string);
-			m_alerts.SetItemText(index, 1, n(level).c_str());
-			m_alerts.SetItemText(index, 2, source.c_str());
-			m_alerts.SetItemText(index, 3, message.c_str());
-		}
+		time_t timer = sr.read_int32();
+		tm* time = localtime(&timer);
+		int level = sr.read_int32();
+		string message = sr.read_string();
+		string source = sr.read_string();
+		char time_string[16];
+		sprintf(time_string, "%02d:%02d:%02d", time->tm_hour, time->tm_min, time->tm_sec);
+		int index = m_alerts.InsertItem(0, time_string);
+		m_alerts.SetItemText(index, 1, n(level).c_str());
+		m_alerts.SetItemText(index, 2, source.c_str());
+		m_alerts.SetItemText(index, 3, message.c_str());
 	}
 	auto_size();
 }
