@@ -44,13 +44,14 @@
 #define ID_POPUP_FILES                  32780
 #define ID_POPUP_TRACKERS               32781
 #define ID_POPUP_ANNOUNCE               32782
+#define ID_POPUP_EXPLORE_TRACKER        32783
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        136
-#define _APS_NEXT_COMMAND_VALUE         32783
+#define _APS_NEXT_COMMAND_VALUE         32784
 #define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           105
 #endif

@@ -86,6 +86,7 @@ protected:
 	afx_msg void OnPopupFiles();
 	afx_msg void OnPopupTrackers();
 	afx_msg void OnPopupAnnounce();
+	afx_msg void OnPopupExploreTracker();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -108,11 +109,13 @@ private:
 	};
 
 	typedef map<int, t_peer> t_peers;
+	typedef vector<string> t_trackers;
 
 	struct t_file
 	{
 		string info_hash;
 		string name;
+		t_trackers trackers;
 		t_peers peers;
 		__int64 downloaded;
 		__int64 left;
