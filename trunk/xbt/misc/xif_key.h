@@ -62,6 +62,12 @@ public:
 		m_values = v.m_values;
 	}
 
+	explicit Cxif_key(const Cvirtual_binary& v):
+		m_keys(*new t_xif_key_map)
+	{
+		load_key(v);
+	}
+
 	const Cxif_key& operator=(const Cxif_key& v)
 	{
 		m_keys = v.m_keys;
