@@ -18,6 +18,7 @@ class Cserver
 public:
 	typedef list<Cbt_admin_link> t_admins;
 	typedef list<Cbt_file> t_files;
+	typedef list<Cbt_peer_link> t_peers;
 
 	void dump(ostream& os);
 	void run();
@@ -37,6 +38,7 @@ public:
 private:
 	t_admins m_admins;
 	t_files m_files;
+	t_peers m_peers;
 
 	int m_admin_port;
 	int m_peer_port;

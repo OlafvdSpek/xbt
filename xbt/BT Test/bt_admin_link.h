@@ -26,9 +26,9 @@ public:
 	Cbt_admin_link(Cserver* server, const sockaddr_in& a, const Csocket& s);
 	~Cbt_admin_link();
 
-	Csocket s()
+	operator bool() const
 	{
-		return m_s;
+		return m_s != INVALID_SOCKET;
 	}
 private:	
 	Cring_buffer m_read_b;

@@ -44,6 +44,11 @@ public:
 	Cbt_peer_link();
 	~Cbt_peer_link();
 
+	operator bool() const
+	{
+		return m_s != INVALID_SOCKET;
+	}
+
 	struct t_remote_request
 	{
 		int offset;
