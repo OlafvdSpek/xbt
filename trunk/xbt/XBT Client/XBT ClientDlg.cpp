@@ -627,6 +627,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 
 void CXBTClientDlg::OnTimer(UINT nIDEvent) 
 {
+	m_initial_hide = false;
 	switch (nIDEvent)
 	{
 	case 0:
@@ -1061,7 +1062,6 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			switch (lParam)
 			{
 			case WM_LBUTTONUP:
-				m_initial_hide = false;
 				ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
 				if (IsWindowVisible())
 					SetForegroundWindow();
@@ -1074,7 +1074,7 @@ LRESULT CXBTClientDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 void CXBTClientDlg::OnWindowPosChanging(WINDOWPOS FAR* lpwndpos) 
 {
-	if (m_initial_hide && m_show_tray_icon)
+	if (m_initial_hide)
 		lpwndpos->flags &= ~SWP_SHOWWINDOW;
 	ETSLayoutDialog::OnWindowPosChanging(lpwndpos);
 }
@@ -1288,7 +1288,6 @@ void CXBTClientDlg::lower_process_priority(bool v)
 
 long CXBTClientDlg::OnHotKey(WPARAM, LPARAM)
 {
-	m_initial_hide = false;
 	ShowWindow(IsWindowVisible() ? SW_HIDE : SW_SHOWMAXIMIZED);
 	if (IsWindowVisible())
 		SetForegroundWindow();
