@@ -345,6 +345,9 @@ void Cserver::read_db()
 	try
 	{
 		Csql_query q(m_database);
+		q.write("update xbt_files set leechers = 0, seeders = 0 where fid >= %s");
+		q.p(m_fid_end);
+		q.execute();
 		q.write("select info_hash, completed, fid, started, stopped, announced, scraped from xbt_files where fid >= %s");
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
@@ -355,7 +358,7 @@ void Cserver::read_db()
 				continue;
 			t_file& file = m_files[string(row.f(0), 20)];
 			file.completed = row.f_int(1, 0);
-			file.dirty = true;
+			file.dirty = false;
 			file.fid = row.f_int(2, 0);
 			file.started = row.f_int(3, 0);
 			file.stopped = row.f_int(4, 0);
