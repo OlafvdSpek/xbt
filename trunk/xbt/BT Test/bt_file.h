@@ -19,7 +19,7 @@ class Cbt_file
 {
 public:
 	int time_remaining();
-	void dump();
+	void dump(ostream& os);
 	void write_have(int);
 	int next_invalid_piece(const Cbt_peer_link::t_remote_pieces&) const;
 	int read_piece(int a, byte* d);

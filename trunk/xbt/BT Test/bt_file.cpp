@@ -160,7 +160,6 @@ void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd
 		else
 			i++;
 	}
-	dump();
 }
 
 void Cbt_file::insert_peer(const sockaddr_in& a)
@@ -303,17 +302,19 @@ void Cbt_file::write_have(int a)
 		i->write_have(a);
 }
 
-void Cbt_file::dump()
+void Cbt_file::dump(ostream& os)
 {
-	int t = time_remaining();
-	ofstream os("d:/temp/xbt.html");
-	os << "<link rel=stylesheet href=\"http://62.216.18.38/xcc.css\"><meta http-equiv=\"refresh\" content=5><title>XBT</title>"
-		<< "<table>"
+	os << "<table>"
 		<< "<tr><td align=right>invalid pieces:<td align=right>" << c_invalid_pieces()
 		<< "<tr><td align=right>valid pieces:<td align=right>" << c_valid_pieces()
 		<< "<tr><td align=right>downloaded:<td align=right>" << (m_downloaded >> 20) << " mb<td align=right>" << (m_down_counter.rate() >> 10) << " kb/s<td align=right>";
+	int t = time_remaining();
 	if (t != -1)
-		os << t / 3600 << " h " << (t % 3600) / 60 << " m " << t % 60 << " s";
+	{
+		if (t / 3600)
+			os << t / 3600 << " h ";
+		os << (t % 3600) / 60 << " m " << t % 60 << " s";
+	}
 	os << "<tr><td align=right>uploaded:<td align=right>" << (m_uploaded >> 20) << " mb<td align=right>" << (m_up_counter.rate() >> 10) << " kb/s"
 		<< "</table>"
 		<< "<hr>"
