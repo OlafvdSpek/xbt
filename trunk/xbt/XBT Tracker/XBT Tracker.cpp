@@ -13,27 +13,21 @@ int main(int argc, char* argv[])
 		if (!strcmp(argv[1], "--install"))
 		{
 			if (nt_service_install(g_service_name))
-			{
-				cerr << "Failed to install service " << g_service_name << "." << endl;
-				return 1;
-			}
+				return cerr << "Failed to install service " << g_service_name << "." << endl, 1;
 			cout << "Service " << g_service_name << " has been installed." << endl;
 			return 0;
 		}
 		else if (!strcmp(argv[1], "--uninstall"))
 		{
 			if (nt_service_uninstall(g_service_name))
-			{
-				cerr << "Failed to uninstall service " << g_service_name << "." << endl;
-				return 1;
-			}
+				return cerr << "Failed to uninstall service " << g_service_name << "." << endl, 1;
 			cout << "Service " << g_service_name << " has been uninstalled." << endl;
 			return 0;
 		}
 	}
 	WSADATA wsadata;
 	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
-		return cerr << "Unable to start WSA" << endl, 0;
+		return cerr << "Unable to start WSA" << endl, 1;
 #endif
 	srand(time(NULL));
 	Cdatabase database;
