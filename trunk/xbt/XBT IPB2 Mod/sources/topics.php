@@ -9,8 +9,6 @@
 |   http://www.invisionpower.com
 |   =============================================
 |   Web: http://www.invisionboard.com
-|   Time: Tue, 21 Sep 2004 16:34:28 GMT
-|   Release: 150aa7a702c3c8b6f6eb90ad49305d2f
 |   Licence Info: http://www.invisionboard.com/?license
 +---------------------------------------------------------------------------
 |
