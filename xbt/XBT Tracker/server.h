@@ -123,7 +123,7 @@ public:
 
 	typedef map<string, t_user> t_users;
 
-	void accept(Csocket& l);
+	void accept(const Csocket& l);
 	const t_user* find_user(const string&) const;
 	int get_user_id(int) const;
 	void read_config();

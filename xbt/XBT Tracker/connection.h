@@ -13,28 +13,24 @@
 
 class Cserver;
 
-class Cconnection  
+class Cconnection: public Cclient
 {
 public:
+	Cclient::s;
+	int run();
 	void read(const string&);
 	int recv();
 	int send();
-	virtual int process_events(int);
+	virtual void process_events(int);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	Cconnection();
 	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a, bool log_access);
-
-	Csocket& s()
-	{
-		return m_s;
-	}
 private:
 	typedef vector<char> t_read_b;
 	typedef vector<char> t_write_b;
 
 	sockaddr_in m_a;
-	Csocket m_s;
 	int m_ctime;
 	Cserver* m_server;
 	int m_state;

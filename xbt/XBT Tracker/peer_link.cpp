@@ -45,18 +45,18 @@ int Cpeer_link::post_select(fd_set* fd_write_set, fd_set* fd_except_set)
 	return FD_ISSET(m_s, fd_except_set) || m_server->time() - m_ctime > 30;
 }
 
-int Cpeer_link::process_events(int events)
+void Cpeer_link::process_events(int events)
 {
 	if (events & (EPOLLIN | EPOLLOUT | EPOLLPRI))
 	{
 		m_s.close();
 		m_server->update_peer(m_file_id, m_peer_id, true);
-		return 1;
 	}
 	if (events & (EPOLLERR | EPOLLHUP))
-	{
 		m_s.close();
-		return 1;
-	}
-	return 0;
+}
+
+int Cpeer_link::run()
+{
+	return s() == INVALID_SOCKET || m_server->time() - m_ctime > 30;
 }
