@@ -203,6 +203,7 @@ private:
 		int down_rate;
 		int up_rate;
 		int c_distributed_copies;
+		int c_distributed_copies_remainder;
 		int c_leechers;
 		int c_seeders;
 		int c_leechers_total;
