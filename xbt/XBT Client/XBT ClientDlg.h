@@ -26,8 +26,10 @@ public:
 	void insert_columns();
 	void insert_top_columns();
 	void insert_bottom_columns();
+	void sort_events();
 	void sort_peers();
 	void sort_files();
+	int events_compare(int id_a, int id_b) const;
 	int files_compare(int id_a, int id_b) const;
 	int peers_compare(int id_a, int id_b) const;
 	int sub_files_compare(int id_a, int id_b) const;
