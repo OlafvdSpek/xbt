@@ -141,6 +141,7 @@ int Cserver::run()
 		return alert(Calert(Calert::emerg, "Server", "listen failed" + Csocket::error2a(WSAGetLastError()))), 1;
 	load_state(Cvirtual_binary(state_fname()));
 	m_profiles.load(Cxif_key(Cvirtual_binary(profiles_fname())));
+	m_scheduler.load(Cxif_key(Cvirtual_binary(scheduler_fname())));
 	m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
 #ifndef WIN32
 	if (daemon(true, false))
@@ -457,6 +458,17 @@ void Cserver::set_profiles(const Cxif_key& v)
 	m_profiles.save().vdata().save(profiles_fname());
 }
 
+Cxif_key Cserver::get_scheduler()
+{
+	return m_scheduler.save();
+}
+
+void Cserver::set_scheduler(const Cxif_key& v)
+{
+	m_scheduler.load(v);
+	m_scheduler.save().vdata().save(scheduler_fname());
+}
+
 Cvirtual_binary Cserver::get_trackers()
 {
 	Clock l(m_cs);
@@ -676,6 +688,11 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 string Cserver::profiles_fname() const
 {
 	return local_app_data_dir() + "/profiles.xif";
+}
+
+string Cserver::scheduler_fname() const
+{
+	return local_app_data_dir() + "/scheduler.xif";
 }
 
 string Cserver::state_fname() const
