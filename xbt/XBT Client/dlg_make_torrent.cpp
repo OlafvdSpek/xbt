@@ -138,7 +138,7 @@ void Cdlg_make_torrent::insert(const string& name)
 		|| !stricmp(base_name(name).c_str(), "thumbs.db")
 		|| _stati64(name.c_str(), &b))
 		return;
-	if (b.st_mode & _S_IFDIR)
+	if (b.st_mode & S_IFDIR)
 	{
 		if (m_name.IsEmpty())
 		{
