@@ -129,8 +129,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				<< "&downloaded=" << n(f.m_downloaded)
 				<< "&left=" << n(f.m_left)
 				<< "&uploaded=" << n(f.m_uploaded)
-				<< "&compact=1"
-				<< "&no_peer_id=1";
+				<< "&compact=1";
 			if (f.local_ipa())
 			{
 				in_addr a;
