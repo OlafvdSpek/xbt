@@ -185,7 +185,7 @@ void Cconnection::read(const string& v)
 			else
 			{
 				m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
-				s = m_server->select_peers(ti).read();
+				s = m_server->select_peers(ti, user).read();
 			}
 		}
 		break;
