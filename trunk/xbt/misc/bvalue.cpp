@@ -216,6 +216,12 @@ void Cbvalue::clear()
 	m_value_type = vt_int;
 }
 
+const Cbvalue::t_map& Cbvalue::d() const
+{
+	static t_map z;
+	return m_value_type == vt_dictionary ? *m_map : z;
+}
+
 const Cbvalue& Cbvalue::d(const string& v) const
 {
 	if (m_value_type == vt_dictionary)
