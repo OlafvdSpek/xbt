@@ -121,42 +121,8 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 	case 1:
 		if (FD_ISSET(m_s, fd_write_set))
 		{
-			stringstream os;
-			os << "GET " << m_url.m_path 
-				<< "?info_hash=" << uri_encode(f.m_info_hash) 
-				<< "&peer_id=" << uri_encode(f.m_peer_id) 
-				<< "&port=" << f.local_port()
-				<< "&downloaded=" << n(f.m_downloaded)
-				<< "&left=" << n(f.m_left)
-				<< "&uploaded=" << n(f.m_uploaded)
-				<< "&compact=1";
-			if (f.local_ipa())
-			{
-				in_addr a;
-				a.s_addr = f.local_ipa();
-				os << "&ip=" << inet_ntoa(a);
-			}
-			switch (m_event)
-			{
-			case e_completed:
-				os << "&event=completed";
-				break;
-			case e_started:
-				os << "&event=started";
-				break;
-			case e_stopped:
-				os << "&event=stopped";
-				break;
-			}
-			m_event = e_none;			
-			os << " HTTP/1.0\r" << endl
-				<< "accept-encoding: gzip\r" << endl
-				<< "host: " << m_url.m_host;
-			if (m_url.m_port != 80)
-				os << ':' << m_url.m_port;
-			os << '\r' << endl
-				<< '\r' << endl;
-			if (m_s.send(os.str().c_str(), os.str().size()) != os.str().size())
+			string v = http_request(f);
+			if (m_s.send(v.c_str(), v.size()) != v.size())
 				close(f);
 			else
 				m_state = 2;
@@ -366,4 +332,44 @@ void Cbt_tracker_link::event(int v)
 {
 	m_event = v;
 	m_announce_time = 0;
+}
+
+string Cbt_tracker_link::http_request(const Cbt_file& f)
+{
+	stringstream os;
+	os << "GET " << m_url.m_path 
+		<< "?info_hash=" << uri_encode(f.m_info_hash) 
+		<< "&peer_id=" << uri_encode(f.m_peer_id) 
+		<< "&port=" << f.local_port()
+		<< "&downloaded=" << n(f.m_downloaded)
+		<< "&left=" << n(f.m_left)
+		<< "&uploaded=" << n(f.m_uploaded)
+		<< "&compact=1";
+	if (f.local_ipa())
+	{
+		in_addr a;
+		a.s_addr = f.local_ipa();
+		os << "&ip=" << inet_ntoa(a);
+	}
+	switch (m_event)
+	{
+	case e_completed:
+		os << "&event=completed";
+		break;
+	case e_started:
+		os << "&event=started";
+		break;
+	case e_stopped:
+		os << "&event=stopped";
+		break;
+	}
+	m_event = e_none;			
+	os << " HTTP/1.0\r" << endl
+		<< "accept-encoding: gzip\r" << endl
+		<< "host: " << m_url.m_host;
+	if (m_url.m_port != 80)
+		os << ':' << m_url.m_port;
+	os << '\r' << endl
+		<< '\r' << endl;
+	return os.str();
 }

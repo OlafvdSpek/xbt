@@ -26,6 +26,7 @@ public:
 		e_stopped,
 	};
 
+	string http_request(const Cbt_file&);
 	void event(int);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
