@@ -79,12 +79,12 @@ public:
 	{
 		return m_s;
 	}
-private:	
+private:
 	SOCKET m_s;
 	int mc_references;
 };
 
-class Csocket  
+class Csocket
 {
 public:
 	static string error2a(int v);
@@ -101,6 +101,7 @@ public:
 	int send(const void*, int);
 	int sendto(const void*, int, const sockaddr* a, socklen_t cb_a);
 	int setsockopt(int level, int name, const void* v, int cb_v);
+	int setsockopt(int level, int name, int v);
 	Csocket(SOCKET = INVALID_SOCKET);
 	Csocket(const Csocket&);
 	const Csocket& operator=(const Csocket&);

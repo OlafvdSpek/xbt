@@ -144,6 +144,11 @@ int Csocket::setsockopt(int level, int name, const void* v, int cb_v)
 	return ::setsockopt(*this, level, name, reinterpret_cast<const char*>(v), cb_v);
 }
 
+int Csocket::setsockopt(int level, int name, int v)
+{
+	return setsockopt(level, name, &v, sizeof(int));
+}
+
 int Csocket::get_host(const string& name)
 {
 	hostent* e = gethostbyname(name.c_str());
