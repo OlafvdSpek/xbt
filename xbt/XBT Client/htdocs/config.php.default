@@ -1,4 +1,5 @@
 <?php
 	$config['client_host'] = 'localhost';
 	$config['client_port'] = 6879;
+	$config['users'] = array('user' => 'pass');
 ?>
