@@ -82,6 +82,15 @@ enum
 	v_trackers,
 };
 
+enum
+{
+	dr_downloaded,
+	dr_name,
+	dr_pieces,
+	dr_uploaded,
+	dr_count
+};
+
 /////////////////////////////////////////////////////////////////////////////
 // CXBTClientDlg dialog
 
@@ -388,6 +397,33 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		return;
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	m_buffer[++m_buffer_w &= 3].erase();
+	const char* row_names[] =
+	{
+		"Downloaded",
+		"Name",
+		"Pieces",
+		"Uploaded",
+	};
+	switch (m_torrents_columns[pDispInfo->item.iSubItem])
+	{
+	case dc_name:
+		m_buffer[m_buffer_w] = row_names[pDispInfo->item.iItem];
+		break;
+	case dc_value:
+		switch (pDispInfo->item.iItem)
+		{
+		case dr_downloaded:
+			m_buffer[m_buffer_w] = b2a(m_file->downloaded) + " / " + b2a(m_file->total_downloaded);
+			break;
+		case dr_name:
+			m_buffer[m_buffer_w] = m_file->name;
+			break;
+		case dr_uploaded:
+			m_buffer[m_buffer_w] = b2a(m_file->uploaded) + " / " + b2a(m_file->total_uploaded);
+			break;
+		}
+		break;
+	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
 	*pResult = 0;
 }
@@ -533,6 +569,8 @@ void CXBTClientDlg::fill_peers()
 	switch (m_bottom_view)
 	{
 	case v_details:
+		for (int i = 0; i < dr_count; i++)
+			m_peers.SetItemData(m_peers.InsertItem(m_peers.GetItemCount(), LPSTR_TEXTCALLBACK), i);
 		break;
 	case v_files:
 		break;
