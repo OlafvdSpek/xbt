@@ -184,7 +184,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_NOTIFY(NM_DBLCLK, IDC_FILES, OnDblclkFiles)
 	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
 	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
-	ON_COMMAND(ID_POPUP_TORRENT_DELETE, OnPopupTorrentDelete)
 	ON_COMMAND(ID_POPUP_VIEW_DETAILS, OnPopupViewDetails)
 	ON_COMMAND(ID_POPUP_VIEW_FILES, OnPopupViewFiles)
 	ON_COMMAND(ID_POPUP_VIEW_PEERS, OnPopupViewPeers)
@@ -205,7 +204,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_FILES, OnUpdatePopupViewFiles)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_PEERS, OnUpdatePopupViewPeers)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_TRACKERS, OnUpdatePopupViewTrackers)
-	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_DELETE, OnUpdatePopupTorrentDelete)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_ANNOUNCE, OnUpdatePopupAnnounce)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE_TRACKER, OnUpdatePopupExploreTracker)
 	ON_COMMAND(ID_POPUP_UPLOAD_RATE_LIMIT, OnPopupUploadRateLimit)
@@ -251,11 +249,13 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_TOOLS_PROFILES, OnToolsProfiles)
 	ON_COMMAND(ID_TOOLS_SCHEDULER, OnToolsScheduler)
 	ON_COMMAND(ID_TOOLS_TRACKERS, OnToolsTrackers)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB, OnSelchangeTab)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
 	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
 	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
-	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB, OnSelchangeTab)
+	ON_COMMAND(ID_FILE_DELETE, OnFileDelete)
+	ON_UPDATE_COMMAND_UI(ID_FILE_DELETE, OnUpdateFileDelete)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1295,17 +1295,6 @@ void CXBTClientDlg::OnPopupAnnounce()
 }
 
 void CXBTClientDlg::OnUpdatePopupAnnounce(CCmdUI* pCmdUI)
-{
-	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
-}
-
-void CXBTClientDlg::OnPopupTorrentDelete()
-{
-	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
-		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.m_info_hash, true);
-}
-
-void CXBTClientDlg::OnUpdatePopupTorrentDelete(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
 }
@@ -2510,6 +2499,17 @@ void CXBTClientDlg::OnFileClose()
 }
 
 void CXBTClientDlg::OnUpdateFileClose(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
+}
+
+void CXBTClientDlg::OnFileDelete() 
+{
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+		m_server.close(m_files_map.find(m_files.GetItemData(index))->second.m_info_hash, true);
+}
+
+void CXBTClientDlg::OnUpdateFileDelete(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
 }

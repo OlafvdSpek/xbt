@@ -424,7 +424,7 @@ BEGIN
             MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
             MENUITEM "Open...\tInsert",             ID_FILE_OPEN
             MENUITEM "&Close\tDelete",              ID_FILE_CLOSE
-            MENUITEM "Delete",                      ID_POPUP_TORRENT_DELETE
+            MENUITEM "&Delete",                     ID_FILE_DELETE
             MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
         END
         POPUP "&View"
@@ -510,6 +510,7 @@ BEGIN
         MENUITEM "&New...\tCtrl+N",             ID_FILE_NEW
         MENUITEM "&Open...\tInsert",            ID_FILE_OPEN
         MENUITEM "&Close\tDelete",              ID_FILE_CLOSE
+        MENUITEM "&Delete",                     ID_FILE_DELETE
         MENUITEM SEPARATOR
         MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT
     END
