@@ -100,7 +100,12 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		if (!m_read_b.size() || m_read_b.cb_w())
 			FD_SET(m_s, fd_read_set);
 		if (m_write_b.empty() && time(NULL) - m_stime > 120)
-			write_keepalive();
+		{
+			if (!m_local_interested && m_f->next_invalid_piece(*this) != -1)
+				interested(true);
+			else
+				write_keepalive();
+		}
 		if (m_send_quota && !m_write_b.empty())
 			FD_SET(m_s, fd_write_set);
 		return m_s;

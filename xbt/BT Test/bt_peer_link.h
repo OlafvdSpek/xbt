@@ -23,7 +23,6 @@ class Cbt_peer_link
 {
 public:
 	void clear_local_requests();
-	void update_interested();
 	int cb_write_buffer() const;
 	void alert(const Calert&);
 	int pre_dump() const;
