@@ -140,10 +140,10 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				break;
 			}
 			m_event = e_none;			
-			os << " HTTP/1.0" << endl
-				<< "accept-encoding: gzip" << endl
-				<< "host: " << m_url.m_host << ':' << m_url.m_port << endl
-				<< endl;
+			os << " HTTP/1.0\r" << endl
+				<< "accept-encoding: gzip\r" << endl
+				<< "host: " << m_url.m_host << ':' << m_url.m_port << '\r' << endl
+				<< '\r' << endl;
 			if (m_s.send(os.str(), os.pcount()) != os.pcount())
 				close(f);
 			else
