@@ -178,7 +178,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_CLOSE, OnUpdatePopupClose)
 	ON_COMMAND(ID_POPUP_OPTIONS, OnPopupOptions)
 	ON_WM_DROPFILES()
-	ON_COMMAND(ID_POPUP_EXIT, OnPopupExit)
+	ON_COMMAND(ID_POPUP_EXIT, OnFileExit)
 	ON_COMMAND(ID_POPUP_EXPLORE, OnPopupExplore)
 	ON_WM_DESTROY()
 	ON_WM_WINDOWPOSCHANGING()
@@ -191,7 +191,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_TRACKERS, OnPopupTrackers)
 	ON_COMMAND(ID_POPUP_ANNOUNCE, OnPopupAnnounce)
 	ON_COMMAND(ID_POPUP_EXPLORE_TRACKER, OnPopupExploreTracker)
-	ON_COMMAND(ID_POPUP_ABOUT, OnPopupAbout)
+	ON_COMMAND(ID_POPUP_ABOUT, OnHelpAbout)
 	ON_COMMAND(ID_POPUP_MAKE_TORRENT, OnPopupMakeTorrent)
 	ON_COMMAND(ID_POPUP_TORRENT_DELETE, OnPopupTorrentDelete)
 	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnPopupTorrentClipboardCopyAnnounceUrl)
@@ -248,9 +248,11 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_OPTIONS, OnUpdatePopupTorrentOptions)
 	ON_COMMAND(ID_POPUP_SCHEDULER, OnPopupScheduler)
 	ON_COMMAND(ID_POPUP_PROFILES, OnPopupProfiles)
+	ON_WM_ACTIVATEAPP()
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
-	ON_WM_ACTIVATEAPP()
+	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
+	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1519,16 +1521,6 @@ void CXBTClientDlg::OnPopupTrackers()
 	m_server.set_trackers(d);
 }
 
-void CXBTClientDlg::OnPopupExit()
-{
-	EndDialog(IDCANCEL);
-}
-
-void CXBTClientDlg::OnPopupAbout()
-{
-	Cdlg_about().DoModal();
-}
-
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	OnPopupExplore();
@@ -2679,4 +2671,14 @@ void CXBTClientDlg::OnActivateApp(BOOL bActive, HTASK hTask)
 	ETSLayoutDialog::OnActivateApp(bActive, hTask);
 	if (!bActive && m_hide_on_deactivate)
 		ShowWindow(SW_HIDE);
+}
+
+void CXBTClientDlg::OnFileExit() 
+{
+	OnCancel();
+}
+
+void CXBTClientDlg::OnHelpAbout() 
+{
+	Cdlg_about().DoModal();
 }
