@@ -562,7 +562,7 @@ void Cserver::update_chokes()
 				links1.push_back(&*j);
 		}
 	}
-	int slots_left = m_upload_slots;
+	int slots_left = m_upload_slots ? max(4, m_upload_slots) : INT_MAX;
 	for (t_links0::iterator i = links0.begin(); i != links0.end(); i++)
 	{
 		if (slots_left)
