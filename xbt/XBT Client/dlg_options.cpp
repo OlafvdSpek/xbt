@@ -176,7 +176,6 @@ void Cdlg_options::OnTorrentsDirectoryBrowse()
 
 BOOL Cdlg_options::OnInitDialog() 
 {
-	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
 		<< (pane(HORIZONTAL)
 			<< (pane(VERTICAL)
@@ -240,6 +239,6 @@ BOOL Cdlg_options::OnInitDialog()
 			<< item(IDCANCEL, NORESIZE)
 			)
 		;
-	UpdateLayout();
+	ETSLayoutDialog::OnInitDialog();
 	return true;
 }
