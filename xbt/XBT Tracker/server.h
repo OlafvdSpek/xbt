@@ -222,6 +222,7 @@ private:
 	int m_clean_up_interval;
 	int m_read_config_interval;
 	int m_read_db_interval;
+	int m_scrape_interval;
 	int m_write_db_interval;
 	int m_fid_end;
 	int m_update_files_method;
