@@ -13,13 +13,6 @@
 
 Cbt_file::Cbt_file()
 {
-#if 1
-	sockaddr_in a;
-	a.sin_family = AF_INET;
-	a.sin_port = htons(6881);
-	a.sin_addr.S_un.S_addr = Csocket::get_host("hwima");
-	insert_peer(a);
-#endif
 }
 
 Cbt_file::~Cbt_file()
@@ -134,7 +127,6 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 		n = max(n, z);
 	}
 	return n;
-
 }
 
 void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
@@ -152,6 +144,11 @@ void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd
 
 void Cbt_file::insert_peer(const sockaddr_in& a)
 {
+	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	{
+		if (i->m_a.sin_addr.s_addr == a.sin_addr.s_addr)
+			return;
+	}
 	Cbt_peer_link peer;
 	peer.m_a = a;
 	peer.m_f = this;
@@ -162,7 +159,7 @@ void Cbt_file::insert_peer(const sockaddr_in& a, const Csocket& s)
 {
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
-		if (i->m_a.sin_addr.S_un.S_addr == a.sin_addr.S_un.S_addr)
+		if (i->m_a.sin_addr.s_addr == a.sin_addr.s_addr)
 			return;
 	}
 	Cbt_peer_link peer;
@@ -219,6 +216,8 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 					cerr << "fseek failed" << endl;
 				else if (fwrite(r, cb_write, 1, i->m_f) != 1)
 					cerr << "fwrite failed" << endl;
+				else
+					fflush(i->m_f);
 				size -= cb_write;
 				if (!size)
 					break;
@@ -228,7 +227,6 @@ void Cbt_file::write_data(int o, const char* s, int cb_s)
 			else
 				offset -= i->m_size;
 		}
-		fflush(i->m_f);
 		piece.m_d.clear();
 		write_have(a);
 	}
@@ -311,8 +309,8 @@ void Cbt_file::dump(ostream& os)
 	{
 		os << "<tr><td>" << inet_ntoa(i->m_a.sin_addr) 
 			<< "<td>" << ntohs(i->m_a.sin_port) 
-			<< "<td align=right>" << (i->m_downloaded >> 10) 
-			<< "<td align=right>" << (i->m_uploaded >> 10)
+			<< "<td align=right>" << static_cast<int>(i->m_downloaded >> 10) 
+			<< "<td align=right>" << static_cast<int>(i->m_uploaded >> 10)
 			<< "<td>" << (i->m_local_choked ? 'C' : ' ') 
 			<< "<td>" << (i->m_local_interested ? 'I' : ' ')
 			<< "<td>" << (i->m_remote_choked ? 'C' : ' ') 
