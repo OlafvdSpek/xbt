@@ -1721,7 +1721,7 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 	case sfc_name:
 		return compare(a.m_name, b.m_name);
 	case sfc_done:
-		return compare(b.m_left, a.m_left);
+		return compare(b.m_left * 1000 / b.m_size, a.m_left * 1000 / a.m_size);
 	case sfc_left:
 		return compare(a.m_left, b.m_left);
 	case sfc_size:
