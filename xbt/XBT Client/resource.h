@@ -23,6 +23,7 @@
 #define IDC_SEEDING_RATIO               1013
 #define IDC_INCREASE_PRIORITY           1014
 #define IDC_LIST                        1014
+#define IDC_FILES_LOCATION              1014
 #define IDC_INSERT                      1015
 #define IDC_DELETE                      1016
 #define IDC_TRACKER                     1017
@@ -54,7 +55,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32784
-#define _APS_NEXT_CONTROL_VALUE         1024
+#define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

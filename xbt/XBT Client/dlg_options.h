@@ -17,6 +17,7 @@ public:
 	struct t_data
 	{
 		int admin_port;
+		string files_location;
 		int peer_port;
 		string public_ipa;
 		int seeding_ratio;
@@ -41,6 +42,7 @@ public:
 	int		m_seeding_ratio;
 	BOOL	m_show_tray_icon;
 	BOOL	m_show_advanced_columns;
+	CString	m_files_location;
 	//}}AFX_DATA
 
 

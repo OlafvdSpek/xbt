@@ -17,6 +17,7 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void set_dir(const string&);
 	void insert_columns();
 	void sort_peers();
 	void sort_files();
@@ -146,9 +147,6 @@ private:
 	t_file* m_file;
 	t_files m_files_map;
 	CString m_dir;
-	CString m_completes_dir;
-	CString m_incompletes_dir;
-	CString m_torrents_dir;
 	CString m_reg_key;
 	Cserver m_server;
 	CWinThread* m_server_thread;

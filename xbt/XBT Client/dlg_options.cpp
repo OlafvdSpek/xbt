@@ -27,6 +27,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_seeding_ratio = 0;
 	m_show_tray_icon = FALSE;
 	m_show_advanced_columns = FALSE;
+	m_files_location = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -45,6 +46,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_SEEDING_RATIO, m_seeding_ratio);
 	DDX_Check(pDX, IDC_SHOW_TRAY_ICON, m_show_tray_icon);
 	DDX_Check(pDX, IDC_SHOW_ADVANCED_COLUMNS, m_show_advanced_columns);
+	DDX_Text(pDX, IDC_FILES_LOCATION, m_files_location);
 	//}}AFX_DATA_MAP
 }
 
@@ -62,6 +64,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 {
 	t_data v;
 	v.admin_port = m_admin_port;
+	v.files_location = m_files_location;
 	v.peer_port = m_peer_port;
 	v.public_ipa = m_public_ipa;
 	v.seeding_ratio = m_seeding_ratio;
@@ -75,6 +78,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 void Cdlg_options::set(const t_data& v)
 {
 	m_admin_port = v.admin_port;
+	m_files_location = v.files_location.c_str();
 	m_peer_port = v.peer_port;
 	m_public_ipa = v.public_ipa.c_str();
 	m_seeding_ratio = v.seeding_ratio;
