@@ -27,6 +27,7 @@ public:
 	int start_file(const string& id);
 	int stop_file(const string& id);
 	int open(const Cvirtual_binary& info, const string& name);
+	Cvirtual_binary get_file_status(const string& id);
 	Cvirtual_binary get_status();
 	void unlock();
 	void lock();
@@ -35,6 +36,8 @@ public:
 	typedef list<Cbt_file> t_files;
 	typedef list<Cbt_link> t_links;
 
+	int pre_file_dump(const string& id) const;
+	void file_dump(Cstream_writer&, const string& id) const;
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	ostream& dump(ostream&) const;
