@@ -798,3 +798,8 @@ bool Cbt_file::test_and_set_hashes(__int64 offset, const string& v, const string
 	}
 	return false;
 }
+
+Cbt_logger& Cbt_file::logger()
+{
+	return m_server->logger();
+}
