@@ -1,7 +1,7 @@
 CREATE TABLE xbt_announce_log
 (
   id int NOT NULL auto_increment,
-  ipa int NOT NULL,
+  ipa int unsigned NOT NULL,
   port int NOT NULL,
   event int NOT NULL,
   info_hash blob NOT NULL,
