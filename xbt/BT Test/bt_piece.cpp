@@ -11,12 +11,6 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-void Cbt_sub_piece::erase_peers(Cbt_piece* piece)
-{
-	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
-		i->first->m_pieces.erase(piece);
-}
-
 Cbt_piece::Cbt_piece()
 {
 	mc_peers = 0;
@@ -78,11 +72,24 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 		mc_unrequested_sub_pieces--;
 	m_sub_pieces[b].valid(true);
 	if (!--mc_sub_pieces_left)
-	{
-		for (t_sub_pieces::iterator i = m_sub_pieces.begin(); i != m_sub_pieces.end(); i++)
-			i->erase_peers(this);
 		m_sub_pieces.clear();
+}
+
+bool Cbt_piece::check_peer(Cbt_peer_link* peer)
+{
+	bool found = false;
+	for (t_sub_pieces::iterator i = m_sub_pieces.begin(); i != m_sub_pieces.end(); i++)
+	{
+		Cbt_sub_piece::t_peers::const_iterator j = i->m_peers.find(peer);
+		if (j != i->m_peers.end() && time(NULL) - j->second > 300)
+		{
+			i->m_peers.erase(peer);
+			mc_unrequested_sub_pieces++;
+			continue;
+		}
+		found = true;
 	}
+	return found;
 }
 
 int Cbt_piece::c_sub_pieces() const
