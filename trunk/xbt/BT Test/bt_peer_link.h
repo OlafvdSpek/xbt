@@ -60,7 +60,7 @@ public:
 	void remote_cancels(int, int, int);
 	void remote_merkle_cancels(__int64 offset);
 	void remote_merkle_requests(__int64 offset, int c_hashes);
-	void send();
+	int send();
 	int recv();
 	void write(const Cvirtual_binary&);
 	void write(const void* s, int cb_s);

@@ -214,8 +214,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				break;
 			}					
 		}
-		if (!m_write_b.empty() && FD_ISSET(m_s, fd_write_set))
-			send();
+		if (!m_write_b.empty() && FD_ISSET(m_s, fd_write_set) && send())
+			return 1;
 		break;
 	}
 	if (!m_left && !m_f->m_left)
@@ -234,6 +234,7 @@ void Cbt_peer_link::close()
 	m_state = -1;
 	for (int i = 0; i < m_remote_pieces.size(); i++)
 		m_f->m_pieces[i].mc_peers -= m_remote_pieces[i];
+	m_remote_pieces.clear();
 }
 
 void Cbt_peer_link::write(const Cvirtual_binary& s)
@@ -284,7 +285,7 @@ int Cbt_peer_link::recv()
 	return 1;
 }
 
-void Cbt_peer_link::send()
+int Cbt_peer_link::send()
 {
 	while (m_send_quota && !m_write_b.empty())
 	{
@@ -298,17 +299,15 @@ void Cbt_peer_link::send()
 			case WSAECONNABORTED:
 			case WSAECONNRESET:
 				alert(Calert(Calert::debug, m_a, "Peer: connection aborted/reset"));
-				close();
+				return 1;
 			case WSAEWOULDBLOCK:
-				break;
-			default:
-				alert(Calert(Calert::debug, m_a, "Peer: send failed:" + n(e)));
-				close();
+				return 0;
 			}
-			return;
+			alert(Calert(Calert::debug, m_a, "Peer: send failed:" + n(e)));
+			return 1;
 		}
 		else if (!r)
-			return;
+			return 0;
 		if (d.m_vb.size() > 5 && d.m_s[4] == bti_piece)
 		{
 			m_uploaded += r;
@@ -323,6 +322,7 @@ void Cbt_peer_link::send()
 		if (d.m_r == d.m_s_end)
 			m_write_b.pop_front();
 	}
+	return 0;
 }
 
 void Cbt_peer_link::remote_has(int v)
