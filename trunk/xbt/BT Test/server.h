@@ -23,6 +23,7 @@ public:
 	void alert(const Calert&);
 	void admin_port(int);
 	void peer_port(int);
+	void public_ipa(int);
 	void upload_rate(int);
 	string state_fname() const;
 	Cvirtual_binary save_state(bool intermediate);
@@ -30,7 +31,9 @@ public:
 	int close(const string& id);
 	int start_file(const string& id);
 	int stop_file(const string& id);
+	string get_url(const string& id);
 	int open(const Cvirtual_binary& info, const string& name);
+	int open_url(const string&);
 	Cvirtual_binary get_file_status(const string& id);
 	Cvirtual_binary get_status();
 	void unlock();
@@ -70,6 +73,11 @@ public:
 	{
 		return m_peer_port;
 	}
+
+	int public_ipa() const
+	{
+		return m_public_ipa;
+	}
 private:
 	t_admins m_admins;
 	Calerts m_alerts;
@@ -78,7 +86,10 @@ private:
 
 	int m_admin_port;
 	string m_dir;
+	int m_new_admin_port;
+	int m_new_peer_port;
 	int m_peer_port;
+	int m_public_ipa;
 	int m_send_quota;
 	bool m_run;
 	int m_update_chokes_time;

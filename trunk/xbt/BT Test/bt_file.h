@@ -20,6 +20,7 @@
 class Cbt_file  
 {
 public:
+	string get_url() const;
 	void alert(const Calert&);
 	void load_state(Cstream_reader&);
 	int pre_save_state(bool intermediate) const;
@@ -109,6 +110,7 @@ public:
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
 
+	int m_local_ipa;
 	int m_local_port;
 	bool m_run;
 };
