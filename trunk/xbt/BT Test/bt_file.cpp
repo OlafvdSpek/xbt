@@ -52,7 +52,7 @@ int Cbt_file::info(const Cbvalue& info)
 {
 	m_name = info.d(bts_name).s();
 	if (m_name.empty())
-		return 0;
+		return 1;
 	m_info = info.read();
 	m_info_hash = compute_sha1(m_info);
 	m_merkle = info.d(bts_pieces).s().empty();

@@ -804,7 +804,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		d.d(bts_files, files);
 	}
 	else if (action == bts_open_torrent) 
-		open(d.d(bts_torrent).read(), incompletes_dir());
+		open(s.d(bts_torrent).read(), incompletes_dir() + '/' + s.d(bts_torrent).d(bts_info).d(bts_name).s());
 	else if (action == bts_pause_torrent)
 		stop_file(s.d(bts_hash).s());
 	else if (action == bts_unpause_torrent)
