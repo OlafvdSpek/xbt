@@ -13,5 +13,8 @@ int main(int argc, char* argv[])
 	srand(time(NULL));
 	Cserver server;
 	server.run();
+#ifdef WIN32
+	WSACleanup();
+#endif
 	return 0;
 }
