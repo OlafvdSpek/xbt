@@ -180,9 +180,9 @@ void Cserver::run()
 				if (!FD_ISSET(*i, &fd_read_set))
 					continue;
 				sockaddr_in a;
-				socklen_t cb_a = sizeof(sockaddr_in);
 				while (1)
 				{
+					socklen_t cb_a = sizeof(sockaddr_in);
 					Csocket s = accept(*i, reinterpret_cast<sockaddr*>(&a), &cb_a);
 					if (s == SOCKET_ERROR)
 					{
