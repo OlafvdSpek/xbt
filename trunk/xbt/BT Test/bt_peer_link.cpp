@@ -370,7 +370,6 @@ void Cbt_peer_link::write_handshake()
 	m_remote_interested = false;
 	m_downloaded = m_uploaded = 0;
 	m_left = m_f->size();
-	m_read_b.size(128 << 10);
 	m_get_peers_stime = 0;
 	mc_local_requests_pending = 0;
 	m_peers_stime = 0;
