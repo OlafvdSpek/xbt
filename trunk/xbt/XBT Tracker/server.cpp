@@ -120,7 +120,8 @@ void Cserver::run()
 	ofstream("xbt_tracker.pid") << getpid() << endl;
 #endif
 	clean_up();
-	read_db();
+	read_db_files();
+	read_db_users();
 	write_db();
 	fd_set fd_read_set;
 	fd_set fd_write_set;
@@ -203,14 +204,16 @@ void Cserver::run()
 			read_config();
 		if (time(NULL) - m_clean_up_time > m_clean_up_interval)
 			clean_up();
-		if (time(NULL) - m_read_db_time > m_read_db_interval)
-			read_db();
+		if (time(NULL) - m_read_db_files_time > m_read_db_interval)
+			read_db_files();
+		if (time(NULL) - m_read_db_users_time > m_read_db_interval)
+			read_db_users();
 		if (time(NULL) - m_write_db_time > m_write_db_interval)
 			write_db();
 	}
 }
 
-void Cserver::insert_peer(const Ctracker_input& v)
+void Cserver::insert_peer(const Ctracker_input& v, bool udp)
 {
 	if (m_log_announce)
 	{
@@ -269,7 +272,14 @@ void Cserver::insert_peer(const Ctracker_input& v)
 		file.stopped++;
 		break;
 	}
-	file.announced++;
+	if (udp)
+		file.announced_udp++;
+	else if (v.m_compact)
+		file.announced_http_compact++;
+	else if (v.m_no_peer_id)
+		file.announced_http_no_peer_id++;
+	else
+		file.announced_http++;
 	file.dirty = true;
 }
 
@@ -399,7 +409,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 		t_files::iterator i = m_files.find(ti.m_info_hash);
 		if (i != m_files.end())
 		{
-			i->second.scraped++;
+			i->second.scraped_http++;
 			i->second.dirty = true;
 			files.d(i->first, i->second.scrape());
 		}
@@ -408,7 +418,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	return v;
 }
 
-void Cserver::read_db()
+void Cserver::read_db_files()
 {
 	try
 	{
@@ -416,7 +426,8 @@ void Cserver::read_db()
 		q.write("update xbt_files set leechers = 0, seeders = 0 where fid >= %s");
 		q.p(m_fid_end);
 		q.execute();
-		q.write("select info_hash, completed, fid, started, stopped, announced, scraped from xbt_files where fid >= %s");
+		q.write("select info_hash, completed, fid, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp"
+			" from xbt_files where fid >= %s");
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
 		Csql_row row;
@@ -430,14 +441,23 @@ void Cserver::read_db()
 			file.fid = row.f_int(2, 0);
 			file.started = row.f_int(3, 0);
 			file.stopped = row.f_int(4, 0);
-			file.announced = row.f_int(5, 0);
-			file.scraped = row.f_int(6, 0);
+			file.announced_http = row.f_int(5, 0);
+			file.announced_http_compact = row.f_int(6, 0);
+			file.announced_http_no_peer_id = row.f_int(7, 0);
+			file.announced_udp = row.f_int(8, 0);
+			file.scraped_http = row.f_int(9, 0);
+			file.scraped_udp = row.f_int(10, 0);
 			m_fid_end = max(m_fid_end, file.fid + 1);
 		}
 	}
 	catch (Cxcc_error error)
 	{
 	}
+	m_read_db_files_time = time(NULL);
+}
+
+void Cserver::read_db_users()
+{
 	try
 	{
 		Csql_query q(m_database);
@@ -456,7 +476,7 @@ void Cserver::read_db()
 	catch (Cxcc_error error)
 	{
 	}
-	m_read_db_time = time(NULL);
+	m_read_db_users_time = time(NULL);
 }
 
 void Cserver::write_db()
@@ -476,14 +496,20 @@ void Cserver::write_db()
 				q.execute();
 				file.fid = m_database.insert_id();
 			}
-			q.write("update xbt_files set leechers = %s, seeders = %s, completed = %s, started = %s, stopped = %s, announced = %s, scraped = %s where fid = %s");
+			q.write("update xbt_files"
+				" set leechers = %s, seeders = %s, completed = %s, started = %s, stopped = %s, announced_http = %s, announced_http_compact = %s, announced_http_no_peer_id = %s, announced_udp = %s, scraped_http = %s, scraped_udp = %s"
+				" where fid = %s");
 			q.p(file.leechers);
 			q.p(file.seeders);
 			q.p(file.completed);
 			q.p(file.started);
 			q.p(file.stopped);
-			q.p(file.announced);
-			q.p(file.scraped);
+			q.p(file.announced_http);
+			q.p(file.announced_http_compact);
+			q.p(file.announced_http_no_peer_id);
+			q.p(file.announced_udp);
+			q.p(file.scraped_http);
+			q.p(file.scraped_udp);
 			q.p(file.fid);
 			q.execute();
 			file.dirty = false;
@@ -610,8 +636,12 @@ string Cserver::debug(const Ctracker_input& ti) const
 				+ "<td>" + (i->second.dirty ? '*' : ' ')
 				+ "<td align=right>" + n(i->second.leechers) 
 				+ "<td align=right>" + n(i->second.seeders) 
-				+ "<td align=right>" + n(i->second.announced) 
-				+ "<td align=right>" + n(i->second.scraped) 
+				+ "<td align=right>" + n(i->second.announced_http) 
+				+ "<td align=right>" + n(i->second.announced_http_compact) 
+				+ "<td align=right>" + n(i->second.announced_http_no_peer_id) 
+				+ "<td align=right>" + n(i->second.announced_udp) 
+				+ "<td align=right>" + n(i->second.scraped_http) 
+				+ "<td align=right>" + n(i->second.scraped_udp) 
 				+ "<td align=right>" + n(i->second.completed) 
 				+ "<td align=right>" + n(i->second.started) 
 				+ "<td align=right>" + n(i->second.stopped);
@@ -631,7 +661,8 @@ string Cserver::debug(const Ctracker_input& ti) const
 		+ "<tr><td>listen check<td>" + n(m_listen_check) 
 		+ "<tr><td>read config time<td>" + n(t - m_read_config_time) 
 		+ "<tr><td>clean up time<td>" + n(t - m_clean_up_time) 
-		+ "<tr><td>read db time<td>" + n(t - m_read_db_time) 
+		+ "<tr><td>read db files time<td>" + n(t - m_read_db_files_time) 
+		+ "<tr><td>read db users time<td>" + n(t - m_read_db_users_time) 
 		+ "<tr><td>write db time<td>" + n(t - m_write_db_time);
 	return page;
 }

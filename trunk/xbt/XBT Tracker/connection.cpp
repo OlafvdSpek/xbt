@@ -168,7 +168,7 @@ void Cconnection::read(const string& v)
 		gzip = m_server->gzip_announce() && !ti.m_compact;
 		if (ti.valid())
 		{
-			m_server->insert_peer(ti);
+			m_server->insert_peer(ti, false);
 			s = m_server->select_peers(ti).read();
 		}
 		break;
@@ -191,7 +191,7 @@ void Cconnection::read(const string& v)
 		static ofstream f("xbt_tracker_gzip.log");
 		f << time(NULL) << '\t' << v[5] << '\t' << s.size() << '\t';
 		Cvirtual_binary s2 = xcc_z::gzip(s);
-		f << s2.size() << '\t' << ti.m_compact << '\t' << ti.m_no_peer_id << endl;
+		f << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << endl;
 		if (s2.size() + 24 < s.size())
 			s = s2;
 		else
