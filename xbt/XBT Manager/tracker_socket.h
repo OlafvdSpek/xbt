@@ -13,7 +13,7 @@ class CXBTManagerDlg;
 /////////////////////////////////////////////////////////////////////////////
 // Ctracker_socket command target
 
-class Ctracker_socket : public CAsyncSocket
+class Ctracker_socket: public CAsyncSocket
 {
 // Attributes
 public:

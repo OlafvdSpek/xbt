@@ -132,7 +132,7 @@ void Cdlg_options::set(const t_data& v)
 	m_upload_slots = v.upload_slots;
 }
 
-void Cdlg_options::OnCompletesDirectoryBrowse() 
+void Cdlg_options::OnCompletesDirectoryBrowse()
 {
 	string dir = string(m_completes_dir);
 	if (!UpdateData(true) || browse_for_directory(GetSafeHwnd(), "Completes Directory", dir))
@@ -141,7 +141,7 @@ void Cdlg_options::OnCompletesDirectoryBrowse()
 	UpdateData(false);
 }
 
-void Cdlg_options::OnIncompletesDirectoryBrowse() 
+void Cdlg_options::OnIncompletesDirectoryBrowse()
 {
 	string dir = string(m_incompletes_dir);
 	if (!UpdateData(true) || browse_for_directory(GetSafeHwnd(), "Incompletes Directory", dir))
@@ -150,7 +150,7 @@ void Cdlg_options::OnIncompletesDirectoryBrowse()
 	UpdateData(false);
 }
 
-void Cdlg_options::OnTorrentsDirectoryBrowse() 
+void Cdlg_options::OnTorrentsDirectoryBrowse()
 {
 	string dir = string(m_torrents_dir);
 	if (!UpdateData(true) || browse_for_directory(GetSafeHwnd(), "Torrents Directory", dir))

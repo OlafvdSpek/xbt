@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_tracker dialog
 
-class Cdlg_tracker : public ETSLayoutDialog
+class Cdlg_tracker: public ETSLayoutDialog
 {
 // Construction
 public:

@@ -13,7 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_options dialog
 
-class Cdlg_options : public CDialog
+class Cdlg_options: public CDialog
 {
 // Construction
 public:

@@ -169,7 +169,7 @@ void CXBTManagerDlg::insert(const string& name)
 
 void CXBTManagerDlg::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
+	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	const t_map_entry& e = m_map.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{

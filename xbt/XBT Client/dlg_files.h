@@ -16,7 +16,7 @@
 
 class Cserver;
 
-class Cdlg_files : public ETSLayoutDialog
+class Cdlg_files: public ETSLayoutDialog
 {
 // Construction
 public:

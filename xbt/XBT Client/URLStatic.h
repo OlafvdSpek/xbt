@@ -11,7 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CURLStatic window
 
-class CURLStatic : public CStatic
+class CURLStatic: public CStatic
 {
 // Construction
 public:

@@ -19,7 +19,7 @@
 // See XBT Manager.cpp for the implementation of this class
 //
 
-class CXBTManagerApp : public CWinApp
+class CXBTManagerApp: public CWinApp
 {
 public:
 	CXBTManagerApp();
