@@ -515,7 +515,7 @@ void Cbt_peer_link::choked(bool v)
 	w = write(w, d.size() - 4);
 	*w++ = bti_unchoke - v;
 	write(d);
-	if (0 && v)
+	if (v)
 		m_remote_requests.clear();
 }
 
@@ -675,10 +675,12 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 	switch (*r++)
 	{
 	case bti_choke:
+		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, true);
 		m_remote_choked = true;
-		clear_local_requests();
+		// clear_local_requests();
 		break;
 	case bti_unchoke:
+		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, false);
 		m_remote_choked = false;
 		break;
 	case bti_interested:
