@@ -769,6 +769,7 @@ string Cserver::debug(const Ctracker_input& ti) const
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
 		+ "<tr><td>torrents<td align=right>" + n(torrents)
 		+ "<tr><td>"
+		+ "<tr><td>auto register<td align=right>" + n(m_auto_register) 
 		+ "<tr><td>listen check<td align=right>" + n(m_listen_check) 
 		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_read_config_interval)
 		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_clean_up_interval)
