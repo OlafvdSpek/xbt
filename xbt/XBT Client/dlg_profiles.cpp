@@ -29,6 +29,9 @@ void Cdlg_profiles::DoDataExchange(CDataExchange* pDX)
 {
 	ETSLayoutDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(Cdlg_profiles)
+	DDX_Control(pDX, IDC_EDIT, m_edit);
+	DDX_Control(pDX, IDC_ACTIVATE, m_activate);
+	DDX_Control(pDX, IDC_DELETE, m_delete);
 	DDX_Control(pDX, IDC_LIST, m_list);
 	//}}AFX_DATA_MAP
 }
@@ -41,6 +44,8 @@ BEGIN_MESSAGE_MAP(Cdlg_profiles, ETSLayoutDialog)
 	ON_BN_CLICKED(IDC_DELETE, OnDelete)
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_LIST, OnGetdispinfoList)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST, OnDblclkList)
+	ON_BN_CLICKED(IDC_ACTIVATE, OnActivate)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, OnItemchangedList)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -50,10 +55,12 @@ END_MESSAGE_MAP()
 BOOL Cdlg_profiles::OnInitDialog() 
 {
 	ETSLayoutDialog::OnInitDialog();
+	update_controls();
 	CreateRoot(VERTICAL)
-		<< item(IDC_LIST, GREEDY)
+		<< item(IDC_LIST)
 		<< (pane(HORIZONTAL, ABSOLUTE_VERT)
 			<< itemGrowing(HORIZONTAL)
+			<< item(IDC_ACTIVATE, NORESIZE)
 			<< item(IDC_INSERT, NORESIZE)
 			<< item(IDC_EDIT, NORESIZE)
 			<< item(IDC_DELETE, NORESIZE)
@@ -70,6 +77,8 @@ BOOL Cdlg_profiles::OnInitDialog()
 	m_list.InsertColumn(4, "Peer Limit", LVCFMT_RIGHT);
 	m_list.InsertColumn(5, "Torrent Limit", LVCFMT_RIGHT);
 	m_list.InsertColumn(6, "");
+	for (t_entries::const_iterator i = m_entries.begin(); i != m_entries.end(); i++)
+		m_list.SetItemData(m_list.InsertItem(m_list.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
 	m_list.auto_size();
 	return true;
 }
@@ -87,7 +96,7 @@ void Cdlg_profiles::OnInsert()
 	e.seeding_ratio_enable = dlg.m_seeding_ratio_enable;
 	e.torrent_limit = dlg.m_torrent_limit_value;
 	e.torrent_limit_enable = dlg.m_torrent_limit_enable;
-	e.upload_rate = dlg.m_upload_rate_value;
+	e.upload_rate = dlg.m_upload_rate_value << 10;
 	e.upload_rate_enable = dlg.m_upload_rate_enable;
 	e.upload_slots = dlg.m_upload_slots_value;
 	e.upload_slots_enable = dlg.m_upload_slots_enable;
@@ -97,7 +106,7 @@ void Cdlg_profiles::OnInsert()
 
 void Cdlg_profiles::OnEdit() 
 {
-	int index = m_list.GetNextItem(-1, LVNI_FOCUSED);
+	int index = m_list.GetNextItem(-1, LVNI_SELECTED);
 	if (index == -1)
 		return;
 	int id = m_list.GetItemData(index);
@@ -110,7 +119,7 @@ void Cdlg_profiles::OnEdit()
 	dlg.m_seeding_ratio_enable = e.seeding_ratio_enable;
 	dlg.m_torrent_limit_value = e.torrent_limit;
 	dlg.m_torrent_limit_enable = e.torrent_limit_enable;
-	dlg.m_upload_rate_value = e.upload_rate;
+	dlg.m_upload_rate_value = e.upload_rate >> 10;
 	dlg.m_upload_rate_enable = e.upload_rate_enable;
 	dlg.m_upload_slots_value = e.upload_slots;
 	dlg.m_upload_slots_enable = e.upload_slots_enable;
@@ -123,7 +132,7 @@ void Cdlg_profiles::OnEdit()
 	e.seeding_ratio_enable = dlg.m_seeding_ratio_enable;
 	e.torrent_limit = dlg.m_torrent_limit_value;
 	e.torrent_limit_enable = dlg.m_torrent_limit_enable;
-	e.upload_rate = dlg.m_upload_rate_value;
+	e.upload_rate = dlg.m_upload_rate_value << 10;
 	e.upload_rate_enable = dlg.m_upload_rate_enable;
 	e.upload_slots = dlg.m_upload_slots_value;
 	e.upload_slots_enable = dlg.m_upload_slots_enable;
@@ -132,11 +141,12 @@ void Cdlg_profiles::OnEdit()
 
 void Cdlg_profiles::OnDelete() 
 {
-	int index = m_list.GetNextItem(-1, LVNI_FOCUSED);
-	if (index == -1)
-		return;
-	m_entries.erase(m_list.GetItemData(index));
-	m_list.DeleteItem(index);
+	int index;
+	while ((index = m_list.GetNextItem(-1, LVNI_SELECTED)) != -1)
+	{
+		m_entries.erase(m_list.GetItemData(index));
+		m_list.DeleteItem(index);
+	}
 }
 
 void Cdlg_profiles::insert(const t_entry& e)
@@ -163,7 +173,7 @@ void Cdlg_profiles::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case 2:
 		if (e.upload_rate_enable)
-			m_buffer[m_buffer_w] = n(e.upload_rate);
+			m_buffer[m_buffer_w] = n(e.upload_rate >> 10);
 		break;
 	case 3:
 		if (e.upload_slots_enable)
@@ -184,6 +194,27 @@ void Cdlg_profiles::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 
 void Cdlg_profiles::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
-	EndDialog(IDOK);
+	OnEdit();
+	*pResult = 0;
+}
+
+void Cdlg_profiles::OnActivate() 
+{
+	if (m_list.GetSelectedCount() != 1)
+		return;
+	m_selected_profile = m_list.GetItemData(m_list.GetNextItem(-1, LVNI_SELECTED));
+	EndDialog(IDC_ACTIVATE);
+}
+
+void Cdlg_profiles::update_controls()
+{
+	m_activate.EnableWindow(m_list.GetSelectedCount() == 1);
+	m_edit.EnableWindow(m_list.GetSelectedCount() == 1);
+	m_delete.EnableWindow(m_list.GetSelectedCount());
+}
+
+void Cdlg_profiles::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	update_controls();
 	*pResult = 0;
 }

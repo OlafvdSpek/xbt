@@ -9,6 +9,7 @@
 //
 
 #include "ListCtrlEx.h"
+#include "../bt test/profiles.h"
 #include "resource.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -18,22 +19,9 @@ class Cdlg_profiles: public ETSLayoutDialog
 {
 // Construction
 public:
-	struct t_entry
-	{
-		string name;
-		int upload_rate;
-		bool upload_rate_enable;
-		int upload_slots;
-		bool upload_slots_enable;
-		int seeding_ratio;
-		bool seeding_ratio_enable;
-		int peer_limit;
-		bool peer_limit_enable;
-		int torrent_limit;
-		bool torrent_limit_enable;
-	};
-
-	typedef map<int, t_entry> t_entries;
+	void update_controls();
+	typedef Cprofile t_entry;
+	typedef Cprofiles t_entries;
 
 	void insert(const t_entry&);
 	Cdlg_profiles(CWnd* pParent = NULL);   // standard constructor
@@ -43,9 +31,22 @@ public:
 		return m_entries;
 	}
 
+	void entries(const t_entries& v)
+	{
+		m_entries = v;
+	}
+
+	const Cprofile& selected_profile() const
+	{
+		return m_entries.find(m_selected_profile)->second;
+	}
+
 // Dialog Data
 	//{{AFX_DATA(Cdlg_profiles)
 	enum { IDD = IDD_PROFILES };
+	CButton	m_edit;
+	CButton	m_activate;
+	CButton	m_delete;
 	CListCtrlEx	m_list;
 	//}}AFX_DATA
 
@@ -68,12 +69,15 @@ protected:
 	afx_msg void OnDelete();
 	afx_msg void OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnActivate();
+	afx_msg void OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
 	string m_buffer[4];
 	int m_buffer_w;
 	t_entries m_entries;
+	int m_selected_profile;
 };
 
 //{{AFX_INSERT_LOCATION}}

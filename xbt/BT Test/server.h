@@ -16,6 +16,7 @@
 #include "bt_tracker_account.h"
 #include "bt_tracker_link.h"
 #include "config.h"
+#include "profiles.h"
 #include "stream_writer.h"
 #include "udp_tracker.h"
 
@@ -59,6 +60,7 @@ public:
 	void tracker_port(int);
 	void upload_rate(int);
 	void upload_slots(int);
+	string profiles_fname() const;
 	string state_fname() const;
 	string trackers_fname() const;
 	Cvirtual_binary save_state(bool intermediate);
@@ -70,6 +72,9 @@ public:
 	int open_url(const string&);
 	Cvirtual_binary get_file_status(const string& id, int flags);
 	Cvirtual_binary get_status(int flags);
+	void load_profile(const Cxif_key&);
+	Cxif_key get_profiles();
+	void set_profiles(const Cxif_key&);
 	Cvirtual_binary get_trackers();
 	void set_trackers(const Cvirtual_binary& d);
 	void unlock();
@@ -219,6 +224,7 @@ private:
 	Cbt_logger m_logger;
 	Cbt_tracker_accounts m_tracker_accounts;
 	Cconfig m_config;
+	Cprofiles m_profiles;
 	Cudp_tracker m_udp_tracker;
 
 	int m_admin_port;
