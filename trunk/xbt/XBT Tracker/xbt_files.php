@@ -65,9 +65,13 @@
 		printf("<td align=right>%d", $result[announced_http]);
 		printf("<td align=right>%d", $result[announced_http_compact]);
 		printf("<td align=right>%d", $result[announced_http_no_peer_id]);
-		printf("<td align=right>%d", $result[announced_udp]);
+		echo("<td align=right>");
+		if ($result[announced_udp])
+			printf("%d", $result[announced_udp]);
 		printf("<td align=right>%d", $result[scraped_http]);
-		printf("<td align=right>%d", $result[scraped_udp]);
+		echo("<td align=right>");
+		if ($result[scraped_udp])
+			printf("%d", $result[scraped_udp]);
 		echo("<td align=right>");
 		if ($result[completed])
 			printf("%d", $result[completed]);
