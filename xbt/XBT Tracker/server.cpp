@@ -103,9 +103,9 @@ int Cserver::run()
 	}
 	t_tcp_sockets lt;
 	t_udp_sockets lu;
-	for (t_listen_ipas::const_iterator j = m_listen_ipas.begin(); j != m_listen_ipas.end(); j++)
+	for (Cconfig::t_listen_ipas::const_iterator j = m_config.m_listen_ipas.begin(); j != m_config.m_listen_ipas.end(); j++)
 	{
-		for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
+		for (Cconfig::t_listen_ports::const_iterator i = m_config.m_listen_ports.begin(); i != m_config.m_listen_ports.end(); i++)
 		{
 			Csocket l;
 			if (l.open(SOCK_STREAM) == INVALID_SOCKET)			
@@ -124,7 +124,7 @@ int Cserver::run()
 			}
 			return 1;
 		}
-		for (t_listen_ports::const_iterator i = m_listen_ports.begin(); i != m_listen_ports.end(); i++)
+		for (Cconfig::t_listen_ports::const_iterator i = m_config.m_listen_ports.begin(); i != m_config.m_listen_ports.end(); i++)
 		{
 			Csocket l;
 			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
@@ -280,19 +280,19 @@ int Cserver::run()
 			}
 		}
 #endif
-		if (time() - m_read_config_time > m_read_config_interval)
+		if (time() - m_read_config_time > m_config.m_read_config_interval)
 			read_config();
-		else if (time() - m_clean_up_time > m_clean_up_interval)
+		else if (time() - m_clean_up_time > m_config.m_clean_up_interval)
 			clean_up();
-		else if (time() - m_read_db_files_time > m_read_db_interval)
+		else if (time() - m_read_db_files_time > m_config.m_read_db_interval)
 			read_db_files();
-		else if (time() - m_read_db_ipas_time > m_read_db_interval)
+		else if (time() - m_read_db_ipas_time > m_config.m_read_db_interval)
 			read_db_ipas();
-		else if (time() - m_read_db_users_time > m_read_db_interval)
+		else if (time() - m_read_db_users_time > m_config.m_read_db_interval)
 			read_db_users();
-		else if (m_write_db_interval && time() - m_write_db_files_time > m_write_db_interval)
+		else if (m_config.m_write_db_interval && time() - m_write_db_files_time > m_config.m_write_db_interval)
 			write_db_files();
-		else if (m_write_db_interval && time() - m_write_db_users_time > m_write_db_interval)
+		else if (m_config.m_write_db_interval && time() - m_write_db_users_time > m_config.m_write_db_interval)
 			write_db_users();
 	}
 	write_db_files();
@@ -324,7 +324,7 @@ void Cserver::accept(const Csocket& l)
 			if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
 				cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
-			m_connections.push_back(Cconnection(this, s, a, m_log_access));
+			m_connections.push_back(Cconnection(this, s, a, m_config.m_log_access));
 			m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
 	}
@@ -332,7 +332,7 @@ void Cserver::accept(const Csocket& l)
 
 void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, int uid)
 {
-	if (m_log_announce)
+	if (m_config.m_log_announce)
 	{
 		Csql_query q(m_database, "(?,?,?,?,?,?,?,?,?,?),");
 		q.p(ntohl(v.m_ipa));
@@ -347,7 +347,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		q.p(time());
 		m_announce_log_buffer += q.read();
 	}
-	if (!m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
+	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
 		return;
 	t_file& file = m_files[v.m_info_hash];
 	t_peers::iterator i = file.peers.find(v.m_ipa);
@@ -375,7 +375,7 @@ void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, 
 		// peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
 
-		if (!m_listen_check || !listen_check)
+		if (!m_config.m_listen_check || !listen_check)
 			peer.listening = true;
 		else if (!peer.listening && time() - peer.mtime > 900)
 		{
@@ -460,12 +460,12 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 	if (ti.m_compact)
 	{
 		Cannounce_output_http_compact o;
-		o.interval(m_announce_interval);
+		o.interval(m_config.m_announce_interval);
 		i->second.select_peers(ti, o);
 		return o.v();
 	}
 	Cannounce_output_http o;
-	o.interval(m_announce_interval);
+	o.interval(m_config.m_announce_interval);
 	o.no_peer_id(ti.m_no_peer_id);
 	i->second.select_peers(ti, o);
 	return o.v();
@@ -489,7 +489,7 @@ void Cserver::t_file::clean_up(int t)
 void Cserver::clean_up()
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->second.clean_up(time() - static_cast<int>(1.5 * m_announce_interval));
+		i->second.clean_up(time() - static_cast<int>(1.5 * m_config.m_announce_interval));
 	m_clean_up_time = time();
 }
 
@@ -504,7 +504,7 @@ Cbvalue Cserver::t_file::scrape() const
 
 Cbvalue Cserver::scrape(const Ctracker_input& ti)
 {
-	if (m_log_scrape)
+	if (m_config.m_log_scrape)
 	{
 		Csql_query q(m_database, "(?,?,?),");
 		q.p(ntohl(ti.m_ipa));
@@ -536,8 +536,8 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 		}
 	}
 	v.d(bts_files, files);
-	if (m_scrape_interval)
-		v.d(bts_flags, Cbvalue().d(bts_min_request_interval, m_scrape_interval));
+	if (m_config.m_scrape_interval)
+		v.d(bts_flags, Cbvalue().d(bts_min_request_interval, m_config.m_scrape_interval));
 	return v;
 }
 
@@ -547,7 +547,7 @@ void Cserver::read_db_files()
 	try
 	{
 		Csql_query q(m_database);
-		if (!m_auto_register)
+		if (!m_config.m_auto_register)
 		{
 			q = "select info_hash, fid from xbt_files where flags & 1";
 			Csql_result result = q.execute();
@@ -564,7 +564,7 @@ void Cserver::read_db_files()
 		}
 		if (m_files.empty())
 			m_database.query("update xbt_files set leechers = 0, seeders = 0");
-		else if (m_auto_register)
+		else if (m_config.m_auto_register)
 			return;			
 		q = "select info_hash, completed, fid, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp"
 			" from xbt_files where fid >= ?";
@@ -651,7 +651,7 @@ void Cserver::write_db_files()
 				q.execute();
 				file.fid = m_database.insert_id();
 			}
-			if (m_update_files_method)
+			if (m_config.m_update_files_method)
 				q = "(?,?,?,?,?,?,?,?,?,?,?,?),";
 			else
 			{
@@ -671,7 +671,7 @@ void Cserver::write_db_files()
 			q.p(file.scraped_http);
 			q.p(file.scraped_udp);
 			q.p(file.fid);
-			if (m_update_files_method)
+			if (m_config.m_update_files_method)
 				buffer += q.read();
 			else
 				q.execute();
@@ -743,85 +743,64 @@ void Cserver::write_db_users()
 
 void Cserver::read_config()
 {
-	m_announce_interval = 1800;
-	m_anonymous_connect = true;
-	m_anonymous_announce = true;
-	m_anonymous_scrape = true;
-	m_auto_register = true;
-	m_clean_up_interval = 60;
-	m_daemon = true;
-	m_gzip_announce = true;
-	m_gzip_debug = true;
-	m_gzip_scrape = true;
-	m_listen_check = true;
-	m_listen_ipas.clear();
-	m_listen_ports.clear();
-	m_log_access = false;
-	m_log_announce = false;
-	m_log_scrape = false;
-	m_read_config_interval = 300;
-	m_read_db_interval = 60;
-	m_redirect_url.erase();
-	m_scrape_interval = 0;
-	m_update_files_method = 0;
-	m_write_db_interval = 60;
+	Cconfig config;
 	try
 	{
 		Csql_result result = m_database.query("select name, value from xbt_config where value is not null");
 		for (Csql_row row; row = result.fetch_row(); )
 		{
 			if (!strcmp(row.f(0), "announce_interval"))
-				m_announce_interval = row.f_int(1);
+				config.m_announce_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "auto_register"))
-				m_auto_register = row.f_int(1);
+				config.m_auto_register = row.f_int(1);
 			else if (!strcmp(row.f(0), "anonymous_connect"))
-				m_anonymous_connect = row.f_int(1);
+				config.m_anonymous_connect = row.f_int(1);
 			else if (!strcmp(row.f(0), "anonymous_announce"))
-				m_anonymous_announce = row.f_int(1);
+				config.m_anonymous_announce = row.f_int(1);
 			else if (!strcmp(row.f(0), "anonymous_scrape"))
-				m_anonymous_scrape = row.f_int(1);
+				config.m_anonymous_scrape = row.f_int(1);
 			else if (!strcmp(row.f(0), "daemon"))
-				m_daemon = row.f_int(1);
+				config.m_daemon = row.f_int(1);
 			else if (!strcmp(row.f(0), "gzip_announce"))
-				m_gzip_announce = row.f_int(1);
+				config.m_gzip_announce = row.f_int(1);
 			else if (!strcmp(row.f(0), "gzip_debug"))
-				m_gzip_debug = row.f_int(1);
+				config.m_gzip_debug = row.f_int(1);
 			else if (!strcmp(row.f(0), "gzip_scrape"))
-				m_gzip_scrape = row.f_int(1);
+				config.m_gzip_scrape = row.f_int(1);
 			else if (!strcmp(row.f(0), "listen_check"))
-				m_listen_check = row.f_int(1);
+				config.m_listen_check = row.f_int(1);
 			else if (!strcmp(row.f(0), "listen_ipa"))
-				m_listen_ipas.insert(inet_addr(row.f(1)));
+				config.m_listen_ipas.insert(inet_addr(row.f(1)));
 			else if (!strcmp(row.f(0), "listen_port"))
-				m_listen_ports.insert(row.f_int(1));
+				config.m_listen_ports.insert(row.f_int(1));
 			else if (!strcmp(row.f(0), "log_access"))
-				m_log_access = row.f_int(1);
+				config.m_log_access = row.f_int(1);
 			else if (!strcmp(row.f(0), "log_announce"))
-				m_log_announce = row.f_int(1);
+				config.m_log_announce = row.f_int(1);
 			else if (!strcmp(row.f(0), "log_scrape"))
-				m_log_scrape = row.f_int(1);
+				config.m_log_scrape = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_config_interval"))
-				m_read_config_interval = row.f_int(1);
+				config.m_read_config_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "read_db_interval"))
-				m_read_db_interval = row.f_int(1);
+				config.m_read_db_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "redirect_url"))
-				m_redirect_url = row.f(1);
+				config.m_redirect_url = row.f(1);
 			if (!strcmp(row.f(0), "scrape_interval"))
-				m_scrape_interval = row.f_int(1);
+				config.m_scrape_interval = row.f_int(1);
 			else if (!strcmp(row.f(0), "update_files_method"))
-				m_update_files_method = row.f_int(1);
+				config.m_update_files_method = row.f_int(1);
 			else if (!strcmp(row.f(0), "write_db_interval"))
-				m_write_db_interval = row.f_int(1);
+				config.m_write_db_interval = row.f_int(1);
 		}
+		if (config.m_listen_ipas.empty())
+			config.m_listen_ipas.insert(htonl(INADDR_ANY));
+		if (config.m_listen_ports.empty())
+			config.m_listen_ports.insert(2710);
+		m_config = config;
 	}
 	catch (Cxcc_error error)
 	{
 	}
-	if (m_listen_ipas.empty())
-		m_listen_ipas.insert(htonl(INADDR_ANY));
-
-	if (m_listen_ports.empty())
-		m_listen_ports.insert(2710);
 	m_read_config_time = time();
 }
 
@@ -906,15 +885,15 @@ string Cserver::statistics() const
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
 		+ "<tr><td>torrents<td align=right>" + n(torrents)
 		+ "<tr><td>"
-		+ "<tr><td>auto register<td align=right>" + n(m_auto_register) 
-		+ "<tr><td>listen check<td align=right>" + n(m_listen_check) 
-		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_read_config_interval)
-		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_clean_up_interval)
-		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_read_db_interval)
-		+ "<tr><td>read db ipas time<td align=right>" + n(t - m_read_db_ipas_time) + " / " + n(m_read_db_interval)
-		+ "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_read_db_interval)
-		+ "<tr><td>write db files time<td align=right>" + n(t - m_write_db_files_time) + " / " + n(m_write_db_interval)
-		+ "<tr><td>write db users time<td align=right>" + n(t - m_write_db_users_time) + " / " + n(m_write_db_interval)
+		+ "<tr><td>auto register<td align=right>" + n(m_config.m_auto_register) 
+		+ "<tr><td>listen check<td align=right>" + n(m_config.m_listen_check) 
+		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_config.m_read_config_interval)
+		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_config.m_clean_up_interval)
+		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_config.m_read_db_interval)
+		+ "<tr><td>read db ipas time<td align=right>" + n(t - m_read_db_ipas_time) + " / " + n(m_config.m_read_db_interval)
+		+ "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_config.m_read_db_interval)
+		+ "<tr><td>write db files time<td align=right>" + n(t - m_write_db_files_time) + " / " + n(m_config.m_write_db_interval)
+		+ "<tr><td>write db users time<td align=right>" + n(t - m_write_db_users_time) + " / " + n(m_config.m_write_db_interval)
 		+ "</table>";
 	return page;
 }

@@ -10,6 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "sql/database.h"
+#include "config.h"
 #include "connection.h"
 #include "epoll.h"
 #include "peer_link.h"
@@ -147,7 +148,7 @@ public:
 
 	int announce_interval() const
 	{
-		return m_announce_interval;
+		return m_config.m_announce_interval;
 	}
 
 	const t_file* file(const string& id) const
@@ -158,37 +159,37 @@ public:
 
 	bool anonymous_connect() const
 	{
-		return m_anonymous_connect;
+		return m_config.m_anonymous_connect;
 	}
 
 	bool anonymous_announce() const
 	{
-		return m_anonymous_announce;
+		return m_config.m_anonymous_announce;
 	}
 
 	bool anonymous_scrape() const
 	{
-		return m_anonymous_scrape;
+		return m_config.m_anonymous_scrape;
 	}
 
 	bool gzip_announce() const
 	{
-		return m_gzip_announce;
+		return m_config.m_gzip_announce;
 	}
 
 	bool gzip_debug() const
 	{
-		return m_gzip_debug;
+		return m_config.m_gzip_debug;
 	}
 
 	bool gzip_scrape() const
 	{
-		return m_gzip_scrape;
+		return m_config.m_gzip_scrape;
 	}
 
 	const string& redirect_url() const
 	{
-		return m_redirect_url;
+		return m_config.m_redirect_url;
 	}
 
 	__int64 secret() const
@@ -202,14 +203,13 @@ public:
 	}
 private:
 	typedef list<Cconnection> t_connections;
-	typedef set<int> t_listen_ipas;
-	typedef set<int> t_listen_ports;
 	typedef list<Cpeer_link> t_peer_links;
 	typedef list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef list<Cudp_listen_socket> t_udp_sockets;
 
 	static void sig_handler(int v);
 
+	Cconfig m_config;
 	int m_clean_up_time;
 	int m_read_config_time;
 	int m_read_db_files_time;
@@ -218,30 +218,9 @@ private:
 	int m_time;
 	int m_write_db_files_time;
 	int m_write_db_users_time;
-	int m_announce_interval;
-	int m_clean_up_interval;
-	int m_read_config_interval;
-	int m_read_db_interval;
-	int m_scrape_interval;
-	int m_write_db_interval;
 	int m_fid_end;
-	int m_update_files_method;
-	bool m_anonymous_connect;
-	bool m_anonymous_announce;
-	bool m_anonymous_scrape;
-	bool m_auto_register;
-	bool m_daemon;
-	bool m_gzip_announce;
-	bool m_gzip_debug;
-	bool m_gzip_scrape;
-	bool m_listen_check;
-	bool m_log_access;
-	bool m_log_announce;
-	bool m_log_scrape;
 	__int64 m_secret;
 	t_connections m_connections;
-	t_listen_ipas m_listen_ipas;
-	t_listen_ports m_listen_ports;
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
 	Cepoll m_epoll;
@@ -251,7 +230,6 @@ private:
 	t_users m_users;
 	string m_announce_log_buffer;
 	string m_scrape_log_buffer;
-	string m_redirect_url;
 	string m_users_updates_buffer;
 };
 
