@@ -135,6 +135,8 @@ void CXBTClientDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_FILES, OnCustomdrawFiles)
+	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PEERS, OnCustomdrawPeers)
 	ON_WM_CONTEXTMENU()
 	//{{AFX_MSG_MAP(CXBTClientDlg)
 	ON_WM_PAINT()
@@ -1839,4 +1841,12 @@ void CXBTClientDlg::OnPopupViewTrackers()
 	insert_bottom_columns();
 	fill_peers();
 	auto_size_peers();
+}
+
+void CXBTClientDlg::OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult)
+{
+}
+
+void CXBTClientDlg::OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult)
+{
 }
