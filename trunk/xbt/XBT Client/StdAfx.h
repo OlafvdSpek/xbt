@@ -10,6 +10,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#pragma warning(disable: 4786)
+
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
 #include <afxwin.h>         // MFC core and standard components
@@ -20,7 +22,20 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <afxsock.h>		// MFC socket extensions
+#include <cassert>
+#include <fstream>
+#include <iostream>
+#include <list>
+#include <map>
+#include <string>
+#include <strstream>
+#include <vector>
 #include "ETSLayout.h"
+#include "bt_misc.h"
+#include "sha1.h"
+#include "virtual_binary.h"
+
+using namespace std;
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
