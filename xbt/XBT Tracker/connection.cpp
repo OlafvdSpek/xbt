@@ -79,18 +79,6 @@ void Cconnection::close()
 	m_s.close();
 }
 
-static string hex_encode(const string& v)
-{
-	string w;
-	w.reserve(v.length() << 1);
-	for (int i = 0; i < v.length(); i++)
-	{
-		w += "0123456789abcdef"[v[i] >> 4 & 0xf];
-		w += "0123456789abcdef"[v[i] & 0xf];
-	}
-	return w;
-}
-
 void Cconnection::read(const string& v)
 {
 	cout << v << endl;
