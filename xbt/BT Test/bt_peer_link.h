@@ -33,6 +33,7 @@ public:
 	void write_have(int);
 	void read_handshake(const t_bt_handshake&);
 	void read_message(const char* s, const char* s_end);
+	void read_info(const char* r, const char* r_end);
 	void write_keepalive();
 	void read_piece(int, int, int, const char*);
 	void write_handshake();
@@ -44,6 +45,7 @@ public:
 	void write_peers();
 	void choked(bool);
 	void interested(bool);
+	static byte* write16(byte* w, int v);
 	static byte* write(byte* w, int v);
 	void write_bitfield();
 	void remote_requests(int, int, int);

@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <io.h>
 #include "bt_strings.h"
+#include "server.h"
 
 #define for if (0) {} else for
 
@@ -18,6 +19,14 @@
 
 Cbt_file::Cbt_file()
 {
+	m_downloaded = 0;
+	m_left = -1;
+	m_uploaded = 0;
+	m_total_downloaded = 0;
+	m_total_uploaded = 0;
+	mc_leechers_total = 0;
+	mc_seeders_total = 0;
+	m_run = true;
 }
 
 Cbt_file::~Cbt_file()
@@ -40,21 +49,11 @@ int Cbt_file::torrent(const Cbvalue& v)
 int Cbt_file::info(const Cbvalue& info)
 {
 	m_name = info.d(bts_name).s();
+	if (m_name.empty())
+		return 0;
 	m_info = info.read();
 	m_info_hash = compute_sha1(m_info);
 	mcb_piece = info.d(bts_piece_length).i();
-	{
-		byte* w = m_info_hashes.write_start((m_info.size() + 4095) / 4096 * 20);
-		const byte* r = m_info;
-		const byte* r_end = m_info.data_end();
-		while (r < r_end)
-		{
-			compute_sha1(r, min(r_end - r, 4096), w);
-			r += 4096;
-			w += 20;
-		}
-		m_info_hashes_hash = compute_sha1(m_info_hashes);
-	}
 	{
 		mcb_f = 0;
 		const Cbvalue::t_list& files = info.d(bts_files).l();
@@ -75,12 +74,26 @@ int Cbt_file::info(const Cbvalue& info)
 	}
 	if (m_sub_files.empty())
 		m_sub_files.push_back(t_sub_file("", 0, mcb_f = info.d(bts_length).i()));
-	if (m_trackers.empty()
-		|| m_trackers.front().empty()
-		|| mcb_f < 1 
+	if (mcb_f < 1 
 		|| mcb_piece < 16 << 10
 		|| mcb_piece > 16 << 20)
 		return 1;
+	{
+		byte* w = m_info_hashes.write_start((m_info.size() + 4095) / 4096 * 20 + 12);
+		*reinterpret_cast<__int32*>(w) = htonl(mcb_piece);
+		w += 4;
+		*reinterpret_cast<__int64*>(w) = htonll(mcb_f);
+		w += 8;
+		const byte* r = m_info;
+		const byte* r_end = m_info.data_end();
+		while (r < r_end)
+		{
+			compute_sha1(r, min(r_end - r, 4096), w);
+			r += 4096;
+			w += 20;
+		}
+		m_info_hashes_hash = compute_sha1(m_info_hashes);
+	}
 	m_pieces.resize((mcb_f + mcb_piece - 1) / mcb_piece);
 	string piece_hashes = info.d(bts_pieces).s();
 	if (piece_hashes.length() != 20 * m_pieces.size())
@@ -90,14 +103,6 @@ int Cbt_file::info(const Cbvalue& info)
 		m_pieces[i].mcb_d = min(mcb_f - mcb_piece * i, mcb_piece);
 		memcpy(m_pieces[i].m_hash, piece_hashes.c_str() + 20 * i, 20);
 	}
-
-	m_downloaded = 0;
-	m_left = 0;
-	m_uploaded = 0;
-	m_total_downloaded = 0;
-	m_total_uploaded = 0;
-	m_run = true;
-
 	return 0;
 }
 
@@ -108,12 +113,24 @@ void Cbt_file::t_sub_file::close()
 	m_f = -1;
 }
 
+void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
+{
+	w.write_string(name());
+	w.write_int32(priority());
+	w.write_int64(size());
+}
+
 bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 {
 	m_f = _open((parent_name + m_name).c_str(), oflag | _O_BINARY | _O_RDWR, _S_IREAD | _S_IWRITE);
 	if (m_f == -1)
 		m_f = _open((parent_name + m_name).c_str(), oflag | _O_BINARY | _O_RDONLY);
 	return *this;
+}
+
+int Cbt_file::t_sub_file::pre_dump() const
+{
+	return name().size() + 16;
 }
 
 int Cbt_file::t_sub_file::read(__int64 offset, void* s, int cb_s)
@@ -133,16 +150,26 @@ int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 int Cbt_file::open(const string& name, bool validate)
 {
 	m_name = name;
+	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
-		i->open(m_name, 0);
+	{
+		if (!i->open(m_name, 0))
+		{
+			int b = (offset + i->size() - 1) / mcb_piece;
+			for (int a = offset / mcb_piece; a <= b; a++)
+				m_pieces[a].m_valid = false;
+		}
+		offset += i->size();
+	}
 	{
 		Cvirtual_binary d;
+		m_left = 0;
 		for (int i = 0; i < m_pieces.size(); i++)
 		{
 			Cbt_piece& piece = m_pieces[i];
 			if (validate)
 			{
-				piece.m_valid = !read_piece(i, d.write_start(piece.mcb_d))
+				piece.m_valid = !read_data(mcb_piece * i, d.write_start(piece.mcb_d), piece.mcb_d)
 					&& !memcmp(compute_sha1(d).c_str(), piece.m_hash, 20);
 			}
 			if (!piece.m_valid)
@@ -163,16 +190,18 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 {
 	{
 		for (t_new_peers::const_iterator i = m_new_peers.begin(); i != m_new_peers.end(); i++)
-			insert_peer(i->first, i->second);
-		m_new_peers.clear();
-	}
-	{
-		for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 		{
-			if (i->m_state != 3)
+			if (find_peer(i->first))
 				continue;
-			i->choked(false); // !i->m_local_interested);
+			Cbt_peer_link peer;
+			peer.m_a.sin_family = AF_INET;
+			peer.m_a.sin_addr.s_addr = i->first;
+			peer.m_a.sin_port = i->second;
+			peer.m_f = this;
+			peer.m_local_link = true;
+			m_peers.push_back(peer);
 		}
+		m_new_peers.clear();
 	}
 	int n = m_tracker.pre_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
@@ -196,27 +225,14 @@ void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd
 	}
 }
 
-void Cbt_file::insert_peer(int h, int p)
+void Cbt_file::insert_old_peer(int h, int p)
 {
-	sockaddr_in a;
-	a.sin_family = AF_INET;
-	a.sin_port = p;
-	a.sin_addr.s_addr = h;
-	insert_peer(a);
+	m_old_peers[h] = p;
 }
 
-void Cbt_file::insert_peer(const sockaddr_in& a)
+void Cbt_file::insert_peer(int h, int p)
 {
-	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
-	{
-		if (i->m_a.sin_addr.s_addr == a.sin_addr.s_addr)
-			return;
-	}
-	Cbt_peer_link peer;
-	peer.m_a = a;
-	peer.m_f = this;
-	peer.m_local_link = true;
-	m_peers.push_back(peer);
+	m_new_peers[h] = p;
 }
 
 void Cbt_file::insert_peer(const t_bt_handshake& h, const sockaddr_in& a, const Csocket& s)
@@ -307,17 +323,9 @@ void Cbt_file::write_data(__int64 o, const char* s, int cb_s)
 	}
 }
 
-int Cbt_file::read_piece(int a, byte* d)
+int Cbt_file::read_data(__int64 offset, byte* d, int cb_d)
 {
-	assert(a >= 0 && a < m_pieces.size());
-	Cbt_piece& piece = m_pieces[a];
-	if (piece.m_d)
-	{
-		piece.m_d.read(d);
-		return 0;
-	}
-	__int64 offset = a * mcb_piece;
-	int size = piece.mcb_d;
+	int size = cb_d;
 	byte* w = d;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
@@ -328,14 +336,14 @@ int Cbt_file::read_piece(int a, byte* d)
 				return 1;
 			size -= cb_read;
 			if (!size)
-				break;
+				return 0;
 			offset = 0;
 			w += cb_read;
 		}
 		else
 			offset -= i->size();
 	}
-	return 0;
+	return 1;
 }
 
 int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
@@ -423,20 +431,28 @@ ostream& operator<<(ostream& os, const Cbt_file& v)
 	return v.dump(os);
 }
 
-int Cbt_file::pre_dump(bool full) const
+int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 84;
-	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
-		size += i->pre_dump();
-	if (full)
+	int size = m_info_hash.length() + m_name.length() + 96;
+	if (flags & Cserver::df_peers)
+	{
+		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+			size += i->pre_dump();
+	}
+	if (flags & Cserver::df_alerts)
 	{
 		for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
+			size += i->pre_dump();
+	}
+	if (flags & Cserver::df_files)
+	{
+		for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			size += i->pre_dump();
 	}
 	return size;
 }
 
-void Cbt_file::dump(Cstream_writer& w, bool full) const
+void Cbt_file::dump(Cstream_writer& w, int flags) const
 {
 	w.write_string(m_info_hash);
 	w.write_string(m_name);
@@ -450,16 +466,33 @@ void Cbt_file::dump(Cstream_writer& w, bool full) const
 	w.write_int32(m_up_counter.rate());
 	w.write_int32(c_leechers());
 	w.write_int32(c_seeders());
+	w.write_int32(mc_leechers_total);
+	w.write_int32(mc_seeders_total);
 	w.write_int32(m_run);
-	w.write_int32(m_peers.size());
-	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
-		i->dump(w);
-	w.write_int32(m_alerts.size());
-	if (full)
+	if (flags & Cserver::df_peers)
 	{
+		w.write_int32(m_peers.size());
+		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
+			i->dump(w);
+	}
+	else
+		w.write_int32(0);	
+	if (flags & Cserver::df_alerts)
+	{
+		w.write_int32(m_alerts.size());
 		for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
 			i->dump(w);
 	}
+	else
+		w.write_int32(0);
+	if (flags & Cserver::df_files)
+	{
+		w.write_int32(m_sub_files.size());
+		for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+			i->dump(w);
+	}
+	else
+		w.write_int32(0);
 }
 
 int Cbt_file::time_remaining() const
@@ -517,14 +550,14 @@ void Cbt_file::load_state(Cstream_reader& r)
 		for (int c_peers = r.read_int32(); c_peers--; )
 		{
 			int h = r.read_int32();
-			m_new_peers[h] = r.read_int32();
+			m_old_peers[h] = m_new_peers[h] = r.read_int32();
 		}
 	}
 }
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + m_sub_files.size() + 8 * m_peers.size() + 36;
+	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 36;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	return c;
@@ -533,10 +566,8 @@ int Cbt_file::pre_save_state(bool intermediate) const
 void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 {
 	w.write_int32(m_trackers.size());	
-	{
-		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
-			w.write_string(*i);
-	}
+	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
+		w.write_string(*i);
 	w.write_data(m_info);
 	w.write_string(m_name);
 	w.write_int64(m_total_downloaded);
@@ -551,13 +582,11 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	}
 	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		w.write_int8(i->priority());
+	w.write_int32(m_old_peers.size());
+	for (t_old_peers::const_iterator i = m_old_peers.begin(); i != m_old_peers.end(); i++)
 	{
-		w.write_int32(m_peers.size());
-		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
-		{
-			w.write_int32(i->m_a.sin_addr.s_addr);
-			w.write_int32(i->m_a.sin_port);
-		}
+		w.write_int32(i->first);
+		w.write_int32(i->second);
 	}
 }
 
@@ -572,10 +601,10 @@ string Cbt_file::get_url() const
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		v += uri_encode(*i) + ',';
 	v += '/' + hex_encode(m_info_hash) + '/' + hex_encode(m_info_hashes_hash) + '/';
-	if (m_local_ipa)
+	if (local_ipa())
 	{
-		v += hex_encode(8, ntohl(m_local_ipa))
-			+ hex_encode(4, m_local_port);
+		v += hex_encode(8, ntohl(local_ipa()))
+			+ hex_encode(4, local_port());
 	}
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
@@ -585,4 +614,35 @@ string Cbt_file::get_url() const
 			+ hex_encode(4, ntohs(i->m_a.sin_port));
 	}
 	return v;
+}
+
+Cbt_peer_link* Cbt_file::find_peer(int h)
+{
+	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	{
+		if (i->m_a.sin_addr.s_addr == h)
+			return &*i;
+	}
+	return NULL;
+}
+
+int Cbt_file::local_ipa() const
+{
+	return m_server->public_ipa();
+}
+
+int Cbt_file::local_port() const
+{
+	return m_server->peer_port();
+}
+
+void Cbt_file::sub_file_priority(const string& id, int priority)
+{
+	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+	{
+		if (i->name() != id)
+			continue;
+		i->priority(priority);
+		return;
+	}
 }

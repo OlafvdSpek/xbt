@@ -123,7 +123,15 @@ SOURCE=.\bt_pl_write_data.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\bt_tracker_account.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\bt_tracker_link.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\bt_tracker_url.cpp
 # End Source File
 # Begin Source File
 
@@ -193,6 +201,10 @@ SOURCE=.\bt_piece.h
 # Begin Source File
 
 SOURCE=.\bt_pl_write_data.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\bt_tracker_account.h
 # End Source File
 # Begin Source File
 
