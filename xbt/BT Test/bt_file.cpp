@@ -185,7 +185,8 @@ void Cbt_file::open()
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
 		if (!i->open(m_name, O_RDWR)
-			&& !i->open(m_name, O_RDONLY))
+			&& !i->open(m_name, O_RDONLY)
+			&& i->size())
 		{
 			int b = (offset + i->size() - 1) / mcb_piece;
 			for (int a = offset / mcb_piece; a <= b; a++)
