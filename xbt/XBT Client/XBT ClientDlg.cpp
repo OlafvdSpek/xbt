@@ -216,31 +216,23 @@ void CXBTClientDlg::open(const string& name)
 	Cbt_torrent torrent(d);
 	if (!torrent.valid())
 		return;
-	char path[MAX_PATH];
-	strcpy(path, m_dir);
-	if (*path)
+	if (!m_dir.IsEmpty())
 	{
-		strcat(path, "\\Torrents");
-		CreateDirectory(path, NULL);
-		strcat(path, "\\");
-		strcat(path, torrent.name().c_str());
-		strcat(path, ".torrent");
-		d.save(path);
+		string path = m_dir + "\\Torrents";
+		CreateDirectory(path.c_str(), NULL);
+		d.save(path + "\\" + torrent.name() + ".torrent");
 	}
-	strcpy(path, m_dir);
-	if (*path && !m_ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
-	{
-		strcat(path, "\\Incompletes\\");
-		strcat(path, torrent.name().c_str());
-	}
+	string path = m_dir;
+	if (!m_dir.IsEmpty() && !m_ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
+		path += "\\Incompletes\\" + torrent.name();
 	else if (torrent.files().size() == 1)
 	{
 		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
-		if (path)
-			dlg.m_ofn.lpstrInitialDir = path;
+		if (!m_dir.IsEmpty())
+			dlg.m_ofn.lpstrInitialDir = m_dir;
 		if (IDOK != dlg.DoModal())
 			return;
-		strcpy(path, dlg.GetPathName());
+		path = dlg.GetPathName();
 	}
 	else
 	{
@@ -252,15 +244,15 @@ void CXBTClientDlg::open(const string& name)
 		ITEMIDLIST* idl = SHBrowseForFolder(&bi);
 		if (!idl)
 			return;
-		if (!SHGetPathFromIDList(idl, path))
-			*path = 0;
+		char path1[MAX_PATH];
+		if (!SHGetPathFromIDList(idl, path1))
+			*path1 = 0;
 		LPMALLOC lpm;
 		if (SHGetMalloc(&lpm) == NOERROR)
 			lpm->Free(idl);
-		if (!*path)
+		if (!*path1)
 			return;
-		strcat(path, "\\");
-		strcat(path, torrent.name().c_str());
+		path += static_cast<string>(path1) + "\\" + torrent.name();
 	}
 	CWaitCursor wc;
 	m_server.open(d, path);
