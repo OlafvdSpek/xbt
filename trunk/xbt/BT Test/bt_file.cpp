@@ -28,6 +28,7 @@ Cbt_file::Cbt_file()
 	mc_seeders_total = 0;
 	m_hasher = NULL;
 	m_run = true;
+	m_validate = true;
 }
 
 Cbt_file::~Cbt_file()
@@ -134,9 +135,6 @@ int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 
 int Cbt_file::open(const string& name)
 {
-	bool validate = true;
-	for (int i = 0; i < m_pieces.size(); i++)
-		validate &= !m_pieces[i].m_valid;
 	m_name = name;
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
@@ -155,8 +153,8 @@ int Cbt_file::open(const string& name)
 		m_left = 0;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->left(0);
-		m_hasher = new Cbt_hasher(validate);
-		while (!validate && m_hasher->run(*this))
+		m_hasher = new Cbt_hasher(m_validate);
+		while (!m_validate && m_hasher->run(*this))
 			;
 	}
 	return 0;
@@ -166,10 +164,14 @@ bool Cbt_file::hash()
 {
 	if (!m_hasher)
 		return false;
-	if (m_hasher->run(*this))
+	int i = max(1, (4 << 20) / mcb_piece);
+	while (i && m_hasher->run(*this))
+		i--;
+	if (!i)
 		return true;
 	delete m_hasher;
 	m_hasher = NULL;
+	m_validate = false;
 	alert(Calert(Calert::debug, "Torrent: " + n(c_valid_pieces()) + '/' + n(m_pieces.size())));
 	alert(Calert(Calert::debug, "Torrent: " + n(mcb_piece >> 10) + " kb/piece"));
 	return false;
@@ -177,6 +179,7 @@ bool Cbt_file::hash()
 
 void Cbt_file::close()
 {
+	m_validate = m_hasher;
 	delete m_hasher;
 	m_hasher = NULL;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
@@ -590,6 +593,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 	m_name = r.read_string();
 	m_total_downloaded = r.read_int64();
 	m_total_uploaded = r.read_int64();
+	m_validate = r.read_int32();
 	{
 		Cvirtual_binary pieces = r.read_data();
 		for (int i = 0; i < min(pieces.size(), m_pieces.size()); i++)
@@ -609,7 +613,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + (!intermediate || !m_left) * m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 36;
+	int c = m_info.size() + m_name.size() + m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 40;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	return c;
@@ -624,14 +628,10 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	w.write_string(m_name);
 	w.write_int64(m_total_downloaded);
 	w.write_int64(m_total_uploaded);
-	if (intermediate && m_left)
-		w.write_data(Cvirtual_binary());
-	else
-	{
-		w.write_int32(m_pieces.size());
-		for (int j = 0; j < m_pieces.size(); j++)
-			w.write_int8(m_pieces[j].m_valid);
-	}
+	w.write_int32(intermediate && m_left || m_validate);
+	w.write_int32(m_pieces.size());
+	for (int j = 0; j < m_pieces.size(); j++)
+		w.write_int8(m_pieces[j].m_valid);
 	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		w.write_int8(i->priority());
 	w.write_int32(m_old_peers.size());
