@@ -59,7 +59,6 @@ public:
 
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
-	Calert(t_level level, const sockaddr_in& source, const string& message);
 private:
 	int m_time;
 	t_level m_level;
