@@ -3,6 +3,7 @@
 #include "server.h"
 #include "static_config.h"
 
+string g_conf_file = "xbt_tracker.conf";
 const char* g_service_name = "XBT Tracker";
 
 int main1()
@@ -11,7 +12,7 @@ int main1()
 	Cdatabase database;
 	Cxcc_error error;
 	Cstatic_config static_config;
-	if (error = static_config.read("xbt_tracker.conf"))
+	if (error = static_config.read(g_conf_file.c_str()))
 #ifdef WIN32
 	{
 		char b[MAX_PATH];
@@ -91,6 +92,8 @@ int main(int argc, char* argv[])
 			cout << "Service " << g_service_name << " has been uninstalled." << endl;
 			return 0;
 		}
+		else if (!strcmp(argv[1], "--conf_file") && argc >= 3)
+			g_conf_file = argv[2];
 		else
 			return 1;
 	}
