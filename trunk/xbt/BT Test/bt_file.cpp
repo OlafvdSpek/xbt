@@ -364,7 +364,11 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		alert(Calert(Calert::debug, "Piece " + n(a) + ": already valid"));
 		return;
 	}
-	piece.write(offset % mcb_piece, s, cb_s);
+	if (piece.write(offset % mcb_piece, s, cb_s))
+	{
+		alert(Calert(Calert::debug, "Piece " + n(a) + ", offset " + n(mcb_piece) + ", size " + n(cb_s) + ": rejected"));
+		return;
+	}
 	int size = cb_s;
 	const char* r = s;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
