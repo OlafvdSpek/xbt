@@ -16,6 +16,7 @@
 #include "bt_tracker_account.h"
 #include "bt_tracker_link.h"
 #include "config.h"
+#include "http_link.h"
 #include "profiles.h"
 #include "scheduler.h"
 #include "stream_writer.h"
@@ -93,6 +94,7 @@ public:
 
 	typedef list<Cbt_admin_link> t_admins;
 	typedef list<Cbt_file> t_files;
+	typedef list<Chttp_link> t_http_links;
 	typedef list<Cbt_link> t_links;
 
 	int pre_file_dump(const string& id, int flags) const;
@@ -246,6 +248,7 @@ private:
 	t_admins m_admins;
 	Calerts m_alerts;
 	t_files m_files;
+	t_http_links m_http_links;
 	t_links m_links;
 	Cbt_logger m_logger;
 	Cbt_tracker_accounts m_tracker_accounts;

@@ -333,6 +333,11 @@ int Cserver::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_ex
 			n = max(n, z);
 		}
 	}
+	for (t_http_links::iterator i = m_http_links.begin(); i != m_http_links.end(); i++)
+	{
+		int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
+		n = max(n, z);
+	}
 	{
 		for (t_links::iterator i = m_links.begin(); i != m_links.end(); i++)
 		{
@@ -351,6 +356,13 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 			i++;
 		else
 			i = m_admins.erase(i);
+	}
+	for (t_http_links::iterator i = m_http_links.begin(); i != m_http_links.end(); )
+	{
+		if (!i->post_select(fd_read_set, fd_write_set, fd_except_set) && *i)
+			i++;
+		else
+			i = m_http_links.erase(i);
 	}
 	for (t_links::iterator i = m_links.begin(); i != m_links.end(); )
 	{

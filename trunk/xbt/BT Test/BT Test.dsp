@@ -171,6 +171,10 @@ SOURCE=.\data_counter.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\http_link.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\merkle_tree.cpp
 # End Source File
 # Begin Source File
@@ -301,6 +305,10 @@ SOURCE=.\config.h
 # Begin Source File
 
 SOURCE=.\data_counter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\http_link.h
 # End Source File
 # Begin Source File
 
