@@ -48,6 +48,9 @@ using namespace std;
 #include <signal.h>
 #include <unistd.h>
 
+#ifdef BSD
+#define atoll atoi
+#endif
 #define O_BINARY 0
 #define _lseeki64 lseek
 #define stricmp strcasecmp
