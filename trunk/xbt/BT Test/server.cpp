@@ -550,7 +550,7 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	f.m_peer_id = new_peer_id();
 	if (below_torrent_limit())
 		f.open();
-	m_files.push_front(f);
+	m_files.push_back(f);
 	save_state(true).save(state_fname());
 	return 0;
 }
@@ -598,7 +598,7 @@ int Cserver::open_url(const string& v)
 		f.insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
 	f.m_info_hash = info_hash;
 	f.m_peer_id = new_peer_id();
-	m_files.push_front(f);
+	m_files.push_back(f);
 	save_state(true).save(state_fname());
 	return 0;
 }
@@ -632,7 +632,7 @@ void Cserver::load_state(const Cvirtual_binary& d)
 		f.m_server = this;
 		f.load_state(r);
 		f.m_peer_id = new_peer_id();
-		m_files.push_front(f);
+		m_files.push_back(f);
 	}
 	assert(r.r() == d.data_end());
 }
