@@ -18,6 +18,24 @@ Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 	m_s = s;
 }
 
+const Cserver::t_user* Ctransaction::authenticate(const void* s, const char* a, const char* s_end) const
+{
+	if (s_end - a < 17 || ~*a & 1)
+		return NULL;
+	string name(a + 1, 8);
+	int i = name.find('\0');
+	const Cserver::t_user* user = m_server.find_user(i == string::npos ? name : name.substr(0, i));
+	if (!user)
+		return NULL;
+	SHA1Context context;
+	SHA1Reset(&context);
+	SHA1Input(&context, s, sizeof(t_udp_tracker_input_announce) + s_end - reinterpret_cast<const char*>(s) - 8);
+	SHA1Input(&context, user->pass.c_str(), user->pass.size());
+	unsigned char hash[20];
+	SHA1Result(&context, hash);
+	return memcmp(a + 9, hash, 8) ? NULL : user;
+}
+
 __int64 Ctransaction::connection_id() const
 {
 	const int cb_s = 8 + sizeof(int);
@@ -62,6 +80,8 @@ void Ctransaction::recv()
 
 void Ctransaction::send_connect(const t_udp_tracker_input_connect& uti, const char* r, const char* r_end)
 {
+	if (!m_server.anonymous_connect() && !authenticate(&uti, r, r_end))
+		return;
 	t_udp_tracker_output_connect uto;
 	uto.action(uta_connect);
 	uto.transaction_id(uti.transaction_id());
@@ -73,8 +93,11 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 {
 	if (uti.m_connection_id != connection_id())
 		return;
-	const int cb_b = 2 << 10;
-	char b[cb_b];
+	if (!m_server.anonymous_announce() && !authenticate(&uti, r, r_end))
+	{
+		send_error(uti, "access denied");
+		return;
+	}
 	Ctracker_input ti;
 	ti.m_downloaded = uti.downloaded();
 	ti.m_event = static_cast<Ctracker_input::t_event>(uti.event());
@@ -95,6 +118,8 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 		send_error(uti, "invalid info hash");
 		return;
 	}
+	const int cb_b = 2 << 10;
+	char b[cb_b];
 	t_udp_tracker_output_announce& uto = *reinterpret_cast<t_udp_tracker_output_announce*>(b);
 	uto.action(uta_announce);
 	uto.transaction_id(uti.transaction_id());
@@ -120,6 +145,11 @@ void Ctransaction::send_scrape(const t_udp_tracker_input_scrape& uti, const char
 {
 	if (uti.m_connection_id != connection_id())
 		return;
+	if (!m_server.anonymous_scrape() && !authenticate(&uti, r, r_end))
+	{
+		send_error(uti, "access denied");
+		return;
+	}
 	const int cb_b = 2 << 10;
 	char b[cb_b];
 	t_udp_tracker_output_scrape& uto = *reinterpret_cast<t_udp_tracker_output_scrape*>(b);

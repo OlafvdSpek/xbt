@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "bt_file.h"
 #include "bt_strings.h"
+#include "server.h"
 
 #define for if (0) {} else for
 
@@ -39,7 +40,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		{
 			BOOL v = true;
 			if (!setsockopt(m_s, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<const char*>(&v), sizeof(BOOL)))
-				m_s.bind(htonl(INADDR_ANY), htons(m_f->m_local_port));
+				m_s.bind(htonl(INADDR_ANY), htons(m_f->local_port()));
 		}
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
@@ -55,12 +56,9 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		if (!m_local_choked && !m_remote_requests.empty() && m_write_b.empty())
 		{
 			const t_remote_request& request = m_remote_requests.front();
-			int a = request.offset / m_f->mcb_piece;
-			int b = request.offset % m_f->mcb_piece;
-			Cbt_piece& piece = m_f->m_pieces[a];
 			Cvirtual_binary d;
-			if (!m_f->read_piece(a, d.write_start(piece.mcb_d)))
-				write_piece(a, b, request.size, d.data() + b);
+			if (!m_f->read_data(request.offset, d.write_start(request.size), request.size))
+				write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size, d);
 			m_remote_requests.pop_front();
 		}
 		if (!m_pieces.empty() && time(NULL) - m_piece_rtime > 120)
@@ -113,7 +111,10 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 	case 2:
 		if (FD_ISSET(m_s, fd_except_set))
 		{
-			alert(Calert(Calert::debug, m_a, "Peer: connect failed"));
+			int e = 0;
+			int size = sizeof(int);
+			getsockopt(m_s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&e), &size);
+			alert(Calert(Calert::debug, m_a, "Peer: connect failed: " + n(e)));
 			close();
 			return;
 		}
@@ -127,13 +128,21 @@ void Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 			case 2:
 				if (m_read_b.cb_r() < sizeof(t_bt_handshake))
 					break;
-				{
-					read_handshake(*reinterpret_cast<const t_bt_handshake*>(m_read_b.r()));
-					m_read_b.cb_r(sizeof(t_bt_handshake));
-				}
+				read_handshake(*reinterpret_cast<const t_bt_handshake*>(m_read_b.r()));
+				if (!*this)
+					return;
+				m_read_b.cb_r(sizeof(t_bt_handshake));
+				m_f->insert_old_peer(m_a.sin_addr.s_addr, m_a.sin_port);
+				m_state = 4;
 			case 4:
+				if (m_read_b.cb_r() < 20)
+					break;
+				m_remote_peer_id.assign(m_read_b.r(), 20);
+				m_read_b.cb_r(20);
 				m_remote_pieces.resize(m_f->m_pieces.size());
 				write_get_peers();
+				if (!m_f->m_info_hashes)
+					write_get_info(-1);
 				write_bitfield();
 				m_state = 3;
 			case 3:
@@ -225,7 +234,7 @@ void Cbt_peer_link::recv()
 	}
 	if (!m_read_b.cb_w())
 		return;
-	alert(Calert(Calert::debug, m_a, "Peer: connection closed"));
+	alert(Calert(Calert::debug, m_a, m_local_link ? "Peer: local link closed" : "Peer: remote link closed"));
 	close();
 }
 
@@ -286,7 +295,7 @@ void Cbt_peer_link::remote_has(int v)
 void Cbt_peer_link::remote_requests(int piece, int offset, int size)
 {
 	if (piece < 0 || piece >= m_f->c_pieces() || offset < 0 || size < 0 || size > min(m_f->m_pieces[piece].mcb_d, 1 << 17) 
-		|| m_remote_requests.size() >= 256 || !m_f->m_pieces[piece].m_valid)
+		|| m_remote_requests.size() >= 256 || !m_f->m_pieces[piece].m_valid || m_local_choked)
 		return;
 	m_remote_requests.push_back(t_remote_request(m_f->mcb_piece * piece + offset, size));
 }
@@ -302,6 +311,12 @@ void Cbt_peer_link::remote_cancels(int piece, int offset, int size)
 	}
 }
 
+byte* Cbt_peer_link::write16(byte* w, int v)
+{
+	*reinterpret_cast<__int16*>(w) = htons(v);
+	return w + 2;
+}
+
 byte* Cbt_peer_link::write(byte* w, int v)
 {
 	*reinterpret_cast<__int32*>(w) = htonl(v);
@@ -314,13 +329,12 @@ void Cbt_peer_link::read_handshake(const t_bt_handshake& h)
 		|| memcmp(h.name, "BitTorrent protocol", 19)
 		|| h.info_hash() != m_f->m_info_hash)
 	{
-		alert(Calert(Calert::warn, "Peer: handshake failed"));
+		alert(Calert(Calert::warn, m_a, "Peer: handshake failed"));
 		close();
 		return;
 	}
 	m_get_info_extension = h.reserved[7] & 1;
 	m_get_peers_extension = h.reserved[7] & 2;
-	m_remote_peer_id = h.peer_id();
 }
 
 void Cbt_peer_link::write_handshake()
@@ -413,6 +427,8 @@ void Cbt_peer_link::choked(bool v)
 	w = write(w, d.size() - 4);
 	*w++ = bti_unchoke - v;
 	write(d);
+	if (v)
+		m_remote_requests.clear();
 }
 
 void Cbt_peer_link::interested(bool v)
@@ -462,6 +478,10 @@ void Cbt_peer_link::write_get_info(int i)
 	write(d);
 }
 
+void Cbt_peer_link::read_info(const char* r, const char* r_end)
+{
+}
+
 void Cbt_peer_link::write_info(int i)
 {
 	if (i < -1 || 4096 * i >= m_f->m_info.size())
@@ -470,16 +490,18 @@ void Cbt_peer_link::write_info(int i)
 	if (i != -1)
 	{
 		int cb = min(m_f->m_info.size() - 4096 * i, 4096);
-		byte* w = d.write_start(5 + cb);
+		byte* w = d.write_start(9 + cb);
 		w = write(w, d.size() - 4);
 		*w++ = bti_info;
+		w = write(w, i);
 		memcpy(w, m_f->m_info + 4096 * i, cb);
 	}
 	else
 	{
-		byte* w = d.write_start(5 + m_f->m_info_hashes.size());
+		byte* w = d.write_start(9 + m_f->m_info_hashes.size());
 		w = write(w, d.size() - 4);
 		*w++ = bti_info;
+		w = write(w, i);
 		m_f->m_info_hashes.read(w);
 	}
 	write(d);
@@ -492,9 +514,8 @@ void Cbt_peer_link::write_get_peers()
 	Cvirtual_binary d;
 	byte* w = d.write_start(7);
 	w = write(w, d.size() - 4);
-	*w++ = bti_get_info;
-	*reinterpret_cast<__int16*>(w) = htons(m_f->m_local_port);
-	w += 2;
+	*w++ = bti_get_peers;
+	w = write16(w, m_f->local_port());
 	write(d);
 	m_get_peers_stime = time(NULL);
 }
@@ -505,14 +526,11 @@ void Cbt_peer_link::write_peers()
 	byte* w = d.write_start(7 + 6 * m_f->m_peers.size());
 	w = write(w, d.size() - 4);
 	*w++ = bti_peers;
-	*reinterpret_cast<__int16*>(w) = htons(m_f->m_local_port);
-	w += 2;
+	w = write16(w, m_f->local_port());
 	for (Cbt_file::t_peers::const_iterator i = m_f->m_peers.begin(); i != m_f->m_peers.end(); i++)
 	{
-		*reinterpret_cast<__int32*>(w) = i->m_a.sin_addr.s_addr;
-		w += 4;
-		*reinterpret_cast<__int16*>(w) = i->m_a.sin_port;
-		w += 2;
+		w = write(w, ntohl(i->m_a.sin_addr.s_addr));
+		w = write16(w, ntohs(i->m_a.sin_port));
 	}
 	write(d);
 	m_peers_stime = time(NULL);
@@ -586,11 +604,14 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		}
 		break;
 	case bti_get_info:
+		if (r_end - r >= 4)
+			write_info(ntohl(*reinterpret_cast<const __int32*>(r)));
 		break;
 	case bti_info:
+		read_info(r, r_end);
 		break;
 	case bti_get_peers:
-		if (r_end - r >= 2 && time(NULL) - m_peers_stime < 300)
+		if (r_end - r >= 2 && time(NULL) - m_peers_stime > 300)
 			write_peers();
 		break;
 	case bti_peers:
