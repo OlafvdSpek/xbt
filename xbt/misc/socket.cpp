@@ -84,7 +84,7 @@ int Csocket::bind(int h, int p)
 
 int Csocket::blocking(bool v)
 {
-#if 1
+#ifdef FIONBIO
 	unsigned long p = !v;
 	return ioctlsocket(*this, FIONBIO, &p);
 #else

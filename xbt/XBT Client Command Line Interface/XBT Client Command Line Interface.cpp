@@ -95,6 +95,16 @@ int main(int argc, char* argv[])
 			v.d(bts_action, bts_pause_torrent);
 			v.d(bts_hash, hash);
 		}
+		else if (!strcmp(argv[1], "peer_port"))
+		{
+			v.d(bts_action, bts_set_options);
+			v.d(bts_peer_port, atoi(argv[2]));
+		}
+		else if (!strcmp(argv[1], "tracker_port"))
+		{
+			v.d(bts_action, bts_set_options);
+			v.d(bts_tracker_port, atoi(argv[2]));
+		}
 		else if (!strcmp(argv[1], "unpause"))
 		{
 			v.d(bts_action, bts_unpause_torrent);
