@@ -483,8 +483,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				m_buffer[m_buffer_w] = time2a(m_file->left * (time(NULL) - m_file->started_at) / m_file->downloaded + time(NULL)) + " (estimated)";
 			break;
 		case dr_distributed_copies:
-			if (m_file->c_distributed_copies)
-				m_buffer[m_buffer_w] = n(m_file->c_distributed_copies);
+			if (m_file->c_distributed_copies || m_file->c_distributed_copies_remainder)
+				m_buffer[m_buffer_w] = n(m_file->c_distributed_copies) + " + " + n(m_file->c_distributed_copies_remainder) + " / " + n(m_file->c_invalid_pieces + m_file->c_valid_pieces);
 			break;
 		case dr_downloaded:
 			m_buffer[m_buffer_w] = b2a(m_file->downloaded, "b");
@@ -877,6 +877,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.started_at = sr.read_int(4);
 	f.completed_at = sr.read_int(4);
 	f.c_distributed_copies = sr.read_int(4);
+	f.c_distributed_copies_remainder = sr.read_int(4);
 	f.removed = false;
 	{
 		int i = f.display_name.rfind('\\');

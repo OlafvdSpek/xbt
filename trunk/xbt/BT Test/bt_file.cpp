@@ -517,7 +517,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 152;
+	int size = m_info_hash.length() + m_name.length() + 156;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -554,6 +554,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	else
 		w.write_int(4, 0);
 	int c_distributed_copies = INT_MAX;
+	int c_distributed_copies_remainder = 0;
 	int c_invalid_chunks = 0;
 	int c_valid_chunks = 0;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
@@ -565,6 +566,8 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 			c_valid_chunks += i->c_sub_pieces() - i->mc_sub_pieces_left;
 		}
 	}
+	for (t_pieces::const_iterator i = m_pieces.begin(); i < m_pieces.end(); i++)
+		c_distributed_copies_remainder += i->mc_peers + i->m_valid > c_distributed_copies;
 	w.write_int(8, m_downloaded);
 	w.write_int(8, m_downloaded_l5);
 	w.write_int(8, m_left);
@@ -589,6 +592,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, m_started_at);
 	w.write_int(4, m_completed_at);
 	w.write_int(4, c_distributed_copies);
+	w.write_int(4, c_distributed_copies_remainder);
 	if (flags & Cserver::df_peers)
 	{
 		w.write_int(4, m_peers.size());
