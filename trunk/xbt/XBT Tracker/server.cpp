@@ -332,11 +332,7 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 {
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
 	if (i == m_files.end()) 
-	{
-		Cbvalue v;
-		v.d(bts_failure_reason, bts_unregistered_torrent);
-		return v;
-	}
+		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent);
 	if (ti.m_compact)
 	{
 		Cannounce_output_http_compact o;
