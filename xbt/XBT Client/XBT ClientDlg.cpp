@@ -125,6 +125,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_TORRENT_DELETE, OnPopupTorrentDelete)
 	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL, OnPopupTorrentClipboardCopyAnnounceUrl)
 	ON_COMMAND(ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH, OnPopupTorrentClipboardCopyHash)
+	ON_COMMAND(ID_POPUP_TORRENT_ALERTS, OnPopupTorrentAlerts)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -907,13 +908,20 @@ void CXBTClientDlg::OnPopupAbout()
 	Cdlg_about().DoModal();	
 }
 
+void CXBTClientDlg::OnPopupTorrentAlerts() 
+{
+	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
+	if (index == -1)
+		return;
+	Cdlg_torrent(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash).DoModal();
+}
+
 void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	int index = m_files.GetNextItem(-1, LVNI_FOCUSED);
 	if (index == -1)
 		return;
-	Cdlg_torrent dlg(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash);
-	dlg.DoModal();
+	Cdlg_torrent(this, m_server, m_files_map.find(m_files.GetItemData(index))->second.info_hash).DoModal();
 	*pResult = 0;
 }
 
@@ -1314,3 +1322,4 @@ void CXBTClientDlg::set_clipboard(const string& v)
 	}
 	GlobalFree(h);
 }
+
