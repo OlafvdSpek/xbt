@@ -21,7 +21,7 @@
 
 using namespace std;
 
-#ifdef WIN32
+#if defined(BSD) || defined(WIN32)
 typedef unsigned int uint32_t;
 typedef int int_least16_t;
 typedef unsigned char uint8_t;
