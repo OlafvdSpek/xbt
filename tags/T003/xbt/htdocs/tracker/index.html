@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<link rel=stylesheet href="/xbt.css">
+<title>XBT Tracker</title>
+<h1>XBT Tracker</h1>
+<hr>
+<h2>Overview</h2>
+
+XBT Tracker is a BitTorrent tracker written in C++.
+It's designed to offer high performance while consuming little resources (CPU and RAM).
+It's a pure tracker, so it doesn't offer a frontend. You can use any (PHP) frontend you want.
+
+<p>
+XBT Tracker listens on port 2710. The announce URL is http://...:2710/announce. The debug URL is http://...:2710/debug. The scrape URL is http://...:2710/scrape.
+An experimental UDP tracker extension is also supported via announce URL udp://...:2710.
+
+<hr>
+<h2>MySQL</h2>
+
+The tracker stores stats in a MySQL database/table.
+Create a database (xbt) and a user (xbt) with password for the tracker and use these in the next step.
+Create the tables defined in xbt_tracker.sql.
+
+<hr>
+<h2>Installing under Windows</h2>
+
+<ol>
+<li>Download XBT Tracker from <a href="http://sourceforge.net/project/showfiles.php?group_id=94951&package_id=113737">http://sourceforge.net/project/showfiles.php?group_id=94951&package_id=113737</a>.
+<li>Unzip the executable to a directory.
+<li>Copy xbt_tracker.conf.default to xbt_tracker.conf.
+<li>Update xbt_tracker.conf with the database, host, user and pass of your MySQL setup.
+</ol>
+
+<hr>
+<h2>Starting under Windows</h2>
+
+Just start the executable. An empty DOS window should appear.
+<hr>
+<h2>Installing under Linux</h2>
+
+Enter the following commands in a terminal. Replace the "database host user pass" line with details that apply to your setup.
+<pre>
+cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xbtt co xbt
+cd xbt/XBT\ Tracker/
+chmod 755 make.sh
+./make.sh
+cat>xbt_tracker.conf
+database host user pass
+&lt;Ctrl+D>
+</pre>
+<hr>
+<h2>Starting under Linux</h2>
+
+Enter the following commands in a terminal.
+<pre>
+./xbt_tracker
+</pre>
+<hr>
+<h2>Stopping under Linux</h2>
+
+Enter the following commands in a terminal.
+<pre>
+kill `cat xbt_tracker.pid`
+</pre>
+<hr>
+<h2>Configuration</h2>
+<table>
+	<tr>
+		<th align=left>name
+		<th align=left>
+		<th align=right>default value
+	<tr>
+		<td>announce_interval
+		<td>
+		<td align=right>1800
+	<tr>
+		<td>anonymous_connect
+		<td>
+		<td align=right>1
+	<tr>
+		<td>anonymous_announce
+		<td>
+		<td align=right>1
+	<tr>
+		<td>anonymous_scrape
+		<td>
+		<td align=right>1
+	<tr>
+		<td>auto_register
+		<td>
+		<td align=right>1
+	<tr>
+		<td>clean_up_interval
+		<td>
+		<td align=right>60
+	<tr>
+		<td>daemon
+		<td>
+		<td align=right>1
+	<tr>
+		<td>gzip_announce
+		<td>
+		<td align=right>1
+	<tr>
+		<td>gzip_debug
+		<td>
+		<td align=right>1
+	<tr>
+		<td>gzip_scrape
+		<td>
+		<td align=right>1
+	<tr>
+		<td>listen_check
+		<td>
+		<td align=right>1
+	<tr>
+		<td>listen_port
+		<td>
+		<td align=right>2710
+	<tr>
+		<td>log_announce
+		<td>
+		<td align=right>0
+	<tr>
+		<td>log_scrape
+		<td>
+		<td align=right>0
+	<tr>
+		<td>read_config_interval
+		<td>
+		<td align=right>300
+	<tr>
+		<td>read_db_interval
+		<td>
+		<td align=right>60
+	<tr>
+		<td>write_db_interval
+		<td>
+		<td align=right>60
+</table>
+<hr>
+<img src="http://sourceforge.net/sflogo.php?group_id=94951;type=1">
