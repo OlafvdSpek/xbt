@@ -143,6 +143,7 @@ int Cserver::run()
 	m_profiles.load(Cxif_key(Cvirtual_binary(profiles_fname())));
 	m_scheduler.load(Cxif_key(Cvirtual_binary(scheduler_fname())));
 	m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
+	clean_scheduler();
 #ifndef WIN32
 	if (daemon(true, false))
 		alert(Calert(Calert::error, "Server", "daemon failed" + n(errno)));
@@ -455,7 +456,9 @@ Cxif_key Cserver::get_profiles()
 void Cserver::set_profiles(const Cxif_key& v)
 {
 	m_profiles.load(v);
+	clean_scheduler();
 	m_profiles.save().vdata().save(profiles_fname());
+	m_scheduler.save().vdata().save(scheduler_fname());
 }
 
 Cxif_key Cserver::get_scheduler()
@@ -466,7 +469,19 @@ Cxif_key Cserver::get_scheduler()
 void Cserver::set_scheduler(const Cxif_key& v)
 {
 	m_scheduler.load(v);
+	clean_scheduler();
 	m_scheduler.save().vdata().save(scheduler_fname());
+}
+
+void Cserver::clean_scheduler()
+{
+	for (Cscheduler::iterator i = m_scheduler.begin(); i != m_scheduler.end(); )
+	{
+		if (m_profiles.count(i->second.profile))
+			i++;
+		else
+			i = m_scheduler.erase(i);
+	}
 }
 
 Cvirtual_binary Cserver::get_trackers()
