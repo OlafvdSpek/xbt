@@ -101,7 +101,7 @@ void Ctransaction::recv()
 	int r = m_s.recvfrom(b, cb_b, reinterpret_cast<sockaddr*>(&m_a), &cb_a);
 	if (r == SOCKET_ERROR)
 	{
-		cerr << "recv failed: " << error2a(WSAGetLastError()) << endl;
+		cerr << "recv failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 		return;
 	}
 	if (r < uti_size)
@@ -223,5 +223,5 @@ void Ctransaction::send_error(const char* r, const char* r_end, const string& ms
 void Ctransaction::send(const void* b, int cb_b)
 {
 	if (m_s.sendto(b, cb_b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != cb_b)
-		cerr << "send failed: " << error2a(WSAGetLastError()) << endl;
+		cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 }
