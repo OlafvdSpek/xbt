@@ -251,7 +251,7 @@ const string& Cbvalue::s() const
 	return m_value_type == vt_string ? *m_string : z;
 }
 
-void Cbvalue::d(const string& v, const Cbvalue& w)
+Cbvalue& Cbvalue::d(const string& v, const Cbvalue& w)
 {
 	if (m_value_type != vt_dictionary)
 	{
@@ -260,9 +260,10 @@ void Cbvalue::d(const string& v, const Cbvalue& w)
 		m_map = new t_map;
 	}
 	(*m_map)[v] = w;
+	return *this;
 }
 
-void Cbvalue::l(const Cbvalue& v)
+Cbvalue& Cbvalue::l(const Cbvalue& v)
 {
 	if (m_value_type != vt_list)
 	{
@@ -271,6 +272,7 @@ void Cbvalue::l(const Cbvalue& v)
 		m_list = new t_list;
 	}
 	(*m_list).push_back(v);
+	return *this;
 }
 
 int Cbvalue::pre_read() const

@@ -26,6 +26,7 @@ public:
 	CButton	m_save;
 	CListCtrl	m_list;
 	CString	m_tracker;
+	CString	m_name;
 	//}}AFX_DATA
 
 

@@ -51,8 +51,8 @@ public:
 	const t_list& l() const;
 	__int64 i() const;
 	const string& s() const;
-	void d(const string& v, const Cbvalue& w);
-	void l(const Cbvalue& v);
+	Cbvalue& d(const string& v, const Cbvalue& w);
+	Cbvalue& l(const Cbvalue& v);
 	int pre_read() const;
 	int read(char* d) const;
 	int read(void* d) const;
