@@ -73,6 +73,7 @@
 		$d .= '<td><a href="http://sourceforge.net/projects/xbtt/">XBT Home Page</a>';
 		$d .= '</table>';
 		$d .= '</center>';
+		$d .= '<hr>';
 		$d .= $v['torrents'];
 		$d .= '<hr>';
 		if (strlen($v['torrent_events']))
