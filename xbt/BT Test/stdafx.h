@@ -47,17 +47,8 @@ using namespace std;
 #include <signal.h>
 #include <unistd.h>
 
-#define _O_BINARY 0
-#define _O_CREAT O_CREAT
-#define _O_RDONLY O_RDONLY
-#define _O_RDWR O_RDWR
-#define _S_IREAD S_IREAD
-#define _S_IWRITE S_IWRITE
-#define _close close
+#define O_BINARY 0
 #define _lseeki64 lseek
-#define _open open
-#define _read read
-#define _write write
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
