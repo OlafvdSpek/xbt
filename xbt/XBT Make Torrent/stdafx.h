@@ -14,22 +14,19 @@
 
 #include <ctime>
 #include <iostream>
+#include <list>
 #include <map>
 #include <vector>
 
 using namespace std;
 
 #ifdef WIN32
-#include <fcntl.h>
-#include <io.h>
-#include <windows.h>
-
-#define atoll _atoi64
 #define for if (0) {} else for
 
 #pragma comment(lib, "ws2_32.lib")
 #else
-#define O_BINARY 0
+#include <stdint.h>
+#include <fcntl.h>
 
 typedef char __int8;
 typedef short __int16;
@@ -38,6 +35,8 @@ typedef long long __int64;
 #endif
 #include "bvalue.h"
 #include "sha1.h"
+#include "socket.h"
+#include "virtual_binary.h"
 #include "xcc_z.h"
 
 //{{AFX_INSERT_LOCATION}}
