@@ -14,7 +14,7 @@
 void Cbt_sub_piece::erase_peers(Cbt_piece* piece)
 {
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
-		(*i)->m_pieces.erase(piece);
+		i->first->m_pieces.erase(piece);
 }
 
 Cbt_piece::Cbt_piece()
@@ -31,6 +31,13 @@ int Cbt_piece::resize(int v)
 	return size();
 }
 
+void Cbt_piece::valid(bool v)
+{
+	m_valid = v;
+	if (!v && m_sub_pieces.empty())
+		mc_sub_pieces_left = mc_unrequested_sub_pieces = c_sub_pieces();
+}
+
 int Cbt_piece::next_invalid_sub_piece(Cbt_peer_link* peer)
 {
 	if (!mc_unrequested_sub_pieces)
@@ -40,7 +47,7 @@ int Cbt_piece::next_invalid_sub_piece(Cbt_peer_link* peer)
 	{
 		if (i->valid() || !i->m_peers.empty())
 			continue;
-		i->m_peers.insert(peer);
+		i->m_peers[peer] = time(NULL);
 		mc_unrequested_sub_pieces--;
 		return &*i - &m_sub_pieces.front();
 	}
