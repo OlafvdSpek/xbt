@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cbt_pl_write_data  
+class Cbt_pl_write_data
 {
 public:
 	Cbt_pl_write_data();

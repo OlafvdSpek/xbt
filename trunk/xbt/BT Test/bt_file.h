@@ -22,7 +22,7 @@
 class Cbt_hasher;
 class Cserver;
 
-class Cbt_file  
+class Cbt_file
 {
 public:
 	enum t_state
@@ -115,8 +115,8 @@ public:
 		void erase(const string& parent_name);
 		bool open(const string& parent_name, int oflag);
 		int pre_dump() const;
-		int read(__int64  offset, void* s, int cb_s);
-		int write(__int64  offset, const void* s, int cb_s);
+		int read(__int64 offset, void* s, int cb_s);
+		int write(__int64 offset, const void* s, int cb_s);
 		
 		const string& merkle_hash() const
 		{

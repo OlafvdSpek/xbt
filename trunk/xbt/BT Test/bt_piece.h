@@ -39,7 +39,7 @@ private:
 	bool m_valid;
 };
 
-class Cbt_piece  
+class Cbt_piece
 {
 public:
 	typedef vector<Cbt_sub_piece> t_sub_pieces;

@@ -15,7 +15,7 @@
 
 class Cserver;
 
-class Cbt_link  
+class Cbt_link
 {
 public:
 	void alert(Calert::t_level, const string&);

@@ -211,9 +211,6 @@ private:
 	Cudp_tracker m_udp_tracker;
 
 	int m_admin_port;
-	int m_new_admin_port;
-	int m_new_peer_port;
-	int m_new_tracker_port;
 	int m_peer_port;
 	int m_send_quota;
 	bool m_run;

@@ -20,7 +20,7 @@
 class Cbt_file;
 class Cbt_piece;
 
-class Cbt_peer_link  
+class Cbt_peer_link
 {
 public:
 	int c_max_requests_pending() const;
