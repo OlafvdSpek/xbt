@@ -120,7 +120,7 @@ void Cconnection::read(const string& v)
 	bool scrape = !strnicmp(v.c_str(), "get /s", 6);
 	if (announce ? !ti.valid() : !scrape)
 		return;
-	ti.m_ipa = inet_ntoa(m_a.sin_addr);
+	ti.m_ipa = m_a.sin_addr.s_addr;
 	{
 		static ofstream f("xbt_tracker.log");
 		f << time(NULL) << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) 

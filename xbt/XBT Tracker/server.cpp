@@ -116,7 +116,7 @@ void Cserver::insert_peer(const Ctracker_input& v)
 
 		if (!peer.listening && time(NULL) - peer.mtime > 900)
 		{
-			Cpeer_link peer_link(ntohl(inet_addr(v.m_ipa.c_str())), v.m_port, this, v.m_info_hash, v.m_ipa);
+			Cpeer_link peer_link(ntohl(v.m_ipa), v.m_port, this, v.m_info_hash, v.m_ipa);
 			if (peer_link)
 				m_peer_links.push_front(peer_link);
 		}
@@ -137,7 +137,7 @@ void Cserver::insert_peer(const Ctracker_input& v)
 	file.dirty = true;
 }
 
-void Cserver::update_peer(const string& file_id, const string& peer_id, bool listening)
+void Cserver::update_peer(const string& file_id, int peer_id, bool listening)
 {
 	t_files::iterator i = m_files.find(file_id);
 	if (i == m_files.end())
@@ -167,7 +167,9 @@ Cbvalue Cserver::t_file::select_peers(const Ctracker_input& ti) const
 		Cbvalue peer;
 		if (!ti.m_no_peer_id)
 			peer.d(bts_peer_id, (*i)->second.peer_id);
-		peer.d(bts_ipa, (*i)->first);
+		in_addr a;
+		a.s_addr = (*i)->first;
+		peer.d(bts_ipa, static_cast<string>(inet_ntoa(a)));
 		peer.d(bts_port, (*i)->second.port);
 		peers.l(peer);
 	}	
@@ -279,7 +281,7 @@ void Cserver::udp_recv(Csocket& s)
 			ti.m_downloaded = uti.downloaded();
 			ti.m_event = static_cast<Ctracker_input::t_event>(uti.event());
 			ti.m_info_hash = uti.info_hash();
-			ti.m_ipa = inet_ntoa(a.sin_addr);
+			ti.m_ipa = a.sin_addr.s_addr;
 			ti.m_left = uti.left();
 			ti.m_num_want = uti.num_want();
 			ti.m_peer_id = uti.peer_id();
@@ -307,7 +309,7 @@ void Cserver::udp_recv(Csocket& s)
 					continue;
 				if (!c--)
 					break;
-				peer->host(ntohl(inet_addr(j->first.c_str())));
+				peer->host(ntohl(j->first));
 				peer->port(j->second.port);
 				peer++;
 			}
