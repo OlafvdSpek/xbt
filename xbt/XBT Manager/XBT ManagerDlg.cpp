@@ -58,8 +58,8 @@ END_MESSAGE_MAP()
 
 BOOL CXBTManagerDlg::OnInitDialog()
 {
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIcon, true);
+	SetIcon(m_hIcon, false);
 
 	ETSLayoutDialog::OnInitDialog();
 
@@ -78,7 +78,7 @@ BOOL CXBTManagerDlg::OnInitDialog()
 	load(list_fname);
 	sort(0);
 
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return true;
 }
 
 // If you add a minimize button to your dialog, you will need the code below

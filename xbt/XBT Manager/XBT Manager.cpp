@@ -40,15 +40,13 @@ BOOL CXBTManagerApp::InitInstance()
 	if (!AfxSocketInit())
 	{
 		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
-		return FALSE;
+		return false;
 	}
 
-	// Standard initialization
-
 #ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
+	Enable3dControls();
 #else
-	Enable3dControlsStatic();	// Call this when linking to MFC statically
+	Enable3dControlsStatic();
 #endif
 	SetRegistryKey("XBT");
 
@@ -56,7 +54,5 @@ BOOL CXBTManagerApp::InitInstance()
 	m_pMainWnd = &dlg;
 	dlg.DoModal();
 
-	// Since the dialog has been closed, return FALSE so that we exit the
-	//  application, rather than start the application's message pump.
-	return FALSE;
+	return false;
 }

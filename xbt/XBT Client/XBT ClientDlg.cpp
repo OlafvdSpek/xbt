@@ -214,8 +214,8 @@ END_MESSAGE_MAP()
 
 BOOL CXBTClientDlg::OnInitDialog()
 {
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIcon, true);
+	SetIcon(m_hIcon, false);
 
 	CreateRoot(VERTICAL)
 		<< item (IDC_FILES, GREEDY)
@@ -259,7 +259,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	AfxGetApp()->ParseCommandLine(cmdInfo);
 	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
 		open(static_cast<string>(cmdInfo.m_strFileName), m_ask_for_location);
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return true;
 }
 
 // If you add a minimize button to your dialog, you will need the code below
