@@ -112,6 +112,11 @@ void Cserver::seeding_ratio(int v)
 	m_config.m_seeding_ratio = v ? max(100, v) : 0;
 }
 
+void Cserver::send_stop_event(bool v)
+{
+	m_config.m_send_stop_event = v;
+}
+
 void Cserver::tracker_port(int v)
 {
 	m_config.m_tracker_port = max(0, v);
