@@ -212,11 +212,11 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case 3:
 		if (e.downloaded)
-			m_buffer[m_buffer_w] = b2a(e.downloaded);
+			m_buffer[m_buffer_w] = b2a(e.total_downloaded);
 		break;
 	case 4:
 		if (e.uploaded)
-			m_buffer[m_buffer_w] = b2a(e.uploaded);
+			m_buffer[m_buffer_w] = b2a(e.total_uploaded);
 		break;
 	case 5:
 		if (e.down_rate)
@@ -419,6 +419,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.left = sr.read_int64();
 	f.size = sr.read_int64();
 	f.uploaded = sr.read_int64();
+	f.total_downloaded = sr.read_int64();
+	f.total_uploaded = sr.read_int64();
 	f.down_rate = sr.read_int32();
 	f.up_rate = sr.read_int32();
 	f.c_leechers = sr.read_int32();

@@ -82,6 +82,9 @@ int Cbt_file::info(const Cbvalue& info)
 	m_downloaded = 0;
 	m_left = 0;
 	m_uploaded = 0;
+	m_total_downloaded = 0;
+	m_total_uploaded = 0;
+	m_run = true;
 
 	return 0;
 }
@@ -389,7 +392,7 @@ ostream& operator<<(ostream& os, const Cbt_file& v)
 
 int Cbt_file::pre_dump() const
 {
-	int size = m_info_hash.length() + m_name.length() + 60;
+	int size = m_info_hash.length() + m_name.length() + 76;
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 		size += i->pre_dump();
 	return size;
@@ -403,6 +406,8 @@ void Cbt_file::dump(Cstream_writer& w) const
 	w.write_int64(m_left);
 	w.write_int64(size());
 	w.write_int64(m_uploaded);
+	w.write_int64(m_total_downloaded);
+	w.write_int64(m_total_uploaded);
 	w.write_int32(m_down_counter.rate());
 	w.write_int32(m_up_counter.rate());
 	w.write_int32(c_leechers());
@@ -455,6 +460,8 @@ void Cbt_file::load_state(Cstream_reader& r)
 		m_trackers.push_back(r.read_string());
 	info(r.read_data());
 	m_name = r.read_string();
+	m_total_downloaded = r.read_int64();
+	m_total_uploaded = r.read_int64();
 	{
 		Cvirtual_binary pieces = r.read_data();
 		for (int i = 0; i < min(pieces.size(), m_pieces.size()); i++)
@@ -471,7 +478,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + 8 * m_peers.size() + 24;
+	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + 8 * m_peers.size() + 40;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	return c;
@@ -486,6 +493,8 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	}
 	w.write_data(m_info);
 	w.write_string(m_name);
+	w.write_int64(m_total_downloaded);
+	w.write_int64(m_total_uploaded);
 	if (intermediate)
 		w.write_data(Cvirtual_binary());
 	else

@@ -101,10 +101,13 @@ public:
 	__int64 m_downloaded;
 	__int64 m_left;
 	__int64 m_uploaded;
+	__int64 m_total_downloaded;
+	__int64 m_total_uploaded;
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
 
 	int m_local_port;
+	bool m_run;
 };
 
 ostream& operator<<(ostream&, const Cbt_file&);
