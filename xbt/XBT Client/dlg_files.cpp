@@ -266,7 +266,13 @@ void Cdlg_files::OnExplore()
 	}
 	for (int i = 0; (i = name.find('/', i)) != string::npos; i++)
 		name[i] = '\\';
-	name.erase(name.rfind('\\'));
+	struct _stati64 b;
+	if (_stati64(name.c_str(), &b) || ~b.st_mode & S_IFDIR)
+	{
+		int i = name.rfind('\\');
+		if (i != string::npos)
+			name.erase(i);
+	}
 	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
 }
 
