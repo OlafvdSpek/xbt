@@ -7,6 +7,8 @@ Outfile "XBT_Tracker-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT\Tracker"
 Page directory
 Page instfiles
+UninstPage uninstConfirm
+UninstPage instfiles
 Section "Install"
 	SetShellVarContext all
 	SetOutPath "$INSTDIR"
@@ -30,6 +32,7 @@ SectionEnd
 Section "Uninstall"
 	SetShellVarContext all
 	Delete "$SMPROGRAMS\XBT Tracker.lnk"
+	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker"
 	RMDir /r "$INSTDIR"
 	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
