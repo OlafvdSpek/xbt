@@ -127,6 +127,8 @@ enum
 	dr_size,
 	dr_started_at,
 	dr_tracker,
+	dr_upload_slots_min,
+	dr_upload_slots_max,
 	dr_uploaded,
 	dr_uploaded_l5_overhead,
 	dr_count
@@ -542,6 +544,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Size",
 		"Started at",
 		"Tracker",
+		"Upload Slots Max",
+		"Upload Slots Min",
 		"Uploaded",
 		"Uploaded (layer 5 overhead)",
 	};
@@ -632,6 +636,14 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		case dr_tracker:
 			if (!m_file->m_trackers.empty())
 				buffer = m_file->m_trackers.front().url;
+			break;
+		case dr_upload_slots_max:
+			if (m_file->m_upload_slots_max_override)
+				buffer = n(m_file->m_upload_slots_max);
+			break;
+		case dr_upload_slots_min:
+			if (m_file->m_upload_slots_min_override)
+				buffer = n(m_file->m_upload_slots_min);
 			break;
 		case dr_uploaded:
 			buffer = b2a(m_file->m_uploaded, "b");
