@@ -65,6 +65,14 @@
 		$d .= '<link rel=stylesheet href="xbt.css">';
 		$d .= '<meta http-equiv=refresh content=60>';
 		$d .= '<title>XBT Client</title>';
+		$d .= '<center>';
+		$d .= '<table>';
+		$d .= '<caption>Links</caption>';
+		$d .= '<tr>';
+		$d .= '<td><a href="?">Home</a>';
+		$d .= '<td><a href="http://sourceforge.net/projects/xbtt/">XBT Home Page</a>';
+		$d .= '</table>';
+		$d .= '</center>';
 		$d .= $v['torrents'];
 		$d .= '<hr>';
 		if (strlen($v['torrent_events']))
