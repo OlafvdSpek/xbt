@@ -1462,8 +1462,10 @@ void CXBTClientDlg::OnPopupProfiles()
 void CXBTClientDlg::OnPopupScheduler()
 {
 	Cdlg_scheduler dlg;
-	if (IDOK != dlg.DoModal())
-		return;
+	dlg.entries(Cscheduler().load(m_server.get_scheduler()));
+	dlg.profiles(Cprofiles().load(m_server.get_profiles()));
+	if (IDOK == dlg.DoModal())
+		m_server.set_scheduler(dlg.entries().save());
 }
 
 void CXBTClientDlg::OnPopupTrackers()
