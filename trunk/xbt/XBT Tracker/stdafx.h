@@ -44,6 +44,7 @@ using namespace std;
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
+typedef char __int8;
 typedef int __int32;
 typedef long long __int64;
 #endif
