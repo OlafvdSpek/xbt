@@ -354,11 +354,18 @@ BEGIN
             MENUITEM "Start",                       ID_POPUP_START
             MENUITEM "Stop",                        ID_POPUP_STOP
             MENUITEM SEPARATOR
+            POPUP "Clipboard"
+            BEGIN
+                MENUITEM "Copy Announce URL",           ID_POPUP_TORRENT_CLIPBOARD_COPY_ANNOUNCE_URL
+
+                MENUITEM "Copy Hash",                   ID_POPUP_TORRENT_CLIPBOARD_COPY_HASH
+
+                MENUITEM "Copy URL",                    ID_POPUP_COPY
+                MENUITEM "Paste URL",                   ID_POPUP_PASTE
+            END
             MENUITEM "Open...",                     ID_POPUP_OPEN
             MENUITEM "&Close",                      ID_POPUP_CLOSE
             MENUITEM "Delete",                      ID_POPUP_TORRENT_DELETE
-            MENUITEM "Copy URL",                    ID_POPUP_COPY
-            MENUITEM "Paste URL",                   ID_POPUP_PASTE
             MENUITEM "Make...",                     ID_POPUP_MAKE_TORRENT
             MENUITEM "Options...",                  ID_POPUP_TORRENT_OPTIONS
         END

@@ -19,6 +19,7 @@ class CXBTClientDlg : public ETSLayoutDialog
 {
 // Construction
 public:
+	void set_clipboard(const string&);
 	void lower_process_priority(bool);
 	void set_dir(const string&);
 	void insert_columns();
@@ -97,6 +98,8 @@ protected:
 	afx_msg void OnPopupAbout();
 	afx_msg void OnPopupMakeTorrent();
 	afx_msg void OnPopupTorrentDelete();
+	afx_msg void OnPopupTorrentClipboardCopyAnnounceUrl();
+	afx_msg void OnPopupTorrentClipboardCopyHash();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
