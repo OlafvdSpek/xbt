@@ -12,9 +12,9 @@ class Cserver;
 class Cudp_listen_socket: public Cclient
 {
 public:
-	virtual int process_events(int);
+	virtual void process_events(int);
+	Cclient::s;
 
-	Csocket m_s;
 	Cserver* m_server;
 };
 

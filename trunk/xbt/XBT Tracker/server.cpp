@@ -118,7 +118,7 @@ int Cserver::run()
 			else
 			{
 				Ctcp_listen_socket ls;
-				ls.m_s = l0;
+				ls.s(l0);
 				ls.m_server = this;
 				lt.push_back(ls);
 #ifdef EPOLL
@@ -143,7 +143,7 @@ int Cserver::run()
 			else
 			{
 				Cudp_listen_socket ls;
-				ls.m_s = l1;
+				ls.s(l1);
 				ls.m_server = this;
 				lu.push_back(ls);
 #ifdef EPOLL
@@ -206,24 +206,27 @@ int Cserver::run()
 			cerr << "epoll_wait failed: " << errno << endl;
 		else 
 		{
+			int prev_time = m_time;
 			m_time = ::time(NULL);
 			for (int i = 0; i < r; i++)
 			{
 				reinterpret_cast<Cclient*>(events[i].data.ptr)->process_events(events[i].events);
 			}
+			if (m_time == prev_time)
+				continue;
 			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
 			{
-				if (i->s() != INVALID_SOCKET)
-					i++;
-				else
+				if (i->run())
 					i = m_connections.erase(i);
+				else
+					i++;
 			}
 			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
 			{
-				if (i->s() != INVALID_SOCKET)
-					i++;
-				else
+				if (i->run())
 					i = m_peer_links.erase(i);
+				else
+					i++;
 			}
 		}
 #else
@@ -247,13 +250,13 @@ int Cserver::run()
 		}		
 		for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 		{
-			FD_SET(i->m_s, &fd_read_set);
-			n = max(n, static_cast<SOCKET>(i->m_s));
+			FD_SET(i->s(), &fd_read_set);
+			n = max(n, static_cast<SOCKET>(i->s()));
 		}
 		for (t_udp_sockets::iterator i = lu.begin(); i != lu.end(); i++)
 		{
-			FD_SET(i->m_s, &fd_read_set);
-			n = max(n, static_cast<SOCKET>(i->m_s));
+			FD_SET(i->s(), &fd_read_set);
+			n = max(n, static_cast<SOCKET>(i->s()));
 		}
 		timeval tv;
 		tv.tv_sec = 1;
@@ -265,13 +268,13 @@ int Cserver::run()
 			m_time = ::time(NULL);
 			for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 			{
-				if (FD_ISSET(i->m_s, &fd_read_set))
-					accept(i->m_s);
+				if (FD_ISSET(i->s(), &fd_read_set))
+					accept(i->s());
 			}
 			for (t_udp_sockets::iterator i = lu.begin(); i != lu.end(); i++)
 			{
-				if (FD_ISSET(i->m_s, &fd_read_set))
-					Ctransaction(*this, i->m_s).recv();
+				if (FD_ISSET(i->s(), &fd_read_set))
+					Ctransaction(*this, i->s()).recv();
 			}
 			{
 				for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
@@ -314,7 +317,7 @@ int Cserver::run()
 	return 0;
 }
 
-void Cserver::accept(Csocket& l)
+void Cserver::accept(const Csocket& l)
 {
 	sockaddr_in a;
 	while (1)

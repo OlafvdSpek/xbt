@@ -246,14 +246,15 @@ void Cconnection::read(const string& v)
 	}
 }
 
-int Cconnection::process_events(int events)
+void Cconnection::process_events(int events)
 {
 	if (events & (EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP) && recv()
 		|| events & EPOLLOUT && send()
 		|| m_state == 5 && m_write_b.empty())
-	{
 		m_s.close();
-		return 1;
-	}
-	return 0;
+}
+
+int Cconnection::run()
+{
+	return s() == INVALID_SOCKET || m_server->time() - m_ctime > 15;
 }
