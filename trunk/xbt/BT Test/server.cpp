@@ -45,7 +45,6 @@ void Cserver::run()
 	{
 		m_files.push_back(Cbt_file());
 		Cbt_file& f = m_files.front();
-		f.m_local_port = peer_port();
 		if (f.info(Cvirtual_binary("d:/temp/test.torrent")))
 			return;
 		if (f.open("d:/temp/xbt/f.bin"))
@@ -82,6 +81,13 @@ void Cserver::run()
 					n = max(n, z);
 				}
 			}
+			{
+				for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+				{
+					int z = i->pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
+					n = max(n, z);
+				}
+			}
 			TIMEVAL tv;
 			tv.tv_sec = 1;
 			tv.tv_usec = 0;
@@ -90,7 +96,7 @@ void Cserver::run()
 				cerr << "select failed: " << WSAGetLastError() << endl;
 				break;
 			}
-			if (FD_ISSET(l, &fd_read_set) && !m_files.empty())
+			if (FD_ISSET(l, &fd_read_set))
 			{
 				sockaddr_in a;
 				socklen_t cb_a = sizeof(sockaddr_in);
@@ -122,10 +128,20 @@ void Cserver::run()
 				for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); )
 				{
 					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
-					if (i->s() == INVALID_SOCKET)
-						i = m_admins.erase(i);
-					else
+					if (*i)
 						i++;
+					else
+						i = m_admins.erase(i);
+				}
+			}
+			{
+				for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); )
+				{
+					i->post_select(&fd_read_set, &fd_write_set, &fd_except_set);
+					if (*i)
+						i++;
+					else
+						i = m_peers.erase(i);
 				}
 			}
 			{
