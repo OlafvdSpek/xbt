@@ -3,7 +3,7 @@ CREATE TABLE xbt_config
   name varchar(255) NOT NULL,
   value varchar(255),
   PRIMARY KEY  (name)
-)
+);
 
 CREATE TABLE xbt_files
 (
@@ -18,4 +18,4 @@ CREATE TABLE xbt_files
   ctime timestamp NOT NULL,
   PRIMARY KEY (fid),
   UNIQUE KEY (info_hash(20))
-)
+);
