@@ -170,13 +170,13 @@ static string peer_id2a(const string& name, const string& peer_id, int i)
 		if (!isalnum(peer_id[j]))
 			break;
 	}
-	return name + peer_id.substr(i, j - i) + " - " + hex_encode(peer_id.substr(8));
+	return name + peer_id.substr(i, j - i);
 }
 
 string peer_id2a(const string& v)
 {
 	if (v.length() != 20)
-		return hex_encode(v);
+		return "";
 	if (v[7] == '-')
 	{
 		switch (v[0])
@@ -218,7 +218,7 @@ string peer_id2a(const string& v)
 		if (v[1] == 'x' && v[2] == 'b' && v[3] == 'c')
 			return "BitComet - " + hex_encode(v.substr(4));
 	}
-	return hex_encode(v);
+	return "Unknown";
 }
 
 int merkle_tree_size(int v)
