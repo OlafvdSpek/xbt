@@ -253,12 +253,13 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_TOOLS_SCHEDULER, OnToolsScheduler)
 	ON_COMMAND(ID_TOOLS_TRACKERS, OnToolsTrackers)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB, OnSelchangeTab)
+	ON_COMMAND(ID_FILE_DELETE, OnFileDelete)
+	ON_UPDATE_COMMAND_UI(ID_FILE_DELETE, OnUpdateFileDelete)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
 	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
 	ON_COMMAND(ID_HELP_ABOUT, OnHelpAbout)
-	ON_COMMAND(ID_FILE_DELETE, OnFileDelete)
-	ON_UPDATE_COMMAND_UI(ID_FILE_DELETE, OnUpdateFileDelete)
+	ON_COMMAND(ID_HELP_HOME_PAGE, OnHelpHomePage)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -2725,6 +2726,11 @@ void CXBTClientDlg::OnToolsTrackers()
 		w.write_string(i->second.m_pass);
 	}
 	m_server.set_trackers(d);
+}
+
+void CXBTClientDlg::OnHelpHomePage() 
+{
+	ShellExecute(m_hWnd, "open", "http://sourceforge.net/projects/xbtt/", NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnHelpAbout() 
