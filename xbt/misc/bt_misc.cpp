@@ -239,3 +239,17 @@ int merkle_tree_size(int v)
 		r++;
 	return r;
 }
+
+string backward_slashes(string v)
+{
+	for (int i = 0; (i = v.find('/', i)) != string::npos; i++)
+		v[i] = '\\';
+	return v;
+}
+
+string forward_slashes(string v)
+{
+	for (int i = 0; (i = v.find('\\', i)) != string::npos; i++)
+		v[i] = '/';
+	return v;
+}

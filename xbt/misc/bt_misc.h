@@ -16,7 +16,9 @@
 using namespace std;
 
 string b2a(__int64 v, const char* postfix = NULL);
+string backward_slashes(string v);
 string escape_string(const string& v);
+string forward_slashes(string v);
 bool is_private_ipa(int a);
 int merkle_tree_size(int v);
 string n(__int64 v);
