@@ -256,6 +256,7 @@ private:
 		__int64 m_uploaded;
 		__int64 m_uploaded_total;
 		int m_down_rate;
+		int m_start_time;
 		int m_up_rate;
 		int mc_files;
 		int mc_leechers;
