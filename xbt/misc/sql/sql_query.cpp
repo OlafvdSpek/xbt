@@ -68,10 +68,14 @@ void Csql_query::p(const string& v)
 	m_list.push_back(v);
 }
 
-void Csql_query::p(int v)
+void Csql_query::p(__int64 v)
 {
-	char b[12];
-	sprintf(b, "%d", v);	
+	char b[21];
+#ifdef WIN32
+	sprintf(b, "%I64d", v);
+#else
+	sprintf(b, "%lld", v);
+#endif
 	p(b);
 }
 
