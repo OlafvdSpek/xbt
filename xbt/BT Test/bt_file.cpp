@@ -65,7 +65,7 @@ int Cbt_file::info(const Cbvalue& info)
 				for (Cbvalue::t_list::const_iterator i = path.begin(); i != path.end(); i++)
 					name += '/' + i->s();
 			}
-			int size = i->d(bts_length).i();
+			__int64 size = i->d(bts_length).i();
 			if (name.empty() || size < 1)
 				return 1;
 			mcb_f += size;
