@@ -351,7 +351,7 @@ int Cbt_file::c_valid_pieces() const
 	return (mcb_f - m_left + mcb_piece - 1) / mcb_piece;
 }
 
-void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
+void Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link* peer)
 {
 	if (offset < 0 || cb_s < 0)
 		return;
@@ -361,12 +361,12 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 	Cbt_piece& piece = m_pieces[a];
 	if (piece.valid())
 	{
-		alert(Calert(Calert::debug, "Piece " + n(a) + ": already valid"));
+		alert(Calert(Calert::debug, peer->m_a, "Piece " + n(a) + ": already valid"));
 		return;
 	}
 	if (piece.write(offset % mcb_piece, s, cb_s))
 	{
-		alert(Calert(Calert::debug, "Piece " + n(a) + ", offset " + n(mcb_piece) + ", size " + n(cb_s) + ": rejected"));
+		alert(Calert(Calert::debug, peer->m_a, "Piece " + n(a) + ", offset " + n(mcb_piece) + ", size " + n(cb_s) + ": rejected"));
 		return;
 	}
 	int size = cb_s;
