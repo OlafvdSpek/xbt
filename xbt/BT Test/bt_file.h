@@ -67,6 +67,16 @@ public:
 		int read(__int64  offset, void* s, int cb_s);
 		int write(__int64  offset, const void* s, int cb_s);
 		
+		__int64 left() const
+		{
+			return m_left;
+		}
+
+		void left(__int64 v)
+		{
+			m_left = v;
+		}
+
 		const string& name() const
 		{
 			return m_name;
@@ -105,6 +115,7 @@ public:
 		}
 	private:
 		int m_f;
+		__int64 m_left;
 		string m_name;
 		int m_priority;
 		__int64 m_size;
