@@ -13,6 +13,7 @@
 #include "connection.h"
 #include "peer_link.h"
 #include "tracker_input.h"
+#include "transaction.h"
 
 class Cserver  
 {
@@ -72,8 +73,12 @@ public:
 	Cbvalue select_peers(const Ctracker_input&);
 	Cbvalue scrape(const Ctracker_input&);
 	void run(Csocket& lt, Csocket& lu);
-	void udp_recv(Csocket& s);
 	Cserver(Cdatabase&);
+
+	int announce_interval() const
+	{
+		return m_announce_interval;
+	}
 
 	const t_files& files() const
 	{
