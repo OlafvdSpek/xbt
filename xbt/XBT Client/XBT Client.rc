@@ -40,7 +40,7 @@ BEGIN
                     WS_TABSTOP,7,65,114,50
 END
 
-IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 164
+IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 363, 174
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 8, "MS Sans Serif"
@@ -60,9 +60,9 @@ BEGIN
     CONTROL         "Show tray icon",IDC_SHOW_TRAY_ICON,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,133,63,10
     CONTROL         "Show advanced columns",IDC_SHOW_ADVANCED_COLUMNS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,147,96,10
-    DEFPUSHBUTTON   "OK",IDOK,250,143,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,306,143,50,14
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,145,96,10
+    DEFPUSHBUTTON   "OK",IDOK,250,153,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,306,153,50,14
     LTEXT           "Admin port",IDC_STATIC,288,7,34,8
     LTEXT           "Peer port",IDC_STATIC,288,26,30,8
     LTEXT           "Upload rate (kbyte/s)",IDC_STATIC,288,61,68,8
@@ -70,6 +70,8 @@ BEGIN
     LTEXT           "Upload slots",IDC_STATIC,288,79,40,8
     LTEXT           "Seeding ratio",IDC_STATIC,288,97,42,8
     LTEXT           "Files location",IDC_STATIC,288,116,42,8
+    CONTROL         "Start minimzed",IDC_START_MINIMIZED,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,157,61,10
 END
 
 IDD_TORRENT DIALOG DISCARDABLE  0, 0, 186, 46
@@ -162,7 +164,7 @@ BEGIN
         VERTGUIDE, 284
         VERTGUIDE, 288
         TOPMARGIN, 7
-        BOTTOMMARGIN, 157
+        BOTTOMMARGIN, 167
         HORZGUIDE, 26
         HORZGUIDE, 44
         HORZGUIDE, 61

@@ -37,6 +37,7 @@
 #define IDC_SHOW_TRAY_ICON              1023
 #define IDC_SHOW_ADVANCED_COLUMNS       1024
 #define IDC_SITE                        1026
+#define IDC_START_MINIMIZED             1027
 #define ID_POPUP_OPEN                   32771
 #define ID_POPUP_CLOSE                  32772
 #define ID_POPUP_OPTIONS                32773
@@ -58,7 +59,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        137
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

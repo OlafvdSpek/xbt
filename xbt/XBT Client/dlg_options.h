@@ -23,6 +23,7 @@ public:
 		int seeding_ratio;
 		bool show_advanced_columns;
 		bool show_tray_icon;
+		bool start_minimized;
 		int upload_rate;
 		int upload_slots;
 	};
@@ -43,6 +44,7 @@ public:
 	BOOL	m_show_tray_icon;
 	BOOL	m_show_advanced_columns;
 	CString	m_files_location;
+	BOOL	m_start_minimized;
 	//}}AFX_DATA
 
 
