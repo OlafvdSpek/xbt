@@ -57,6 +57,7 @@ Cserver::Cserver()
 	m_dir = ".";
 	m_end_mode = true;
 	m_log_peer_connect_failures = false;
+	m_log_peer_connection_closures = false;
 	m_log_peer_recv_failures = false;
 	m_log_peer_send_failures = true;
 	m_peer_limit = 0;

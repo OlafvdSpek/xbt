@@ -120,6 +120,11 @@ public:
 		return m_log_peer_connect_failures;
 	}
 
+	bool log_peer_connection_closures() const
+	{
+		return m_log_peer_connection_closures;
+	}
+
 	bool log_peer_recv_failures() const
 	{
 		return m_log_peer_recv_failures;
@@ -195,6 +200,7 @@ private:
 	string m_dir;
 	bool m_end_mode;
 	bool m_log_peer_connect_failures;
+	bool m_log_peer_connection_closures;
 	bool m_log_peer_recv_failures;
 	bool m_log_peer_send_failures;
 	int m_new_admin_port;
