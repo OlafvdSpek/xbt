@@ -32,6 +32,7 @@ public:
 	int m_left;
 	int m_port;
 	int m_uploaded;
+	int m_num_want;
 	bool m_no_peer_id;
 };
 

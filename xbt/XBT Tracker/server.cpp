@@ -144,27 +144,27 @@ void Cserver::update_peer(const string& file_id, const string& peer_id, bool lis
 	j->second.listening = listening;
 }
 
-Cbvalue Cserver::select_peers(const string& info_hash, bool peer_id, bool seeders)
+Cbvalue Cserver::select_peers(const Ctracker_input& ti)
 {
 	if (time(NULL) - m_clean_up_time > m_clean_up_interval)
 		clean_up();
 	if (time(NULL) - m_write_db_time > m_write_db_interval)
 		write_db();
-	t_files::const_iterator i = m_files.find(info_hash);
+	t_files::const_iterator i = m_files.find(ti.m_info_hash);
 	if (i == m_files.end())
 		return Cbvalue();
 	Cbvalue v;
 	v.d(bts_interval, m_announce_interval);
-	Cbvalue peers;
-	int c = 50;
+	Cbvalue peers(Cbvalue::vt_list);
+	int c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
 	for (t_peers::const_iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
 	{
-		if (!seeders && !j->second.left || !j->second.listening)
+		if (!ti.m_left && !j->second.left || !j->second.listening)
 			continue;
 		if (!c--)
 			break;
 		Cbvalue peer;
-		if (peer_id)
+		if (!ti.m_no_peer_id)
 			peer.d(bts_peer_id, j->second.peer_id);
 		peer.d(bts_ipa, j->first);
 		peer.d(bts_port, j->second.port);
@@ -209,7 +209,7 @@ Cbvalue Cserver::t_file::scrape() const
 Cbvalue Cserver::scrape(const Ctracker_input& ti)
 {
 	Cbvalue v;
-	Cbvalue files;
+	Cbvalue files(Cbvalue::vt_dictionary);
 	if (ti.m_info_hash.empty())
 	{
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)

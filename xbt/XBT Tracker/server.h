@@ -67,7 +67,7 @@ public:
 	void clean_up();
 	void insert_peer(const Ctracker_input&);
 	void update_peer(const string& file_id, const string& peer_id, bool listening);
-	Cbvalue select_peers(const string&, bool peer_id, bool seeders);
+	Cbvalue select_peers(const Ctracker_input&);
 	Cbvalue scrape(const Ctracker_input&);
 	void run(Csocket& lt, Csocket& lu);
 	void udp_recv(Csocket& s);
