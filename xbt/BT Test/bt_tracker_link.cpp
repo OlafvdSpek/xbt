@@ -142,9 +142,9 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				<< "&peer_id=" << uri_encode(f.m_peer_id) 
 				// << "&ip=" << uri_encode("62.163.33.227")
 				<< "&port=" << f.m_local_port
-				<< "&uploaded=" << static_cast<int>(f.m_uploaded)
-				<< "&downloaded=" << static_cast<int>(f.m_downloaded)
-				<< "&left=" << static_cast<int>(f.left())
+				<< "&uploaded=" << static_cast<unsigned>(f.m_uploaded)
+				<< "&downloaded=" << static_cast<unsigned>(f.m_downloaded)
+				<< "&left=" << static_cast<unsigned>(f.left())
 				// << "&event=" << uri_encode("started") 
 				<< " HTTP/1.0" << endl
 				<< "accept-encoding: gzip" << endl
