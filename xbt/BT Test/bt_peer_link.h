@@ -31,7 +31,7 @@ public:
 	ostream& dump(ostream&) const;
 	void write_piece(int, int, int, const void*);
 	void write_have(int);
-	int read_handshake(const t_bt_handshake&);
+	int read_handshake(const char* r);
 	void read_message(const char* s, const char* s_end);
 	void read_info(const char* r, const char* r_end);
 	void write_keepalive();

@@ -241,7 +241,7 @@ void Cbt_file::insert_peer(int h, int p)
 	m_new_peers[h] = p;
 }
 
-void Cbt_file::insert_peer(const t_bt_handshake& h, const sockaddr_in& a, const Csocket& s)
+void Cbt_file::insert_peer(const char* r, const sockaddr_in& a, const Csocket& s)
 {
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
 	{
@@ -254,7 +254,7 @@ void Cbt_file::insert_peer(const t_bt_handshake& h, const sockaddr_in& a, const 
 	peer.m_s = s;
 	peer.m_local_link = false;
 	peer.m_state = 4;
-	if (peer.read_handshake(h))
+	if (peer.read_handshake(r))
 	{
 		assert(false);
 		return;
