@@ -284,22 +284,19 @@ int Cbt_file::c_valid_pieces() const
 	return r;
 }
 
-void Cbt_file::write_data(__int64 o, const char* s, int cb_s)
+void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 {
-	if (o < 0 || cb_s < 0 || o + cb_s > mcb_f)
+	if (offset < 0 || cb_s < 0 || offset + cb_s > mcb_f)
 		return;
-	int a = o / mcb_piece;
+	int a = offset / mcb_piece;
 	if (a < m_pieces.size())
 	{
 		Cbt_piece& piece = m_pieces[a];
 		if (piece.m_valid)
 			return;
-		piece.write(o % mcb_piece, s, cb_s);
-		if (!piece.m_valid)
-			return;
-		__int64 offset = a * mcb_piece;
-		int size = piece.m_d.size();
-		const byte* r = piece.m_d;
+		piece.write(offset % mcb_piece, s, cb_s);
+		int size = cb_s;
+		const char* r = s;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		{
 			if (offset < i->size())
@@ -333,10 +330,19 @@ void Cbt_file::write_data(__int64 o, const char* s, int cb_s)
 			else
 				offset -= i->size();
 		}
+		if (piece.mc_sub_pieces_left)
+			return;
+		Cvirtual_binary d;
+		read_data(a * mcb_piece, d.write_start(piece.mcb_d), piece.mcb_d);
+		if (memcmp(compute_sha1(d).c_str(), piece.m_hash, 20))
+		{
+			alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
+			return;
+		}
+		piece.m_valid = true;
 		m_left -= piece.mcb_d;
 		if (!m_left)
 			m_tracker.event(Cbt_tracker_link::t_event::e_completed);
-		piece.m_d.clear();
 		{
 			for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 				i->write_have(a);
@@ -442,7 +448,12 @@ ostream& operator<<(ostream& os, const Cbt_file& v)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 96;
+	int size = m_info_hash.length() + m_name.length() + 100;
+	if (flags & Cserver::df_trackers)
+	{
+		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
+			size += i->size() + 4;
+	}
 	if (flags & Cserver::df_peers)
 	{
 		for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
@@ -465,6 +476,14 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 {
 	w.write_string(m_info_hash);
 	w.write_string(m_name);
+	if (flags & Cserver::df_trackers)
+	{
+		w.write_int32(m_trackers.size());
+		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
+			w.write_string(*i);
+	}
+	else
+		w.write_int32(0);
 	w.write_int64(m_downloaded);
 	w.write_int64(m_left);
 	w.write_int64(size());
@@ -564,7 +583,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 
 int Cbt_file::pre_save_state(bool intermediate) const
 {
-	int c = m_info.size() + m_name.size() + !intermediate * m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 36;
+	int c = m_info.size() + m_name.size() + (!intermediate || !m_left) * m_pieces.size() + m_sub_files.size() + 8 * m_old_peers.size() + 36;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	return c;
@@ -579,7 +598,7 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	w.write_string(m_name);
 	w.write_int64(m_total_downloaded);
 	w.write_int64(m_total_uploaded);
-	if (intermediate)
+	if (intermediate && m_left)
 		w.write_data(Cvirtual_binary());
 	else
 	{
