@@ -28,6 +28,8 @@ Cbt_file::Cbt_file()
 	m_total_uploaded = 0;
 	mc_leechers_total = 0;
 	mc_seeders_total = 0;
+	mc_rejected_chunks = 0;
+	mc_rejected_pieces = 0;
 	m_hasher = NULL;
 	m_started_at = time(NULL);
 	m_session_started_at = time(NULL);
@@ -379,6 +381,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 	Cbt_piece& piece = m_pieces[a];
 	if (piece.valid() || piece.write(offset % mcb_piece, s, cb_s))
 	{
+		mc_rejected_chunks++;
 		if (offset % piece.cb_sub_piece())
 			peer->alert(Calert::debug, "Piece " + n(a) + ", offset " + n(offset % mcb_piece) + ", size " + b2a(cb_s) + ": rejected");
 		else
@@ -422,6 +425,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 	piece.valid(m_merkle || !memcmp(compute_sha1(d).c_str(), piece.m_hash, 20));
 	if (!piece.valid())
 	{
+		mc_rejected_pieces++;
 		alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
 		logger().invalid(m_info_hash, false, a);
 		return 0;
@@ -528,7 +532,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 168;
+	int size = m_info_hash.length() + m_name.length() + 176;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -600,6 +604,8 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, mc_seeders_total);
 	w.write_int(4, c_invalid_chunks);
 	w.write_int(4, c_invalid_pieces());
+	w.write_int(4, mc_rejected_chunks);
+	w.write_int(4, mc_rejected_pieces);
 	w.write_int(4, c_valid_chunks);
 	w.write_int(4, c_valid_pieces());
 	w.write_int(4, 32 << 10);

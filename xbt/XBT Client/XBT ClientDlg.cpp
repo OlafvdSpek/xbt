@@ -115,6 +115,8 @@ enum
 	dr_name,
 	dr_peers,
 	dr_pieces,
+	dr_rejected_chunks,
+	dr_rejected_pieces,
 	dr_seeders,
 	dr_size,
 	dr_started_at,
@@ -505,6 +507,8 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Name",
 		"Peers",
 		"Pieces",
+		"Rejected Chunks",
+		"Rejected Pieces",
 		"Seeders",
 		"Size",
 		"Started at",
@@ -564,6 +568,12 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			break;
 		case dr_pieces:
 			m_buffer[m_buffer_w] = n(m_file->c_valid_pieces) + " / " + n(m_file->c_invalid_pieces + m_file->c_valid_pieces) + " x " + b2a(m_file->cb_piece, "b");
+			break;
+		case dr_rejected_chunks:
+			m_buffer[m_buffer_w] = n(m_file->c_rejected_chunks);
+			break;
+		case dr_rejected_pieces:
+			m_buffer[m_buffer_w] = n(m_file->c_rejected_pieces);
 			break;
 		case dr_seeders:
 			m_buffer[m_buffer_w] = n(m_file->c_seeders);
@@ -961,6 +971,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.c_seeders_total = sr.read_int(4);
 	f.c_invalid_chunks = sr.read_int(4);
 	f.c_invalid_pieces = sr.read_int(4);
+	f.c_rejected_chunks = sr.read_int(4);
+	f.c_rejected_pieces = sr.read_int(4);
 	f.c_valid_chunks = sr.read_int(4);
 	f.c_valid_pieces = sr.read_int(4);
 	f.cb_chunk = sr.read_int(4);
