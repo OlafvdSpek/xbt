@@ -606,6 +606,7 @@ void Cserver::read_config()
 	m_listen_check = true;
 	m_listen_ipas.clear();
 	m_listen_ports.clear();
+	m_log_access = false;
 	m_log_announce = false;
 	m_log_scrape = false;
 	m_read_config_interval = 300;
@@ -641,6 +642,8 @@ void Cserver::read_config()
 				m_listen_ipas.insert(inet_addr(row.f(1)));
 			else if (!strcmp(row.f(0), "listen_port"))
 				m_listen_ports.insert(row.f_int(1));
+			else if (!strcmp(row.f(0), "log_access"))
+				m_log_access = row.f_int(1);
 			else if (!strcmp(row.f(0), "log_announce"))
 				m_log_announce = row.f_int(1);
 			else if (!strcmp(row.f(0), "log_scrape"))
