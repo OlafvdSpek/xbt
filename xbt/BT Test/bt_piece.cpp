@@ -39,9 +39,7 @@ void Cbt_piece::write(int offset, const char* s, int cb_s)
 			cout << "invalid" << endl;
 		}
 		else
-		{
 			m_valid = true;
-		}
 	}
 }
 
