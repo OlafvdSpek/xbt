@@ -131,6 +131,7 @@ public:
 	Cbvalue select_peers(const Ctracker_input&);
 	Cbvalue scrape(const Ctracker_input&);
 	void run();
+	static void term();
 	Cserver(Cdatabase&);
 
 	int announce_interval() const
