@@ -45,11 +45,10 @@ public:
 
 	__int64 size() const;
 	bool valid() const;
-	int write(const Cvirtual_binary&);
 	int write(const Cbvalue&);
-	int write_info(const Cbvalue& v);
+	int write_info(const Cbvalue&);
 	Cbt_torrent();
-	Cbt_torrent(const Cvirtual_binary&);
+	Cbt_torrent(const Cbvalue&);
 
 	const string& announce() const
 	{

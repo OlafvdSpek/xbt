@@ -11,7 +11,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-Cbvalue::Cbvalue(int v)
+Cbvalue::Cbvalue(__int64 v)
 {
 	m_value_type = vt_int;
 	m_int = v;
@@ -173,7 +173,7 @@ int Cbvalue::write(const char*& s, const char* s_end)
 			if (s++ >= s_end)
 				return 1;
 			m_value_type = vt_int;
-			m_int = atoi(a);
+			m_int = _atoi64(a);
 			return 0;
 		}
 	case 'l':
@@ -228,7 +228,7 @@ const Cbvalue& Cbvalue::d(const string& v) const
 	return z;
 }
 
-int Cbvalue::i() const
+__int64 Cbvalue::i() const
 {
 	return m_value_type == vt_int ? m_int : 0;
 }

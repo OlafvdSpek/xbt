@@ -48,7 +48,7 @@ public:
 	void clear();
 	const Cbvalue& d(const string&) const;
 	const t_list& l() const;
-	int i() const;
+	__int64 i() const;
 	const string& s() const;
 	void d(const string& v, const Cbvalue& w);
 	void l(const Cbvalue& v);
@@ -59,7 +59,7 @@ public:
 	int write(const char* s, int cb_s);
 	int write(const void* s, int cb_s);
 	int write(const Cvirtual_binary&);
-	Cbvalue(int v = 0);
+	Cbvalue(__int64 v = 0);
 	Cbvalue(t_value_type t);
 	Cbvalue(const string& v);
 	Cbvalue(const Cbvalue&);
@@ -71,7 +71,7 @@ private:
 
 	union
 	{
-		int m_int;
+		__int64 m_int;
 		string* m_string;
 		t_list* m_list;
 		t_map* m_map;
