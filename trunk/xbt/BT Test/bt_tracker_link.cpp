@@ -101,7 +101,11 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		if (m_url.m_protocol == Cbt_tracker_url::tp_udp)
 		{
 			char d[utic_size];
+#ifdef WIN32
 			write<__int64>(d + uti_connection_id, 0x41727101980);
+#else
+			write<__int64>(d + uti_connection_id, 0x41727101980ll);
+#endif
 			write<__int32>(d + uti_action, uta_connect);
 			write<__int32>(d + uti_transaction_id, m_transaction_id = rand());
 			if (m_s.send(d, utic_size) != utic_size)
@@ -178,7 +182,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 		else if (FD_ISSET(m_s, fd_except_set))
 		{
 			int e = 0;
-			int size = sizeof(int);
+			socklen_t size = sizeof(int);
 			getsockopt(m_s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&e), &size);
 			f.alert(Calert(Calert::error, "Tracker: HTTP: connect failed: " + Csocket::error2a(e)));
 			close(f);
