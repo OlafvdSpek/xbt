@@ -126,11 +126,11 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			switch (m_state)
 			{
 			case 2:
-				if (m_read_b.cb_r() < sizeof(t_bt_handshake))
+				if (m_read_b.cb_r() < hs_size)
 					break;
-				if (read_handshake(*reinterpret_cast<const t_bt_handshake*>(m_read_b.r())))
+				if (read_handshake(m_read_b.r()))
 					return 1;
-				m_read_b.cb_r(sizeof(t_bt_handshake));
+				m_read_b.cb_r(hs_size);
 				m_f->insert_old_peer(m_a.sin_addr.s_addr, m_a.sin_port);
 				m_state = 4;
 			case 4:
@@ -328,17 +328,17 @@ byte* Cbt_peer_link::write(byte* w, int v)
 	return w + 4;
 }
 
-int Cbt_peer_link::read_handshake(const t_bt_handshake& h)
+int Cbt_peer_link::read_handshake(const char* h)
 {
-	if (h.cb_name != 19
-		|| memcmp(h.name, "BitTorrent protocol", 19)
-		|| h.info_hash() != m_f->m_info_hash)
+	if (h[hs_name_size] != 19
+		|| memcmp(h + hs_name, "BitTorrent protocol", 19)
+		|| string(h + hs_info_hash, 20) != m_f->m_info_hash)
 	{
 		alert(Calert(Calert::warn, m_a, "Peer: handshake failed"));
 		return 1;
 	}
-	m_get_info_extension = h.reserved[7] & 1;
-	m_get_peers_extension = h.reserved[7] & 2;
+	m_get_info_extension = h[hs_reserved + 7] & 1;
+	m_get_peers_extension = h[hs_reserved + 7] & 2;
 	return 0;
 }
 

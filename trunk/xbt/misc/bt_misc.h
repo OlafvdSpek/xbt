@@ -50,6 +50,15 @@ inline __int64 ntohll(__int64 v)
 
 enum
 {
+	hs_name_size = 0,
+	hs_name = 1,
+	hs_reserved = 20,
+	hs_info_hash = 28,
+	hs_size = 48,
+};
+
+enum
+{
 	uta_connect,
 	uta_announce,
 	uta_scrape,
@@ -75,12 +84,13 @@ enum
 	utia_key = 88,
 	utia_num_want = 92,
 	utia_port = 96,
-	utia_size = 96,
+	utia_size = 98,
 
 	utis_size = 16,
 
 	uto_action = 0,
 	uto_transaction_id = 4,
+	uto_size = 8,
 
 	utoc_connection_id = 8,
 	utoc_size = 16,
