@@ -34,6 +34,7 @@ public:
 		bool show_advanced_columns;
 		bool show_tray_icon;
 		bool start_minimized;
+		int torrent_limit;
 		int tracker_port;
 		int upload_rate;
 		int upload_slots;
@@ -64,6 +65,7 @@ public:
 	CString	m_completes_dir;
 	CString	m_incompletes_dir;
 	CString	m_torrents_dir;
+	int		m_torrent_limit;
 	//}}AFX_DATA
 
 
