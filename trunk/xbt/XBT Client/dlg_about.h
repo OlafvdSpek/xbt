@@ -9,6 +9,7 @@
 //
 
 #include "resource.h"
+#include "URLStatic.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // Cdlg_about dialog
@@ -22,7 +23,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(Cdlg_about)
 	enum { IDD = IDD_ABOUT };
-	CStatic	m_site;
+	CURLStatic	m_site;
 	//}}AFX_DATA
 
 
