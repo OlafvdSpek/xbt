@@ -16,8 +16,7 @@ CREATE TABLE xbt_announce_log
 CREATE TABLE xbt_config
 (
   name varchar(255) NOT NULL,
-  value varchar(255),
-  PRIMARY KEY (name)
+  value varchar(255) NOT NULL,
 );
 
 CREATE TABLE xbt_files
