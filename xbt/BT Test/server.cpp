@@ -479,6 +479,32 @@ int Cserver::announce(const string& id)
 	return 1;
 }
 
+int Cserver::pause_file(const string& id)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != id)
+			continue;
+		i->m_run = true;
+		return 0;
+	}
+	return 1;
+}
+
+int Cserver::unpause_file(const string& id)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != id)
+			continue;
+		i->m_run = false;
+		return 0;
+	}
+	return 1;
+}
+
 int Cserver::start_file(const string& id)
 {
 	Clock l(m_cs);

@@ -254,6 +254,8 @@ BEGIN
             MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
             MENUITEM SEPARATOR
             MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
+            MENUITEM "Pause",                       ID_POPUP_TORRENT_PAUSE
+            MENUITEM "Unpause",                     ID_POPUP_TORRENT_UNPAUSE
             MENUITEM "Start",                       ID_POPUP_START
             MENUITEM "Stop",                        ID_POPUP_STOP
             MENUITEM SEPARATOR

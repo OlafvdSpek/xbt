@@ -60,6 +60,8 @@ public:
 	void load_state(const Cvirtual_binary&);
 	int close(const string& id, bool erase = false);
 	int announce(const string& id);
+	int pause_file(const string& id);
+	int unpause_file(const string& id);
 	int start_file(const string& id);
 	int stop_file(const string& id);
 	string get_url(const string& id);

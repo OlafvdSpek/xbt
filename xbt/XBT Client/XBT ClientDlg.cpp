@@ -162,7 +162,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_WM_QUERYDRAGICON()
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_FILES, OnGetdispinfoFiles)
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_PEERS, OnGetdispinfoPeers)
-	ON_WM_SIZE()
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_FILES, OnItemchangedFiles)
 	ON_WM_TIMER()
 	ON_COMMAND(ID_POPUP_OPEN, OnPopupOpen)
@@ -232,7 +231,12 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PRIORITY_NORMAL, OnUpdatePopupTorrentPriorityNormal)
 	ON_COMMAND(ID_POPUP_VIEW_PIECES, OnPopupViewPieces)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_PIECES, OnUpdatePopupViewPieces)
+	ON_WM_SIZE()
 	ON_WM_INITMENU()
+	ON_COMMAND(ID_POPUP_TORRENT_PAUSE, OnPopupTorrentPause)
+	ON_COMMAND(ID_POPUP_TORRENT_UNPAUSE, OnPopupTorrentUnpause)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_UNPAUSE, OnUpdatePopupTorrentUnpause)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_TORRENT_PAUSE, OnUpdatePopupTorrentPause)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -1235,6 +1239,28 @@ void CXBTClientDlg::OnPopupAnnounce()
 }
 
 void CXBTClientDlg::OnUpdatePopupAnnounce(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
+}
+
+void CXBTClientDlg::OnPopupTorrentPause() 
+{
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+		m_server.pause_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+}
+
+void CXBTClientDlg::OnUpdatePopupTorrentPause(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
+}
+
+void CXBTClientDlg::OnPopupTorrentUnpause() 
+{
+	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
+		m_server.unpause_file(m_files_map.find(m_files.GetItemData(index))->second.info_hash);
+}
+
+void CXBTClientDlg::OnUpdatePopupTorrentUnpause(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);	
 }
@@ -2520,4 +2546,3 @@ void CXBTClientDlg::OnUpdatePopupTorrentPriorityLow(CCmdUI* pCmdUI)
 	pCmdUI->Enable(m_files.GetNextItem(-1, LVNI_SELECTED) != -1);
 	pCmdUI->SetCheck(get_torrent_priority() == -1);
 }
-
