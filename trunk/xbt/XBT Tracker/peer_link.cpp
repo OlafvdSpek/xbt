@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "peer_link.h"
 
+#include "bt_misc.h"
 #include "server.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -18,9 +19,9 @@ Cpeer_link::Cpeer_link()
 Cpeer_link::Cpeer_link(int h, int p, Cserver* server, const string& file_id, int peer_id)
 {
 	if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
-		cerr << "socket failed: " << WSAGetLastError() << endl;
+		cerr << "socket failed: " << error2a(WSAGetLastError()) << endl;
 	else if (m_s.connect(h, p) && WSAGetLastError() != WSAEWOULDBLOCK)
-		cerr << "connect failed: " << WSAGetLastError() << endl;
+		cerr << "connect failed: " << error2a(WSAGetLastError()) << endl;
 	m_ctime = time(NULL);
 	m_server = server;
 	m_file_id = file_id;
