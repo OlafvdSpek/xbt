@@ -61,6 +61,9 @@ public:
 	//}}AFX_VIRTUAL
 
 protected:
+	afx_msg long OnAreYouMe(WPARAM, LPARAM);
+	afx_msg long OnTaskbarCreated(WPARAM, LPARAM);
+	afx_msg long OnTray(WPARAM, LPARAM);
 	afx_msg void OnContextMenu(CWnd*, CPoint point);
 	void OnTrayMenu();
 	afx_msg void OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult);
@@ -157,6 +160,7 @@ protected:
 	afx_msg void OnFileDelete();
 	afx_msg void OnUpdateFileDelete(CCmdUI* pCmdUI);
 	afx_msg void OnHelpHomePage();
+	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
