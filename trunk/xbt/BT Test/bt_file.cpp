@@ -959,3 +959,21 @@ int Cbt_file::upload_slots_min() const
 {
 	return m_upload_slots_min_override ? m_upload_slots_min : m_server->torrent_upload_slots_min();
 }
+
+void Cbt_file::trackers(const string& v)
+{
+	m_trackers.clear();
+	for (int i = 0; i < v.length(); )
+	{
+		int j = v.find_first_of("\n\r ", i);
+		if (i == j)
+		{
+			i++;
+			continue;
+		}
+		if (j == string::npos)
+			j = v.length();
+		m_trackers.push_back(v.substr(i, j - i));
+		i = j + 1;
+	}
+}

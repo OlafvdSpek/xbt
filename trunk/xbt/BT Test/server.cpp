@@ -628,6 +628,18 @@ void Cserver::torrent_seeding_ratio(const string &file_id, bool override, int v)
 	}
 }
 
+void Cserver::torrent_trackers(const string& file_id, const string& v)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != file_id)
+			continue;
+		i->trackers(v);
+		return;
+	}
+}
+
 void Cserver::torrent_upload_slots_max(const string& file_id, bool override, int v)
 {
 	Clock l(m_cs);
