@@ -288,3 +288,8 @@ int mkpath(const string& v)
 	}
 	return 0;
 }
+
+int hms2i(int h, int m, int s)
+{
+	return 60 * (h + 60 * m) + s;
+}
