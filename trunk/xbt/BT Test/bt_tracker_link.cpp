@@ -180,9 +180,10 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			{
 				if (r == SOCKET_ERROR)
 				{
-					if (WSAGetLastError() != WSAEWOULDBLOCK)
+					int e = WSAGetLastError();
+					if (e != WSAEWOULDBLOCK)
 					{
-						f.alert(Calert(Calert::error, "Tracker: HTTP: recv failed"));
+						f.alert(Calert(Calert::error, "Tracker: HTTP: recv failed:" + n(e)));
 						close();
 					}
 					return;
@@ -339,6 +340,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 			}
 		}
 	}
+	f.alert(Calert(Calert::error, "Tracker: Invalid HTTP output"));
 	return 1;
 }
 

@@ -133,12 +133,14 @@ bool is_private_ipa(int a)
 		|| (ntohl(a) & 0xffff0000) == 0xc0a80000;
 }
 
-string b2a(__int64 v)
+string b2a(__int64 v, const char* postfix)
 {
 	int l;
 	for (l = 0; v < -9999 || v > 9999; l++)
 		v >>= 10;
 	const char* a[] = {"", " k", " m", " g", " t", " p"};
+	if (postfix)
+		return n(v) + (l ? a[l] : " ") + postfix;
 	return n(v) + a[l];
 }
 
@@ -191,6 +193,18 @@ string peer_id2a(const string& v)
 					break;
 			}
 			return "BitTornado " + v.substr(1, i - 1) + " - " + hex_encode(v.substr(i));
+		}
+		break;
+	case 'U':
+		if (v[7] == '-')
+		{
+			int i;
+			for (i = 1; i < 7; i++)
+			{
+				if (!isalnum(v[i]))
+					break;
+			}
+			return "U " + v.substr(1, i - 1) + " - " + hex_encode(v.substr(i));
 		}
 		break;
 	case 'X':
