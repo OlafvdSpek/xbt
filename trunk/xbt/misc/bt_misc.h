@@ -24,6 +24,7 @@ string hex_decode(const string&);
 string hex_encode(int l, int v);
 string hex_encode(const string& v);
 string peer_id2a(const string& v);
+string time2a(time_t v);
 string uri_decode(const string& v);
 string uri_encode(const string& v);
 

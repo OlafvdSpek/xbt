@@ -178,6 +178,8 @@ public:
 	Cbt_tracker_link m_tracker;
 	t_trackers m_trackers;
 	Cvirtual_binary m_info;
+	int m_started_at;
+	int m_completed_at;
 	int mc_leechers_total;
 	int mc_seeders_total;
 

@@ -112,6 +112,8 @@ void Cdlg_files::load_data()
 	bool run = sr.read_int(4);
 	sr.read_int(4);
 	sr.read_int(4);
+	sr.read_int(4);
+	sr.read_int(4);
 	int c_files = sr.read_int(4);
 	for (int i = 0; i < c_files; i++)
 	{
