@@ -78,17 +78,32 @@ public:
 
 		t_file()
 		{
-			announced = completed = fid = leechers = scraped = seeders = started = stopped = 0;
+			announced_http = 0;
+			announced_http_compact = 0;
+			announced_http_no_peer_id = 0;
+			announced_udp = 0;
+			completed = 0;
 			dirty = true;
+			fid = 0;
+			leechers = 0;
+			scraped_http = 0;
+			scraped_udp = 0;
+			seeders = 0;
+			started = 0;
+			stopped = 0;
 		}
 
 		t_peers peers;
-		int announced;
+		int announced_http;
+		int announced_http_compact;
+		int announced_http_no_peer_id;
+		int announced_udp;
 		int completed;
 		bool dirty;
 		int fid;
 		int leechers;
-		int scraped;
+		int scraped_http;
+		int scraped_udp;
 		int seeders;
 		int started;
 		int stopped;
@@ -106,9 +121,10 @@ public:
 	const t_user* find_user(const string&) const;
 	void read_config();
 	void write_db();
-	void read_db();
+	void read_db_files();
+	void read_db_users();
 	void clean_up();
-	void insert_peer(const Ctracker_input&);
+	void insert_peer(const Ctracker_input&, bool udp);
 	void update_peer(const string& file_id, int peer_id, bool listening);
 	string debug(const Ctracker_input&) const;
 	Cbvalue select_peers(const Ctracker_input&);
@@ -168,7 +184,8 @@ private:
 
 	int m_clean_up_time;
 	int m_read_config_time;
-	int m_read_db_time;
+	int m_read_db_files_time;
+	int m_read_db_users_time;
 	int m_write_db_time;
 	int m_announce_interval;
 	int m_clean_up_interval;

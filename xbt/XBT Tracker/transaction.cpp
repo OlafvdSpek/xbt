@@ -136,7 +136,7 @@ void Ctransaction::send_announce(const t_udp_tracker_input_announce& uti, const 
 	ti.m_peer_id = uti.peer_id();
 	ti.m_port = uti.port();
 	ti.m_uploaded = uti.uploaded();
-	m_server.insert_peer(ti);
+	m_server.insert_peer(ti, true);
 	const Cserver::t_files& files = m_server.files();
 	Cserver::t_files::const_iterator i = files.find(ti.m_info_hash);
 	if (i == files.end())
