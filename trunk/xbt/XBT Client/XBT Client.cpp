@@ -50,12 +50,25 @@ BOOL CXBTClientApp::InitInstance()
 #else
 	Enable3dControlsStatic();	// Call this when linking to MFC statically
 #endif
+	AfxBeginThread(backend_thread, this);
+
+	CCommandLineInfo cmdInfo;
+	ParseCommandLine(cmdInfo);
 
 	CXBTClientDlg dlg;
 	m_pMainWnd = &dlg;
+	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen && !cmdInfo.m_strFileName.IsEmpty())
+		dlg.open(static_cast<string>(cmdInfo.m_strFileName));
 	dlg.DoModal();
 
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
 	return FALSE;
 }
+
+unsigned int CXBTClientApp::backend_thread(void* p)
+{
+	reinterpret_cast<CXBTClientApp*>(p)->m_server.run();
+	return 0;
+}
+

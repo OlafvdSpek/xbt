@@ -40,6 +40,7 @@ RSC=rc.exe
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /c
@@ -52,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /machine:I386
+# ADD LINK32 zdll.lib /nologo /subsystem:windows /machine:I386
 
 !ELSEIF  "$(CFG)" == "XBT Client - Win32 Debug"
 
@@ -65,9 +66,10 @@ LINK32=link.exe
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
+# PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ  /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ   /c
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x413 /d "_DEBUG" /d "_AFXDLL"
@@ -77,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 zdll.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -90,8 +92,72 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE="..\BT Test\bt_admin_link.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_file.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\bt_misc.cpp
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_peer_link.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_piece.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_pl_write_data.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_tracker_link.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\bvalue.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\cgfiltyp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\data_counter.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\ETSLayout.cpp
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\ring_buffer.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\server.cpp"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\sha1.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\socket.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\virtual_binary.cpp
 # End Source File
 # Begin Source File
 
@@ -105,13 +171,53 @@ SOURCE=".\XBT Client.rc"
 
 SOURCE=".\XBT ClientDlg.cpp"
 # End Source File
+# Begin Source File
+
+SOURCE=..\misc\xcc_z.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE="..\BT Test\bt_admin_link.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_file.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_peer_link.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_piece.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_pl_write_data.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\bt_tracker_link.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\data_counter.h"
+# End Source File
+# Begin Source File
+
 SOURCE=.\Resource.h
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\ring_buffer.h"
+# End Source File
+# Begin Source File
+
+SOURCE="..\BT Test\server.h"
 # End Source File
 # Begin Source File
 
