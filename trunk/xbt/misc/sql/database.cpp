@@ -21,12 +21,13 @@ Cxcc_error Cdatabase::open(const string& host, const string& user, const string&
 	return open(host.c_str(), user.c_str(), password.c_str(), database.c_str(), echo_errors);
 }
 
-Cxcc_error Cdatabase::open(istream& is, bool echo_errors)
+Cxcc_error Cdatabase::open(const string& conf_file, bool echo_errors)
 {
 	string host; 
 	string user; 
 	string password; 
 	string database;
+	ifstream is(conf_file.c_str());
 	is >> database >> host >> user >> password;
 	return is ? open(host, user, password, database, echo_errors) : Cxcc_error("Unable to read static config");
 }
