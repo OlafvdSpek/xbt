@@ -181,14 +181,21 @@ void Cserver::run()
 					continue;
 				sockaddr_in a;
 				socklen_t cb_a = sizeof(sockaddr_in);
-				Csocket s = accept(*i, reinterpret_cast<sockaddr*>(&a), &cb_a);
-				if (s == SOCKET_ERROR)
-					cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-				else
+				while (1)
 				{
-					if (s.blocking(false))
-						cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-					m_connections.push_front(Cconnection(this, s, a));
+					Csocket s = accept(*i, reinterpret_cast<sockaddr*>(&a), &cb_a);
+					if (s == SOCKET_ERROR)
+					{
+						if (WSAGetLastError() != WSAEWOULDBLOCK)
+							cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+						break;
+					}
+					else
+					{
+						if (s.blocking(false))
+							cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+						m_connections.push_front(Cconnection(this, s, a));
+					}
 				}
 			}
 			for (t_sockets::iterator i = lu.begin(); i != lu.end(); i++)
