@@ -303,7 +303,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 		string(AfxGetApp()->GetProfileString(m_reg_key, "local_app_data_dir")),
 		string(AfxGetApp()->GetProfileString(m_reg_key, "torrents_dir")));
 	m_hide_on_deactivate = AfxGetApp()->GetProfileInt(m_reg_key, "hide_on_deactivate", false);
-	lower_process_priority(AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", true));
+	lower_process_priority(AfxGetApp()->GetProfileInt(m_reg_key, "lower_process_priority", false));
 	m_server.peer_limit(AfxGetApp()->GetProfileInt(m_reg_key, "peer_limit", m_server.peer_limit()));
 	m_server.peer_port(AfxGetApp()->GetProfileInt(m_reg_key, "peer_port", m_server.peer_port()));
 	string public_ipa = AfxGetApp()->GetProfileString(m_reg_key, "public_ipa", "");
