@@ -165,6 +165,7 @@ int Cserver::run()
 		if (sigaction(SIGTERM, &act, NULL))
 			cerr << "sigaction failed" << endl;
 #endif
+		m_save_state_time = time(NULL);
 		fd_set fd_read_set;
 		fd_set fd_write_set;
 		fd_set fd_except_set;
