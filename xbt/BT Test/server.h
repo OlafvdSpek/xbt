@@ -157,6 +157,11 @@ public:
 		return m_config.m_log_peer_send_failures;
 	}
 
+	bool log_piece_valid() const
+	{
+		return m_config.m_log_piece_valid;
+	}
+
 	Cbt_logger& logger()
 	{
 		return m_logger;
