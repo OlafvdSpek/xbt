@@ -922,7 +922,7 @@ class db_driver {
 		{
 			if ( ! $this->manual_addslashes )
 			{
-				$v = preg_replace( "/'/", "\\'", $v );
+				$v = addslashes( $v );
 			}
 
 			$field_names  .= "$k,";
@@ -986,7 +986,7 @@ class db_driver {
 		{
 			if ( ! $this->manual_addslashes )
 			{
-				$v = preg_replace( "/'/", "\\'", $v );
+				$v = addslashes( $v );
 			}
 
 			//-----------------------------------------
