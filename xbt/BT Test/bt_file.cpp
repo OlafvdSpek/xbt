@@ -7,7 +7,6 @@
 
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <io.h>
 #include "bt_hasher.h"
 #include "bt_strings.h"
 #include "server.h"
@@ -95,7 +94,7 @@ int Cbt_file::info(const Cbvalue& info)
 void Cbt_file::t_sub_file::close()
 {
 	if (m_f != -1)
-		_close(m_f);
+		::_close(m_f);
 	m_f = -1;
 }
 
@@ -110,7 +109,7 @@ void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 
 bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 {
-	m_f = _open((parent_name + m_name).c_str(), oflag | _O_BINARY, _S_IREAD | _S_IWRITE);
+	m_f = ::_open((parent_name + m_name).c_str(), oflag | _O_BINARY, _S_IREAD | _S_IWRITE);
 	return *this;
 }
 
@@ -123,14 +122,14 @@ int Cbt_file::t_sub_file::read(__int64 offset, void* s, int cb_s)
 {
 	return !*this
 		|| _lseeki64(m_f, offset, SEEK_SET) != offset
-		|| _read(m_f, s, cb_s) != cb_s;
+		|| ::_read(m_f, s, cb_s) != cb_s;
 }
 
 int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
 {
 	return !*this
-		|| _lseeki64(m_f, offset, SEEK_SET) != offset
-		|| _write(m_f, s, cb_s) != cb_s;
+		|| ::_lseeki64(m_f, offset, SEEK_SET) != offset
+		|| ::_write(m_f, s, cb_s) != cb_s;
 }
 
 int Cbt_file::open(const string& name)
@@ -308,7 +307,11 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 						int a = path.find_first_of("/\\", i);
 						if (a == string::npos)
 							break;
+#ifdef WIN32
 						CreateDirectory(path.substr(0, a).c_str(), NULL);
+#else
+						mkdir(path.substr(0, a).c_str(), 0777);
+#endif
 						i = a + 1;
 					}
 					if (i->open(m_name, _O_CREAT | _O_RDWR))
@@ -344,9 +347,7 @@ void Cbt_file::write_data(__int64 offset, const char* s, int cb_s)
 		piece.m_valid = true;
 		m_left -= piece.mcb_d;
 		if (!m_left)
-		{
-			m_tracker.event(Cbt_tracker_link::t_event::e_completed);
-		}
+			m_tracker.event(Cbt_tracker_link::e_completed);
 		{
 			offset = a * mcb_piece;
 			size = mcb_piece;
