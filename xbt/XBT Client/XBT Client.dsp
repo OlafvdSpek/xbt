@@ -132,6 +132,10 @@ SOURCE="..\BT Test\bt_tracker_link.cpp"
 # End Source File
 # Begin Source File
 
+SOURCE=..\misc\bt_tracker_url.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\bvalue.cpp
 # End Source File
 # Begin Source File
@@ -250,6 +254,10 @@ SOURCE=..\misc\bt_torrent.h
 # Begin Source File
 
 SOURCE="..\BT Test\bt_tracker_link.h"
+# End Source File
+# Begin Source File
+
+SOURCE=..\misc\bt_tracker_url.h
 # End Source File
 # Begin Source File
 
