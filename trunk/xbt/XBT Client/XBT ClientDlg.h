@@ -158,6 +158,9 @@ private:
 		int c_seeders;
 		int c_leechers_total;
 		int c_seeders_total;
+		int c_invalid_pieces;
+		int c_valid_pieces;
+		int cb_piece;
 		bool hashing;
 		bool running;
 		bool removed;

@@ -84,6 +84,9 @@ void Cdlg_torrent::load_data()
 	int c_seeders = sr.read_int(4);
 	sr.read_int(4);
 	sr.read_int(4);
+	sr.read_int(4);
+	sr.read_int(4);
+	sr.read_int(4);
 	bool run = sr.read_int(4);
 	sr.read_int(4);
 	m_alerts.DeleteAllItems();

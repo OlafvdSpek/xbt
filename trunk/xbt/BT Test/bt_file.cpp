@@ -540,7 +540,7 @@ ostream& operator<<(ostream& os, const Cbt_file& v)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 100;
+	int size = m_info_hash.length() + m_name.length() + 112;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -588,6 +588,9 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, c_seeders());
 	w.write_int(4, mc_leechers_total);
 	w.write_int(4, mc_seeders_total);
+	w.write_int(4, c_invalid_pieces());
+	w.write_int(4, c_valid_pieces());
+	w.write_int(4, mcb_piece);
 	w.write_int(4, m_hasher ? 2 : m_run);
 	if (flags & Cserver::df_peers)
 	{
