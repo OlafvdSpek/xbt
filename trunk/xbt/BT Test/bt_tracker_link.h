@@ -29,7 +29,6 @@ public:
 	void event(int);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
-	ostream& dump(ostream&) const;
 	void close(Cbt_file&);
 	int read(Cbt_file& f, const Cvirtual_binary&);
 	int pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
@@ -52,8 +51,6 @@ private:
 	int m_current_tracker;
 	int m_event;
 };
-
-ostream& operator<<(ostream&, const Cbt_tracker_link&);
 
 #endif // !defined(AFX_BT_TRACKER_LINK_H__19566F35_0475_4CE0_BF87_19345BBD0E42__INCLUDED_)
 

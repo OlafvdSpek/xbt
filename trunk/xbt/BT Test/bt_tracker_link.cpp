@@ -374,16 +374,6 @@ void Cbt_tracker_link::close(Cbt_file& f)
 		m_current_tracker = 0;
 }
 
-ostream& Cbt_tracker_link::dump(ostream& os) const
-{
-	return os;
-}
-
-ostream& operator<<(ostream& os, const Cbt_tracker_link& v)
-{
-	return v.dump(os);
-}
-
 int Cbt_tracker_link::pre_dump() const
 {
 	int size = 0;
