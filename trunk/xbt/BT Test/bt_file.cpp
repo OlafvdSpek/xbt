@@ -520,7 +520,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 164;
+	int size = m_info_hash.length() + m_name.length() + 168;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -539,6 +539,11 @@ int Cbt_file::pre_dump(int flags) const
 	if (flags & Cserver::df_files)
 	{
 		for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+			size += i->pre_dump();
+	}
+	if (flags & Cserver::df_pieces)
+	{
+		for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 			size += i->pre_dump();
 	}
 	return size;
@@ -618,6 +623,14 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	{
 		w.write_int(4, m_sub_files.size());
 		for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
+			i->dump(w);
+	}
+	else
+		w.write_int(4, 0);
+	if (flags & Cserver::df_pieces)
+	{
+		w.write_int(4, m_pieces.size());
+		for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
 			i->dump(w);
 	}
 	else

@@ -44,3 +44,36 @@ int Cbt_piece::cb_sub_piece(int b)
 {
 	return min(mcb_sub_piece * (b + 1), mcb_d) - mcb_sub_piece * b;
 }
+
+int Cbt_piece::pre_dump() const
+{
+	return 12;
+}
+
+int Cbt_piece::rank() const
+{
+	return 400000 * min(m_peers.size(), 9)
+		+ 20000 * max(0, min(9 - m_priority, 19)) 
+		+ 2000 * min(mc_peers, 9)
+		+ 1000 * m_sub_pieces.empty()
+		+ min(mc_peers, 999);
+}
+
+void Cbt_piece::dump(Cstream_writer& w) const
+{
+	if (m_sub_pieces.empty())
+	{
+		w.write_int(1, 0);
+		w.write_int(1, 0);
+	}
+	else
+	{
+		w.write_int(1, mc_sub_pieces_left);
+		w.write_int(1, c_sub_pieces() - mc_sub_pieces_left);
+	}
+	w.write_int(4, mc_peers);
+	w.write_int(1, m_priority);
+	w.write_int(4, rank());
+	w.write_int(1, m_valid);
+}
+
