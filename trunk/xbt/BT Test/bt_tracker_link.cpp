@@ -10,17 +10,6 @@
 #include "bt_strings.h"
 #include "xcc_z.h"
 
-enum
-{
-	tp_http,
-	tp_udp,
-	tp_unknown
-};
-
-enum
-{
-};
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -29,6 +18,7 @@ Cbt_tracker_link::Cbt_tracker_link()
 {
 	m_announce_time = 0;
 	mc_attempts = 0;
+	m_current_tracker = 0;
 	m_event = e_started;
 	m_state = 0;
 }
@@ -37,56 +27,27 @@ Cbt_tracker_link::~Cbt_tracker_link()
 {
 }
 
-static int split_url(const string& url, int& protocol, string& address, int& port, string& path)
-{
-	int a = url.find("://");
-	if (a == string::npos)
-		return 1;
-	int b = url.find(':', a + 3);
-	int c = url.find('/', a + 3);
-	if (c == string::npos)
-		return 1;
-	if (url.substr(0, a) == "http")
-		protocol = tp_http;
-	else if (url.substr(0, a) == "udp")
-		protocol = tp_udp;
-	else 
-		protocol = tp_unknown;
-	if (b == string::npos || b > c)
-	{
-		address = url.substr(a + 3, c - a - 3);
-		port = 80;
-	}
-	else
-	{
-		address = url.substr(a + 3, b - a - 3);
-		port = atoi(url.substr(b + 1, c - b - 1).c_str());
-		if (port == 2710)
-			protocol = tp_udp;
-	}
-	path = url.substr(c);
-	return 0;
-}
-
 int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
 	switch (m_state)
 	{
 	case 0:
-		if (!f.m_run || m_announce_time > time(NULL))
+		assert(m_current_tracker >= 0 && m_current_tracker < f.m_trackers.size());
+		if (!f.m_run || m_announce_time > time(NULL) || m_current_tracker < 0 || m_current_tracker >= f.m_trackers.size())
 			return 0;
-		if (split_url(f.m_trackers.front(), m_protocol, m_host, m_port, m_path))
+		m_url = f.m_trackers[m_current_tracker];
+		if (!m_url.valid())
 			return 0;
-		switch (m_protocol)
+		switch (m_url.m_protocol)
 		{
-		case tp_http:
-			f.alert(Calert(Calert::info, "Tracker: URL: http://" + m_host + ':' + n(m_port) + m_path + "?info_hash=" + uri_encode(f.m_info_hash)));		
+		case Cbt_tracker_url::tp_http:
+			f.alert(Calert(Calert::info, "Tracker: URL: http://" + m_url.m_host + ':' + n(m_url.m_port) + m_url.m_path + "?info_hash=" + uri_encode(f.m_info_hash)));		
 			m_announce_time = time(NULL) + (300 << mc_attempts++);
 			if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
 				return 0;
 			break;
-		case tp_udp:
-			f.alert(Calert(Calert::info, "Tracker: URL: udp://" + m_host + ':' + n(m_port) + "?info_hash=" + uri_encode(f.m_info_hash)));
+		case Cbt_tracker_url::tp_udp:
+			f.alert(Calert(Calert::info, "Tracker: URL: udp://" + m_url.m_host + ':' + n(m_url.m_port) + "?info_hash=" + uri_encode(f.m_info_hash)));
 			m_announce_time = time(NULL) + (60 << mc_attempts++);
 			if (m_s.open(SOCK_DGRAM) == INVALID_SOCKET)
 				return 0;
@@ -95,23 +56,27 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 			return 0;
 		}
 		{
-			int h = Csocket::get_host(m_host);
+			int h = Csocket::get_host(m_url.m_host);
 			if (h == INADDR_NONE)
 			{
 				f.alert(Calert(Calert::error, "Tracker: gethostbyname failed"));
+				close(f);
 				return 0;
 			}
-			if (m_s.connect(h, htons(m_port)) && WSAGetLastError() != WSAEWOULDBLOCK)
+			if (m_s.connect(h, htons(m_url.m_port)) && WSAGetLastError() != WSAEWOULDBLOCK)
 				return 0;
-		}
-		if (m_protocol == tp_udp)
+			in_addr a;
+			a.s_addr = h;
+			f.alert(Calert(Calert::info, "Tracker: IPA: " + static_cast<string>(inet_ntoa(a))));
+		}		
+		if (m_url.m_protocol == Cbt_tracker_url::tp_udp)
 		{
 			t_udp_tracker_input_connect uti;
 			uti.action(uta_connect);
 			uti.transaction_id(m_transaction_id = rand());
 			if (m_s.send(&uti, sizeof(t_udp_tracker_input_connect)) != sizeof(t_udp_tracker_input_connect))
 			{
-				close();
+				close(f);
 				return 0;
 			}
 			f.alert(Calert(Calert::debug, "Tracker: UDP: connect send"));
@@ -143,7 +108,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 		if (FD_ISSET(m_s, fd_write_set))
 		{
 			strstream os;
-			os << "GET " << m_path 
+			os << "GET " << m_url.m_path 
 				<< "?info_hash=" << uri_encode(f.m_info_hash) 
 				<< "&peer_id=" << uri_encode(f.m_peer_id) 
 				<< "&port=" << f.m_local_port
@@ -173,17 +138,17 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			m_event = e_none;			
 			os << " HTTP/1.0" << endl
 				<< "accept-encoding: gzip" << endl
-				<< "host: " << m_host << ':' << m_port << endl
+				<< "host: " << m_url.m_host << ':' << m_url.m_port << endl
 				<< endl;
 			if (m_s.send(os.str(), os.pcount()) != os.pcount())
-				close();
+				close(f);
 			else
 				m_state = 2;
 		}
 		else if (FD_ISSET(m_s, fd_except_set))
 		{
 			f.alert(Calert(Calert::error, "Tracker: HTTP: connect failed"));
-			close();
+			close(f);
 		}
 		break;
 	case 2:
@@ -197,7 +162,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					if (e != WSAEWOULDBLOCK)
 					{
 						f.alert(Calert(Calert::error, "Tracker: HTTP: recv failed:" + n(e)));
-						close();
+						close(f);
 					}
 					return;
 				}
@@ -205,7 +170,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			}
 			m_d.size(m_w - m_d);
 			read(f, m_d);
-			close();
+			close(f);
 		}
 		break;
 	case 3:
@@ -236,7 +201,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					uti.port(htons(f.m_local_port));
 					if (m_s.send(&uti, sizeof(t_udp_tracker_input_announce)) != sizeof(t_udp_tracker_input_announce))
 					{
-						close();
+						close(f);
 						return;
 					}
 					f.alert(Calert(Calert::debug, "Tracker: UDP: announce send"));
@@ -246,7 +211,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			}				
 		}
 		else if (time(NULL) - m_connect_send > 15)
-			close();
+			close(f);
 		break;
 	case 4:
 		if (FD_ISSET(m_s, fd_read_set))
@@ -272,11 +237,11 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 						f.insert_peer(a);
 					}
 				}
-				close();
+				close(f);
 			}
 		}
 		else if (time(NULL) - m_announce_send > 15)
-			close();
+			close(f);
 		break;
 	}
 }
@@ -342,10 +307,22 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 	return 1;
 }
 
-void Cbt_tracker_link::close()
+void Cbt_tracker_link::close(Cbt_file& f)
 {
 	m_s.close();
 	m_state = 0;
+	if (!mc_attempts)
+	{
+		swap(f.m_trackers[0], f.m_trackers[m_current_tracker]);
+		m_current_tracker = 0;
+	}
+	else if (++m_current_tracker < f.m_trackers.size())
+	{
+		m_announce_time = 0;
+		mc_attempts = 0;
+	}
+	else
+		m_current_tracker = 0;
 }
 
 ostream& Cbt_tracker_link::dump(ostream& os) const
