@@ -9,6 +9,8 @@ class CListCtrlEx: public CListCtrl
 {
 public:
 	//{{AFX_VIRTUAL(CListCtrlEx)
+	public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void PreSubclassWindow();
 	//}}AFX_VIRTUAL

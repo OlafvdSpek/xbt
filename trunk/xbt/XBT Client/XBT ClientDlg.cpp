@@ -1297,6 +1297,21 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 	{
 		switch (pMsg->wParam)
 		{
+		case '1':
+			OnPopupViewDetails();
+			return true;
+		case '2':
+			OnPopupViewEvents();
+			return true;
+		case '3':
+			OnPopupViewFiles();
+			return true;
+		case '4':
+			OnPopupViewPeers();
+			return true;
+		case '5':
+			OnPopupViewTrackers();
+			return true;
 		case VK_CANCEL:
 		case VK_ESCAPE:
 			ShowWindow(SW_HIDE);
@@ -1900,45 +1915,38 @@ void CXBTClientDlg::set_clipboard(const string& v)
 	GlobalFree(h);
 }
 
-
-void CXBTClientDlg::OnPopupViewDetails()
+void CXBTClientDlg::set_bottom_view(int v)
 {
-	m_bottom_view = v_details;
+	m_peers.DeleteAllItems();
+	m_bottom_view = v;
 	m_peers_sort_column = -1;
 	insert_bottom_columns();
 	fill_peers();
+}
+
+void CXBTClientDlg::OnPopupViewDetails()
+{
+	set_bottom_view(v_details);
 }
 
 void CXBTClientDlg::OnPopupViewEvents()
 {
-	m_bottom_view = v_events;
-	m_peers_sort_column = -1;
-	insert_bottom_columns();
-	fill_peers();
+	set_bottom_view(v_events);
 }
 
 void CXBTClientDlg::OnPopupViewFiles()
 {
-	m_bottom_view = v_files;
-	m_peers_sort_column = -1;
-	insert_bottom_columns();
-	fill_peers();
+	set_bottom_view(v_files);
 }
 
 void CXBTClientDlg::OnPopupViewPeers()
 {
-	m_bottom_view = v_peers;
-	m_peers_sort_column = pc_client;
-	insert_bottom_columns();
-	fill_peers();
+	set_bottom_view(v_peers);
 }
 
 void CXBTClientDlg::OnPopupViewTrackers()
 {
-	m_bottom_view = v_trackers;
-	m_peers_sort_column = -1;
-	insert_bottom_columns();
-	fill_peers();
+	set_bottom_view(v_trackers);
 }
 
 void CXBTClientDlg::OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult)
