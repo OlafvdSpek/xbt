@@ -7,7 +7,6 @@
 
 #include "bt_misc.h"
 #include "bt_strings.h"
-#include "server.h"
 #include "sha1.h"
 
 template <class T>
