@@ -97,29 +97,33 @@ void Ctransaction::recv()
 {
 	const int cb_b = 2 << 10;
 	char b[cb_b];
-	socklen_t cb_a = sizeof(sockaddr_in);
-	int r = m_s.recvfrom(b, cb_b, reinterpret_cast<sockaddr*>(&m_a), &cb_a);
-	if (r == SOCKET_ERROR)
+	while (1)
 	{
-		cerr << "recv failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-		return;
-	}
-	if (r < uti_size)
-		return;
-	switch (read<__int32>(b + uti_action, b + r))
-	{
-	case uta_connect:
-		if (r >= utic_size)
-			send_connect(b, b + r);
-		break;
-	case uta_announce:
-		if (r >= utia_size)
-			send_announce(b, b + r);
-		break;
-	case uta_scrape:
-		if (r >= utis_size)
-			send_scrape(b, b + r);
-		break;
+		socklen_t cb_a = sizeof(sockaddr_in);
+		int r = m_s.recvfrom(b, cb_b, reinterpret_cast<sockaddr*>(&m_a), &cb_a);
+		if (r == SOCKET_ERROR)
+		{
+			if (WSAGetLastError() != WSAEWOULDBLOCK)
+				cerr << "recv failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+			return;
+		}
+		if (r < uti_size)
+			return;
+		switch (read<__int32>(b + uti_action, b + r))
+		{
+		case uta_connect:
+			if (r >= utic_size)
+				send_connect(b, b + r);
+			break;
+		case uta_announce:
+			if (r >= utia_size)
+				send_announce(b, b + r);
+			break;
+		case uta_scrape:
+			if (r >= utis_size)
+				send_scrape(b, b + r);
+			break;
+		}
 	}
 }
 
