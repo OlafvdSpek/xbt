@@ -84,6 +84,11 @@ int Csql_result::c_rows() const
 	return mysql_num_rows(h());
 }
 
+void Csql_result::data_seek(int i)
+{
+	mysql_data_seek(h(), i);
+}
+
 Csql_row Csql_result::fetch_row() const
 {
 	MYSQL_ROW data = mysql_fetch_row(h());
