@@ -27,7 +27,7 @@ public:
 	Cbt_logger& logger();
 	void clear_local_requests();
 	int cb_write_buffer() const;
-	void alert(const Calert&);
+	void alert(Calert::t_level, const string&);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	void write_piece(int, int, int, const void*);
@@ -84,6 +84,7 @@ public:
 	{
 		__int64 offset;
 		int size;
+		int stime;
 
 		t_local_request()
 		{
@@ -93,6 +94,7 @@ public:
 		{
 			offset = _offset;
 			size = _size;
+			stime = time(NULL);
 		}
 	};
 

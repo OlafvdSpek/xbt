@@ -366,7 +366,10 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 	}
 	if (piece.write(offset % mcb_piece, s, cb_s))
 	{
-		alert(Calert(Calert::debug, peer->m_a, "Piece " + n(a) + ", offset " + n(offset % mcb_piece) + ", size " + n(cb_s) + ": rejected"));
+		if (offset % piece.cb_sub_piece())
+			alert(Calert(Calert::debug, peer->m_a, "Piece " + n(a) + ", offset " + n(offset % mcb_piece) + ", size " + n(cb_s) + ": rejected"));
+		else
+			alert(Calert(Calert::debug, peer->m_a, "Piece " + n(a) + ", chunk " + n(offset % mcb_piece / piece.cb_sub_piece()) + ", size " + n(cb_s) + ": rejected"));
 		return 1;
 	}
 	int size = cb_s;
