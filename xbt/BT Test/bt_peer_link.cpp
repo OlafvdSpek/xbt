@@ -273,7 +273,8 @@ int Cbt_peer_link::recv()
 	}
 	if (!m_read_b.cb_w())
 		return 0;
-	alert(Calert(Calert::debug, m_a, m_local_link ? "Peer: local link closed" : "Peer: remote link closed"));
+	if (m_f->m_server->log_peer_connection_closures())
+		alert(Calert(Calert::debug, m_a, m_local_link ? "Peer: local link closed" : "Peer: remote link closed"));
 	return 1;
 }
 
