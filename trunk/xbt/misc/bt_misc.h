@@ -22,11 +22,15 @@ enum
 	uta_scrape,
 };
 
+#ifdef _MSC_VER
 #pragma pack(push, 1)
+#else
+#pragma pack(1)
+#endif
 
 struct t_udp_tracker_input
 {
-	char m_connection_id[8];
+	__int64 m_connection_id;
 
 	int action() const
 	{
@@ -274,6 +278,8 @@ private:
 	short m_port;
 };
 
+#ifdef _MSC_VER
 #pragma pack(pop, 1)
+#endif
 
 #endif // !defined(AFX_BT_MISC_H__C8A447CF_4F41_429E_9437_55453B6A85D8__INCLUDED_)
