@@ -7,7 +7,7 @@ const char* g_service_name = "XBT Tracker";
 static SERVICE_STATUS g_service_status;
 static SERVICE_STATUS_HANDLE gh_service_status;
 
-void main1()
+int main1()
 {
 	srand(time(NULL));
 	Cdatabase database;
@@ -17,7 +17,7 @@ void main1()
 		cerr << error.message() << endl;
 	if (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true))
 		cerr << error.message() << endl;
-	Cserver(database).run();
+	return Cserver(database).run();
 }
 
 #ifdef WIN32
@@ -74,21 +74,18 @@ int main(int argc, char* argv[])
 			return 0;
 		}
 	}
+	WSADATA wsadata;
+	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
+		return cerr << "Unable to start WSA" << endl, 1;
 	SERVICE_TABLE_ENTRY st[] = 
 	{
 		{ "", nt_service_main },
 		{ NULL, NULL }
 	};
-	StartServiceCtrlDispatcher(st);
+	if (StartServiceCtrlDispatcher(st))
+		return 0;
 	if (GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)
 		return 1;
-	WSADATA wsadata;
-	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
-		return cerr << "Unable to start WSA" << endl, 1;
 #endif
-	main1();
-#ifdef WIN32
-	WSACleanup();
-#endif
-	return 0;
+	return main1();
 }

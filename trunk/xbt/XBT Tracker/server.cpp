@@ -92,7 +92,7 @@ Cserver::Cserver(Cdatabase& database):
 		m_secret = m_secret << 8 ^ rand();
 }
 
-void Cserver::run()
+int Cserver::run()
 {
 	read_config();
 	t_sockets lt, lu;
@@ -121,7 +121,7 @@ void Cserver::run()
 		}
 	}
 	if (lt.empty() || lu.empty())
-		return;
+		return 1;
 #ifndef WIN32
 	if (m_daemon && daemon(true, false))
 		cerr << "daemon failed" << endl;
@@ -238,6 +238,7 @@ void Cserver::run()
 	}
 	write_db();
 	unlink(g_pid_fname);
+	return 0;
 }
 
 void Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, int uid)

@@ -130,7 +130,7 @@ public:
 	string debug(const Ctracker_input&) const;
 	Cbvalue select_peers(const Ctracker_input&);
 	Cbvalue scrape(const Ctracker_input&);
-	void run();
+	int run();
 	static void term();
 	Cserver(Cdatabase&);
 
