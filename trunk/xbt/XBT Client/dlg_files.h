@@ -14,6 +14,8 @@ class Cdlg_files : public ETSLayoutDialog
 {
 // Construction
 public:
+	int compare(int id_a, int id_b) const;
+	void sort();
 	void auto_size();
 	void load_data();
 	Cdlg_files(CWnd* pParent, Cserver& server, const string& info_hash);   // standard constructor
@@ -43,6 +45,7 @@ protected:
 	afx_msg void OnDecreasePriority();
 	afx_msg void OnIncreasePriority();
 	afx_msg void OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
@@ -61,6 +64,8 @@ private:
 	string m_info_hash;
 	t_map m_map;
 	Cserver& m_server;
+	int m_sort_column;
+	int m_sort_reverse;
 };
 
 //{{AFX_INSERT_LOCATION}}

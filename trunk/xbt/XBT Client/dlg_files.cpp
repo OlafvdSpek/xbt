@@ -41,8 +41,9 @@ BEGIN_MESSAGE_MAP(Cdlg_files, ETSLayoutDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_DECREASE_PRIORITY, OnDecreasePriority)
 	ON_BN_CLICKED(IDC_INCREASE_PRIORITY, OnIncreasePriority)
-	ON_WM_CHAR()
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_FILES, OnGetdispinfoFiles)
+	ON_WM_CHAR()
+	ON_NOTIFY(LVN_COLUMNCLICK, IDC_FILES, OnColumnclickFiles)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -68,6 +69,7 @@ BOOL Cdlg_files::OnInitDialog()
 	m_files.InsertColumn(2, "Left", LVCFMT_RIGHT);
 	m_files.InsertColumn(3, "Size", LVCFMT_RIGHT);
 	m_files.InsertColumn(4, "Priority");
+	m_sort_column = 0;
 	load_data();
 	SetTimer(0, 15000, NULL);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -114,6 +116,7 @@ void Cdlg_files::load_data()
 		for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
 			m_files.SetItemData(m_files.InsertItem(m_files.GetItemCount(), LPSTR_TEXTCALLBACK), i->first);
 	}
+	sort();
 	auto_size();
 }
 
@@ -177,9 +180,57 @@ void Cdlg_files::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		m_buffer[m_buffer_w] = n(e.size);
 		break;
 	case 4:
-		m_buffer[m_buffer_w] = n(e.priority);
+		if (e.priority)
+			m_buffer[m_buffer_w] = n(e.priority);
 		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
 	*pResult = 0;
+}
+
+void Cdlg_files::OnColumnclickFiles(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	m_sort_reverse = pNMListView->iSubItem == m_sort_column && !m_sort_reverse;
+	m_sort_column = pNMListView->iSubItem;
+	sort();
+	*pResult = 0;
+}
+
+template <class T>
+static int compare(const T& a, const T& b)
+{
+	return a < b ? -1 : a != b;
+}
+
+int Cdlg_files::compare(int id_a, int id_b) const
+{
+	if (m_sort_reverse)
+		swap(id_a, id_b);
+	const t_map_entry& a = m_map.find(id_a)->second;
+	const t_map_entry& b = m_map.find(id_b)->second;
+	switch (m_sort_column)
+	{
+	case 0:
+		return ::compare(a.name, b.name);
+	case 1:
+		return ::compare(b.left * 1000 / b.size, a.left * 1000 / a.size);
+	case 2:
+		return ::compare(a.left, b.left);
+	case 3:
+		return ::compare(a.size, b.size);
+	case 4:
+		return ::compare(b.priority, a.priority);
+	}
+	return 0;
+}
+
+static int CALLBACK compare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	return reinterpret_cast<Cdlg_files*>(lParamSort)->compare(lParam1, lParam2);
+}
+
+void Cdlg_files::sort()
+{
+	m_files.SortItems(::compare, reinterpret_cast<DWORD>(this));	
 }
