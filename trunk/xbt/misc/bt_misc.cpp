@@ -212,7 +212,7 @@ string peer_id2a(const string& v)
 		break;
 	case 'e':
 		if (v[1] == 'x' && v[2] == 'b' && v[3] == 'c' && v[4] >= 0 && v[4] < 10 && v[5] >= 0 && v[5] < 100)
-			return "BitComet " + n(v[4]) + '.' + n(v[5]);
+			return "BitComet " + n(v[4]) + '.' + n(v[5] / 10) + n(v[5] % 10);
 	}
 	return "Unknown";
 }
