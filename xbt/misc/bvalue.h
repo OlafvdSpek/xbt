@@ -14,26 +14,6 @@
 class Cbvalue  
 {
 public:
-	class Cerror
-	{
-	public:
-		Cerror()
-		{
-		};
-
-		Cerror(const string& v)
-		{
-			m_v = v;
-		}
-
-		const string& v() const
-		{
-			return m_v;
-		}
-	private:
-		string m_v;
-	};
-
 	enum t_value_type
 	{
 		vt_int,
@@ -51,6 +31,7 @@ public:
 	const t_list& l() const;
 	__int64 i() const;
 	const string& s() const;
+	bool d_has(const string&) const;
 	Cbvalue& d(const string& v, const Cbvalue& w);
 	Cbvalue& l(const Cbvalue& v);
 	int pre_read() const;

@@ -25,6 +25,39 @@ string strip_name(const string& v)
 	return i == string::npos ? v : v.substr(i + 1);
 }
 
+ostream& show_options(ostream& os, const Cbvalue& v)
+{
+	cout << "admin port: \t" << static_cast<int>(v.d(bts_admin_port).i()) << endl
+		<< "peer port: \t" << static_cast<int>(v.d(bts_peer_port).i()) << endl
+		<< "tracker port: \t" << static_cast<int>(v.d(bts_tracker_port).i()) << endl
+		<< "upload rate: \t" << static_cast<int>(v.d(bts_upload_rate).i()) << endl
+		<< "upload slots: \t" << static_cast<int>(v.d(bts_upload_slots).i()) << endl
+		<< "seeding ratio: \t" << static_cast<int>(v.d(bts_seeding_ratio).i()) << endl;
+	return os;
+}
+
+ostream& show_status(ostream& os, const Cbvalue& v)
+{
+	const Cbvalue& files = v.d(bts_files);
+	for (Cbvalue::t_map::const_iterator i = files.d().begin(); i != files.d().end(); i++)
+	{
+		cout << hex_encode(i->first) 
+			<< '\t' << static_cast<int>(i->second.d(bts_incomplete).i()) << " l"
+			<< '\t' << static_cast<int>(i->second.d(bts_complete).i()) << " s"
+			<< endl
+			<< '\t' << strip_name(i->second.d(bts_name).s())
+			<< endl
+			<< '\t' << b2a(i->second.d(bts_left).i()) 
+			<< '\t' << b2a(i->second.d(bts_size).i()) 
+			<< '\t' << b2a(i->second.d(bts_total_downloaded).i()) 
+			<< '\t' << b2a(i->second.d(bts_total_uploaded).i()) 
+			<< '\t' << b2a(i->second.d(bts_down_rate).i()) 
+			<< '\t' << b2a(i->second.d(bts_up_rate).i()) 
+			<< endl;
+	}
+	return os;
+}
+
 int main(int argc, char* argv[])
 {
 #ifdef WIN32
@@ -79,6 +112,14 @@ int main(int argc, char* argv[])
 				return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 		}
 	}
+	if (argc == 2 && !strcmp(argv[1], "options"))
+	{
+		Cbvalue v;
+		v.d(bts_action, bts_get_options);
+		if (send(s, v))
+			return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
+	}
+	else
 	{
 		Cbvalue v;
 		v.d(bts_action, bts_get_status);
@@ -100,23 +141,10 @@ int main(int argc, char* argv[])
 			if (v.write(d + 5, ntohl(*reinterpret_cast<__int32*>(d)) - 1))
 				break;
 			v.read().save("/temp/bvalue.txt");
-			Cbvalue files = v.d(bts_files);
-			for (Cbvalue::t_map::const_iterator i = files.d().begin(); i != files.d().end(); i++)
-			{
-				cout << hex_encode(i->first) 
-					<< '\t' << static_cast<int>(i->second.d(bts_incomplete).i()) << " l"
-					<< '\t' << static_cast<int>(i->second.d(bts_complete).i()) << " s"
-					<< endl
-					<< '\t' << strip_name(i->second.d(bts_name).s())
-					<< endl
-					<< '\t' << b2a(i->second.d(bts_left).i()) 
-					<< '\t' << b2a(i->second.d(bts_size).i()) 
-					<< '\t' << b2a(i->second.d(bts_total_downloaded).i()) 
-					<< '\t' << b2a(i->second.d(bts_total_uploaded).i()) 
-					<< '\t' << b2a(i->second.d(bts_down_rate).i()) 
-					<< '\t' << b2a(i->second.d(bts_up_rate).i()) 
-					<< endl;
-			}
+			if (v.d_has(bts_files))
+				show_status(cout, v);
+			else
+				show_options(cout, v);
 			break;
 		}
 	}

@@ -225,6 +225,11 @@ const Cbvalue::t_map& Cbvalue::d() const
 	return m_value_type == vt_dictionary ? *m_map : z;
 }
 
+bool Cbvalue::d_has(const string& v) const
+{
+	return m_value_type == vt_dictionary && m_map->find(v) != m_map->end();
+}
+
 const Cbvalue& Cbvalue::d(const string& v) const
 {
 	if (m_value_type == vt_dictionary)

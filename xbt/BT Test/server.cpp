@@ -785,6 +785,15 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	string action = s.d(bts_action).s();
 	if (action == bts_close_torrent)
 		close(s.d(bts_hash).s());
+	else if (action == bts_get_options)
+	{
+		d.d(bts_admin_port, admin_port());
+		d.d(bts_peer_port, peer_port());
+		d.d(bts_tracker_port, tracker_port());
+		d.d(bts_upload_rate, upload_rate());
+		d.d(bts_upload_slots, upload_slots());
+		d.d(bts_seeding_ratio, seeding_ratio());
+	}
 	else if (action == bts_get_status)
 	{
 		Cbvalue files;
@@ -808,6 +817,19 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		open(s.d(bts_torrent).read(), incompletes_dir() + '/' + s.d(bts_torrent).d(bts_info).d(bts_name).s());
 	else if (action == bts_pause_torrent)
 		stop_file(s.d(bts_hash).s());
+	else if (action == bts_set_options)
+	{
+		if (s.d_has(bts_peer_port))
+			peer_port(s.d(bts_peer_port).i());
+		if (s.d_has(bts_tracker_port))
+			tracker_port(s.d(bts_tracker_port).i());
+		if (s.d_has(bts_upload_rate))
+			upload_rate(s.d(bts_upload_rate).i());
+		if (s.d_has(bts_upload_slots))
+			upload_slots(s.d(bts_upload_slots).i());
+		if (s.d_has(bts_seeding_ratio))
+			seeding_ratio(s.d(bts_seeding_ratio).i());
+	}
 	else if (action == bts_unpause_torrent)
 		start_file(s.d(bts_hash).s());
 	return d;
