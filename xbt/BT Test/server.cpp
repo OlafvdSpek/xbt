@@ -775,6 +775,7 @@ void Cserver::update_states()
 		if (i->state() == Cbt_file::s_queued)
 			i->open();
 	}
+	m_update_states_time = time(NULL);
 }
 
 string Cserver::completes_dir() const
@@ -863,14 +864,21 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		d.d(bts_seeding_ratio, seeding_ratio());
 		d.d(bts_peer_limit, peer_limit());
 		d.d(bts_torrent_limit, torrent_limit());
+		d.d(bts_completes_dir, completes_dir());
+		d.d(bts_incompletes_dir, incompletes_dir());
+		d.d(bts_torrents_dir, torrents_dir());
 	}
 	else if (action == bts_get_status)
 	{
 		Cbvalue files(Cbvalue::vt_list);
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
+			Cbvalue events;
+			for (Calerts::const_reverse_iterator j = i->m_alerts.rbegin(); j != i->m_alerts.rend(); j++)
+				events.l(Cbvalue().d(bts_time, j->time()).d(bts_message, j->message()));
 			Cbvalue file;
 			file.d(bts_complete, i->c_seeders());
+			file.d(bts_events, events);
 			file.d(bts_incomplete, i->c_leechers());
 			file.d(bts_left, i->m_left);
 			file.d(bts_priority, i->priority());
@@ -903,6 +911,12 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 			peer_limit(s.d(bts_peer_limit).i());
 		if (s.d_has(bts_torrent_limit))
 			torrent_limit(s.d(bts_torrent_limit).i());
+		if (s.d_has(bts_completes_dir))
+			completes_dir(s.d(bts_completes_dir).s());
+		if (s.d_has(bts_incompletes_dir))
+			incompletes_dir(s.d(bts_incompletes_dir).s());
+		if (s.d_has(bts_torrents_dir))
+			torrents_dir(s.d(bts_torrents_dir).s());
 	}
 	else if (action == bts_set_priority)
 		file_priority(s.d(bts_hash).s(), s.d(bts_priority).i());
