@@ -250,7 +250,6 @@ string error2a(int v)
 	case WSAEHOSTDOWN: return "EHOSTDOWN";
 	case WSAEHOSTUNREACH: return "EHOSTUNREACH";
 	case WSAENOTEMPTY: return "ENOTEMPTY";
-	case WSAEPROCLIM: return "EPROCLIM";
 	case WSAEUSERS: return "EUSERS";
 	case WSAEDQUOT: return "EDQUOT";
 	case WSAESTALE: return "ESTALE";
