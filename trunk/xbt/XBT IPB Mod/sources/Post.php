@@ -847,6 +847,9 @@ class Post {
 			if (!isset($torrent))
 				return;
 			$attach_data['bt_info_hash'] = pack("H*", sha1($torrent["value"]["info"]["string"]));
+			$piece_count = $torrent["value"]["info"]["value"]["pieces"]["strlen"] / 20;
+			$piece_length = $torrent["value"]["info"]["value"]["piece length"]["value"];
+			$attach_data['bt_size'] = $piece_count * $piece_length;
 		}
 
 		return $attach_data;
