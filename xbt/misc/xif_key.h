@@ -9,9 +9,6 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-// #pragma comment(lib, "bzip_static.lib")
-// #pragma comment(lib, "z_static.lib")
-
 #include <map>
 #include <string>
 #include "virtual_binary.h"

@@ -72,8 +72,6 @@ void Cxif_value::load_new(const byte*& data)
 	switch (m_type)
 	{
 	case vt_bin32:
-		m_value_int = read<unsigned __int32>(data);
-		break;
 	case vt_int32:
 		m_value_int = read<__int32>(data);
 		break;
@@ -107,8 +105,6 @@ int Cxif_value::skip(const byte* s)
 	switch (type)
 	{
 	case vt_bin32:
-		read<unsigned __int32>(r);
-		break;
 	case vt_int32:
 		read<__int32>(r);
 		break;
