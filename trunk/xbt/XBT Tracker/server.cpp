@@ -405,7 +405,7 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		peer.left = v.m_left;
 		peer.peer_id = v.m_peer_id;
 		peer.port = v.m_port;
-		peer.uid = user->uid;
+		peer.uid = user ? user->uid : 0;
 		peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
 		if (user)
