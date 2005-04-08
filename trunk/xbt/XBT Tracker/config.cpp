@@ -21,7 +21,7 @@ Cconfig::Cconfig()
 	m_gzip_announce = true;
 	m_gzip_debug = true;
 	m_gzip_scrape = true;
-	m_listen_check = true;
+	m_listen_check = false;
 	m_listen_ipas.clear();
 	m_listen_ports.clear();
 	m_log_access = false;
