@@ -18,6 +18,7 @@ Cconfig::Cconfig()
 	m_auto_register = true;
 	m_clean_up_interval = 60;
 	m_daemon = true;
+	m_debug = false;
 	m_gzip_announce = true;
 	m_gzip_debug = true;
 	m_gzip_scrape = true;
@@ -64,6 +65,8 @@ void Cconfig::set(const string& name, int value)
 		m_clean_up_interval = value;
 	else if (name == "daemon")
 		m_daemon = value;
+	else if (name == "debug")
+		m_debug = value;
 	else if (name == "gzip_announce")
 		m_gzip_announce = value;
 	else if (name == "gzip_debug")
