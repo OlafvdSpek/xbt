@@ -193,8 +193,9 @@ void Cconnection::read(const string& v)
 		}
 		break;
 	case 'd':
-		gzip = m_server->gzip_debug();
+		if (m_server->debug())
 		{
+			gzip = m_server->gzip_debug();
 			string v = m_server->debug(ti);
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(v.c_str(), v.length());
