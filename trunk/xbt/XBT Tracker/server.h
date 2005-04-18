@@ -189,6 +189,11 @@ public:
 		return m_config.m_anonymous_scrape;
 	}
 
+	bool debug() const
+	{
+		return m_config.m_debug;
+	}
+
 	bool gzip_announce() const
 	{
 		return m_config.m_gzip_announce;
