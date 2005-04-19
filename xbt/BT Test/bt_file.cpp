@@ -257,7 +257,7 @@ void Cbt_file::erase()
 	ZeroMemory(&op, sizeof(SHFILEOPSTRUCT));
 	op.wFunc = FO_DELETE;
 	char b[MAX_PATH];
-	strcpy(b, m_name.c_str());
+	strcpy(b, native_slashes(m_name).c_str());
 	b[m_name.size() + 1] = 0;
 	op.pFrom = b;
 	op.fFlags = FOF_ALLOWUNDO | FOF_NOERRORUI;
