@@ -54,12 +54,12 @@ void Cbt_tracker_url::write(const string& v)
 		return;
 	int protocol;
 	int port;
-	if (v.substr(0, a) == "http")
+	if (!stricmp(v.substr(0, a).c_str(), "http"))
 	{
 		protocol = tp_http;
 		port = 80;
 	}
-	else if (v.substr(0, a) == "udp")
+	else if (!stricmp(v.substr(0, a).c_str(), "udp"))
 	{
 		protocol = tp_udp;
 		port = 2710;
