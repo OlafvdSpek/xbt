@@ -13,6 +13,20 @@
 class CXBTClientDlg: public ETSLayoutDialog
 {
 public:
+	bool get_profile_hide_on_deactivate();
+	bool get_profile_lower_process_priority();
+	bool get_profile_show_advanced_columns();
+	bool get_profile_show_confirm_exit_dialog();
+	bool get_profile_show_tray_icon();
+	bool get_profile_start_minimized();
+	bool get_profile_upnp();
+	void write_profile_hide_on_deactivate(bool);
+	void write_profile_lower_process_priority(bool);
+	void write_profile_show_advanced_columns(bool);
+	void write_profile_show_confirm_exit_dialog(bool);
+	void write_profile_show_tray_icon(bool v);
+	void write_profile_start_minimized(bool);
+	void write_profile_upnp(bool);
 	int GetProfileInt(LPCTSTR Entry, int Default = 0);
 	string GetProfileString(LPCTSTR Entry, LPCTSTR Default = "");
 	BOOL WriteProfileInt(LPCTSTR Entry, int Value);

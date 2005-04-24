@@ -41,6 +41,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_show_confirm_exit_dialog = FALSE;
 	m_hide_on_deactivate = FALSE;
 	m_send_stop_event = FALSE;
+	m_upnp = FALSE;
 	//}}AFX_DATA_INIT
 }
 
@@ -74,6 +75,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_SHOW_CONFIRM_EXIT_DIALOG, m_show_confirm_exit_dialog);
 	DDX_Check(pDX, IDC_HIDE_ON_DEACTIVATE, m_hide_on_deactivate);
 	DDX_Check(pDX, IDC_SEND_STOP_EVENT, m_send_stop_event);
+	DDX_Check(pDX, IDC_UPNP, m_upnp);
 	//}}AFX_DATA_MAP
 	if (pDX->m_bSaveAndValidate)
 		m_hot_key_value = m_hot_key.GetHotKey();
@@ -118,6 +120,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.tracker_port = m_tracker_port;
 	v.upload_rate = m_upload_rate << 10;
 	v.upload_slots = m_upload_slots;
+	v.upnp = m_upnp;
 	return v;
 }
 
@@ -145,6 +148,7 @@ void Cdlg_options::set(const t_data& v)
 	m_tracker_port = v.tracker_port;
 	m_upload_rate = v.upload_rate >> 10;
 	m_upload_slots = v.upload_slots;
+	m_upnp = v.upnp;
 }
 
 void Cdlg_options::OnCompletesDirectoryBrowse()
@@ -232,6 +236,7 @@ BOOL Cdlg_options::OnInitDialog()
 				<< item(IDC_SHOW_CONFIRM_EXIT_DIALOG, NORESIZE)
 				<< item(IDC_SHOW_TRAY_ICON, NORESIZE)
 				<< item(IDC_START_MINIMIZED, NORESIZE)
+				<< item(IDC_UPNP, NORESIZE)
 				)
 			)
 		<< (pane(HORIZONTAL)
