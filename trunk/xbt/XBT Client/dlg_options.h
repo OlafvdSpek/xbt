@@ -41,6 +41,7 @@ public:
 		int tracker_port;
 		int upload_rate;
 		int upload_slots;
+		bool upnp;
 	};
 
 	t_data get() const;
@@ -72,6 +73,7 @@ public:
 	BOOL	m_show_confirm_exit_dialog;
 	BOOL	m_hide_on_deactivate;
 	BOOL	m_send_stop_event;
+	BOOL	m_upnp;
 	//}}AFX_DATA
 
 

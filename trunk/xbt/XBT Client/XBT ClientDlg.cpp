@@ -185,7 +185,7 @@ CXBTClientDlg::CXBTClientDlg(CWnd* pParent /*=NULL*/)
 #ifdef _DEBUG
 	m_initial_hide = false;
 #else
-	m_initial_hide = GetProfileInt("start_minimized", false);
+	m_initial_hide = get_profile_start_minimized();
 #endif
 	m_server_thread = NULL;
 	update_global_details();
@@ -341,8 +341,8 @@ BOOL CXBTClientDlg::OnInitDialog()
 		GetProfileString("incompletes_dir"),
 		GetProfileString("local_app_data_dir"),
 		GetProfileString("torrents_dir"));
-	m_hide_on_deactivate = GetProfileInt("hide_on_deactivate", false);
-	lower_process_priority(GetProfileInt("lower_process_priority", false));
+	m_hide_on_deactivate = get_profile_hide_on_deactivate();
+	lower_process_priority(get_profile_lower_process_priority());
 	m_server.peer_limit(GetProfileInt("peer_limit", m_server.peer_limit()));
 	m_server.peer_port(GetProfileInt("peer_port", m_server.peer_port()));
 	string public_ipa = GetProfileString("public_ipa");
@@ -350,8 +350,8 @@ BOOL CXBTClientDlg::OnInitDialog()
 		m_server.public_ipa(Csocket::get_host(public_ipa));
 	m_server.seeding_ratio(GetProfileInt("seeding_ratio", m_server.seeding_ratio()));
 	m_server.send_stop_event(GetProfileInt("send_stop_event", m_server.send_stop_event()));
-	m_show_advanced_columns = GetProfileInt("show_advanced_columns", false);
-	m_show_tray_icon = GetProfileInt("show_tray_icon", true);
+	m_show_advanced_columns = get_profile_show_advanced_columns();
+	m_show_tray_icon = get_profile_show_tray_icon();
 	m_server.torrent_limit(GetProfileInt("torrent_limit", m_server.torrent_limit()));
 	m_server.tracker_port(GetProfileInt("tracker_port", m_server.tracker_port()));
 	m_server.upload_rate(GetProfileInt("upload_rate", m_server.upload_rate()));
@@ -2577,15 +2577,15 @@ void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::OnPopupViewAdvancedColumns()
 {
-	m_show_advanced_columns = !GetProfileInt("show_advanced_columns", false);
-	WriteProfileInt("show_advanced_columns", m_show_advanced_columns);
+	m_show_advanced_columns = !get_profile_show_advanced_columns();
+	write_profile_show_advanced_columns(m_show_advanced_columns);
 	insert_columns(true);
 }
 
 void CXBTClientDlg::OnPopupViewTrayIcon()
 {
-	m_show_tray_icon = !GetProfileInt("show_tray_icon", true);
-	WriteProfileInt("show_tray_icon", m_show_tray_icon);
+	m_show_tray_icon = !get_profile_show_tray_icon();
+	write_profile_show_tray_icon(m_show_tray_icon);
 	if (m_show_tray_icon)
 		register_tray();
 	else
@@ -2794,7 +2794,7 @@ void CXBTClientDlg::OnUpdatePopupStateStopped(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnCancel() 
 {
-	if (!GetProfileInt("show_confirm_exit_dialog", false)
+	if (!get_profile_show_confirm_exit_dialog()
 		|| IDOK == MessageBox("Would you like to exit XBT Client?", NULL, MB_ICONWARNING | MB_OKCANCEL))
 		ETSLayoutDialog::OnCancel();
 }
@@ -2910,24 +2910,25 @@ void CXBTClientDlg::OnToolsOptions()
 	data.ask_for_location = GetProfileInt("ask_for_location", false);
 	data.bind_before_connect = m_server.bind_before_connect();
 	data.completes_dir = m_server.completes_dir();
-	data.hide_on_deactivate = GetProfileInt("hide_on_deactivate", false);
+	data.hide_on_deactivate = get_profile_hide_on_deactivate();
 	data.hot_key = GetProfileInt("hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q');
 	data.incompletes_dir = m_server.incompletes_dir();
-	data.lower_process_priority = GetProfileInt("lower_process_priority", false);
+	data.lower_process_priority = get_profile_lower_process_priority();
 	data.peer_limit = m_server.peer_limit();
 	data.peer_port = GetProfileInt("peer_port", m_server.peer_port());
 	data.public_ipa = GetProfileString("public_ipa");
 	data.seeding_ratio = m_server.seeding_ratio();
 	data.send_stop_event = m_server.send_stop_event();
-	data.show_advanced_columns = GetProfileInt("show_advanced_columns", false);
-	data.show_confirm_exit_dialog = GetProfileInt("show_confirm_exit_dialog", false);
-	data.show_tray_icon = GetProfileInt("show_tray_icon", true);
-	data.start_minimized = GetProfileInt("start_minimized", false);
+	data.show_advanced_columns = get_profile_show_advanced_columns();
+	data.show_confirm_exit_dialog = get_profile_show_confirm_exit_dialog();
+	data.show_tray_icon = get_profile_show_tray_icon();
+	data.start_minimized = get_profile_start_minimized();
 	data.torrent_limit = m_server.torrent_limit();
 	data.torrents_dir = m_server.torrents_dir();
 	data.tracker_port = GetProfileInt("tracker_port", m_server.tracker_port());
 	data.upload_rate = m_server.upload_rate();
 	data.upload_slots = m_server.upload_slots();
+	data.upnp = get_profile_upnp();
 	dlg.set(data);
 	unregister_hot_key();
 	if (IDOK != dlg.DoModal())
@@ -2958,24 +2959,25 @@ void CXBTClientDlg::OnToolsOptions()
 	WriteProfileInt("ask_for_location", data.ask_for_location);
 	WriteProfileInt("bind_before_connect", data.bind_before_connect);
 	WriteProfileString("completes_dir", data.completes_dir);
-	WriteProfileInt("hide_on_deactivate", data.hide_on_deactivate);
+	write_profile_hide_on_deactivate(data.hide_on_deactivate);
 	WriteProfileInt("hot_key", data.hot_key);
 	WriteProfileString("incompletes_dir", data.incompletes_dir);
-	WriteProfileInt("lower_process_priority", data.lower_process_priority);
+	write_profile_lower_process_priority(data.lower_process_priority);
 	WriteProfileInt("peer_limit", data.peer_limit);
 	WriteProfileInt("peer_port", data.peer_port);
 	WriteProfileString("public_ipa", data.public_ipa);
 	WriteProfileInt("seeding_ratio", data.seeding_ratio);
 	WriteProfileInt("send_stop_event", data.send_stop_event);
-	WriteProfileInt("show_advanced_columns", data.show_advanced_columns);
-	WriteProfileInt("show_confirm_exit_dialog", data.show_confirm_exit_dialog);
-	WriteProfileInt("show_tray_icon", data.show_tray_icon);
-	WriteProfileInt("start_minimized", data.start_minimized);
+	write_profile_show_advanced_columns(data.show_advanced_columns);
+	write_profile_show_confirm_exit_dialog(data.show_confirm_exit_dialog);
+	write_profile_show_tray_icon(data.show_tray_icon);
+	write_profile_start_minimized(data.start_minimized);
 	WriteProfileInt("torrent_limit", data.torrent_limit);
 	WriteProfileString("torrents_dir", data.torrents_dir);
 	WriteProfileInt("tracker_port", data.tracker_port);
 	WriteProfileInt("upload_rate", data.upload_rate);
 	WriteProfileInt("upload_slots", data.upload_slots);
+	write_profile_upnp(data.upnp);
 	insert_columns(true);
 	register_hot_key(data.hot_key);
 	if (m_show_tray_icon)
@@ -3170,4 +3172,74 @@ BOOL CXBTClientDlg::WriteProfileInt(LPCTSTR Entry, int Value)
 BOOL CXBTClientDlg::WriteProfileString(LPCTSTR Entry, const string& Value)
 {
 	return AfxGetApp()->WriteProfileString(m_reg_key, Entry, Value.c_str());
+}
+
+bool CXBTClientDlg::get_profile_hide_on_deactivate()
+{
+	return GetProfileInt("hide_on_deactivate", false);
+}
+
+void CXBTClientDlg::write_profile_hide_on_deactivate(bool v)
+{
+	WriteProfileInt("hide_on_deactivate", v);
+}
+
+bool CXBTClientDlg::get_profile_lower_process_priority()
+{
+	return GetProfileInt("lower_process_priority", false);
+}
+
+void CXBTClientDlg::write_profile_lower_process_priority(bool v)
+{
+	WriteProfileInt("lower_process_priority", v);
+}
+
+bool CXBTClientDlg::get_profile_show_advanced_columns()
+{
+	return GetProfileInt("show_advanced_columns", false);
+}
+
+void CXBTClientDlg::write_profile_show_advanced_columns(bool v)
+{
+	WriteProfileInt("show_advanced_columns", v);
+}
+
+bool CXBTClientDlg::get_profile_show_confirm_exit_dialog()
+{
+	return GetProfileInt("show_confirm_exit_dialog", false);
+}
+
+void CXBTClientDlg::write_profile_show_confirm_exit_dialog(bool v)
+{
+	WriteProfileInt("show_confirm_exit_dialog", v);
+}
+
+bool CXBTClientDlg::get_profile_show_tray_icon()
+{
+	return GetProfileInt("show_tray_icon", true);
+}
+
+void CXBTClientDlg::write_profile_show_tray_icon(bool v)
+{
+	WriteProfileInt("show_tray_icon", v);
+}
+
+bool CXBTClientDlg::get_profile_start_minimized()
+{
+	return GetProfileInt("start_minimized", true);
+}
+
+void CXBTClientDlg::write_profile_start_minimized(bool v)
+{
+	WriteProfileInt("start_minimized", v);
+}
+
+bool CXBTClientDlg::get_profile_upnp()
+{
+	return GetProfileInt("upnp", true);
+}
+
+void CXBTClientDlg::write_profile_upnp(bool v)
+{
+	WriteProfileInt("upnp", v);
 }
