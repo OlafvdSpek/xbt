@@ -98,6 +98,7 @@
 #define IDC_SEND_STOP_EVENT             1064
 #define IDC_MAX_UPLOAD_SLOTS_OVERRIDE   1065
 #define IDC_UPLOAD_SLOTS_MAX_OVERRIDE   1065
+#define IDC_UPNP                        1065
 #define IDC_TAB                         1066
 #define IDC_VERSION                     1068
 #define IDC_HOTKEY1                     1069
