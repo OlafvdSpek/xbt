@@ -183,20 +183,26 @@ string Csocket::error2a(int v)
 {
 	switch (v)
 	{
+	case WSAEACCES: return "EACCES";
 	case WSAEADDRINUSE: return "EADDRINUSE";
 	case WSAEADDRNOTAVAIL: return "EADDRNOTAVAIL";
 	case WSAEAFNOSUPPORT: return "EAFNOSUPPORT";
 	case WSAEALREADY: return "EALREADY";
+	case WSAEBADF: return "EBADF";
 	case WSAECONNABORTED: return "ECONNABORTED";
 	case WSAECONNREFUSED: return "ECONNREFUSED";
 	case WSAECONNRESET: return "ECONNRESET";
 	case WSAEDESTADDRREQ: return "EDESTADDRREQ";
 	case WSAEDQUOT: return "EDQUOT";
+	case WSAEFAULT: return "EFAULT";
 	case WSAEHOSTDOWN: return "EHOSTDOWN";
 	case WSAEHOSTUNREACH: return "EHOSTUNREACH";
 	case WSAEINPROGRESS: return "EINPROGRESS";
+	case WSAEINTR: return "EINTR";
+	case WSAEINVAL: return "EINVAL";
 	case WSAEISCONN: return "EISCONN";
 	case WSAELOOP: return "ELOOP";
+	case WSAEMFILE: return "EMFILE";
 	case WSAEMSGSIZE: return "EMSGSIZE";
 	case WSAENAMETOOLONG: return "ENAMETOOLONG";
 	case WSAENETDOWN: return "ENETDOWN";

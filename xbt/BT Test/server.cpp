@@ -240,7 +240,7 @@ int Cserver::run()
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
 		{
 			alert(Calert(Calert::error, "Server", "select failed: " + Csocket::error2a(WSAGetLastError())));
-			break;
+			continue;
 		}
 		m_time = ::time(NULL);
 		if (0)
