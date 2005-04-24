@@ -133,6 +133,11 @@ void Cserver::upload_slots(int v)
 	m_config.m_upload_slots = max(0, v);
 }
 
+void Cserver::upnp(bool v)
+{
+	m_config.m_upnp = v;
+}
+
 int Cserver::run()
 {
 	m_admin_port = m_config.m_admin_port;

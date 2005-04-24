@@ -36,6 +36,7 @@ Cconfig::Cconfig()
 	m_tracker_port = 2710;
 	m_upload_rate = 0;
 	m_upload_slots = 8;
+	m_upnp = true;
 #ifdef WIN32
 	char path[MAX_PATH];
 	string home = FAILED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)) ? "C:" : path;
@@ -91,6 +92,8 @@ const Cconfig& Cconfig::write(const Cbvalue& v)
 		m_upload_rate = v.d("upload_rate").i();
 	if (v.d_has("upload_slots"))
 		m_upload_slots = v.d("upload_slots").i();
+	if (v.d_has("upnp"))
+		m_upnp = v.d("upnp").i();
 	return *this;
 }
 
@@ -116,5 +119,6 @@ Cbvalue Cconfig::read() const
 	v.d("tracker_port", m_tracker_port);
 	v.d("upload_rate", m_upload_rate);
 	v.d("upload_slots", m_upload_slots);
+	v.d("upnp", m_upnp);
 	return v;
 }

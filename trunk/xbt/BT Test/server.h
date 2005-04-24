@@ -97,6 +97,7 @@ public:
 	void update_states();
 	void upload_rate(int);
 	void upload_slots(int);
+	void upnp(bool);
 
 	typedef list<Cbt_admin_link> t_admins;
 	typedef list<Cbt_file> t_files;

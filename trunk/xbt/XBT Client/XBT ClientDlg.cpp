@@ -356,6 +356,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.tracker_port(GetProfileInt("tracker_port", m_server.tracker_port()));
 	m_server.upload_rate(GetProfileInt("upload_rate", m_server.upload_rate()));
 	m_server.upload_slots(GetProfileInt("upload_slots", m_server.upload_slots()));
+	m_server.upnp(get_profile_upnp());
 	m_tab.SetCurSel(m_bottom_view);
 	start_server();
 	insert_columns(true);
@@ -2955,6 +2956,7 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.tracker_port(data.tracker_port);
 	m_server.upload_rate(data.upload_rate);
 	m_server.upload_slots(data.upload_slots);
+	m_server.upnp(data.upnp);
 	WriteProfileInt("admin_port", data.admin_port);
 	WriteProfileInt("ask_for_location", data.ask_for_location);
 	WriteProfileInt("bind_before_connect", data.bind_before_connect);
