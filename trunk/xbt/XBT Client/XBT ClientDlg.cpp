@@ -2913,7 +2913,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.hide_on_deactivate = GetProfileInt("hide_on_deactivate", false);
 	data.hot_key = GetProfileInt("hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q');
 	data.incompletes_dir = m_server.incompletes_dir();
-	data.lower_process_priority = GetProfileInt("lower_process_priority", true);
+	data.lower_process_priority = GetProfileInt("lower_process_priority", false);
 	data.peer_limit = m_server.peer_limit();
 	data.peer_port = GetProfileInt("peer_port", m_server.peer_port());
 	data.public_ipa = GetProfileString("public_ipa");
