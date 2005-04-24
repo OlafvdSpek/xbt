@@ -26,6 +26,7 @@ public:
 	bool m_log_peer_send_failures;
 	bool m_log_piece_valid;
 	bool m_send_stop_event;
+	bool m_upnp;
 	int m_admin_port;
 	int m_peer_limit;
 	int m_peer_port;
