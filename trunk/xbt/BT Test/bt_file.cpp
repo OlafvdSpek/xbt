@@ -199,11 +199,16 @@ void Cbt_file::open()
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->left(0);
 		m_hasher = new Cbt_hasher(m_validate);
-		while (!m_validate && m_hasher->run(*this))
-			;
+		if (!m_validate)
+		{
+			while (m_hasher->run(*this))
+				;
+			delete m_hasher;
+			m_hasher = NULL;
+		}
 	}
 	announce();
-	m_state = s_hashing;
+	m_state = m_hasher ? s_hashing : s_running;
 }
 
 bool Cbt_file::hash()
