@@ -2900,7 +2900,10 @@ void CXBTClientDlg::OnEditPasteUrl()
 
 void CXBTClientDlg::OnEditSelectAll() 
 {
-	m_files.select_all();
+	if (GetFocus() == &m_files)
+		m_files.select_all();
+	else
+		m_peers.select_all();
 }
 
 void CXBTClientDlg::OnToolsOptions() 
