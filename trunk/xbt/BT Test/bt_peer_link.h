@@ -24,6 +24,7 @@ class Cbt_piece;
 class Cbt_peer_link: public Cbt_peer_data
 {
 public:
+	string debug_string() const;
 	int write_data(__int64 o, const char* s, int cb_s, int latency);
 	int c_max_requests_pending() const;
 	void check_pieces();

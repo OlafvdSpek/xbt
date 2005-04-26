@@ -217,6 +217,7 @@ private:
 		int mc_pieces;
 		int m_rtime;
 		int m_stime;
+		string m_debug;
 		bool m_removed;
 	};
 

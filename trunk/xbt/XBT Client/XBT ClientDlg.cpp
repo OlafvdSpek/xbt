@@ -81,6 +81,7 @@ enum
 	pc_host,
 	pc_port,
 	pc_peer_id,
+	pc_debug,
 	pc_end,
 
 	sfc_name,
@@ -978,6 +979,9 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	case pc_client:
 		buffer = peer_id2a(e.m_remote_peer_id);
 		break;
+	case pc_debug:
+		buffer = e.m_debug;
+		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
@@ -1390,6 +1394,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	p.mc_pieces = sr.read_int(4);
 	p.m_rtime = sr.read_int(4);
 	p.m_stime = sr.read_int(4);
+	p.m_debug = sr.read_string();
 	if (p.m_remote_peer_id.empty())
 		return;
 	t_peers::iterator i;
@@ -2169,6 +2174,9 @@ void CXBTClientDlg::insert_bottom_columns()
 			m_peers_columns.push_back(pc_pieces);
 			m_peers_columns.push_back(pc_recv_time);
 			m_peers_columns.push_back(pc_send_time);
+#ifdef _DEBUG
+			m_peers_columns.push_back(pc_debug);
+#endif
 			m_peers_columns.push_back(pc_host);
 			m_peers_columns.push_back(pc_port);
 			m_peers_columns.push_back(pc_peer_id);
@@ -2230,6 +2238,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		"Host",
 		"Port",
 		"Peer ID",
+		"Debug",
 		"",
 		"Name",
 		"Extension",
@@ -2289,6 +2298,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
 		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 

@@ -781,7 +781,7 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 
 int Cbt_peer_link::pre_dump() const
 {
-	int size = m_remote_peer_id.length() + 69;
+	int size = m_remote_peer_id.length() + debug_string().length() + 73;
 	return size;
 }
 
@@ -805,6 +805,7 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(4, m_pieces.size());
 	w.write_int(4, m_rtime);
 	w.write_int(4, m_stime);
+	w.write_string(debug_string());
 }
 
 void Cbt_peer_link::alert(Calert::t_level level, const string& message)
@@ -841,4 +842,9 @@ void Cbt_peer_link::check_pieces()
 int Cbt_peer_link::c_max_requests_pending() const
 {
 	return min(mc_max_requests_pending, m_f->c_max_requests_pending());
+}
+
+string Cbt_peer_link::debug_string() const
+{
+	return n(cb_write_buffer());
 }
