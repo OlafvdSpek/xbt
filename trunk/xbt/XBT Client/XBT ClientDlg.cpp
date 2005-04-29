@@ -628,7 +628,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		case dr_completed_at:
 			if (m_file->m_completed_at)
 				buffer = time2a(m_file->m_completed_at) + " (" + duration2a(time(NULL) - m_file->m_completed_at) + " ago)";
-			else if (m_file->m_downloaded && m_file->m_left && time(NULL) - m_file->m_session_started_at > 300)
+			else if (m_file->m_downloaded && m_file->m_left && time(NULL) - m_file->m_session_started_at > 300 && m_file->m_state == Cbt_file::s_running)
 			{
 				int duration = m_file->m_left * (time(NULL) - m_file->m_session_started_at) / m_file->m_downloaded;
 				buffer = time2a(duration + time(NULL)) + " (" + duration2a(duration) + " to go, estimated)";
