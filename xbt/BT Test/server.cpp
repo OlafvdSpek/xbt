@@ -54,6 +54,7 @@ Cserver::Cserver():
 	m_peer_port = m_config.m_peer_port;
 	m_run = false;
 	m_run_scheduler_time = 0;
+	m_send_quota = 0;
 	m_start_time = ::time(NULL);
 	m_time = ::time(NULL);
 	m_tracker_port = m_config.m_tracker_port;
@@ -138,8 +139,55 @@ void Cserver::upnp(bool v)
 	m_config.m_upnp = v;
 }
 
+#ifdef WIN32
+string get_host_name()
+{
+	vector<char> t(256);
+	if (!gethostname(&t.front(), t.size()))
+		throw std::exception("gethostname failed");
+	return &t.front();
+}
+
+wstring mbyte_to_wchar(const string& s)
+{
+	vector<wchar_t> t(MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, NULL, 0));
+	if (!MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, &t.front(), t.size()))
+		throw std::exception("MultiByteToWideChar failed");
+	return &t.front();
+}
+
+string wchar_to_mbyte(const wstring& s)
+{
+	vector<char> t(WideCharToMultiByte(CP_ACP, 0, s.c_str(), -1, NULL, 0, NULL, NULL));
+	if (!WideCharToMultiByte(CP_ACP, 0, s.c_str(), -1, &t.front(), t.size(), NULL, NULL))
+		throw std::exception("WideCharToMultiByte failed");
+	return &t.front();
+}
+#endif
+
 int Cserver::run()
 {
+	HRESULT hr;
+	hr = CoInitialize(NULL);
+	if (FAILED(hr))
+		alert(Calert(Calert::warn, "Server", "CoInitialize failed: " + n(hr)));
+#ifdef WIN32
+	IStaticPortMappingCollection* static_port_mapping_collection = NULL;
+	if (m_config.m_upnp)
+	{
+		IUPnPNAT* upnp_nat;
+		hr = CoCreateInstance(CLSID_UPnPNAT, NULL, CLSCTX_INPROC_SERVER, IID_IUPnPNAT, reinterpret_cast<void**>(&upnp_nat));
+		if (FAILED(hr) || !upnp_nat)
+			alert(Calert(Calert::warn, "UPnP NAT", "CoCreateInstance failed: " + n(hr)));
+		else
+		{
+			hr = upnp_nat->get_StaticPortMappingCollection(&static_port_mapping_collection);
+			upnp_nat->Release();
+			if (FAILED(hr) || !static_port_mapping_collection)
+				alert(Calert(Calert::warn, "UPnP NAT", "get_StaticPortMappingCollection failed: " + n(hr)));
+		}
+	}
+#endif
 	m_admin_port = m_config.m_admin_port;
 	m_peer_port = m_config.m_peer_port;
 	m_tracker_port = m_config.m_tracker_port;
@@ -147,13 +195,58 @@ int Cserver::run()
 	if (l.open(SOCK_STREAM) == INVALID_SOCKET
 		|| la.open(SOCK_STREAM) == INVALID_SOCKET
 		|| lt.open(SOCK_DGRAM) == INVALID_SOCKET)
-		return alert(Calert(Calert::emerg, "Server", "socket failed" + Csocket::error2a(WSAGetLastError()))), 1;
+		return alert(Calert(Calert::emerg, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError()))), 1;
 	while (admin_port() < 0x10000 && la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_admin_port++;
-	while (peer_port() < 0x10000 && l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
-		m_peer_port++;
+	for (; peer_port() < 0x10000; m_peer_port++)
+	{
+		if (l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
+			continue;
+#ifdef WIN32
+		try
+		{
+			if (!static_port_mapping_collection)
+				break;
+			IStaticPortMapping* static_port_mapping = NULL;
+			BSTR bstrProtocol = SysAllocString(L"TCP");
+			BSTR bstrInternalClient = SysAllocString(mbyte_to_wchar(get_host_name()).c_str());
+			BSTR bstrDescription = SysAllocString(L"XBT Client");
+			hr = static_port_mapping_collection->Add(peer_port(), bstrProtocol, peer_port(), bstrInternalClient, true, bstrDescription, &static_port_mapping);
+			SysFreeString(bstrProtocol);
+			SysFreeString(bstrInternalClient);
+			SysFreeString(bstrDescription);
+			if (FAILED(hr) || !static_port_mapping)
+			{
+				alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping_collection->Add failed failed: " + n(hr)));
+				break;
+			}
+			BSTR bstrExternalIPA;
+			hr = static_port_mapping->get_ExternalIPAddress(&bstrExternalIPA);
+			static_port_mapping->Release();		
+			if (FAILED(hr))
+			{
+				alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping->get_ExternalIPAddress failed: " + n(hr)));
+				break;
+			}
+			alert(Calert(Calert::info, "UPnP NAT", "External IPA: " + wchar_to_mbyte(bstrExternalIPA)));
+			SysFreeString(bstrExternalIPA);
+		}
+		catch (std::exception& e)
+		{
+			alert(Calert(Calert::warn, "UPnP NAT", e.what()));
+		}
+#endif
+		break;
+	 }
 	while (tracker_port() < 0x10000 && lt.bind(htonl(INADDR_ANY), htons(tracker_port())) && WSAGetLastError() == WSAEADDRINUSE)
 		m_tracker_port++;
+#ifdef WIN32
+	if (static_port_mapping_collection)
+	{
+		static_port_mapping_collection->Release();
+		static_port_mapping_collection = NULL;
+	}
+#endif
 	mkpath(local_app_data_dir());
 	if (l.listen() || la.listen())
 		return alert(Calert(Calert::emerg, "Server", "listen failed" + Csocket::error2a(WSAGetLastError()))), 1;
