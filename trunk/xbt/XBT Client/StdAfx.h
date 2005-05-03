@@ -31,6 +31,7 @@
 #include <io.h>
 #include <list>
 #include <map>
+#include <natupnp.h>
 #include <set>
 #include <shlwapi.h>
 #include <sstream>
