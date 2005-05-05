@@ -163,12 +163,28 @@ bool is_private_ipa(int a)
 string b2a(__int64 v, const char* postfix)
 {
 	int l;
-	for (l = 0; v < -9999 || v > 9999; l++)
+	for (l = 0; v < -9999 || v > 999999; l++)
 		v >>= 10;
-	const char* a[] = {"", " k", " m", " g", " t", " p"};
+	char d[32];
+	char* w = d;
+	if (v > 999)
+	{
+		l++;
+		int b = (v & 0x3ff) * 100 >> 10;
+		v >>= 10;
+		w += sprintf(w, "%d", static_cast<int>(v));
+		if (v < 10 && b % 10)
+			w += sprintf(w, ".%02d", b);
+		else if (v < 100 && b > 9)
+			w += sprintf(w, ".%d", b / 10);
+	}
+	else
+		w += sprintf(w, "%d", static_cast<int>(v));
+	const char* a[] = {"", " k", " m", " g", " t", " p", " e", " z", " y"};
+	w += sprintf(w, "%s", a[l]);
 	if (postfix)
-		return n(v) + (l ? a[l] : " ") + postfix;
-	return n(v) + a[l];
+		w += sprintf(w, "%s%s", l ? "" : " ", postfix);
+	return d;
 }
 
 static string peer_id2a(const string& name, const string& peer_id, int i)
