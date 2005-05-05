@@ -355,7 +355,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_show_tray_icon = get_profile_show_tray_icon();
 	m_server.torrent_limit(GetProfileInt("torrent_limit", m_server.torrent_limit()));
 	m_server.tracker_port(GetProfileInt("tracker_port", m_server.tracker_port()));
-	m_server.upload_rate(GetProfileInt("upload_rate", m_server.upload_rate()));
+	m_server.upload_rate(get_profile_upload_rate());
 	m_server.upload_slots(GetProfileInt("upload_slots", m_server.upload_slots()));
 	m_server.upnp(get_profile_upnp());
 	m_tab.SetCurSel(m_bottom_view);
@@ -2671,12 +2671,12 @@ void CXBTClientDlg::OnUpdatePopupViewGlobalEvents(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnPopupUploadRateLimit()
 {
-	m_server.upload_rate(m_server.upload_rate() ? 0 : GetProfileInt("upload_rate", 0));
+	m_server.upload_rate(m_server.upload_rate() ? 0 : get_profile_upload_rate());
 }
 
 void CXBTClientDlg::OnUpdatePopupUploadRateLimit(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(GetProfileInt("upload_rate", 0));
+	pCmdUI->Enable(get_profile_upload_rate());
 	pCmdUI->SetCheck(m_server.upload_rate());
 }
 
@@ -2940,7 +2940,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.torrent_limit = m_server.torrent_limit();
 	data.torrents_dir = m_server.torrents_dir();
 	data.tracker_port = GetProfileInt("tracker_port", m_server.tracker_port());
-	data.upload_rate = m_server.upload_rate();
+	data.upload_rate = get_profile_upload_rate();
 	data.upload_slots = m_server.upload_slots();
 	data.upnp = get_profile_upnp();
 	dlg.set(data);
@@ -3257,4 +3257,14 @@ bool CXBTClientDlg::get_profile_upnp()
 void CXBTClientDlg::write_profile_upnp(bool v)
 {
 	WriteProfileInt("upnp", v);
+}
+
+int CXBTClientDlg::get_profile_upload_rate()
+{
+	return GetProfileInt("upload_rate", 0);
+}
+
+void CXBTClientDlg::write_profile_upload_rate(int v)
+{
+	WriteProfileInt("upload_rate", v);
 }
