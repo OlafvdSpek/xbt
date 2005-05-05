@@ -192,54 +192,84 @@ int Cserver::run()
 	m_peer_port = m_config.m_peer_port;
 	m_tracker_port = m_config.m_tracker_port;
 	Csocket l, la, lt;
-	if (l.open(SOCK_STREAM) == INVALID_SOCKET
-		|| la.open(SOCK_STREAM) == INVALID_SOCKET
-		|| lt.open(SOCK_DGRAM) == INVALID_SOCKET)
-		return alert(Calert(Calert::emerg, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError()))), 1;
-	while (admin_port() < 0x10000 && la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
-		m_admin_port++;
-	for (; peer_port() < 0x10000; m_peer_port++)
+	if (admin_port())
 	{
-		if (l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
-			continue;
+		if (la.open(SOCK_STREAM) == INVALID_SOCKET)
+			alert(Calert(Calert::error, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError())));
+		else
+		{
+			while (admin_port() < 0x10000 && la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
+				m_admin_port++;
+			if (la.listen())
+			{
+				alert(Calert(Calert::error, "Server", "listen failed: " + Csocket::error2a(WSAGetLastError())));
+				la.close();
+			}
+		}
+	}
+	if (peer_port())
+	{
+		if (l.open(SOCK_STREAM) == INVALID_SOCKET)
+			alert(Calert(Calert::error, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError())));
+		else
+		{
+			for (;  peer_port() < 0x10000; m_peer_port++)
+			{
+				if (l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
+					continue;
 #ifdef WIN32
-		try
-		{
-			if (!static_port_mapping_collection)
-				break;
-			IStaticPortMapping* static_port_mapping = NULL;
-			BSTR bstrProtocol = SysAllocString(L"TCP");
-			BSTR bstrInternalClient = SysAllocString(mbyte_to_wchar(get_host_name()).c_str());
-			BSTR bstrDescription = SysAllocString(L"XBT Client");
-			hr = static_port_mapping_collection->Add(peer_port(), bstrProtocol, peer_port(), bstrInternalClient, true, bstrDescription, &static_port_mapping);
-			SysFreeString(bstrProtocol);
-			SysFreeString(bstrInternalClient);
-			SysFreeString(bstrDescription);
-			if (FAILED(hr) || !static_port_mapping)
-			{
-				alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping_collection->Add failed failed: " + n(hr)));
-				break;
-			}
-			BSTR bstrExternalIPA;
-			hr = static_port_mapping->get_ExternalIPAddress(&bstrExternalIPA);
-			static_port_mapping->Release();		
-			if (FAILED(hr))
-			{
-				alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping->get_ExternalIPAddress failed: " + n(hr)));
-				break;
-			}
-			alert(Calert(Calert::info, "UPnP NAT", "External IPA: " + wchar_to_mbyte(bstrExternalIPA)));
-			SysFreeString(bstrExternalIPA);
-		}
-		catch (std::exception& e)
-		{
-			alert(Calert(Calert::warn, "UPnP NAT", e.what()));
-		}
+				try
+				{
+					if (!static_port_mapping_collection)
+						break;
+					IStaticPortMapping* static_port_mapping = NULL;
+					BSTR bstrProtocol = SysAllocString(L"TCP");
+					BSTR bstrInternalClient = SysAllocString(mbyte_to_wchar(get_host_name()).c_str());
+					BSTR bstrDescription = SysAllocString(L"XBT Client");
+					hr = static_port_mapping_collection->Add(peer_port(), bstrProtocol, peer_port(), bstrInternalClient, true, bstrDescription, &static_port_mapping);
+					SysFreeString(bstrProtocol);
+					SysFreeString(bstrInternalClient);
+					SysFreeString(bstrDescription);
+					if (FAILED(hr) || !static_port_mapping)
+					{
+						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping_collection->Add failed failed: " + n(hr)));
+						break;
+					}
+					BSTR bstrExternalIPA;
+					hr = static_port_mapping->get_ExternalIPAddress(&bstrExternalIPA);
+					static_port_mapping->Release();		
+					if (FAILED(hr))
+					{
+						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping->get_ExternalIPAddress failed: " + n(hr)));
+						break;
+					}
+					alert(Calert(Calert::info, "UPnP NAT", "External IPA: " + wchar_to_mbyte(bstrExternalIPA)));
+					SysFreeString(bstrExternalIPA);
+				}
+				catch (std::exception& e)
+				{
+					alert(Calert(Calert::warn, "UPnP NAT", e.what()));
+				}
 #endif
-		break;
-	 }
-	while (tracker_port() < 0x10000 && lt.bind(htonl(INADDR_ANY), htons(tracker_port())) && WSAGetLastError() == WSAEADDRINUSE)
-		m_tracker_port++;
+				break;
+			}
+			if (l.listen())
+			{
+				alert(Calert(Calert::error, "Server", "listen failed: " + Csocket::error2a(WSAGetLastError())));
+				l.close();
+			}
+		}
+	}
+	if (tracker_port())
+	{
+		if (lt.open(SOCK_DGRAM) == INVALID_SOCKET)
+			alert(Calert(Calert::error, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError())));
+		else
+		{
+			while (tracker_port() < 0x10000 && lt.bind(htonl(INADDR_ANY), htons(tracker_port())) && WSAGetLastError() == WSAEADDRINUSE)
+				m_tracker_port++;
+		}
+	}
 #ifdef WIN32
 	if (static_port_mapping_collection)
 	{
@@ -248,8 +278,6 @@ int Cserver::run()
 	}
 #endif
 	mkpath(local_app_data_dir());
-	if (l.listen() || la.listen())
-		return alert(Calert(Calert::emerg, "Server", "listen failed" + Csocket::error2a(WSAGetLastError()))), 1;
 	load_state(Cvirtual_binary(state_fname()));
 	m_profiles.load(Cxif_key(Cvirtual_binary(profiles_fname())));
 	m_scheduler.load(Cxif_key(Cvirtual_binary(scheduler_fname())));
@@ -258,7 +286,7 @@ int Cserver::run()
 	run_scheduler();
 #ifndef WIN32
 	if (daemon(true, false))
-		alert(Calert(Calert::error, "Server", "daemon failed" + n(errno)));
+		alert(Calert(Calert::error, "Server", "daemon failed: " + n(errno)));
 	ofstream(g_pid_fname) << getpid() << endl;
 	struct sigaction act;
 	act.sa_handler = sig_handler;
@@ -282,7 +310,12 @@ int Cserver::run()
 		if (m_config.m_admin_port != m_admin_port)
 		{
 			Csocket s;
-			if (s.open(SOCK_STREAM) != INVALID_SOCKET
+			if (!m_config.m_admin_port)
+			{
+				la.close();
+				m_admin_port = m_config.m_admin_port;
+			}
+			else if (s.open(SOCK_STREAM) != INVALID_SOCKET
 				&& !s.bind(htonl(INADDR_LOOPBACK), htons(m_config.m_admin_port))
 				&& !s.listen())
 			{
@@ -293,7 +326,12 @@ int Cserver::run()
 		if (m_config.m_peer_port != m_peer_port)
 		{
 			Csocket s;
-			if (s.open(SOCK_STREAM) != INVALID_SOCKET
+			if (!m_config.m_peer_port)
+			{
+				l.close();
+				m_peer_port = m_config.m_peer_port;
+			}
+			else if (s.open(SOCK_STREAM) != INVALID_SOCKET
 				&& !s.bind(htonl(INADDR_ANY), htons(m_config.m_peer_port))
 				&& !s.listen())
 			{
@@ -304,7 +342,12 @@ int Cserver::run()
 		if (m_config.m_tracker_port != m_tracker_port)
 		{
 			Csocket s;
-			if (s.open(SOCK_DGRAM) != INVALID_SOCKET
+			if (!m_config.m_tracker_port)
+			{
+				lt.close();
+				m_tracker_port = m_config.m_tracker_port;
+			}
+			else if (s.open(SOCK_DGRAM) != INVALID_SOCKET
 				&& !s.bind(htonl(INADDR_ANY), htons(m_config.m_tracker_port)))
 			{
 				lt = s;
@@ -322,15 +365,21 @@ int Cserver::run()
 				hash = false;
 		}
 		int n = pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
-		if (below_peer_limit())
+		if (l != INVALID_SOCKET && below_peer_limit())
 		{
 			FD_SET(l, &fd_read_set);
 			n = max(n, static_cast<SOCKET>(l));
 		}
-		FD_SET(la, &fd_read_set);
-		n = max(n, static_cast<SOCKET>(la));
-		FD_SET(lt, &fd_read_set);
-		n = max(n, static_cast<SOCKET>(lt));
+		if (la != INVALID_SOCKET)
+		{
+			FD_SET(la, &fd_read_set);
+			n = max(n, static_cast<SOCKET>(la));
+		}
+		if (lt != INVALID_SOCKET)
+		{
+			FD_SET(lt, &fd_read_set);
+			n = max(n, static_cast<SOCKET>(lt));
+		}
 		unlock();
 		timeval tv;
 		tv.tv_sec = hash ? 1 : 0;
@@ -359,7 +408,7 @@ int Cserver::run()
 #endif
 		}
 		lock();
-		if (FD_ISSET(l, &fd_read_set))
+		if (l != INVALID_SOCKET && FD_ISSET(l, &fd_read_set))
 		{
 			sockaddr_in a;
 			while (1)
@@ -380,7 +429,7 @@ int Cserver::run()
 				}
 			}
 		}
-		if (FD_ISSET(la, &fd_read_set))
+		if (la != INVALID_SOCKET && FD_ISSET(la, &fd_read_set))
 		{
 			sockaddr_in a;
 			while (1)
@@ -401,7 +450,7 @@ int Cserver::run()
 				}
 			}
 		}
-		if (FD_ISSET(lt, &fd_read_set))
+		if (lt != INVALID_SOCKET && FD_ISSET(lt, &fd_read_set))
 			m_udp_tracker.recv(lt);
 		post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 		if (stopping)
