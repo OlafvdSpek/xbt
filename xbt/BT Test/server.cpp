@@ -143,7 +143,7 @@ void Cserver::upnp(bool v)
 string get_host_name()
 {
 	vector<char> t(256);
-	if (!gethostname(&t.front(), t.size()))
+	if (gethostname(&t.front(), t.size()))
 		throw std::exception("gethostname failed");
 	return &t.front();
 }
