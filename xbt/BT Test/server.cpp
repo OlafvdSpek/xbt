@@ -167,11 +167,11 @@ string wchar_to_mbyte(const wstring& s)
 
 int Cserver::run()
 {
+#ifdef WIN32
 	HRESULT hr;
 	hr = CoInitialize(NULL);
 	if (FAILED(hr))
 		alert(Calert(Calert::warn, "Server", "CoInitialize failed: " + n(hr)));
-#ifdef WIN32
 	IStaticPortMappingCollection* static_port_mapping_collection = NULL;
 	if (m_config.m_upnp)
 	{
