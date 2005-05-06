@@ -237,7 +237,7 @@ int Cserver::run()
 					}
 					BSTR bstrExternalIPA;
 					hr = static_port_mapping->get_ExternalIPAddress(&bstrExternalIPA);
-					static_port_mapping->Release();		
+					static_port_mapping->Release();
 					if (FAILED(hr))
 					{
 						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping->get_ExternalIPAddress failed: " + n(hr)));
@@ -440,7 +440,7 @@ int Cserver::run()
 				{
 					if (WSAGetLastError() != WSAEWOULDBLOCK)
 						alert(Calert(Calert::error, "Server", "accept failed: " + Csocket::error2a(WSAGetLastError())));
-					break;						
+					break;
 				}
 				else
 				{
@@ -1236,7 +1236,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		d.d(bts_files, files);
 		d.d(bts_version, xbt_version2a(version()));
 	}
-	else if (action == bts_open_torrent) 
+	else if (action == bts_open_torrent)
 		open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), "");
 	else if (action == bts_set_options)
 	{
@@ -1275,7 +1275,7 @@ void Cserver::term()
 
 int Cserver::version()
 {
-	return 52;
+	return 53;
 }
 
 Chttp_link* Cserver::http_request(int h, int p, const string& request, Chttp_response_handler* response_handler)
