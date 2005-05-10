@@ -7,6 +7,7 @@
 
 #include "../bt test/server.h"
 #include "ListCtrlEx1.h"
+#include "dns_worker.h"
 #include "resource.h"
 #include "stream_reader.h"
 
@@ -220,6 +221,7 @@ private:
 		int m_rtime;
 		int m_stime;
 		string m_debug;
+		string m_host_name;
 		bool m_removed;
 	};
 
@@ -303,6 +305,7 @@ private:
 	t_file* m_file;
 	t_files m_files_map;
 	t_global_details m_global_details;
+	Cdns_worker m_dns_worker;
 	CString m_reg_key;
 	Cserver m_server;
 	CWinThread* m_server_thread;

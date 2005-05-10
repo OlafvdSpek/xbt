@@ -80,6 +80,7 @@ enum
 	pc_send_time,
 	pc_host,
 	pc_port,
+	pc_host_name,
 	pc_peer_id,
 	pc_debug,
 	pc_end,
@@ -143,6 +144,7 @@ enum
 	dr_rejected_pieces,
 	dr_seeders,
 	dr_seeding_ratio,
+	dr_seeding_ratio_reached_at,	
 	dr_size,
 	dr_started_at,
 	dr_tracker,
@@ -603,6 +605,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Rejected Pieces",
 		"Seeders",
 		"Seeding Ratio",
+		"Seeding Ratio Reached at",
 		"Size",
 		"Started at",
 		"Tracker",
@@ -690,6 +693,19 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		case dr_seeding_ratio:
 			if (m_file->m_seeding_ratio)
 				buffer = n(m_file->m_seeding_ratio) + " %";
+			break;
+		case dr_seeding_ratio_reached_at:
+			if (m_file->m_seeding_ratio_reached_at)
+				buffer = time2a(m_file->m_seeding_ratio_reached_at) + " (" + duration2a(time(NULL) - m_file->m_seeding_ratio_reached_at) + " ago)";
+			else if (m_file->m_uploaded && !m_file->m_left && m_file->m_seeding_ratio && time(NULL) - m_file->m_session_started_at > 300 && m_file->m_state == Cbt_file::s_running)
+			{
+				int left = m_file->m_seeding_ratio * m_file->m_size / 100 - m_file->m_total_uploaded;
+				if (left > 0)
+				{
+					int duration = left * (time(NULL) - m_file->m_session_started_at) / m_file->m_uploaded;
+					buffer = time2a(duration + time(NULL)) + " (" + duration2a(duration) + " to go, estimated)";
+				}
+			}
 			break;
 		case dr_size:
 			buffer = b2a(m_file->m_size, "b");
@@ -908,6 +924,9 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 	case pc_host:
 		buffer = inet_ntoa(e.m_host);
+		break;
+	case pc_host_name:
+		buffer = e.m_host_name;
 		break;
 	case pc_port:
 		buffer = n(ntohs(e.m_port));
@@ -1259,6 +1278,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.m_allow_end_mode = sr.read_int(4);
 	f.m_seeding_ratio = sr.read_int(4);
 	f.m_seeding_ratio_override = sr.read_int(4);
+	f.m_seeding_ratio_reached_at = sr.read_int(4);
 	f.m_upload_slots_max = sr.read_int(4);
 	f.m_upload_slots_max_override = sr.read_int(4);
 	f.m_upload_slots_min = sr.read_int(4);
@@ -1377,6 +1397,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	bool inserted = false;
 	t_peer p;
 	p.m_host.s_addr = htonl(sr.read_int(4));
+	p.m_host_name = m_dns_worker.get_host_by_addr(p.m_host.s_addr);
 	p.m_port = htons(sr.read_int(4));
 	p.m_remote_peer_id = sr.read_string();
 	p.m_downloaded = sr.read_int(8);
@@ -1872,6 +1893,8 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	{
 	case pc_host:
 		return compare(ntohl(a.m_host.s_addr), ntohl(b.m_host.s_addr));
+	case pc_host_name:
+		return compare(a.m_host_name, b.m_host_name);
 	case pc_port:
 		return compare(ntohs(a.m_port), ntohs(b.m_port));
 	case pc_done:
@@ -2179,6 +2202,7 @@ void CXBTClientDlg::insert_bottom_columns()
 #endif
 			m_peers_columns.push_back(pc_host);
 			m_peers_columns.push_back(pc_port);
+			m_peers_columns.push_back(pc_host_name);
 			m_peers_columns.push_back(pc_peer_id);
 		}
 		m_peers_columns.push_back(pc_end);
@@ -2236,6 +2260,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		"RT",
 		"ST",
 		"Host",
+		"Host Name",
 		"Port",
 		"Peer ID",
 		"Debug",
@@ -2296,6 +2321,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
+		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_RIGHT,
 		LVCFMT_LEFT,
