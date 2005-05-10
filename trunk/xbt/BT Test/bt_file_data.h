@@ -37,6 +37,7 @@ public:
 	int m_completed_at;
 	int m_priority;
 	int m_seeding_ratio;
+	int m_seeding_ratio_reached_at;
 	int m_session_started_at;
 	int m_started_at;
 	int m_upload_slots_max;
