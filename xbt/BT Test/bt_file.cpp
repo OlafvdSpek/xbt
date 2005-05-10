@@ -34,6 +34,7 @@ Cbt_file::Cbt_file()
 	m_started_at = time(NULL);
 	m_session_started_at = time(NULL);
 	m_completed_at = 0;
+	m_seeding_ratio_reached_at = 0;
 	m_priority = 0;
 	m_state = s_queued;
 	m_validate = true;
@@ -281,6 +282,7 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 		return 0;
 	if (state() == s_running && !m_left && seeding_ratio() && 100 * m_total_uploaded / seeding_ratio() > m_size)
 	{
+		m_seeding_ratio_reached_at = m_server->time();
 		alert(Calert(Calert::notice, "Seeding ratio reached"));
 		close();
 	}
@@ -549,7 +551,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 204;
+	int size = m_info_hash.length() + m_name.length() + 208;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -637,6 +639,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, m_allow_end_mode);
 	w.write_int(4, seeding_ratio());
 	w.write_int(4, m_seeding_ratio_override);
+	w.write_int(4, m_seeding_ratio_reached_at);
 	w.write_int(4, upload_slots_max());
 	w.write_int(4, m_upload_slots_max_override);
 	w.write_int(4, upload_slots_min());
@@ -758,7 +761,8 @@ void Cbt_file::load_state(Cstream_reader& r)
 	m_upload_slots_max_override = r.read_int(4);
 	m_upload_slots_min = r.read_int(4);
 	m_upload_slots_min_override = r.read_int(4);
-	r.read(48);
+	m_seeding_ratio_reached_at = r.read_int(4);
+	r.read(44);
 	if (!is_open())
 		return;
 	m_state = s_stopped;
@@ -808,7 +812,8 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	w.write_int(4, m_upload_slots_max_override);
 	w.write_int(4, m_upload_slots_min);
 	w.write_int(4, m_upload_slots_min_override);
-	w.write(48);
+	w.write_int(4, m_seeding_ratio_reached_at);
+	w.write(44);
 }
 
 void Cbt_file::alert(const Calert& v)
