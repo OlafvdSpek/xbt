@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 zdll.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 pthreadVC2.lib zdll.lib /nologo /subsystem:windows /machine:I386
 
 !ELSEIF  "$(CFG)" == "XBT Client - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 zdll.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 pthreadVC2.lib zdll.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -217,6 +217,10 @@ SOURCE=.\dlg_tracker.cpp
 # Begin Source File
 
 SOURCE=.\dlg_trackers.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dns_worker.cpp
 # End Source File
 # Begin Source File
 
