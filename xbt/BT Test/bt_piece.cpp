@@ -85,7 +85,8 @@ bool Cbt_piece::check_peer(Cbt_peer_link* peer, int time_out)
 		if (j != i->m_peers.end() && time(NULL) - j->second > time_out)
 		{
 			i->m_peers.erase(peer);
-			mc_unrequested_sub_pieces++;
+			if (i->m_peers.empty())
+				mc_unrequested_sub_pieces++;
 			continue;
 		}
 		found = true;

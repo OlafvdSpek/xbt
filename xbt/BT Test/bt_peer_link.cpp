@@ -154,6 +154,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				if (!m_local_interested && m_f->next_invalid_piece(*this) != -1)
 					interested(true);
 			}
+			if (m_local_requests.empty() || m_f->m_server->time() - m_local_requests.back().stime > 120)
+				mc_local_requests_pending = 0;
 			if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
 			{
 				const t_remote_request& request = m_remote_requests.front();
@@ -629,22 +631,23 @@ void Cbt_peer_link::write_peers()
 
 void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
-	mc_local_requests_pending--;
-	for (t_local_requests::iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
+	while (!m_local_requests.empty() && m_local_requests.front().offset != m_f->mcb_piece * piece + offset)
+		m_local_requests.erase(m_local_requests.begin());
+	if (m_local_requests.empty())
 	{
-		if (i->offset != m_f->mcb_piece * piece + offset)
-			continue;
-		int t = m_f->m_server->time() - i->stime;
-		mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
-		logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
-		m_f->m_downloaded += size;
-		m_f->m_down_counter.add(size);
-		m_f->m_total_downloaded += size;
-		m_local_requests.erase(i);
-		write_data(m_f->mcb_piece * piece + offset, s, size, t);
+		alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b"));
 		return;
 	}
-	alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b"));
+	mc_local_requests_pending--;
+	t_local_requests::iterator i = m_local_requests.begin();
+	int t = m_f->m_server->time() - i->stime;
+	mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
+	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
+	m_f->m_downloaded += size;
+	m_f->m_down_counter.add(size);
+	m_f->m_total_downloaded += size;
+	m_local_requests.erase(i);
+	write_data(m_f->mcb_piece * piece + offset, s, size, t);
 }
 
 void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes)
@@ -831,7 +834,7 @@ void Cbt_peer_link::check_pieces()
 {
 	for (t_pieces::iterator i = m_pieces.begin(); i != m_pieces.end(); )
 	{
-		if ((*i)->check_peer(this, m_f->end_mode() ? 15 : m_f->m_server->time() - m_rtime > 30 ? 60 : 600))
+		if ((*i)->check_peer(this, m_f->end_mode() ? 15 : 600))
 			i++;
 		else
 			m_pieces.erase(i++);
