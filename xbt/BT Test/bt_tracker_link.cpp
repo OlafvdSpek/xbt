@@ -368,7 +368,9 @@ string Cbt_tracker_link::http_request(const Cbt_file& f)
 		<< "host: " << m_url.m_host;
 	if (m_url.m_port != 80)
 		os << ':' << m_url.m_port;
-	os << '\r' << endl
-		<< '\r' << endl;
+	os << '\r' << endl;
+	if (!f.m_server->user_agent().empty())
+		os << "user-agent: " << f.m_server->user_agent() << '\r' << endl;
+	os << '\r' << endl;
 	return os.str();
 }
