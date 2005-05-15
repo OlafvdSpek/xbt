@@ -452,6 +452,8 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 		string path1 = m_server.incompletes_dir();
 		if (browse_for_directory(GetSafeHwnd(), torrent.name(), path1))
 			return;
+		if (!path1.empty() && path1[path1.size() - 1] == '\\')
+			path1.erase(path1.size() - 1);
 		path = path1 + '/' + torrent.name();
 	}
 	CWaitCursor wc;
