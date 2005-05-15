@@ -573,6 +573,7 @@ BEGIN
             MENUITEM "Announce URL",                ID_EDIT_COPY_ANNOUNCE_URL
 
             MENUITEM "Hash",                        ID_EDIT_COPY_HASH
+            MENUITEM "Host",                        ID_EDIT_COPY_HOST
             MENUITEM "URL\tCtrl+C",                 ID_EDIT_COPY_URL
         END
         MENUITEM "&Paste URL\tCtrl+V",          ID_EDIT_PASTE_URL
