@@ -116,6 +116,8 @@
 #define IDC_PEER_LIMIT_STATIC           1080
 #define IDC_TORRENT_LIMIT_STATIC        1081
 #define IDC_HOT_KEY_STATIC              1082
+#define IDC_USER_AGENT_STATIC           1083
+#define IDC_USER_AGENT                  1084
 #define ID_POPUP_EXPLORE                32775
 #define ID_POPUP_START                  32776
 #define ID_POPUP_STOP                   32777
@@ -169,9 +171,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        145
+#define _APS_NEXT_RESOURCE_VALUE        146
 #define _APS_NEXT_COMMAND_VALUE         32840
-#define _APS_NEXT_CONTROL_VALUE         1083
+#define _APS_NEXT_CONTROL_VALUE         1085
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

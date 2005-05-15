@@ -70,6 +70,8 @@ BEGIN
                     ES_NUMBER
     CONTROL         "HotKey1",IDC_HOT_KEY,"msctls_hotkey32",WS_BORDER |
                     WS_TABSTOP,7,223,37,14
+    COMBOBOX        IDC_USER_AGENT,183,205,48,164,CBS_DROPDOWN | CBS_SORT |
+                    WS_VSCROLL | WS_TABSTOP
     CONTROL         "Ask for location",IDC_ASK_FOR_LOCATION,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,241,65,10
     CONTROL         "Bind before connect",IDC_BIND_BEFORE_CONNECT,"Button",
@@ -113,6 +115,7 @@ BEGIN
     LTEXT           "Peer Limit:",IDC_PEER_LIMIT_STATIC,288,187,34,14
     LTEXT           "Torrent Limit:",IDC_TORRENT_LIMIT_STATIC,288,205,42,14
     LTEXT           "Hot Key:",IDC_HOT_KEY_STATIC,288,223,28,14
+    LTEXT           "User Agent:",IDC_USER_AGENT_STATIC,281,243,38,14
 END
 
 IDD_TRACKERS DIALOG DISCARDABLE  0, 0, 282, 95
@@ -604,6 +607,21 @@ BEGIN
     VK_INSERT,      ID_FILE_OPEN,           VIRTKEY, NOINVERT
     VK_RETURN,      ID_POPUP_EXPLORE,       VIRTKEY, NOINVERT
     VK_RETURN,      ID_POPUP_TORRENT_OPTIONS, VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_OPTIONS DLGINIT
+BEGIN
+    IDC_USER_AGENT, 0x403, 1, 0
+"\000"
+    IDC_USER_AGENT, 0x403, 11, 0
+0x4258, 0x2054, 0x6c43, 0x6569, 0x746e, "\000"
+    0
 END
 
 

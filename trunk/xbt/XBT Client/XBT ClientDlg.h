@@ -22,6 +22,7 @@ public:
 	bool get_profile_start_minimized();
 	bool get_profile_upnp();
 	int get_profile_upload_rate();
+	string get_profile_user_agent();
 	void write_profile_hide_on_deactivate(bool);
 	void write_profile_lower_process_priority(bool);
 	void write_profile_show_advanced_columns(bool);
@@ -30,6 +31,7 @@ public:
 	void write_profile_start_minimized(bool);
 	void write_profile_upnp(bool);
 	void write_profile_upload_rate(int);
+	void write_profile_user_agent(const string&);
 	int GetProfileInt(LPCTSTR Entry, int Default = 0);
 	string GetProfileString(LPCTSTR Entry, LPCTSTR Default = "");
 	BOOL WriteProfileInt(LPCTSTR Entry, int Value);

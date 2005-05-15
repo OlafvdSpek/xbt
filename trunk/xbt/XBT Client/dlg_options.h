@@ -42,6 +42,7 @@ public:
 		int upload_rate;
 		int upload_slots;
 		bool upnp;
+		string user_agent;
 	};
 
 	t_data get() const;
@@ -74,6 +75,7 @@ public:
 	BOOL	m_hide_on_deactivate;
 	BOOL	m_send_stop_event;
 	BOOL	m_upnp;
+	CString	m_user_agent;
 	//}}AFX_DATA
 
 
