@@ -1789,6 +1789,42 @@ static int compare(const T& a, const T& b, int c = 0)
 	return a < b ? -1 : a == b ? c : 1;
 }
 
+int compare_host_names(const string& a, const string& b)
+{
+	int a1 = a.size() - 1;
+	int b1 = b.size() - 1;
+	string a3;
+	string b3;
+	while (a1 != -1 && b1 != -1)
+	{
+		int a2 = a.rfind('.', a1);
+		int b2 = b.rfind('.', b1);
+		if (a2 == string::npos)
+		{
+			a3 = a.substr(0, a1 + 1);
+			a1 = -1;
+		}
+		else
+		{
+			a3 = a.substr(a2 + 1, a1 - a2);
+			a1 = a2 - 1;
+		}
+		if (b2 == string::npos)
+		{
+			b3 = b.substr(0, b1 + 1);
+			b1 = -1;
+		}
+		else
+		{
+			b3 = b.substr(b2 + 1, b1 - b2);
+			b1 = b2 - 1;
+		}
+		if (int c = compare(a3, b3))
+			return c;
+	}
+	return a1 == -1 ? b1 == -1 ? 0 : -1 : 1;
+}
+
 int CXBTClientDlg::files_compare(int id_a, int id_b) const
 {
 	if (m_torrents_sort_reverse)
@@ -1902,7 +1938,7 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	case pc_host:
 		return compare(ntohl(a.m_host.s_addr), ntohl(b.m_host.s_addr));
 	case pc_host_name:
-		return compare(a.m_host_name, b.m_host_name);
+		return compare_host_names(a.m_host_name, b.m_host_name);
 	case pc_port:
 		return compare(ntohs(a.m_port), ntohs(b.m_port));
 	case pc_done:
