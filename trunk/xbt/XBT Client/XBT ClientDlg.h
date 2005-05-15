@@ -193,6 +193,10 @@ protected:
 	afx_msg void OnPopupViewGlobalDetails();
 	afx_msg void OnUpdatePopupViewGlobalDetails(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupExplore(CCmdUI* pCmdUI);
+	afx_msg void OnPopupDisconnect();
+	afx_msg void OnUpdatePopupDisconnect(CCmdUI* pCmdUI);
+	afx_msg void OnPopupConnect();
+	afx_msg void OnUpdatePopupConnect(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);

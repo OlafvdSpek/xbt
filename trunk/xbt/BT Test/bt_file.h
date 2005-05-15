@@ -27,6 +27,8 @@ class Cserver;
 class Cbt_file: public Cbt_file_data
 {
 public:
+	void peer_connect(int ipa, int port);
+	void peer_disconnect(int ipa);
 	void trackers(const string&);
 	int c_local_links() const;
 	int c_remote_links() const;

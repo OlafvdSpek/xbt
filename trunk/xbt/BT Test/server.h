@@ -52,6 +52,8 @@ public:
 	int file_state(const string&, Cbt_file::t_state);
 	int open(const Cvirtual_binary& info, const string& name);
 	int open_url(const string&);
+	int peer_connect(const string& id, int ipa, int port);
+	int peer_disconnect(const string& id, int ipa);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	static int version();
 	string completes_dir() const;
