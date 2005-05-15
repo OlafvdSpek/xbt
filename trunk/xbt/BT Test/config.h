@@ -42,6 +42,7 @@ public:
 	string m_incompletes_dir;
 	string m_local_app_data_dir;
 	string m_torrents_dir;
+	string m_user_agent;
 };
 
 #endif // !defined(AFX_CONFIG_H__CE8DA4C3_CDFC_46F3_A22E_ECCC9EAFD1DC__INCLUDED_)

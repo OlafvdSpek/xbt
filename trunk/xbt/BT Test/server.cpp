@@ -1303,3 +1303,13 @@ void Cserver::check_remote_links()
 	alert(Calert(Calert::warn, "Did you forget to open a port in your firewall or router?"));
 	alert(Calert(Calert::warn, n(c_local_links) + " local links, but no remote links have been established."));
 }
+
+string Cserver::user_agent() const
+{
+	return m_config.m_user_agent;
+}
+
+void Cserver::user_agent(const string& v)
+{
+	m_config.m_user_agent = v;
+}

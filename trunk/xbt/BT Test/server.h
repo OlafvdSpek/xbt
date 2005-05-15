@@ -64,6 +64,7 @@ public:
 	string state_fname() const;
 	string torrents_dir() const;
 	string trackers_fname() const;
+	string user_agent() const;
 	void admin_port(int);
 	void alert(const Calert&);
 	void clean_scheduler();
@@ -98,6 +99,7 @@ public:
 	void upload_rate(int);
 	void upload_slots(int);
 	void upnp(bool);
+	void user_agent(const string&);
 
 	typedef list<Cbt_admin_link> t_admins;
 	typedef list<Cbt_file> t_files;

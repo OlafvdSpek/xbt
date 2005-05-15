@@ -94,6 +94,8 @@ const Cconfig& Cconfig::write(const Cbvalue& v)
 		m_upload_slots = v.d("upload_slots").i();
 	if (v.d_has("upnp"))
 		m_upnp = v.d("upnp").i();
+	if (v.d_has("user_agent"))
+		m_user_agent = v.d("user_agent").s();
 	return *this;
 }
 
@@ -120,5 +122,6 @@ Cbvalue Cconfig::read() const
 	v.d("upload_rate", m_upload_rate);
 	v.d("upload_slots", m_upload_slots);
 	v.d("upnp", m_upnp);
+	v.d("user_agent", m_user_agent);
 	return v;
 }
