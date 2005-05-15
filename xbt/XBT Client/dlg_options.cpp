@@ -42,6 +42,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_hide_on_deactivate = FALSE;
 	m_send_stop_event = FALSE;
 	m_upnp = FALSE;
+	m_user_agent = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -76,6 +77,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_HIDE_ON_DEACTIVATE, m_hide_on_deactivate);
 	DDX_Check(pDX, IDC_SEND_STOP_EVENT, m_send_stop_event);
 	DDX_Check(pDX, IDC_UPNP, m_upnp);
+	DDX_CBString(pDX, IDC_USER_AGENT, m_user_agent);
 	//}}AFX_DATA_MAP
 	if (pDX->m_bSaveAndValidate)
 		m_hot_key_value = m_hot_key.GetHotKey();
@@ -121,6 +123,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.upload_rate = m_upload_rate << 10;
 	v.upload_slots = m_upload_slots;
 	v.upnp = m_upnp;
+	v.user_agent = m_user_agent;
 	return v;
 }
 
@@ -149,6 +152,7 @@ void Cdlg_options::set(const t_data& v)
 	m_upload_rate = v.upload_rate >> 10;
 	m_upload_slots = v.upload_slots;
 	m_upnp = v.upnp;
+	m_user_agent = v.user_agent.c_str();
 }
 
 void Cdlg_options::OnCompletesDirectoryBrowse()
@@ -197,6 +201,7 @@ BOOL Cdlg_options::OnInitDialog()
 				<< item(IDC_PEER_PORT_STATIC, NORESIZE)
 				<< item(IDC_TRACKER_PORT_STATIC, NORESIZE)
 				<< item(IDC_HOT_KEY_STATIC, NORESIZE)
+				<< item(IDC_USER_AGENT_STATIC, NORESIZE)
 				)
 			<< (pane(VERTICAL)
 				<< item(IDC_SEEDING_RATIO, ABSOLUTE_VERT)
@@ -221,6 +226,7 @@ BOOL Cdlg_options::OnInitDialog()
 				<< item(IDC_PEER_PORT, ABSOLUTE_VERT)
 				<< item(IDC_TRACKER_PORT, ABSOLUTE_VERT)
 				<< item(IDC_HOT_KEY, ABSOLUTE_VERT)
+				<< item(IDC_USER_AGENT, ABSOLUTE_VERT)
 				)
 			)
 		<< (pane(HORIZONTAL)

@@ -360,6 +360,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_server.upload_rate(get_profile_upload_rate());
 	m_server.upload_slots(GetProfileInt("upload_slots", m_server.upload_slots()));
 	m_server.upnp(get_profile_upnp());
+	m_server.user_agent(get_profile_user_agent());
 	m_tab.SetCurSel(m_bottom_view);
 	start_server();
 	insert_columns(true);
@@ -2969,6 +2970,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.upload_rate = get_profile_upload_rate();
 	data.upload_slots = m_server.upload_slots();
 	data.upnp = get_profile_upnp();
+	data.user_agent = m_server.user_agent();
 	dlg.set(data);
 	unregister_hot_key();
 	if (IDOK != dlg.DoModal())
@@ -2996,6 +2998,7 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.upload_rate(data.upload_rate);
 	m_server.upload_slots(data.upload_slots);
 	m_server.upnp(data.upnp);
+	m_server.user_agent(data.user_agent);
 	WriteProfileInt("admin_port", data.admin_port);
 	WriteProfileInt("ask_for_location", data.ask_for_location);
 	WriteProfileInt("bind_before_connect", data.bind_before_connect);
@@ -3019,6 +3022,7 @@ void CXBTClientDlg::OnToolsOptions()
 	WriteProfileInt("upload_rate", data.upload_rate);
 	WriteProfileInt("upload_slots", data.upload_slots);
 	write_profile_upnp(data.upnp);
+	write_profile_user_agent(data.user_agent);
 	insert_columns(true);
 	register_hot_key(data.hot_key);
 	if (m_show_tray_icon)
@@ -3293,4 +3297,14 @@ int CXBTClientDlg::get_profile_upload_rate()
 void CXBTClientDlg::write_profile_upload_rate(int v)
 {
 	WriteProfileInt("upload_rate", v);
+}
+
+string CXBTClientDlg::get_profile_user_agent()
+{
+	return GetProfileString("user_agent");
+}
+
+void CXBTClientDlg::write_profile_user_agent(const string& v)
+{
+	WriteProfileString("user_agent", v);
 }
