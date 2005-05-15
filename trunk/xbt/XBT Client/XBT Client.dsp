@@ -192,6 +192,10 @@ SOURCE=.\dlg_options.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\dlg_peer_connect.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\dlg_profile.cpp
 # End Source File
 # Begin Source File
@@ -426,6 +430,10 @@ SOURCE=.\dlg_make_torrent.h
 # Begin Source File
 
 SOURCE=.\dlg_options.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_peer_connect.h
 # End Source File
 # Begin Source File
 
