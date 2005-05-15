@@ -987,3 +987,19 @@ void Cbt_file::trackers(const string& v)
 		i = j + 1;
 	}
 }
+
+void Cbt_file::peer_connect(int ipa, int port)
+{
+	insert_peer(ipa, port);
+}
+
+void Cbt_file::peer_disconnect(int ipa)
+{
+	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
+	{
+		if (i->m_a.sin_addr.s_addr != ipa)
+			continue;
+		i->close();
+		return;
+	}
+}

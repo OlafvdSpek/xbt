@@ -11,6 +11,7 @@
 #include "dlg_about.h"
 #include "dlg_make_torrent.h"
 #include "dlg_options.h"
+#include "dlg_peer_connect.h"
 #include "dlg_profiles.h"
 #include "dlg_scheduler.h"
 #include "dlg_torrent_options.h"
@@ -305,9 +306,13 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_GLOBAL_EVENTS, OnUpdatePopupViewGlobalEvents)
 	ON_COMMAND(ID_POPUP_VIEW_GLOBAL_DETAILS, OnPopupViewGlobalDetails)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_GLOBAL_DETAILS, OnUpdatePopupViewGlobalDetails)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE, OnUpdatePopupExplore)
+	ON_COMMAND(ID_POPUP_DISCONNECT, OnPopupDisconnect)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_DISCONNECT, OnUpdatePopupDisconnect)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
-	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE, OnUpdatePopupExplore)
+	ON_COMMAND(ID_POPUP_CONNECT, OnPopupConnect)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_CONNECT, OnUpdatePopupConnect)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -3309,4 +3314,31 @@ string CXBTClientDlg::get_profile_user_agent()
 void CXBTClientDlg::write_profile_user_agent(const string& v)
 {
 	WriteProfileString("user_agent", v);
+}
+
+void CXBTClientDlg::OnPopupConnect() 
+{
+	Cdlg_peer_connect dlg;
+	if (IDOK != dlg.DoModal())
+		return;
+	m_server.peer_connect(m_file->m_info_hash, inet_addr(dlg.m_host), htons(dlg.m_port));
+}
+
+void CXBTClientDlg::OnUpdatePopupConnect(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_bottom_view == v_peers && m_file);
+}
+
+void CXBTClientDlg::OnPopupDisconnect() 
+{
+	for (int index = -1; (index = m_peers.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_peer& e = m_file->peers[m_peers.GetItemData(index)];
+		m_server.peer_disconnect(m_file->m_info_hash, e.m_host.s_addr);
+	}
+}
+
+void CXBTClientDlg::OnUpdatePopupDisconnect(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_bottom_view == v_peers && m_file && m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
 }

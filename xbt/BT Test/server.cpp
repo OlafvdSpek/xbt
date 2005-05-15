@@ -1313,3 +1313,29 @@ void Cserver::user_agent(const string& v)
 {
 	m_config.m_user_agent = v;
 }
+
+int Cserver::peer_connect(const string& id, int ipa, int port)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != id)
+			continue;
+		i->peer_connect(ipa, port);
+		return 0;
+	}
+	return 1;
+}
+
+int Cserver::peer_disconnect(const string& id, int ipa)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash != id)
+			continue;
+		i->peer_disconnect(ipa);
+		return 0;
+	}
+	return 1;
+}
