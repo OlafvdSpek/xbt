@@ -197,6 +197,8 @@ protected:
 	afx_msg void OnUpdatePopupDisconnect(CCmdUI* pCmdUI);
 	afx_msg void OnPopupConnect();
 	afx_msg void OnUpdatePopupConnect(CCmdUI* pCmdUI);
+	afx_msg void OnEditCopyHost();
+	afx_msg void OnUpdateEditCopyHost(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);

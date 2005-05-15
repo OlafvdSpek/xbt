@@ -309,10 +309,12 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE, OnUpdatePopupExplore)
 	ON_COMMAND(ID_POPUP_DISCONNECT, OnPopupDisconnect)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_DISCONNECT, OnUpdatePopupDisconnect)
-	ON_WM_SIZE()
-	ON_WM_INITMENU()
 	ON_COMMAND(ID_POPUP_CONNECT, OnPopupConnect)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_CONNECT, OnUpdatePopupConnect)
+	ON_WM_SIZE()
+	ON_WM_INITMENU()
+	ON_COMMAND(ID_EDIT_COPY_HOST, OnEditCopyHost)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY_HOST, OnUpdateEditCopyHost)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -2953,6 +2955,19 @@ void CXBTClientDlg::OnEditCopyHash()
 void CXBTClientDlg::OnUpdateEditCopyHash(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_files.GetSelectedCount() == 1);
+}
+
+
+void CXBTClientDlg::OnEditCopyHost() 
+{
+	int id = m_peers.GetItemData(m_peers.GetNextItem(-1, LVNI_SELECTED));
+	if (id != -1)
+		set_clipboard(inet_ntoa(m_file->peers.find(id)->second.m_host));
+}
+
+void CXBTClientDlg::OnUpdateEditCopyHost(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_bottom_view = v_peers && m_file && m_peers.GetSelectedCount() == 1);
 }
 
 void CXBTClientDlg::OnEditCopyUrl() 
