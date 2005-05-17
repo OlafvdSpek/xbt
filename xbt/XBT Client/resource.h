@@ -174,13 +174,14 @@
 #define ID_POPUP_DISCONNECT             32840
 #define ID_POPUP_CONNECT                32841
 #define ID_EDIT_COPY_HOST               32842
+#define ID_EDIT_COPY_ROWS               32843
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        147
-#define _APS_NEXT_COMMAND_VALUE         32843
+#define _APS_NEXT_COMMAND_VALUE         32844
 #define _APS_NEXT_CONTROL_VALUE         1089
 #define _APS_NEXT_SYMED_VALUE           105
 #endif

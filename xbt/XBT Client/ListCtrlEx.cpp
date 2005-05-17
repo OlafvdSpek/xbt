@@ -105,3 +105,28 @@ std::string& CListCtrlEx::get_buffer()
 {
 	return m_buffer[++m_buffer_w &= 3].erase();
 }
+
+std::string CListCtrlEx::get_selected_rows_tsv()
+{
+	string d;
+	for (int j = 0; j < GetHeaderCtrl()->GetItemCount(); j++)
+	{
+		const int cb_b = 256;
+		char b[cb_b];
+		HDITEM item;
+		item.mask = HDI_TEXT;
+		item.pszText = b;
+		item.cchTextMax = cb_b - 1;
+		GetHeaderCtrl()->GetItem(j, &item);
+		d += item.pszText;
+		d += "\t";
+	}
+	d += "\r\n";
+	for (int i = -1; (i = GetNextItem(i, LVNI_SELECTED)) != -1; )
+	{
+		for (int j = 0; j < GetHeaderCtrl()->GetItemCount(); j++)
+			d += GetItemText(i, j) + "\t";
+		d += "\r\n";
+	}
+	return d;
+}
