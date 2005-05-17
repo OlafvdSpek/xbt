@@ -849,5 +849,12 @@ int Cbt_peer_link::c_max_requests_pending() const
 
 string Cbt_peer_link::debug_string() const
 {
-	return n(cb_write_buffer());
+	string d;
+	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
+		d += "lr: " + n(i->offset / m_f->mcb_piece) + "; ";
+	if (m_read_b.cb_read())
+		d += "rb: " + n(m_read_b.cb_read()) + "; ";
+	if (cb_write_buffer())
+		d += "wb: " + n(cb_write_buffer()) + "; ";
+	return d;
 }
