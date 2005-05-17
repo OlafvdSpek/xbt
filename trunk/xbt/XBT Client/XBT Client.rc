@@ -437,6 +437,7 @@ BEGIN
             MENUITEM "Copy Announce URL",           ID_EDIT_COPY_ANNOUNCE_URL
 
             MENUITEM "Copy Hash",                   ID_EDIT_COPY_HASH
+            MENUITEM "Copy Rows",                   ID_EDIT_COPY_ROWS
             MENUITEM "Copy URL\tCtrl+C",            ID_EDIT_COPY_URL
             MENUITEM "Paste URL\tCtrl+V",           ID_EDIT_PASTE_URL
         END
@@ -493,6 +494,10 @@ IDR_POPUP_BOTTOM_FILES MENU DISCARDABLE
 BEGIN
     POPUP "_POPUP_"
     BEGIN
+        POPUP "Clipboard"
+        BEGIN
+            MENUITEM "Copy Rows",                   ID_EDIT_COPY_ROWS
+        END
         POPUP "&Priority"
         BEGIN
             MENUITEM "High",                        ID_POPUP_PRIORITY_HIGH
@@ -529,6 +534,10 @@ IDR_POPUP_BOTTOM MENU DISCARDABLE
 BEGIN
     POPUP "_POPUP_"
     BEGIN
+        POPUP "Clipboard"
+        BEGIN
+            MENUITEM "Copy Rows",                   ID_EDIT_COPY_ROWS
+        END
         POPUP "&View"
         BEGIN
             MENUITEM "&Details\t1",                 ID_POPUP_VIEW_DETAILS
@@ -574,6 +583,7 @@ BEGIN
 
             MENUITEM "Hash",                        ID_EDIT_COPY_HASH
             MENUITEM "Host",                        ID_EDIT_COPY_HOST
+            MENUITEM "Rows",                        ID_EDIT_COPY_ROWS
             MENUITEM "URL\tCtrl+C",                 ID_EDIT_COPY_URL
         END
         MENUITEM "&Paste URL\tCtrl+V",          ID_EDIT_PASTE_URL

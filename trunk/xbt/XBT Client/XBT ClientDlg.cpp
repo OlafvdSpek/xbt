@@ -313,6 +313,7 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_CONNECT, OnUpdatePopupConnect)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
+	ON_COMMAND(ID_EDIT_COPY_ROWS, OnEditCopyRows)
 	ON_COMMAND(ID_EDIT_COPY_HOST, OnEditCopyHost)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY_HOST, OnUpdateEditCopyHost)
 	//}}AFX_MSG_MAP
@@ -2957,7 +2958,6 @@ void CXBTClientDlg::OnUpdateEditCopyHash(CCmdUI* pCmdUI)
 	pCmdUI->Enable(m_files.GetSelectedCount() == 1);
 }
 
-
 void CXBTClientDlg::OnEditCopyHost() 
 {
 	int id = m_peers.GetItemData(m_peers.GetNextItem(-1, LVNI_SELECTED));
@@ -2968,6 +2968,11 @@ void CXBTClientDlg::OnEditCopyHost()
 void CXBTClientDlg::OnUpdateEditCopyHost(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_bottom_view = v_peers && m_file && m_peers.GetSelectedCount() == 1);
+}
+
+void CXBTClientDlg::OnEditCopyRows() 
+{
+	set_clipboard((GetFocus() == &m_files ? m_files : m_peers).get_selected_rows_tsv());
 }
 
 void CXBTClientDlg::OnEditCopyUrl() 

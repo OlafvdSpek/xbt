@@ -18,6 +18,7 @@ public:
 	//}}AFX_VIRTUAL
 public:
 	std::string& get_buffer();
+	std::string get_selected_rows_tsv();
 	void select_all();
 	void DeleteAllColumns();
 	DWORD GetItemData(int nItem) const;

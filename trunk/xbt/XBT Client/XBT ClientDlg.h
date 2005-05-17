@@ -193,6 +193,7 @@ protected:
 	afx_msg void OnPopupViewGlobalDetails();
 	afx_msg void OnUpdatePopupViewGlobalDetails(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupExplore(CCmdUI* pCmdUI);
+	afx_msg void OnEditCopyRows();
 	afx_msg void OnPopupDisconnect();
 	afx_msg void OnUpdatePopupDisconnect(CCmdUI* pCmdUI);
 	afx_msg void OnPopupConnect();
