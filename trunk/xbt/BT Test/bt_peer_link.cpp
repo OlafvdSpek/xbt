@@ -154,8 +154,10 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				if (!m_local_interested && m_f->next_invalid_piece(*this) != -1)
 					interested(true);
 			}
+			/*
 			if (m_local_requests.empty() || m_f->m_server->time() - m_local_requests.back().stime > 120)
 				mc_local_requests_pending = 0;
+			*/
 			if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
 			{
 				const t_remote_request& request = m_remote_requests.front();
@@ -632,10 +634,10 @@ void Cbt_peer_link::write_peers()
 void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
 	while (!m_local_requests.empty() && m_local_requests.front().offset != m_f->mcb_piece * piece + offset)
-		m_local_requests.erase(m_local_requests.begin());
+		m_local_requests.pop_front();
 	if (m_local_requests.empty())
 	{
-		alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b"));
+		alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b") + " (" + peer_id2a(m_remote_peer_id) + ")");
 		return;
 	}
 	mc_local_requests_pending--;
