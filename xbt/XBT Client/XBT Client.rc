@@ -536,6 +536,7 @@ BEGIN
     BEGIN
         POPUP "Clipboard"
         BEGIN
+            MENUITEM "Copy Host",                   ID_EDIT_COPY_HOST
             MENUITEM "Copy Rows",                   ID_EDIT_COPY_ROWS
         END
         POPUP "&View"

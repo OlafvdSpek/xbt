@@ -2967,7 +2967,7 @@ void CXBTClientDlg::OnEditCopyHost()
 
 void CXBTClientDlg::OnUpdateEditCopyHost(CCmdUI* pCmdUI) 
 {
-	pCmdUI->Enable(m_bottom_view = v_peers && m_file && m_peers.GetSelectedCount() == 1);
+	pCmdUI->Enable(m_bottom_view == v_peers && m_file && m_peers.GetSelectedCount() == 1);
 }
 
 void CXBTClientDlg::OnEditCopyRows() 
