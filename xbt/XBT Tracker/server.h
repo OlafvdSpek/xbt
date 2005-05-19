@@ -19,7 +19,7 @@
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
 
-class Cserver  
+class Cserver
 {
 public:
 	struct t_peer
@@ -134,6 +134,7 @@ public:
 		int peers_limit;
 		int torrents_limit;
 		string pass;
+		__int64 torrent_pass_secret;
 	};
 
 	typedef map<int, t_user> t_users;
