@@ -368,11 +368,11 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 	}
 	else if (v.m_left && user && user->torrents_limit && user->incompletes >= user->torrents_limit)
 		return bts_torrents_limit_reached;
-	else if (user && user->peers_limit)
+	else if (v.m_left && user && user->peers_limit)
 	{
 		int c = 0;
 		for (t_peers::const_iterator j = file.peers.begin(); j != file.peers.end(); j++)
-			c += j->second.uid == user->uid;
+			c += j->second.left && j->second.uid == user->uid;
 		if (c >= user->peers_limit)
 			return bts_peers_limit_reached;
 	}
