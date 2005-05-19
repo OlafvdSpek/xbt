@@ -65,7 +65,9 @@ CREATE TABLE xbt_files_users
   announced int NOT NULL,
   completed int NOT NULL,
   downloaded bigint(20) NOT NULL,
+  `left` bigint(20) NOT NULL,
   uploaded bigint(20) NOT NULL,
+  mtime timestamp NOT NULL,
   UNIQUE KEY (info_hash(20), uid),
   KEY (uid)
 );
