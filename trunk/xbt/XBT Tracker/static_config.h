@@ -11,7 +11,7 @@
 
 #include "xcc_error.h"
 
-class Cstatic_config  
+class Cstatic_config
 {
 public:
 	Cxcc_error read(const char* fname);
