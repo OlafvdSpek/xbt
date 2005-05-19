@@ -131,6 +131,7 @@ public:
 		int fid_end;
 		int completes;
 		int incompletes;
+		int peers_limit;
 		int torrents_limit;
 		string pass;
 	};
