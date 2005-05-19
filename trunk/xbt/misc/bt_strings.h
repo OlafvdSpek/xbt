@@ -73,6 +73,7 @@ const string bts_peer_id = "peer id";
 const string bts_peer_limit = "peer limit";
 const string bts_peer_port = "peer port";
 const string bts_peers = "peers";
+const string bts_peers_limit_reached = "access denied, peers limit reached";
 const string bts_piece_length = "piece length";
 const string bts_pieces = "pieces";
 const string bts_port = "port";
