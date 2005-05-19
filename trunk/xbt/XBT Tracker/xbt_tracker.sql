@@ -99,6 +99,7 @@ CREATE TABLE xbt_users
   peers_limit int NOT NULL,
   torrents_limit int NOT NULL,
   torrent_pass char(32) NOT NULL,
+  torrent_pass_secret bigint NOT NULL,
   downloaded bigint NOT NULL,
   uploaded bigint NOT NULL,
   PRIMARY KEY (uid)
