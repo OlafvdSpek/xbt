@@ -9,7 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cconfig  
+class Cconfig
 {
 public:
 	typedef set<int> t_listen_ipas;

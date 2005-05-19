@@ -33,7 +33,7 @@ enum
 typedef void epoll_event;
 #endif
 
-class Cepoll  
+class Cepoll
 {
 public:
 	int create(int size);

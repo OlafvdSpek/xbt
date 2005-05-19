@@ -16,7 +16,7 @@ struct t_udp_tracker_input_announce;
 struct t_udp_tracker_input_connect;
 struct t_udp_tracker_input_scrape;
 
-class Ctransaction  
+class Ctransaction
 {
 public:
 	Cserver::t_user* authenticate(const void* s, const char* s_end) const;
