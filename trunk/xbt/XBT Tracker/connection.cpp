@@ -136,6 +136,15 @@ int Cconnection::send()
 	return 0;
 }
 
+static string calculate_torrent_pass1(const string& info_hash, __int64 torrent_pass_secret)
+{
+	Csha1 sha1;
+	sha1.write(info_hash.c_str(), info_hash.size());
+	torrent_pass_secret = htonll(torrent_pass_secret);
+	sha1.write(&torrent_pass_secret, sizeof(torrent_pass_secret));
+	return sha1.read();
+}
+
 void Cconnection::read(const string& v)
 {
 #ifndef NDEBUG
@@ -166,10 +175,29 @@ void Cconnection::read(const string& v)
 	}
 	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
 		ti.m_ipa = m_a.sin_addr.s_addr;
+	string torrent_pass0;
+	string torrent_pass1;
+	a = 4;
+	if (a < v.size() && v[a] == '/')
+	{
+		a++;
+		if (a + 1 < v.size() && v[a + 1] == '/')
+			a += 2;
+		if (a + 32 < v.size() && v[a + 32] == '/')
+		{
+			torrent_pass0 = v.substr(a, 32);
+			a += 33;
+			if (a + 40 < v.size() && v[a + 40] == '/')
+			{
+				torrent_pass1 = v.substr(a, 40);
+				a += 41;
+			}
+		}
+	}
 	string h = "HTTP/1.0 200 OK\r\n";
 	Cvirtual_binary s;
 	bool gzip = true;
-	switch (v.size() >= 41 && v[6] == '/' && v[39] == '/' ? v[40] : v.size() >= 6 ? v[5] : 0) 
+	switch (a < v.size() ? v[a] : 0) 
 	{
 	case 'a':
 		gzip = m_server->gzip_announce() && !ti.m_compact;
@@ -179,10 +207,12 @@ void Cconnection::read(const string& v)
 				s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
 			else
 			{
-				Cserver::t_user* user = v.size() >= 40 && v[6] == '/' && v[39] == '/' ? m_server->find_user_by_torrent_pass(v.substr(7, 32)) : NULL;
+				Cserver::t_user* user = m_server->find_user_by_torrent_pass(torrent_pass0);
 				if (!user)
 					user = m_server->find_user_by_ipa(ntohl(ti.m_ipa));
 				if (!m_server->anonymous_announce() && !user)
+					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
+				else if (user && user->torrent_pass_secret && calculate_torrent_pass1(ti.m_info_hash, user->torrent_pass_secret) != hex_decode(torrent_pass1))
 					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 				else
 				{
