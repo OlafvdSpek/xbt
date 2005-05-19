@@ -96,6 +96,7 @@ CREATE TABLE xbt_users
   name char(8) NOT NULL,
   pass blob NOT NULL,
   fid_end int NOT NULL,
+  peers_limit int NOT NULL,
   torrents_limit int NOT NULL,
   torrent_pass char(32) NOT NULL,
   downloaded bigint NOT NULL,
