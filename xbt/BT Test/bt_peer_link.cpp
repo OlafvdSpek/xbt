@@ -142,8 +142,6 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				break;
 			}					
 		}
-		if (!m_write_b.empty() && FD_ISSET(m_s, fd_write_set) && send())
-			return 1;
 		if (m_state == 3)
 		{
 			write_choke(m_local_choked_goal);
@@ -201,6 +199,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 					write_keepalive();
 			}
 		}
+		if (!m_write_b.empty() && send())
+			return 1;
 		break;
 	}
 	if (!m_left && !m_f->m_left)
