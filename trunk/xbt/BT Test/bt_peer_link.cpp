@@ -199,7 +199,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 					write_keepalive();
 			}
 		}
-		if (!m_write_b.empty() && send())
+		if (send())
 			return 1;
 		break;
 	}
