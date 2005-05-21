@@ -192,12 +192,20 @@ The tracker reads it's configuration from the SQL table xbt_config.
 <p>
 If auto_register is on, the tracker will track any torrent.
 If it's off, the tracker will only track torrents (identified by info_hash) that are in the xbt_files table.
+
+<pre>
+insert into xbt_files (info_hash, ctime) values ('&lt;info_hash>', null); // insert
+update xbt_files set flags = 1 where info_hash = '&lt;info_hash>'; // delete
+</pre>
 <hr>
 <h2>Anonymous Announce</h2>
 
 <p>
 If anonymous_announce is on, the tracker will serve any user.
 If it's off, the tracker will only serve users (identified by torrent_pass) that are in the xbt_users table.
+
+<p>
+The torrent_pass field in xbt_users contains the 32 char torrent_pass. The announce URL contains the same torrent_pass: /&lt;torrent_pass>/announce
 <hr>
 <div>
 	<a href="http://sourceforge.net/projects/xbtt/"><img src="http://sourceforge.net/sflogo.php?group_id=94951&amp;type=1" alt="XBT project at SF"></a>
