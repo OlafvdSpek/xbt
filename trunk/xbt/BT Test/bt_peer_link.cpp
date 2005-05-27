@@ -18,6 +18,7 @@
 
 Cbt_peer_link::Cbt_peer_link()
 {
+	m_can_send = false;
 	m_f = NULL;
 	m_send_quota = 0;
 	m_state = 1;
@@ -53,7 +54,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 	case 4:
 		if (!m_read_b.size() || m_read_b.cb_w())
 			FD_SET(m_s, fd_read_set);
-		if (m_send_quota && !m_write_b.empty())
+		if (!m_can_send)
 			FD_SET(m_s, fd_write_set);
 		return m_s;
 	}
@@ -87,6 +88,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 		}
 	case 3:
 	case 4:
+		if (FD_ISSET(m_s, fd_write_set))
+			m_can_send = true;
 		if (FD_ISSET(m_s, fd_read_set))
 		{
 			if (recv())
@@ -271,7 +274,7 @@ int Cbt_peer_link::recv()
 
 int Cbt_peer_link::send()
 {
-	while (m_send_quota && !m_write_b.empty())
+	while (m_can_send && m_send_quota && !m_write_b.empty())
 	{
 		Cbt_pl_write_data& d = m_write_b.front();
 		int r = m_s.send(d.m_r, min(d.m_s_end - d.m_r, m_send_quota));
@@ -279,7 +282,10 @@ int Cbt_peer_link::send()
 		{
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
+			{
+				m_can_send = false;
 				return 0;
+			}
 			if (m_f->m_server->log_peer_send_failures())
 				alert(Calert::debug, "Peer: send failed: " + Csocket::error2a(e));
 			return 1;
