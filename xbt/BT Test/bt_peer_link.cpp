@@ -20,7 +20,6 @@ Cbt_peer_link::Cbt_peer_link()
 {
 	m_can_send = false;
 	m_f = NULL;
-	m_send_quota = 0;
 	m_state = 1;
 }
 
@@ -271,12 +270,12 @@ int Cbt_peer_link::recv()
 	return 1;
 }
 
-int Cbt_peer_link::send()
+int Cbt_peer_link::send(int& send_quota)
 {
-	while (m_can_send && m_send_quota && !m_write_b.empty())
+	while (m_can_send && send_quota && !m_write_b.empty())
 	{
 		Cbt_pl_write_data& d = m_write_b.front();
-		int r = m_s.send(d.m_r, min(d.m_s_end - d.m_r, m_send_quota));
+		int r = m_s.send(d.m_r, min(d.m_s_end - d.m_r, send_quota));
 		if (r == SOCKET_ERROR)
 		{
 			int e = WSAGetLastError();
@@ -299,7 +298,7 @@ int Cbt_peer_link::send()
 			m_f->m_up_counter.add(r);
 			m_f->m_total_uploaded += r;
 		}
-		m_send_quota -= r;
+		send_quota -= r;
 		m_stime = m_f->m_server->time();
 		d.m_r += r;
 		if (d.m_r == d.m_s_end)
@@ -865,5 +864,7 @@ string Cbt_peer_link::debug_string() const
 		d += "rb: " + n(m_read_b.cb_read()) + "; ";
 	if (cb_write_buffer())
 		d += "wb: " + n(cb_write_buffer()) + "; ";
+	if (m_can_send)
+		d += "w: 1; ";
 	return d;
 }

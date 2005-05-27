@@ -64,7 +64,7 @@ public:
 	void remote_cancels(int, int, int);
 	void remote_merkle_cancels(__int64 offset);
 	void remote_merkle_requests(__int64 offset, int c_hashes);
-	int send();
+	int send(int& send_quota);
 	int recv();
 	void write(const Cvirtual_binary&);
 	void write(const void* s, int cb_s);
@@ -73,11 +73,6 @@ public:
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	Cbt_peer_link();
 	~Cbt_peer_link();
-
-	void send_quota(int v)
-	{
-		m_send_quota = v;
-	}
 
 	operator bool() const
 	{
@@ -138,7 +133,6 @@ public:
 	int m_rtime;
 	int m_stime;
 	int m_check_pieces_time;
-	int m_send_quota;
 	int mc_max_requests_pending;
 
 	t_local_requests m_local_requests;
