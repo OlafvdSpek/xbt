@@ -203,8 +203,6 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 					write_keepalive();
 			}
 		}
-		if (send())
-			return 1;
 		break;
 	}
 	if (!m_left && !m_f->m_left)

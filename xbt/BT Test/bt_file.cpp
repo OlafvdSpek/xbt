@@ -326,7 +326,7 @@ void Cbt_file::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd
 	m_tracker.post_select(*this, fd_read_set, fd_write_set, fd_except_set);
 	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); )
 	{
-		if (i->post_select(fd_read_set, fd_write_set, fd_except_set))
+		if (i->post_select(fd_read_set, fd_write_set, fd_except_set) || i->send())
 		{
 			i->close();
 			i = m_peers.erase(i);
