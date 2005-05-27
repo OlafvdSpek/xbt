@@ -131,7 +131,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 								break;
 							const char* s = m_read_b.r() + 4;
 							m_read_b.cb_r(4 + cb_m);
-							read_message(s, s + cb_m);
+							if (read_message(s, s + cb_m))
+								return 1;
 						}
 						else
 							m_read_b.cb_r(4);
@@ -637,14 +638,14 @@ void Cbt_peer_link::write_peers()
 	m_peers_stime = m_f->m_server->time();
 }
 
-void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
+int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
 	while (!m_local_requests.empty() && m_local_requests.front().offset != m_f->mcb_piece * piece + offset)
 		m_local_requests.pop_front();
 	if (m_local_requests.empty())
 	{
 		alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b") + " (" + peer_id2a(m_remote_peer_id) + ")");
-		return;
+		return 1;
 	}
 	mc_local_requests_pending--;
 	t_local_requests::iterator i = m_local_requests.begin();
@@ -656,6 +657,7 @@ void Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	m_f->m_total_downloaded += size;
 	m_local_requests.erase(i);
 	write_data(m_f->mcb_piece * piece + offset, s, size, t);
+	return 0;
 }
 
 void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes)
@@ -690,7 +692,7 @@ int Cbt_peer_link::write_data(__int64 o, const char* s, int cb_s, int latency)
 	return 1;
 }
 
-void Cbt_peer_link::read_message(const char* r, const char* r_end)
+int Cbt_peer_link::read_message(const char* r, const char* r_end)
 {
 	switch (*r++)
 	{
@@ -757,7 +759,7 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		{
 			const __int32* a = reinterpret_cast<const __int32*>(r);
 			r += 8;
-			read_piece(ntohl(a[0]), ntohl(a[1]), r_end - r, r);
+			return read_piece(ntohl(a[0]), ntohl(a[1]), r_end - r, r);
 		}
 		break;
 	case bti_cancel:
@@ -788,6 +790,7 @@ void Cbt_peer_link::read_message(const char* r, const char* r_end)
 		}
 		break;
 	}
+	return 0;
 }
 
 int Cbt_peer_link::pre_dump() const
