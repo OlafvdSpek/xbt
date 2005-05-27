@@ -40,10 +40,10 @@ public:
 	void write_have(int);
 	void write_haves();
 	int read_handshake(const char* r);
-	void read_message(const char* s, const char* s_end);
+	int read_message(const char* s, const char* s_end);
 	void read_info(const char* r, const char* r_end);
 	void write_keepalive();
-	void read_piece(int, int, int, const char*);
+	int read_piece(int, int, int, const char*);
 	void read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes);
 	void write_handshake();
 	void write_request(int, int, int);
