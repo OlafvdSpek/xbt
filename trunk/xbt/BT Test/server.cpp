@@ -354,7 +354,6 @@ int Cserver::run()
 				m_tracker_port = m_config.m_tracker_port;
 			}
 		}
-		update_send_quotas();
 		FD_ZERO(&fd_read_set);
 		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
@@ -542,6 +541,65 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 	}
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->post_select(fd_read_set, fd_write_set, fd_except_set);
+	if (m_update_send_quotas_time != time())
+		m_send_quota = m_config.m_upload_rate;
+	m_update_send_quotas_time = time();
+	if (m_config.m_upload_rate && !m_send_quota)
+		return;
+	typedef multimap<int, Cbt_peer_link*> t_links;
+	t_links links;
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_hasher)
+			continue;
+		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); )
+		{
+			int q = INT_MAX;
+			if (m_config.m_upload_rate)
+			{
+				if (j->m_can_send && j->cb_write_buffer())
+					links.insert(t_links::value_type(j->cb_write_buffer(), &*j));
+				j++;
+			}
+			else if (j->send(q))
+			{
+				j->close();
+				j = i->m_peers.erase(j);
+			}
+			else
+				j++;
+		}
+	}
+	if (!m_config.m_upload_rate)
+		return;
+	while (m_send_quota && !links.empty())
+	{
+		int j = links.size();
+		int send_quota_left = 0;
+		for (t_links::iterator i = links.begin(); i != links.end(); j--)
+		{
+			int q = min(i->first, m_send_quota / j);
+			m_send_quota -= q;
+			if (i->second->send(q))
+				i->second->close();
+			if (q)
+				i = links.erase(i);
+			else
+				i++;
+			send_quota_left += q;
+		}
+		m_send_quota += send_quota_left;
+	}
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); )
+		{
+			if (j->m_s == INVALID_SOCKET)
+				j = i->m_peers.erase(j);
+			else
+				j++;
+		}
+	}
 }
 
 void Cserver::stop()
@@ -1067,47 +1125,6 @@ void Cserver::update_chokes()
 		}
 	}
 	m_update_chokes_time = time();
-}
-
-void Cserver::update_send_quotas()
-{
-	if (m_config.m_upload_rate)
-	{
-		int t = time();
-		if (m_update_send_quotas_time == t)
-		{
-			if (!m_send_quota)
-				return;
-		}
-		else
-			m_send_quota = min(t - m_update_send_quotas_time, 3) * m_config.m_upload_rate;
-		m_update_send_quotas_time = t;
-
-		typedef multimap<int, Cbt_peer_link*> t_links;
-		t_links links;
-		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		{
-			for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
-			{
-				if (j->cb_write_buffer())
-					links.insert(t_links::value_type(j->cb_write_buffer(), &*j));
-			}
-		}
-		for (t_links::iterator i = links.begin(); i != links.end(); i++)
-		{
-			int q = min(i->first, m_send_quota / links.size());
-			i->second->send_quota(q);
-			m_send_quota -= q;
-		}
-	}
-	else
-	{
-		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		{
-			for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
-				j->send_quota(INT_MAX);
-		}
-	}
 }
 
 void Cserver::update_states()

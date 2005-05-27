@@ -96,7 +96,6 @@ public:
 	void tracker_port(int);
 	void unlock();
 	void update_chokes();
-	void update_send_quotas();
 	void update_states();
 	void upload_rate(int);
 	void upload_slots(int);
