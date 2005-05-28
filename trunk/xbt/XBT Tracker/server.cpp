@@ -529,7 +529,7 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 	return o.v();
 }
 
-void Cserver::t_file::clean_up(int t, Cserver& server)
+void Cserver::t_file::clean_up(time_t t, Cserver& server)
 {
 	for (t_peers::iterator i = peers.begin(); i != peers.end(); )
 	{
@@ -1013,7 +1013,7 @@ string Cserver::statistics() const
 		seeders += i->second.seeders;
 		torrents++;
 	}
-	int t = time();
+	time_t t = time();
 	page += "<table><tr><td>leechers<td align=right>" + n(leechers)
 		+ "<tr><td>seeders<td align=right>" + n(seeders)
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)

@@ -31,7 +31,7 @@ private:
 	typedef vector<char> t_write_b;
 
 	sockaddr_in m_a;
-	int m_ctime;
+	time_t m_ctime;
 	int m_state;
 	t_read_b m_read_b;
 	t_write_b m_write_b;

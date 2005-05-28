@@ -24,7 +24,7 @@ public:
 	Cpeer_link();
 	Cpeer_link(int h, int p, Cserver* server, const string& file_id, int peer_id);
 private:
-	int m_ctime;
+	time_t m_ctime;
 	string m_file_id;
 	int m_peer_id;
 };
