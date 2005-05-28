@@ -270,7 +270,7 @@ public:
 		PaneBase* GetPaneBase()	{ return operator->(); }
 
 		bool IsValid()			{ return (m_pPaneHolder != 0); }
-		operator !()			{ return (m_pPaneHolder == 0); }
+		bool operator !()		{ return (m_pPaneHolder == 0); }
 
 	};
 
