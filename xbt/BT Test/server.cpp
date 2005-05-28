@@ -31,7 +31,7 @@ public:
 	}
 private:
 	Clock(const Clock&);
-	operator=(const Clock&);
+	const Clock& operator=(const Clock&);
 
 	CRITICAL_SECTION* m_cs;
 #else
@@ -583,7 +583,7 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 			if (i->second->send(q))
 				i->second->close();
 			if (q)
-				i = links.erase(i);
+				links.erase(i++);
 			else
 				i++;
 			send_quota_left += q;
