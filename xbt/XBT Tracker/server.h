@@ -38,7 +38,7 @@ public:
 		__int64 uploaded;
 
 		bool listening;
-		int mtime;
+		time_t mtime;
 	};
 
 	typedef map<int, t_peer> t_peers;
@@ -77,7 +77,7 @@ public:
 
 	struct t_file
 	{
-		void clean_up(int t, Cserver&);
+		void clean_up(time_t t, Cserver&);
 		string debug() const;
 		void select_peers(const Ctracker_input&, Cannounce_output&) const;
 		Cbvalue scrape() const;
@@ -226,7 +226,7 @@ public:
 		return m_stats;
 	}
 
-	int time() const
+	time_t time() const
 	{
 		return m_time;
 	}
@@ -241,14 +241,14 @@ private:
 	Cconfig m_config;
 	Cstats m_stats;
 	bool m_use_sql;
-	int m_clean_up_time;
-	int m_read_config_time;
-	int m_read_db_files_time;
-	int m_read_db_ipas_time;
-	int m_read_db_users_time;
-	int m_time;
-	int m_write_db_files_time;
-	int m_write_db_users_time;
+	time_t m_clean_up_time;
+	time_t m_read_config_time;
+	time_t m_read_db_files_time;
+	time_t m_read_db_ipas_time;
+	time_t m_read_db_users_time;
+	time_t m_time;
+	time_t m_write_db_files_time;
+	time_t m_write_db_users_time;
 	int m_fid_end;
 	__int64 m_secret;
 	t_connections m_connections;
