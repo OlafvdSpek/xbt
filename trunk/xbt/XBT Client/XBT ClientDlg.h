@@ -11,6 +11,10 @@
 #include "resource.h"
 #include "stream_reader.h"
 
+#if _MSC_VER >= 1300
+#define HTASK DWORD
+#endif
+
 class CXBTClientDlg: public ETSLayoutDialog
 {
 public:
