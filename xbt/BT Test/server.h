@@ -54,6 +54,7 @@ public:
 	int open_url(const string&);
 	int peer_connect(const string& id, int ipa, int port);
 	int peer_disconnect(const string& id, int ipa);
+	int peer_block(int ipa);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	static int version();
 	string completes_dir() const;
@@ -106,6 +107,7 @@ public:
 	typedef list<Cbt_file> t_files;
 	typedef list<Chttp_link> t_http_links;
 	typedef list<Cbt_link> t_links;
+	typedef set<int> t_block_list;
 
 	int pre_file_dump(const string& id, int flags) const;
 	void file_dump(Cstream_writer&, const string& id, int flags) const;
@@ -131,6 +133,11 @@ public:
 	void bind_before_connect(bool v)
 	{
 		m_config.m_bind_before_connect = v;
+	}
+
+	bool block_list_has(int ipa) const
+	{
+		return m_block_list.count(ipa);
 	}
 
 	const Cconfig& config() const
@@ -252,6 +259,7 @@ private:
 
 	t_admins m_admins;
 	Calerts m_alerts;
+	t_block_list m_block_list;
 	t_files m_files;
 	t_http_links m_http_links;
 	t_links m_links;

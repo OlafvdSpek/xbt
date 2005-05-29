@@ -420,7 +420,7 @@ int Cserver::run()
 						alert(Calert(Calert::error, "Server", "accept failed: " + Csocket::error2a(WSAGetLastError())));
 					break;
 				}
-				else
+				else if (!block_list_has(a.sin_addr.s_addr))
 				{
 					if (s.blocking(false))
 						alert(Calert(Calert::error, "Server", "ioctlsocket failed: " + Csocket::error2a(WSAGetLastError())));
@@ -803,6 +803,7 @@ int Cserver::file_state(const string& id, Cbt_file::t_state state)
 		if (i->m_info_hash != id)
 			continue;
 		i->state(state);
+		m_update_states_time = 0;
 		return 0;
 	}
 	return 1;
@@ -1129,10 +1130,17 @@ void Cserver::update_chokes()
 
 void Cserver::update_states()
 {
-	for (t_files::iterator i = m_files.begin(); i != m_files.end() && below_torrent_limit(); i++)
+	while (below_torrent_limit())
 	{
-		if (i->state() == Cbt_file::s_queued)
-			i->open();
+		t_files::iterator best = m_files.end();
+		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		{
+			if (i->state() == Cbt_file::s_queued && (best == m_files.end() || i->priority() > best->priority() || i->priority() == best->priority() && i->size() < best->size()))
+				best = i;
+		}
+		if (best == m_files.end())
+			break;
+		best->open();
 	}
 	m_update_states_time = time();
 }
@@ -1355,4 +1363,13 @@ int Cserver::peer_disconnect(const string& id, int ipa)
 		return 0;
 	}
 	return 1;
+}
+
+int Cserver::peer_block(int ipa)
+{
+	Clock l(m_cs);
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		i->peer_disconnect(ipa);
+	m_block_list.insert(ipa);
+	return 0;
 }
