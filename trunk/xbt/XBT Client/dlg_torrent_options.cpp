@@ -18,6 +18,7 @@ Cdlg_torrent_options::Cdlg_torrent_options(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_torrent_options::IDD, pParent, "Cdlg_torrent_options")
 {
 	//{{AFX_DATA_INIT(Cdlg_torrent_options)
+	m_priority = 0;
 	m_seeding_ratio_value = 0;
 	m_upload_slots_max_value = 0;
 	m_upload_slots_min_value = 0;
@@ -37,6 +38,7 @@ void Cdlg_torrent_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_UPLOAD_SLOTS_MAX_OVERRIDE, m_upload_slots_max_override);
 	DDX_Control(pDX, IDC_SEEDING_RATIO_OVERRIDE, m_seeding_ratio_override);
 	DDX_Control(pDX, IDC_SEEDING_RATIO, m_seeding_ratio);
+	DDX_Text(pDX, IDC_PRIORITY, m_priority);
 	DDX_Text(pDX, IDC_SEEDING_RATIO, m_seeding_ratio_value);
 	DDX_Text(pDX, IDC_UPLOAD_SLOTS_MAX, m_upload_slots_max_value);
 	DDX_Text(pDX, IDC_UPLOAD_SLOTS_MIN, m_upload_slots_min_value);
@@ -60,6 +62,7 @@ END_MESSAGE_MAP()
 BOOL Cdlg_torrent_options::OnInitDialog()
 {
 	m_end_mode = m_data.end_mode;
+	m_priority = m_data.priority;
 	m_seeding_ratio_value = m_data.seeding_ratio;
 	m_trackers = m_data.trackers.c_str();
 	m_upload_slots_min_value = m_data.upload_slots_min;
@@ -72,12 +75,14 @@ BOOL Cdlg_torrent_options::OnInitDialog()
 			)
 		<< (pane(HORIZONTAL)
 			<< (pane(VERTICAL)
+				<< item(IDC_PRIORITY_STATIC, NORESIZE)
 				<< item(IDC_SEEDING_RATIO_OVERRIDE, NORESIZE)
 				<< item(IDC_UPLOAD_SLOTS_MIN_OVERRIDE, NORESIZE)
 				<< item(IDC_UPLOAD_SLOTS_MAX_OVERRIDE, NORESIZE)
 				<< item(IDC_END_MODE, NORESIZE)
 				)
 			<< (pane(VERTICAL)
+				<< item(IDC_PRIORITY, ABSOLUTE_VERT)
 				<< item(IDC_SEEDING_RATIO, ABSOLUTE_VERT)
 				<< item(IDC_UPLOAD_SLOTS_MIN, ABSOLUTE_VERT)
 				<< item(IDC_UPLOAD_SLOTS_MAX, ABSOLUTE_VERT)
@@ -122,6 +127,7 @@ void Cdlg_torrent_options::OnUploadSlotsMaxOverride()
 void Cdlg_torrent_options::OnOK()
 {
 	ETSLayoutDialog::OnOK();
+	m_data.priority = m_priority;
 	m_data.end_mode = m_end_mode;
 	m_data.seeding_ratio = m_seeding_ratio_value;
 	m_data.seeding_ratio_override = m_seeding_ratio_override.GetState() & 3;

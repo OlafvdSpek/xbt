@@ -20,6 +20,7 @@ public:
 	struct t_data
 	{
 		bool end_mode;
+		int priority;
 		int seeding_ratio;
 		bool seeding_ratio_override;
 		string trackers;
@@ -42,6 +43,7 @@ public:
 	CButton	m_upload_slots_max_override;
 	CButton	m_seeding_ratio_override;
 	CEdit	m_seeding_ratio;
+	int		m_priority;
 	int		m_seeding_ratio_value;
 	int		m_upload_slots_max_value;
 	int		m_upload_slots_min_value;
