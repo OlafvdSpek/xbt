@@ -200,6 +200,8 @@ protected:
 	afx_msg void OnEditCopyRows();
 	afx_msg void OnPopupDisconnect();
 	afx_msg void OnUpdatePopupDisconnect(CCmdUI* pCmdUI);
+	afx_msg void OnPopupBlock();
+	afx_msg void OnUpdatePopupBlock(CCmdUI* pCmdUI);
 	afx_msg void OnPopupConnect();
 	afx_msg void OnUpdatePopupConnect(CCmdUI* pCmdUI);
 	afx_msg void OnEditCopyHost();

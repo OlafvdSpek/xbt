@@ -309,6 +309,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE, OnUpdatePopupExplore)
 	ON_COMMAND(ID_POPUP_DISCONNECT, OnPopupDisconnect)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_DISCONNECT, OnUpdatePopupDisconnect)
+	ON_COMMAND(ID_POPUP_BLOCK, OnPopupBlock)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_BLOCK, OnUpdatePopupBlock)
 	ON_COMMAND(ID_POPUP_CONNECT, OnPopupConnect)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_CONNECT, OnUpdatePopupConnect)
 	ON_WM_SIZE()
@@ -1595,6 +1597,7 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 	for (t_trackers::const_iterator i = f.m_trackers.begin(); i != f.m_trackers.end(); i++)
 		data.trackers += i->url + "\r\n";
 	data.end_mode = f.m_allow_end_mode;
+	data.priority = f.m_priority;
 	data.seeding_ratio = f.m_seeding_ratio;
 	data.seeding_ratio_override = f.m_seeding_ratio_override;
 	data.upload_slots_max = f.m_upload_slots_max;
@@ -1606,6 +1609,7 @@ void CXBTClientDlg::OnPopupTorrentOptions()
 		return;
 	data = dlg.get();
 	m_server.torrent_end_mode(f.m_info_hash, data.end_mode);
+	m_server.file_priority(f.m_info_hash, data.priority);
 	m_server.torrent_seeding_ratio(f.m_info_hash, data.seeding_ratio_override, data.seeding_ratio);
 	m_server.torrent_trackers(f.m_info_hash, data.trackers);
 	m_server.torrent_upload_slots_max(f.m_info_hash, data.upload_slots_max_override, data.upload_slots_max);
@@ -1866,6 +1870,8 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 		return compare(a.m_state, b.m_state);
 	case fc_name:
 		return compare(a.m_display_name, b.m_display_name);
+	case fc_priority:
+		return compare(b.m_priority, a.m_priority);
 	}
 	return 0;
 }
@@ -3395,6 +3401,20 @@ void CXBTClientDlg::OnPopupDisconnect()
 }
 
 void CXBTClientDlg::OnUpdatePopupDisconnect(CCmdUI* pCmdUI) 
+{
+	pCmdUI->Enable(m_bottom_view == v_peers && m_file && m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
+}
+
+void CXBTClientDlg::OnPopupBlock() 
+{
+	for (int index = -1; (index = m_peers.GetNextItem(index, LVNI_SELECTED)) != -1; )
+	{
+		const t_peer& e = m_file->peers[m_peers.GetItemData(index)];
+		m_server.peer_block(e.m_host.s_addr);
+	}
+}
+
+void CXBTClientDlg::OnUpdatePopupBlock(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_bottom_view == v_peers && m_file && m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
 }

@@ -123,6 +123,8 @@
 #define IDC_PORT_STATIC                 1087
 #define IDC_HOST                        1088
 #define IDC_PORT                        1089
+#define IDC_PRIORITY                    1089
+#define IDC_PRIORITY_STATIC             1090
 #define ID_POPUP_EXPLORE                32775
 #define ID_POPUP_START                  32776
 #define ID_POPUP_STOP                   32777
@@ -175,14 +177,15 @@
 #define ID_POPUP_CONNECT                32841
 #define ID_EDIT_COPY_HOST               32842
 #define ID_EDIT_COPY_ROWS               32843
+#define ID_POPUP_BLOCK                  32845
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        147
-#define _APS_NEXT_COMMAND_VALUE         32844
-#define _APS_NEXT_CONTROL_VALUE         1089
+#define _APS_NEXT_COMMAND_VALUE         32846
+#define _APS_NEXT_CONTROL_VALUE         1091
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

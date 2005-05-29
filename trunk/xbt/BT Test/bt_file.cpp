@@ -290,7 +290,7 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 	{
 		for (t_new_peers::const_iterator i = m_new_peers.begin(); i != m_new_peers.end() && m_server->below_peer_limit(); )
 		{
-			if (!find_peer(i->first))
+			if (!find_peer(i->first) && !m_server->block_list_has(i->first))
 			{
 				Cbt_peer_link peer;
 				peer.m_a.sin_family = AF_INET;
