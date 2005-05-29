@@ -39,6 +39,7 @@ void Cdlg_torrent_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SEEDING_RATIO_OVERRIDE, m_seeding_ratio_override);
 	DDX_Control(pDX, IDC_SEEDING_RATIO, m_seeding_ratio);
 	DDX_Text(pDX, IDC_PRIORITY, m_priority);
+	DDV_MinMaxInt(pDX, m_priority, -128, 127);
 	DDX_Text(pDX, IDC_SEEDING_RATIO, m_seeding_ratio_value);
 	DDX_Text(pDX, IDC_UPLOAD_SLOTS_MAX, m_upload_slots_max_value);
 	DDX_Text(pDX, IDC_UPLOAD_SLOTS_MIN, m_upload_slots_min_value);
