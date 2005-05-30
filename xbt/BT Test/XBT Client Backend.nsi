@@ -1,5 +1,5 @@
 !define UPGRADEDLL_NOREGISTER
-!define VERSION "0.5.5"
+!define VERSION "0.5.6"
 !include "UpgradeDLL.nsh"
 
 Name "XBT Client Backend ${VERSION}"
