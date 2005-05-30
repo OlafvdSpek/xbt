@@ -561,6 +561,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Connect...",                  ID_POPUP_CONNECT
         MENUITEM "Disconnect",                  ID_POPUP_DISCONNECT
+        MENUITEM "Block",                       ID_POPUP_BLOCK
         MENUITEM "Options...\tCtrl+O",          ID_TOOLS_OPTIONS
         MENUITEM "Profiles...\tCtrl+P",         ID_TOOLS_PROFILES
         MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
