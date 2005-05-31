@@ -875,7 +875,7 @@ void Cserver::write_db_users()
 				+ "  announced = announced + values(announced),"
 				+ "  completed = completed + values(completed),"
 				+ "  downloaded = downloaded + values(downloaded),"
-				+ "  `left` = `left` + values(`left`),"
+				+ "  `left` = values(`left`),"
 				+ "  uploaded = uploaded + values(uploaded)");
 		}
 		catch (Cxcc_error)
