@@ -48,7 +48,7 @@ public:
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;
 	bool check_peer(Cbt_peer_link*, int time_out);
-	void erase_peer(Cbt_peer_link*);
+	void erase_peer(Cbt_peer_link*, int offset);
 	int next_invalid_sub_piece(Cbt_peer_link*);
 	void load_state(Cstream_reader&);
 	int pre_save_state() const;

@@ -2247,7 +2247,6 @@ void CXBTClientDlg::insert_bottom_columns()
 		{
 			m_peers_columns.push_back(pc_local_requests);
 			m_peers_columns.push_back(pc_remote_requests);
-			m_peers_columns.push_back(pc_pieces);
 			m_peers_columns.push_back(pc_recv_time);
 			m_peers_columns.push_back(pc_send_time);
 #ifdef _DEBUG
