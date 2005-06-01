@@ -117,7 +117,6 @@ public:
 
 	typedef list<t_local_request> t_local_requests;
 	typedef set<int> t_have_queue;
-	typedef set<Cbt_piece*> t_pieces;
 	typedef vector<bool> t_remote_pieces;
 	typedef list<t_remote_request> t_remote_requests;
 	typedef list<Cbt_pl_write_data> t_write_buffer;
@@ -129,7 +128,6 @@ public:
 	Cring_buffer m_read_b;
 	t_write_buffer m_write_b;
 	t_have_queue m_have_queue;
-	t_pieces m_pieces;
 	int m_rtime;
 	int m_stime;
 	int m_check_pieces_time;

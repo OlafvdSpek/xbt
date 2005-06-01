@@ -181,7 +181,6 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 					break;
 				}
 				Cbt_piece& piece = m_f->m_pieces[a];
-				m_pieces.insert(&piece);
 				for (int b; mc_local_requests_pending < c_max_requests_pending() && (b = piece.next_invalid_sub_piece(this)) != -1; )
 				{
 					t_local_request request(m_f->mcb_piece * a + piece.cb_sub_piece() * b, piece.cb_sub_piece(b));
@@ -421,7 +420,7 @@ void Cbt_peer_link::write_have(int a)
 {
 	if (m_remote_pieces.empty())
 		return;
-	if (m_local_interested && m_pieces.empty() && m_remote_pieces[a])
+	if (m_local_interested && m_local_requests.empty() && m_remote_pieces[a])
 		interested(m_f->next_invalid_piece(*this) != -1);
 	Cvirtual_binary d;
 	byte* w = d.write_start(9);
@@ -638,7 +637,10 @@ void Cbt_peer_link::write_peers()
 int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 {
 	while (!m_local_requests.empty() && m_local_requests.front().offset != m_f->mcb_piece * piece + offset)
+	{
+		m_f->m_pieces[m_local_requests.front().offset / m_f->mcb_piece].erase_peer(this, m_local_requests.front().offset % m_f->mcb_piece);
 		m_local_requests.pop_front();
+	}
 	if (m_local_requests.empty())
 	{
 		alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b") + " (" + peer_id2a(m_remote_peer_id) + ")");
@@ -813,7 +815,7 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(1, m_remote_choked);
 	w.write_int(1, m_remote_interested);
 	w.write_int(4, m_remote_requests.size());
-	w.write_int(4, m_pieces.size());
+	w.write_int(4, 0);
 	w.write_int(4, m_rtime);
 	w.write_int(4, m_stime);
 	w.write_string(debug_string());
@@ -826,9 +828,8 @@ void Cbt_peer_link::alert(Calert::t_level level, const string& message)
 
 void Cbt_peer_link::clear_local_requests()
 {
-	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
-		(*i)->erase_peer(this);
-	m_pieces.clear();
+	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
+		m_f->m_pieces[i->offset / m_f->mcb_piece].erase_peer(this, i->offset % m_f->mcb_piece);
 	m_local_requests.clear();
 	mc_local_requests_pending = 0;
 }
@@ -840,13 +841,8 @@ Cbt_logger& Cbt_peer_link::logger()
 
 void Cbt_peer_link::check_pieces()
 {
-	for (t_pieces::iterator i = m_pieces.begin(); i != m_pieces.end(); )
-	{
-		if ((*i)->check_peer(this, m_f->end_mode() ? 15 : 600))
-			i++;
-		else
-			m_pieces.erase(i++);
-	}
+	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
+		m_f->m_pieces[i->offset / m_f->mcb_piece].check_peer(this, m_f->end_mode() ? 15 : 600);
 	m_check_pieces_time = m_f->m_server->time();
 }
 

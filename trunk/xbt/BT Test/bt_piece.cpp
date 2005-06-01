@@ -49,16 +49,18 @@ int Cbt_piece::next_invalid_sub_piece(Cbt_peer_link* peer)
 	return -1;
 }
 
-void Cbt_piece::erase_peer(Cbt_peer_link* peer)
+void Cbt_piece::erase_peer(Cbt_peer_link* peer, int offset)
 {
-	for (t_sub_pieces::iterator i = m_sub_pieces.begin(); i != m_sub_pieces.end(); i++)
-	{
-		if (i->m_peers.find(peer) == i->m_peers.end())
-			continue;
-		i->m_peers.erase(peer);
-		assert(!i->valid());
-		mc_unrequested_sub_pieces++;
-	}
+	if (m_valid)
+		return;
+	int b = offset / cb_sub_piece();
+	assert(b < m_sub_pieces.size());
+	t_sub_pieces::iterator i = m_sub_pieces.begin() + b;
+	if (i->m_peers.find(peer) == i->m_peers.end())
+		return;
+	i->m_peers.erase(peer);
+	assert(!i->valid());
+	mc_unrequested_sub_pieces++;
 }
 
 int Cbt_piece::write(int offset, const char* s, int cb_s)
