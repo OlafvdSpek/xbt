@@ -53,9 +53,15 @@
 		switch ($_REQUEST['a'])
 		{
 		case 'set_options':
-			$completes_dir = stripslashes($_REQUEST['completes_dir']);
-			$incompletes_dir = stripslashes($_REQUEST['incompletes_dir']);
-			$torrents_dir = stripslashes($_REQUEST['torrents_dir']);
+			$completes_dir = $_REQUEST['completes_dir'];
+			$incompletes_dir = $_REQUEST['incompletes_dir'];
+			$torrents_dir = $_REQUEST['torrents_dir'];
+			if (get_magic_quotes_gpc())
+			{
+				$completes_dir = stripslashes($completes_dir);
+				$incompletes_dir = stripslashes($incompletes_dir);
+				$torrents_dir = stripslashes($torrents_dir);
+			}
 			send_string
 			(
 				$s,
