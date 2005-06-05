@@ -55,6 +55,7 @@ int Cbt_link::recv()
 		m_mtime = m_server->time();
 		if (m_read_b.cb_r() >= hs_size)
 		{
+			const char* m = m_read_b.r();
 			m_server->insert_peer(m, m_a, m_s);
 			return 1;
 		}
