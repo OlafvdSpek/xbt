@@ -1245,8 +1245,10 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 				events.l(Cbvalue().d(bts_time, j->time()).d(bts_message, j->message()));
 			Cbvalue file;
 			file.d(bts_complete, i->c_seeders());
+			file.d(bts_complete_total, i->mc_seeders_total);
 			file.d(bts_events, events);
 			file.d(bts_incomplete, i->c_leechers());
+			file.d(bts_incomplete_total, i->mc_leechers_total);
 			file.d(bts_left, i->m_left);
 			file.d(bts_priority, i->priority());
 			file.d(bts_size, i->m_size);
