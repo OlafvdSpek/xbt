@@ -126,7 +126,9 @@
 		$aggregate['down rate'] += $file['value']['down rate']['value'];
 		$aggregate['up rate'] += $file['value']['up rate']['value'];
 		$aggregate['incomplete'] += $file['value']['incomplete']['value'];
+		$aggregate['incomplete total'] += $file['value']['incomplete total']['value'];
 		$aggregate['complete'] += $file['value']['complete']['value'];
+		$aggregate['complete total'] += $file['value']['complete total']['value'];
 		$rows .= template_torrent(array_merge($file['value'], array('info_hash' => array('value' => $info_hash))));
 		if ($info_hash == pack('H*', $_REQUEST['torrent']))
 			$torrent_events .= template_torrent_events($file['value']['events']['value']);

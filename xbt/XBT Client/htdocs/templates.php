@@ -105,7 +105,11 @@
 		$d .= sprintf('<td align=right>%s', b2a($v['down rate']['value']));
 		$d .= sprintf('<td align=right>%s', b2a($v['up rate']['value']));
 		$d .= sprintf('<td align=right>%s', nz($v['incomplete']['value']));
+		if ($v['incomplete total']['value'])
+			$d .= ' / ' . $v['incomplete total']['value'];
 		$d .= sprintf('<td align=right>%s', nz($v['complete']['value']));
+		if ($v['complete total']['value'])
+			$d .= ' / ' . $v['complete total']['value'];
 		$d .= sprintf('<td align=right>%s', priority2a($v['priority']['value']));
 		$d .= sprintf('<td align=left>%s', state2a($v['state']['value']));
 		return $d;
@@ -146,7 +150,11 @@
 			$d .= sprintf('<th align=right>%s', b2a($v['aggregate']['down rate']));
 			$d .= sprintf('<th align=right>%s', b2a($v['aggregate']['up rate']));
 			$d .= sprintf('<th align=right>%s', nz($v['aggregate']['incomplete']));
+			if ($v['aggregate']['incomplete total'])
+				$d .= ' / ' . $v['aggregate']['incomplete total'];
 			$d .= sprintf('<th align=right>%s', nz($v['aggregate']['complete']));
+			if ($v['aggregate']['complete total'])
+				$d .= ' / ' . $v['aggregate']['complete total'];
 			$d .= '<th>';
 			$d .= '<th>';
 		}
