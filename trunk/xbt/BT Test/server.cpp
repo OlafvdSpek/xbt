@@ -12,7 +12,7 @@
 
 #define for if (0) {} else for
 
-const char* g_pid_fname = "xbt_client_back_end.pid";
+const char* g_pid_fname = "xbt_client_backend.pid";
 static volatile bool g_sig_term = false;
 const static int g_state_version = 3;
 
