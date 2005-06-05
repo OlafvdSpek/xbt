@@ -135,6 +135,11 @@ int main(int argc, char* argv[])
 			v.d(bts_action, bts_set_options);
 			v.d(bts_upload_rate, atoi(argv[2]) << 10);
 		}
+		else if (!strcmp(argv[1], "upload_slots"))
+		{
+			v.d(bts_action, bts_set_options);
+			v.d(bts_upload_slots, atoi(argv[2]));
+		}
 		if (!v.d().empty() && send(s, v))
 			return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 	}
