@@ -3298,7 +3298,7 @@ BOOL CXBTClientDlg::WriteProfileString(LPCTSTR Entry, const string& Value)
 
 bool CXBTClientDlg::get_profile_hide_on_deactivate()
 {
-	return GetProfileInt("hide_on_deactivate", false);
+	return GetProfileInt("hide_on_deactivate", true);
 }
 
 void CXBTClientDlg::write_profile_hide_on_deactivate(bool v)
