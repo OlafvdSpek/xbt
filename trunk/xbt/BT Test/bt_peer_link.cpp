@@ -416,10 +416,8 @@ void Cbt_peer_link::queue_have(int a)
 
 void Cbt_peer_link::write_have(int a)
 {
-	if (m_remote_pieces.empty())
+	if (m_remote_pieces.empty() || m_remote_pieces[a])
 		return;
-	if (m_local_interested && m_local_requests.empty() && m_remote_pieces[a])
-		interested(m_f->next_invalid_piece(*this) != -1);
 	Cvirtual_binary d;
 	byte* w = d.write_start(9);
 	w = write(w, d.size() - 4);
