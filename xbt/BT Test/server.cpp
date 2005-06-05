@@ -1073,8 +1073,8 @@ void Cserver::update_chokes()
 				;
 			else if (!m_config.m_upload_slots)
 				j->choked(false);
-			else if (j->m_down_counter.rate() > 256)
-				links0.insert(t_links0::value_type(j->m_down_counter.rate(), &*j));
+			else if (j->m_down_counter.rate(time()) > 256)
+				links0.insert(t_links0::value_type(j->m_down_counter.rate(time()), &*j));
 			else if (j->m_remote_interested)
 				(j->m_local_interested ? links1 : links2).push_back(&*j);
 		}
@@ -1253,8 +1253,8 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 			file.d(bts_state, i->state());
 			file.d(bts_total_downloaded, i->m_total_downloaded);
 			file.d(bts_total_uploaded, i->m_total_uploaded);
-			file.d(bts_down_rate, i->m_down_counter.rate());
-			file.d(bts_up_rate, i->m_up_counter.rate());
+			file.d(bts_down_rate, i->m_down_counter.rate(time()));
+			file.d(bts_up_rate, i->m_up_counter.rate(time()));
 			file.d(bts_name, i->m_name);
 			files.d(i->m_info_hash, file);
 		}
