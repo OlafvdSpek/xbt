@@ -12,11 +12,11 @@
 class Cdata_counter
 {
 public:
-	int rate() const;
-	void add(int);
+	int rate(time_t) const;
+	void add(int, time_t);
 	Cdata_counter();
 private:
-	void update_rate();
+	void update_rate(time_t);
 
 	int m_got;
 	int m_rate;

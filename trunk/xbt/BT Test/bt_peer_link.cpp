@@ -257,7 +257,7 @@ int Cbt_peer_link::recv()
 			return 1;
 		}
 		m_downloaded += r;
-		m_down_counter.add(r);
+		m_down_counter.add(r, m_f->m_server->time());
 		m_rtime = m_f->m_server->time();
 		m_read_b.cb_w(r);
 		m_f->m_downloaded_l5 += r;
@@ -292,9 +292,9 @@ int Cbt_peer_link::send(int& send_quota)
 		if (d.m_vb.size() > 5 && d.m_s[4] == bti_piece)
 		{
 			m_uploaded += r;
-			m_up_counter.add(r);
+			m_up_counter.add(r, m_f->m_server->time());
 			m_f->m_uploaded += r;
-			m_f->m_up_counter.add(r);
+			m_f->m_up_counter.add(r, m_f->m_server->time());
 			m_f->m_total_uploaded += r;
 		}
 		send_quota -= r;
@@ -652,7 +652,7 @@ int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
 	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
 	m_f->m_downloaded += size;
-	m_f->m_down_counter.add(size);
+	m_f->m_down_counter.add(size, m_f->m_server->time());
 	m_f->m_total_downloaded += size;
 	m_local_requests.erase(i);
 	write_data(m_f->mcb_piece * piece + offset, s, size, t);
@@ -669,7 +669,7 @@ void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, c
 	}
 	write_data(offset, s, size, 0);
 	m_f->m_downloaded += size;
-	m_f->m_down_counter.add(size);
+	m_f->m_down_counter.add(size, m_f->m_server->time());
 	m_f->m_total_downloaded += size;
 }
 
@@ -806,8 +806,8 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(8, m_downloaded);
 	w.write_int(8, m_left);
 	w.write_int(8, m_uploaded);
-	w.write_int(4, m_down_counter.rate());
-	w.write_int(4, m_up_counter.rate());
+	w.write_int(4, m_down_counter.rate(m_f->m_server->time()));
+	w.write_int(4, m_up_counter.rate(m_f->m_server->time()));
 	w.write_int(1, m_local_link);
 	w.write_int(1, m_local_choked);
 	w.write_int(1, m_local_interested);

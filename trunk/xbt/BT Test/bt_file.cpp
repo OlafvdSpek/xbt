@@ -615,8 +615,8 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(8, m_uploaded_l5);
 	w.write_int(8, m_total_downloaded);
 	w.write_int(8, m_total_uploaded);
-	w.write_int(4, m_down_counter.rate());
-	w.write_int(4, m_up_counter.rate());
+	w.write_int(4, m_down_counter.rate(m_server->time()));
+	w.write_int(4, m_up_counter.rate(m_server->time()));
 	w.write_int(4, c_leechers());
 	w.write_int(4, c_seeders());
 	w.write_int(4, mc_leechers_total);
