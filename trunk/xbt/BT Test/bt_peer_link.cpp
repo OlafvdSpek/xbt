@@ -371,9 +371,7 @@ byte* Cbt_peer_link::write(byte* w, int v)
 
 int Cbt_peer_link::read_handshake(const char* h)
 {
-	if (h[hs_name_size] != 19
-		|| memcmp(h + hs_name, "BitTorrent protocol", 19)
-		|| string(h + hs_info_hash, 20) != m_f->m_info_hash)
+	if (string(h + hs_info_hash, 20) != m_f->m_info_hash)
 	{
 		alert(Calert::warn, "Peer: handshake failed");
 		return 1;
