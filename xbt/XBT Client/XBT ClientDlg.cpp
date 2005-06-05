@@ -1481,6 +1481,10 @@ void CXBTClientDlg::OnTimer(UINT nIDEvent)
 		read_server_dump(Cstream_reader(m_server.get_status(0)));
 		update_tray();
 		break;
+	case 2:
+		KillTimer(2);
+		ShowWindow(SW_HIDE);
+		break;
 	}
 	ETSLayoutDialog::OnTimer(nIDEvent);
 }
@@ -2891,8 +2895,13 @@ void CXBTClientDlg::OnCancel()
 void CXBTClientDlg::OnActivateApp(BOOL bActive, HTASK hTask) 
 {
 	ETSLayoutDialog::OnActivateApp(bActive, hTask);
-	if (!bActive && m_hide_on_deactivate)
-		ShowWindow(SW_HIDE);
+	if (m_hide_on_deactivate)
+	{
+		if (bActive)
+			KillTimer(2);
+		else
+			SetTimer(2, 30000, NULL);
+	}
 }
 
 void CXBTClientDlg::OnFileNew() 
