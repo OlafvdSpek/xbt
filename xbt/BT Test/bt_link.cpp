@@ -20,7 +20,7 @@ Cbt_link::Cbt_link(Cserver* server, const sockaddr_in& a, const Csocket& s)
 	m_a = a;
 	m_s = s;
 	m_server = server;
-	m_ctime = m_mtime = time(NULL);
+	m_ctime = m_mtime = server->time();
 
 	m_read_b.size(49);
 }
@@ -36,7 +36,7 @@ int Cbt_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 int Cbt_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
 	return m_read_b.cb_w() && FD_ISSET(m_s, fd_read_set) && recv()
-		|| time(NULL) - m_ctime > 5;
+		|| m_server->time() - m_ctime > 5;
 }
 
 int Cbt_link::recv()
@@ -52,7 +52,7 @@ int Cbt_link::recv()
 			return 1;
 		}
 		m_read_b.cb_w(r);
-		m_mtime = time(NULL);
+		m_mtime = m_server->time();
 		if (m_read_b.cb_r() >= hs_size)
 		{
 			const char* m = m_read_b.r();

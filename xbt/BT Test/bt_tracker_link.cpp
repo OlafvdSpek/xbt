@@ -37,7 +37,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		if (m_current_tracker >= f.m_trackers.size())
 			m_current_tracker = 0;
 		if (f.state() != Cbt_file::s_running
-			|| !m_current_tracker && m_announce_time > time(NULL) 
+			|| !m_current_tracker && m_announce_time > f.m_server->time() 
 			|| m_current_tracker < 0 
 			|| m_current_tracker >= f.m_trackers.size() 
 			|| !f.m_server->below_peer_limit())
@@ -53,13 +53,13 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		{
 		case Cbt_tracker_url::tp_http:
 			f.alert(Calert(Calert::info, "Tracker: URL: http://" + m_url.m_host + ':' + n(m_url.m_port) + m_url.m_path));
-			m_announce_time = time(NULL) + (300 << mc_attempts++);
+			m_announce_time = f.m_server->time() + (300 << mc_attempts++);
 			if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
 				return 0;
 			break;
 		case Cbt_tracker_url::tp_udp:
 			f.alert(Calert(Calert::info, "Tracker: URL: udp://" + m_url.m_host + ':' + n(m_url.m_port)));
-			m_announce_time = time(NULL) + (60 << mc_attempts++);
+			m_announce_time = f.m_server->time() + (60 << mc_attempts++);
 			if (m_s.open(SOCK_DGRAM) == INVALID_SOCKET)
 				return 0;
 			break;
@@ -96,7 +96,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 				return 0;
 			}
 			f.alert(Calert(Calert::debug, "Tracker: UDP: connect send"));
-			m_connect_send = time(NULL);
+			m_connect_send = f.m_server->time();
 			m_state = 3;
 		}
 		else
@@ -203,11 +203,11 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					return;
 				}
 				f.alert(Calert(Calert::debug, "Tracker: UDP: announce send"));
-				m_announce_send = time(NULL);
+				m_announce_send = f.m_server->time();
 				m_state = 4;
 			}				
 		}
-		else if (time(NULL) - m_connect_send > 15)
+		else if (f.m_server->time() - m_connect_send > 15)
 			close(f);
 		break;
 	case 4:
@@ -223,7 +223,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				if (r >= utoa_size
 					&& read_int(4, d + uto_action, d + r) == uta_announce)
 				{
-					m_announce_time = time(NULL) + max(300, read_int(4, d + utoa_interval, d + r));
+					m_announce_time = f.m_server->time() + max(300, read_int(4, d + utoa_interval, d + r));
 					f.mc_leechers_total = read_int(4, d + utoa_leechers, d + r);
 					f.mc_seeders_total = read_int(4, d + utoa_seeders, d + r);
 					mc_attempts = 0;
@@ -240,7 +240,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				}
 			}
 		}
-		else if (time(NULL) - m_announce_send > 15)
+		else if (f.m_server->time() - m_announce_send > 15)
 			close(f);
 		break;
 	}
@@ -271,7 +271,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 					}
 					if (v.d(bts_failure_reason).s().empty())
 					{
-						m_announce_time = time(NULL) + max(300, v.d(bts_interval).i());
+						m_announce_time = f.m_server->time() + max(300, v.d(bts_interval).i());
 						f.mc_leechers_total = v.d(bts_incomplete).i();
 						f.mc_seeders_total = v.d(bts_complete).i();
 						mc_attempts = 0;

@@ -451,7 +451,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 	m_left -= piece.size();
 	if (!m_left)
 	{
-		m_completed_at = time(NULL);
+		m_completed_at = m_server->time();
 		m_tracker.event(Cbt_tracker_link::e_completed);
 	}
 	{
