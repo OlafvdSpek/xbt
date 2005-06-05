@@ -3391,7 +3391,7 @@ void CXBTClientDlg::OnPopupConnect()
 	Cdlg_peer_connect dlg;
 	if (IDOK != dlg.DoModal())
 		return;
-	m_server.peer_connect(m_file->m_info_hash, inet_addr(dlg.m_host), htons(dlg.m_port));
+	m_server.peer_connect(m_file->m_info_hash, Csocket::get_host(static_cast<string>(dlg.m_host)), htons(dlg.m_port));
 }
 
 void CXBTClientDlg::OnUpdatePopupConnect(CCmdUI* pCmdUI) 
