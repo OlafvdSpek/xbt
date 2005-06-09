@@ -22,6 +22,7 @@
 #define IDD_SCHEDULER_ENTRY             142
 #define IDR_TRAY                        144
 #define IDD_PEER_CONNECT                146
+#define IDD_BLOCK_LIST                  148
 #define IDC_FILES                       1000
 #define IDC_PEERS                       1002
 #define IDC_ADMIN_PORT                  1002
@@ -178,13 +179,14 @@
 #define ID_EDIT_COPY_HOST               32842
 #define ID_EDIT_COPY_ROWS               32843
 #define ID_POPUP_BLOCK                  32845
+#define ID_TOOLS_BLOCK_LIST             32846
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        147
-#define _APS_NEXT_COMMAND_VALUE         32846
+#define _APS_NEXT_RESOURCE_VALUE        149
+#define _APS_NEXT_COMMAND_VALUE         32848
 #define _APS_NEXT_CONTROL_VALUE         1091
 #define _APS_NEXT_SYMED_VALUE           105
 #endif

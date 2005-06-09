@@ -945,9 +945,7 @@ string Cserver::t_file::debug() const
 	string page;
 	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
 	{
-		in_addr a;
-		a.s_addr = i->first;
-		page += "<tr><td>" + static_cast<string>(inet_ntoa(a))
+		page += "<tr><td>" + Csocket::inet_ntoa(i->first)
 			+ "<td align=right>" + n(ntohs(i->second.port))
 			+ "<td>" + (i->second.listening ? '*' : ' ')
 			+ "<td align=right>" + n(i->second.left)

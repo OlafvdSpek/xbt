@@ -32,7 +32,7 @@ STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP |
 EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
 CAPTION "XBT Client"
 MENU IDR_MAINFRAME
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,114,50
@@ -304,6 +304,19 @@ BEGIN
     LTEXT           "Port:",IDC_PORT_STATIC,7,25,18,14
 END
 
+IDD_BLOCK_LIST DIALOG DISCARDABLE  0, 0, 282, 95
+STYLE DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Block List"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,7,7,268,63
+    PUSHBUTTON      "&Delete",IDC_DELETE,120,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,173,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,225,74,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -411,6 +424,14 @@ BEGIN
         RIGHTMARGIN, 179
         TOPMARGIN, 7
         BOTTOMMARGIN, 58
+    END
+
+    IDD_BLOCK_LIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 275
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -596,6 +617,7 @@ BEGIN
     END
     POPUP "&Tools"
     BEGIN
+        MENUITEM "Block List",                  ID_TOOLS_BLOCK_LIST
         MENUITEM "&Options\tCtrl+O",            ID_TOOLS_OPTIONS
         MENUITEM "&Profiles\tCtrl+P",           ID_TOOLS_PROFILES
         MENUITEM "&Scheduler",                  ID_TOOLS_SCHEDULER
