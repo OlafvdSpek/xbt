@@ -91,6 +91,10 @@ SOURCE=..\misc\alerts.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\block_list.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=".\BT Test.cpp"
 # End Source File
 # Begin Source File
@@ -246,6 +250,10 @@ SOURCE=..\misc\xif_value.cpp
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\block_list.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\bt_admin_link.h

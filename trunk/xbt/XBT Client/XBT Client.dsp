@@ -96,6 +96,10 @@ SOURCE=..\misc\alerts.cpp
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\block_list.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\windows\browse_for_directory.cpp
 # End Source File
 # Begin Source File
@@ -181,6 +185,10 @@ SOURCE="..\BT Test\data_counter.cpp"
 # Begin Source File
 
 SOURCE=.\dlg_about.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_block_list.cpp
 # End Source File
 # Begin Source File
 
@@ -333,6 +341,10 @@ SOURCE=..\misc\alerts.h
 # End Source File
 # Begin Source File
 
+SOURCE="..\BT Test\block_list.h"
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\windows\browse_for_directory.h
 # End Source File
 # Begin Source File
@@ -418,6 +430,10 @@ SOURCE="..\BT Test\data_counter.h"
 # Begin Source File
 
 SOURCE=.\dlg_about.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\dlg_block_list.h
 # End Source File
 # Begin Source File
 
