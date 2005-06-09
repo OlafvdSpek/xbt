@@ -946,10 +946,9 @@ int Cserver::open_url(const string& v)
 	if (a == string::npos)
 		return 3;
 	string info_hash = hex_decode(v.substr(b, a++ - b));
-	b = v.find('/', a);
-	if (b == string::npos)
-		return 4;
-	string peers = hex_decode(v.substr(b));
+	if (info_hash.empty())
+		return 5;
+	string peers = hex_decode(v.substr(a));
 #ifdef WIN32
 	while (!m_run)
 		Sleep(100);
@@ -963,8 +962,6 @@ int Cserver::open_url(const string& v)
 			i->insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
 		return 0;
 	}
-	if (info_hash.empty())
-		return 5;
 	Cbt_file f;
 	f.m_server = this;
 	for (a = 0; (b = trackers.find(',', a)) != string::npos; a = b + 1)
