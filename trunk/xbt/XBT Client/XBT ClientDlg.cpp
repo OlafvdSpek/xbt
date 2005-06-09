@@ -9,6 +9,7 @@
 #include "bt_misc.h"
 #include "bt_torrent.h"
 #include "dlg_about.h"
+#include "dlg_block_list.h"
 #include "dlg_make_torrent.h"
 #include "dlg_options.h"
 #include "dlg_peer_connect.h"
@@ -307,17 +308,18 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_VIEW_GLOBAL_DETAILS, OnPopupViewGlobalDetails)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_GLOBAL_DETAILS, OnUpdatePopupViewGlobalDetails)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_EXPLORE, OnUpdatePopupExplore)
+	ON_COMMAND(ID_EDIT_COPY_ROWS, OnEditCopyRows)
 	ON_COMMAND(ID_POPUP_DISCONNECT, OnPopupDisconnect)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_DISCONNECT, OnUpdatePopupDisconnect)
 	ON_COMMAND(ID_POPUP_BLOCK, OnPopupBlock)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_BLOCK, OnUpdatePopupBlock)
 	ON_COMMAND(ID_POPUP_CONNECT, OnPopupConnect)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_CONNECT, OnUpdatePopupConnect)
-	ON_WM_SIZE()
-	ON_WM_INITMENU()
-	ON_COMMAND(ID_EDIT_COPY_ROWS, OnEditCopyRows)
 	ON_COMMAND(ID_EDIT_COPY_HOST, OnEditCopyHost)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY_HOST, OnUpdateEditCopyHost)
+	ON_COMMAND(ID_TOOLS_BLOCK_LIST, OnToolsBlockList)
+	ON_WM_SIZE()
+	ON_WM_INITMENU()
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -3018,6 +3020,14 @@ void CXBTClientDlg::OnEditSelectAll()
 		m_files.select_all();
 	else
 		m_peers.select_all();
+}
+
+void CXBTClientDlg::OnToolsBlockList() 
+{
+	Cdlg_block_list dlg;
+	dlg.entries(Cblock_list().load(m_server.get_block_list()));
+	if (IDOK == dlg.DoModal())
+		m_server.set_block_list(dlg.entries().save());
 }
 
 void CXBTClientDlg::OnToolsOptions() 

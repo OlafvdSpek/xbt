@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "block_list.h"
 #include "bt_admin_link.h"
 #include "bt_file.h"
 #include "bt_link.h"
@@ -42,6 +43,7 @@ public:
 	Cvirtual_binary get_status(int flags);
 	Cvirtual_binary get_trackers();
 	Cvirtual_binary save_state(bool intermediate);
+	Cxif_key get_block_list();
 	Cxif_key get_profiles();
 	Cxif_key get_scheduler();
 	bool below_peer_limit() const;
@@ -84,6 +86,7 @@ public:
 	void run_scheduler();
 	void seeding_ratio(int);
 	void send_stop_event(bool);
+	void set_block_list(const Cxif_key&);
 	void set_profiles(const Cxif_key&);
 	void set_scheduler(const Cxif_key&);
 	void set_trackers(const Cvirtual_binary& d);
@@ -107,7 +110,6 @@ public:
 	typedef list<Cbt_file> t_files;
 	typedef list<Chttp_link> t_http_links;
 	typedef list<Cbt_link> t_links;
-	typedef set<int> t_block_list;
 
 	int pre_file_dump(const string& id, int flags) const;
 	void file_dump(Cstream_writer&, const string& id, int flags) const;
@@ -259,7 +261,7 @@ private:
 
 	t_admins m_admins;
 	Calerts m_alerts;
-	t_block_list m_block_list;
+	Cblock_list m_block_list;
 	t_files m_files;
 	t_http_links m_http_links;
 	t_links m_links;
