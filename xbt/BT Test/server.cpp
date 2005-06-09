@@ -693,6 +693,16 @@ Cvirtual_binary Cserver::get_status(int flags)
 	return d;
 }
 
+Cxif_key Cserver::get_block_list()
+{
+	return m_block_list.save();
+}
+
+void Cserver::set_block_list(const Cxif_key& v)
+{
+	m_block_list.load(v);
+}
+
 void Cserver::load_profile(const Cxif_key& v)
 {
 	load_profile(Cprofile().load(v));
