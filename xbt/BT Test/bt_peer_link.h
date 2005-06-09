@@ -145,6 +145,7 @@ public:
 	bool m_get_peers_extension;
 	bool m_local_choked_goal;
 	bool m_local_interested_goal;
+	bool m_can_recv;
 	bool m_can_send;
 private:
 	void write_choke(bool);

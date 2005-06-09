@@ -18,6 +18,7 @@
 
 Cbt_peer_link::Cbt_peer_link()
 {
+	m_can_recv = false;
 	m_can_send = false;
 	m_f = NULL;
 	m_state = 1;
@@ -51,7 +52,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 		FD_SET(m_s, fd_except_set);
 	case 3:
 	case 4:
-		if (!m_read_b.size() || m_read_b.cb_w())
+		if (!m_can_recv)
 			FD_SET(m_s, fd_read_set);
 		if (!m_can_send)
 			FD_SET(m_s, fd_write_set);
@@ -90,6 +91,8 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 		if (FD_ISSET(m_s, fd_write_set))
 			m_can_send = true;
 		if (FD_ISSET(m_s, fd_read_set))
+			m_can_recv = true;
+		if (m_can_recv)
 		{
 			if (recv())
 				return 1;
