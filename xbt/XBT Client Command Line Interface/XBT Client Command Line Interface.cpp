@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
 		if (send(s, v))
 			return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 	}
-	const int cb_d = 64 << 10;
+	const int cb_d = 1 << 20;
 	char d[cb_d];
 	char* w = d;
 	int r;
