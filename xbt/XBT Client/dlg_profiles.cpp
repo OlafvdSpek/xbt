@@ -160,35 +160,35 @@ void Cdlg_profiles::insert(const t_entry& e)
 void Cdlg_profiles::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_list.get_buffer();
 	const t_entry& e = m_entries.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{
 	case 0:
-		m_buffer[m_buffer_w] = e.name;
+		buffer = e.name;
 		break;
 	case 1:
 		if (e.seeding_ratio_enable)
-			m_buffer[m_buffer_w] = n(e.seeding_ratio);
+			buffer = n(e.seeding_ratio);
 		break;
 	case 2:
 		if (e.upload_rate_enable)
-			m_buffer[m_buffer_w] = n(e.upload_rate >> 10);
+			buffer = n(e.upload_rate >> 10);
 		break;
 	case 3:
 		if (e.upload_slots_enable)
-			m_buffer[m_buffer_w] = n(e.upload_slots);
+			buffer = n(e.upload_slots);
 		break;
 	case 4:
 		if (e.peer_limit_enable)
-			m_buffer[m_buffer_w] = n(e.peer_limit);
+			buffer = n(e.peer_limit);
 		break;
 	case 5:
 		if (e.torrent_limit_enable)
-			m_buffer[m_buffer_w] = n(e.torrent_limit);
+			buffer = n(e.torrent_limit);
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 

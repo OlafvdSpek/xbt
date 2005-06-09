@@ -76,9 +76,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 			}
 			if (m_s.connect(h, htons(m_url.m_port)) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
 				return 0;
-			in_addr a;
-			a.s_addr = h;
-			f.alert(Calert(Calert::info, "Tracker: IPA: " + static_cast<string>(inet_ntoa(a))));
+			f.alert(Calert(Calert::info, "Tracker: IPA: " + Csocket::inet_ntoa(h)));
 		}		
 		if (m_url.m_protocol == Cbt_tracker_url::tp_udp)
 		{

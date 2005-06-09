@@ -74,8 +74,6 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
-	string m_buffer[4];
-	int m_buffer_w;
 	t_entries m_entries;
 	int m_selected_profile;
 };
