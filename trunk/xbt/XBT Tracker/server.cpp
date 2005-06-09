@@ -55,9 +55,7 @@ public:
 		Cbvalue peer;
 		if (!m_no_peer_id)
 			peer.d(bts_peer_id, p.peer_id);
-		in_addr a;
-		a.s_addr = h;
-		peer.d(bts_ipa, static_cast<string>(inet_ntoa(a)));
+		peer.d(bts_ipa, Csocket::inet_ntoa(h));
 		peer.d(bts_port, ntohs(p.port));
 		m_peers.l(peer);
 	}

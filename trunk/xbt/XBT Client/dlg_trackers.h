@@ -67,8 +67,6 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
-	string m_buffer[4];
-	int m_buffer_w;
 	t_trackers m_trackers;
 };
 

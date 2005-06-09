@@ -187,18 +187,18 @@ void Cdlg_make_torrent::post_insert()
 void Cdlg_make_torrent::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_list.get_buffer();
 	const t_map_entry& e = m_map.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{
 	case 0:
-		m_buffer[m_buffer_w] = base_name(e.name);
+		buffer = base_name(e.name);
 		break;
 	case 1:
-		m_buffer[m_buffer_w] = n(e.size);
+		buffer = n(e.size);
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 

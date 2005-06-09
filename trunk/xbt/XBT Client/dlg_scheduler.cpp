@@ -129,7 +129,7 @@ void Cdlg_scheduler::insert(const t_entry& e)
 void Cdlg_scheduler::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	m_buffer[++m_buffer_w &= 3].erase();
+	string& buffer = m_list.get_buffer();
 	const t_entry& e = m_entries.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{
@@ -137,14 +137,14 @@ void Cdlg_scheduler::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 		{
 			char b[9];
 			sprintf(b, "%02d:%02d:%02d", e.time / 3600, e.time / 60 % 60, e.time % 60);
-			m_buffer[m_buffer_w] = b;
+			buffer = b;
 		}
 		break;
 	case 1:
-		m_buffer[m_buffer_w] = m_profiles.find(e.profile)->second.name;
+		buffer = m_profiles.find(e.profile)->second.name;
 		break;
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w].c_str());
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 
