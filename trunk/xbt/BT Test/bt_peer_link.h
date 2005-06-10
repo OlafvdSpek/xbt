@@ -50,8 +50,8 @@ public:
 	void write_merkle_cancel(__int64 offset);
 	void write_merkle_request(__int64 offset, int c_hashes);
 	void write_cancel(int, int, int);
-	void write_get_info(int);
-	void write_info(int);
+	void write_get_info();
+	void write_info();
 	void write_get_peers();
 	void write_peers();
 	void choked(bool);
