@@ -116,7 +116,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				m_remote_pieces.resize(m_f->m_pieces.size());
 				write_get_peers();
 				if (0)
-					write_get_info(-1);
+					write_get_info();
 				write_bitfield();
 				m_state = 3;
 			case 3:
@@ -571,15 +571,14 @@ void Cbt_peer_link::write_merkle_cancel(__int64 offset)
 	write(d);
 }
 
-void Cbt_peer_link::write_get_info(int i)
+void Cbt_peer_link::write_get_info()
 {
-	if (!m_get_info_extension)
+	if (!m_get_info_extension || m_f->m_info.size())
 		return;
 	Cvirtual_binary d;
-	byte* w = d.write_start(9);
+	byte* w = d.write_start(5);
 	w = write(w, d.size() - 4);
 	*w++ = bti_get_info;
-	w = write(w, i);
 	write(d);
 }
 
@@ -587,20 +586,13 @@ void Cbt_peer_link::read_info(const char* r, const char* r_end)
 {
 }
 
-void Cbt_peer_link::write_info(int i)
+void Cbt_peer_link::write_info()
 {
-	if (i < -1 || 4096 * i >= m_f->m_info.size())
-		return;
 	Cvirtual_binary d;
-	if (i != -1)
-	{
-		int cb = min(m_f->m_info.size() - 4096 * i, 4096);
-		byte* w = d.write_start(9 + cb);
-		w = write(w, d.size() - 4);
-		*w++ = bti_info;
-		w = write(w, i);
-		memcpy(w, m_f->m_info + 4096 * i, cb);
-	}
+	byte* w = d.write_start(5 + m_f->m_info.size());
+	w = write(w, d.size() - 4);
+	*w++ = bti_info;
+	m_f->m_info.read(w);
 	write(d);
 }
 
@@ -768,8 +760,7 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		}
 		break;
 	case bti_get_info:
-		if (r_end - r >= 4)
-			write_info(ntohl(*reinterpret_cast<const __int32*>(r)));
+		write_info();
 		break;
 	case bti_info:
 		read_info(r, r_end);

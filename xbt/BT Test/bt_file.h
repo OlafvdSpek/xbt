@@ -190,7 +190,6 @@ public:
 		Cmerkle_tree m_merkle_tree;
 	};
 
-	typedef vector<bool> t_info_blocks_valid;
 	typedef map<int, int> t_old_peers;
 	typedef map<int, int> t_new_peers;
 	typedef vector<t_sub_file> t_sub_files;
@@ -198,7 +197,6 @@ public:
 	typedef vector<Cbt_piece> t_pieces;
 	typedef vector<string> t_trackers;
 
-	t_info_blocks_valid m_info_blocks_valid;
 	t_sub_files m_sub_files;
 	t_old_peers m_old_peers;
 	t_new_peers m_new_peers;
