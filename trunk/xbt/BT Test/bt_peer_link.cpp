@@ -246,26 +246,31 @@ int Cbt_peer_link::cb_write_buffer() const
 
 int Cbt_peer_link::recv()
 {
-	if (!m_read_b.size())
+	if (m_can_recv && !m_read_b.size())
 		m_read_b.size(65 << 10);
-	for (int r; m_read_b.cb_w() && (r = m_s.recv(m_read_b.w(), m_read_b.cb_w())); )
+	for (int r; m_can_recv && m_read_b.cb_w() && (r = m_s.recv(m_read_b.w(), m_read_b.cb_w())); )
 	{
 		if (r == SOCKET_ERROR)
 		{
 			int e = WSAGetLastError();
 			if (e == WSAEWOULDBLOCK)
+			{
+				m_can_recv = false;
 				return 0;
+			}
 			if (m_f->m_server->log_peer_recv_failures())
 				alert(Calert::debug, "Peer: recv failed: " + Csocket::error2a(e));
 			return 1;
 		}
+		if (r != m_read_b.cb_w())
+			m_can_recv = false;
 		m_downloaded += r;
 		m_down_counter.add(r, m_f->m_server->time());
 		m_rtime = m_f->m_server->time();
 		m_read_b.cb_w(r);
 		m_f->m_downloaded_l5 += r;
 	}
-	if (!m_read_b.cb_w())
+	if (!m_can_recv || !m_read_b.cb_w())
 		return 0;
 	if (m_f->m_server->log_peer_connection_closures())
 		alert(Calert::debug, m_local_link ? "Peer: local link closed" : "Peer: remote link closed");
@@ -292,6 +297,8 @@ int Cbt_peer_link::send(int& send_quota)
 		}
 		else if (!r)
 			return 0;
+		if (r != min(d.m_s_end - d.m_r, send_quota))
+			m_can_send = false;
 		if (d.m_vb.size() > 5 && d.m_s[4] == bti_piece)
 		{
 			m_uploaded += r;
