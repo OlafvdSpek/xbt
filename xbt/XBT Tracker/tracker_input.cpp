@@ -87,6 +87,7 @@ void Ctracker_input::set(const string& name, const string& value)
 bool Ctracker_input::valid() const
 {
 	return m_downloaded >= 0
+		&& (m_event != e_completed || !m_left)
 		&& m_info_hash.length() == 20
 		&& m_left >= -1
 		&& m_peer_id.length() == 20
