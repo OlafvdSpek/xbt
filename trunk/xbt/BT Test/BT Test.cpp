@@ -4,11 +4,11 @@
 
 const char* g_service_name = "XBT Client";
 
-int main1()
+int main1(const string& options_fname)
 {
 	srand(time(NULL));
 	Cserver server;
-	server.config(Cconfig().write(Cvirtual_binary(server.options_fname())));
+	server.config(Cconfig().write(Cvirtual_binary(options_fname.empty() ? server.options_fname() : options_fname)));
 	server.run();
 	return 0;
 }
@@ -44,7 +44,7 @@ void WINAPI nt_service_main(DWORD argc, LPTSTR* argv)
 	SetServiceStatus(gh_service_status, &g_service_status);
 	g_service_status.dwCurrentState = SERVICE_RUNNING;
 	SetServiceStatus(gh_service_status, &g_service_status);
-	main1();
+	main1("");
 	g_service_status.dwCurrentState = SERVICE_STOPPED;
 	SetServiceStatus(gh_service_status, &g_service_status);
 }
@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 			cout << "Service " << g_service_name << " has been uninstalled." << endl;
 			return 0;
 		}
-		else
+		else if (*argv[1] == '-')
 			return 1;
 	}
 	WSADATA wsadata;
@@ -86,5 +86,5 @@ int main(int argc, char* argv[])
 		&& GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)		
 		return 1;
 #endif
-	return main1();
+	return main1(argc >= 2 ? argv[1] : "");
 }
