@@ -62,6 +62,7 @@ CREATE TABLE xbt_files_users
 (
   info_hash blob NOT NULL,
   uid int NOT NULL,
+  active tinyint NOT NULL,
   announced int NOT NULL,
   completed int NOT NULL,
   downloaded bigint(20) NOT NULL,
