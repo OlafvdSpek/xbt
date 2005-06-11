@@ -96,8 +96,8 @@ Cserver::Cserver(Cdatabase& database, const string& table_prefix, bool use_sql):
 
 int Cserver::run()
 {
-	test_sql();
 	read_config();
+	test_sql();
 	if (m_epoll.create(1 << 10) == -1)
 	{
 		cerr << "epoll_create failed" << endl;
@@ -1106,21 +1106,21 @@ string Cserver::table_name(int v) const
 	switch (v)
 	{
 	case table_announce_log:
-		return m_table_prefix + "announce_log";
+		return m_config.m_table_announce_log.empty() ? m_table_prefix + "announce_log" : m_config.m_table_announce_log;
 	case table_config:
 		return m_table_prefix + "config";
 	case table_files:
-		return m_table_prefix + "files";
+		return m_config.m_table_files.empty() ? m_table_prefix + "files" : m_config.m_table_files;
 	case table_files_updates:
-		return m_table_prefix + "files_updates";
+		return m_config.m_table_files_updates.empty() ? m_table_prefix + "files_updates" : m_config.m_table_files_updates;
 	case table_files_users:
-		return m_table_prefix + "files_users";
+		return m_config.m_table_files_users.empty() ? m_table_prefix + "files_users" : m_config.m_table_files_users;
 	case table_ipas:
-		return m_table_prefix + "ipas";
+		return m_config.m_table_ipas.empty() ? m_table_prefix + "ipas" : m_config.m_table_ipas;
 	case table_scrape_log:
-		return m_table_prefix + "scrape_log";
+		return m_config.m_table_scrape_log.empty() ? m_table_prefix + "scrape_log" : m_config.m_table_scrape_log;
 	case table_users:
-		return m_table_prefix + "users";
+		return m_config.m_table_users.empty() ? m_table_prefix + "users" : m_config.m_table_users;
 	}
 	assert(false);
 	return "";

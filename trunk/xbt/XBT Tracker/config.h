@@ -41,6 +41,13 @@ public:
 	int m_update_files_method;
 	string m_pid_file;
 	string m_redirect_url;
+	string m_table_announce_log;
+	string m_table_files;
+	string m_table_files_updates;
+	string m_table_files_users;
+	string m_table_ipas;
+	string m_table_scrape_log;
+	string m_table_users;
 	t_listen_ipas m_listen_ipas;
 	t_listen_ports m_listen_ports;
 };
