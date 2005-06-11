@@ -82,13 +82,14 @@ private:
 	Cbvalue m_peers;
 };
 
-Cserver::Cserver(Cdatabase& database, bool use_sql):
+Cserver::Cserver(Cdatabase& database, const string& table_prefix, bool use_sql):
 	m_database(database)
 {
 	m_fid_end = 0;
 
 	for (int i = 0; i < 8; i++)
 		m_secret = m_secret << 8 ^ rand();
+	m_table_prefix = table_prefix;
 	m_time = ::time(NULL);
 	m_use_sql = use_sql;
 }
@@ -637,25 +638,28 @@ void Cserver::read_db_files_sql()
 		Csql_query q(m_database);
 		if (!m_config.m_auto_register)
 		{
-			q = "select info_hash, fid from xbt_files where flags & 1";
+			q = "select info_hash, fid from ? where flags & 1";
+			q.p(table_name(table_files));
 			Csql_result result = q.execute();
 			for (Csql_row row; row = result.fetch_row(); )
 			{
 				if (row.size(0) != 20)
 					continue;
 				m_files.erase(row.f(0));
-				q = "delete from xbt_files where fid = ?";
+				q = "delete from ? where fid = ?";
+				q.p(table_name(table_files));
 				q.p(row.f_int(1));
 				q.execute();
 			}
 
 		}
 		if (m_files.empty())
-			m_database.query("update xbt_files set leechers = 0, seeders = 0");
+			m_database.query("update " + table_name(table_files) + " set leechers = 0, seeders = 0");
 		else if (m_config.m_auto_register)
 			return;
 		q = "select info_hash, completed, fid, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp"
-			" from xbt_files where fid >= ?";
+			" from ? where fid >= ?";
+		q.p(table_name(table_files));
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
@@ -690,7 +694,8 @@ void Cserver::read_db_ipas()
 		return;
 	try
 	{
-		Csql_query q(m_database, "select ipa, uid from xbt_ipas");
+		Csql_query q(m_database, "select ipa, uid from ?");
+		q.p(table_name(table_ipas));
 		Csql_result result = q.execute();
 		m_ipas.clear();
 		for (Csql_row row; row = result.fetch_row(); )
@@ -710,7 +715,8 @@ void Cserver::read_db_users()
 	{
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
 			i->second.marked = true;
-		Csql_query q(m_database, "select uid, name, pass, torrent_pass, fid_end, torrents_limit, peers_limit, torrent_pass_secret from xbt_users");
+		Csql_query q(m_database, "select uid, name, pass, torrent_pass, fid_end, torrents_limit, peers_limit, torrent_pass_secret from ?");
+		q.p(table_name(table_users));
 		Csql_result result = q.execute();
 		m_users_names.clear();
 		m_users_torrent_passes.clear();
@@ -758,7 +764,8 @@ void Cserver::write_db_files()
 			Csql_query q(m_database);
 			if (!file.fid)
 			{
-				q = "insert into xbt_files (info_hash, ctime) values (?, NULL)";
+				q = "insert into ? (info_hash, ctime) values (?, NULL)";
+				q.p(table_name(table_files));
 				q.pe(i->first);
 				q.execute();
 				file.fid = m_database.insert_id();
@@ -767,9 +774,10 @@ void Cserver::write_db_files()
 				q = "(?,?,?,?,?,?,?,?,?,?,?,?),";
 			else
 			{
-				q = "update xbt_files"
+				q = "update ?"
 					" set leechers = ?, seeders = ?, completed = ?, started = ?, stopped = ?, announced_http = ?, announced_http_compact = ?, announced_http_no_peer_id = ?, announced_udp = ?, scraped_http = ?, scraped_udp = ?"
 					" where fid = ?";
+				q.p(table_name(table_files));
 			}
 			q.p(file.leechers);
 			q.p(file.seeders);
@@ -794,8 +802,8 @@ void Cserver::write_db_files()
 			buffer.erase(buffer.size() - 1);
 			if (m_config.m_update_files_method == 1)
 			{
-				m_database.query("insert into xbt_files_updates (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " + buffer);
-				m_database.query("update xbt_files f inner join xbt_files_updates fu using (fid)"
+				m_database.query("insert into " + table_name(table_files_updates) + " (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " + buffer);
+				m_database.query("update " + table_name(table_files) + " f inner join " + table_name(table_files_updates) + " fu using (fid)"
 					" set" 
 					"  f.leechers = fu.leechers,"
 					"  f.seeders = fu.seeders,"
@@ -808,11 +816,11 @@ void Cserver::write_db_files()
 					"  f.announced_udp = fu.announced_udp,"
 					"  f.scraped_http = fu.scraped_http,"
 					"  f.scraped_udp = fu.scraped_udp");
-				m_database.query("delete from xbt_files_updates");
+				m_database.query("delete from " + table_name(table_files_updates));
 			}
 			else
 			{
-				m_database.query("insert into xbt_files_updates (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " 
+				m_database.query("insert into " + table_name(table_files) + " (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " 
 					+ buffer
 					+ " on duplicate key update"
 					+ "  leechers = values(leechers),"
@@ -837,7 +845,7 @@ void Cserver::write_db_files()
 		try
 		{
 			m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
-			m_database.query("insert delayed into xbt_announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
+			m_database.query("insert delayed into " + table_name(table_announce_log) + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
 		}
 		catch (Cxcc_error)
 		{
@@ -849,7 +857,7 @@ void Cserver::write_db_files()
 		try
 		{
 			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
-			m_database.query("insert delayed into xbt_scrape_log (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
+			m_database.query("insert delayed into " + table_name(table_scrape_log) + " (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
 		}
 		catch (Cxcc_error)
 		{
@@ -868,7 +876,7 @@ void Cserver::write_db_users()
 		m_files_users_updates_buffer.erase(m_files_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into xbt_files_users (active, announced, completed, downloaded, `left`, uploaded, info_hash, uid) values "
+			m_database.query("insert into " + table_name(table_files_users) + " (active, announced, completed, downloaded, `left`, uploaded, info_hash, uid) values "
 				+ m_files_users_updates_buffer
 				+ " on duplicate key update"
 				+ "  active = values(active),"
@@ -888,7 +896,7 @@ void Cserver::write_db_users()
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into xbt_users (downloaded, uploaded, uid) values "
+			m_database.query("insert into " + table_name(table_users) + " (downloaded, uploaded, uid) values "
 				+ m_users_updates_buffer
 				+ " on duplicate key update"
 				+ "  downloaded = downloaded + values(downloaded),"
@@ -908,7 +916,7 @@ void Cserver::read_config()
 	{
 		try
 		{
-			Csql_result result = m_database.query("select name, value from xbt_config where value is not null");
+			Csql_result result = m_database.query("select name, value from " + table_name(table_config) + " where value is not null");
 			Cconfig config;
 			for (Csql_row row; row = result.fetch_row(); )
 				config.set(row.f(0), row.f(1));
@@ -918,22 +926,18 @@ void Cserver::read_config()
 		{
 		}
 	}
-	else
+	else if (ifstream is("xbt_tracker.conf"))
 	{
-		ifstream is("xbt_tracker.conf");
-		if (is)
+		Cconfig config;
+		string s;
+		while (getline(is, s))
 		{
-			Cconfig config;
-			string s;
-			while (getline(is, s))
-			{
-				int i = s.find('=');
-				if (i == string::npos)
-					continue;
-				config.set(s.substr(0, i), s.substr(i + 1));
-			}
-			m_config = config;
+			int i = s.find('=');
+			if (i == string::npos)
+				continue;
+			config.set(s.substr(0, i), s.substr(i + 1));
 		}
+		m_config = config;
 	}
 	if (m_config.m_listen_ipas.empty())
 		m_config.m_listen_ipas.insert(htonl(INADDR_ANY));
@@ -1097,20 +1101,45 @@ void Cserver::term()
 	g_sig_term = true;
 }
 
+string Cserver::table_name(int v) const
+{
+	switch (v)
+	{
+	case table_announce_log:
+		return m_table_prefix + "announce_log";
+	case table_config:
+		return m_table_prefix + "config";
+	case table_files:
+		return m_table_prefix + "files";
+	case table_files_updates:
+		return m_table_prefix + "files_updates";
+	case table_files_users:
+		return m_table_prefix + "files_users";
+	case table_ipas:
+		return m_table_prefix + "ipas";
+	case table_scrape_log:
+		return m_table_prefix + "scrape_log";
+	case table_users:
+		return m_table_prefix + "users";
+	}
+	assert(false);
+	return "";
+}
+
 int Cserver::test_sql()
 {
 	if (!m_use_sql)
 		return 0;
 	try
 	{
-		m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from xbt_announce_log where 0 = 1");
-		m_database.query("select name, value from xbt_config where 0 = 1");
-		m_database.query("select fid, info_hash, leechers, seeders, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, completed, started, stopped, flags, mtime, ctime from xbt_files where 0 = 1");
-		m_database.query("select fid, leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp from xbt_files_updates where 0 = 1");
-		m_database.query("select info_hash, uid, active, announced, completed, downloaded, `left`, uploaded from xbt_files_users where 0 = 1");
-		m_database.query("select ipa, uid, mtime from xbt_ipas where 0 = 1");
-		m_database.query("select id, ipa, info_hash, uid, mtime from xbt_scrape_log where 0 = 1");
-		m_database.query("select uid, name, pass, fid_end, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from xbt_users where 0 = 1");
+		m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from " + table_name(table_announce_log) + " where 0 = 1");
+		m_database.query("select name, value from " + table_name(table_config) + " where 0 = 1");
+		m_database.query("select fid, info_hash, leechers, seeders, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, completed, started, stopped, flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
+		m_database.query("select fid, leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp from " + table_name(table_files_updates) + " where 0 = 1");
+		m_database.query("select info_hash, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
+		m_database.query("select ipa, uid, mtime from " + table_name(table_ipas) + " where 0 = 1");
+		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0 = 1");
+		m_database.query("select uid, name, pass, fid_end, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");
 		return 0;
 	}
 	catch (Cxcc_error)
