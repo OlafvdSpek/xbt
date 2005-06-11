@@ -45,6 +45,20 @@ void Cconfig::set(const string& name, const string& value)
 		m_pid_file = value;
 	else if (name == "redirect_url")
 		m_redirect_url = value;
+	else if (name == "table_announce_log")
+		m_table_announce_log = value;
+	else if (name == "table_files")
+		m_table_files = value;
+	else if (name == "table_files_updates")
+		m_table_files_updates = value;
+	else if (name == "table_files_users")
+		m_table_files_users = value;
+	else if (name == "table_ipas")
+		m_table_ipas = value;
+	else if (name == "table_scrape_log")
+		m_table_scrape_log = value;
+	else if (name == "table_users")
+		m_table_users = value;
 	else
 		set(name, atoi(value.c_str()));
 }
