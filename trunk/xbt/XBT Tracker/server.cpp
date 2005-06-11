@@ -386,7 +386,8 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 			downloaded = v.m_downloaded - i->second.downloaded;
 			uploaded = v.m_uploaded - i->second.uploaded;
 		}
-		Csql_query q(m_database, "(1,?,?,?,?,?,?),");
+		Csql_query q(m_database, "(?,1,?,?,?,?,?,?),");
+		q.p(v.m_event != Ctracker_input::e_stopped);
 		q.p(v.m_event == Ctracker_input::e_completed);
 		q.p(downloaded);
 		q.p(v.m_left);
@@ -867,9 +868,10 @@ void Cserver::write_db_users()
 		m_files_users_updates_buffer.erase(m_files_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into xbt_files_users (announced, completed, downloaded, `left`, uploaded, info_hash, uid) values "
+			m_database.query("insert into xbt_files_users (active, announced, completed, downloaded, `left`, uploaded, info_hash, uid) values "
 				+ m_files_users_updates_buffer
 				+ " on duplicate key update"
+				+ "  active = values(active),"
 				+ "  announced = announced + values(announced),"
 				+ "  completed = completed + values(completed),"
 				+ "  downloaded = downloaded + values(downloaded),"
@@ -1105,7 +1107,7 @@ int Cserver::test_sql()
 		m_database.query("select name, value from xbt_config where 0 = 1");
 		m_database.query("select fid, info_hash, leechers, seeders, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, completed, started, stopped, flags, mtime, ctime from xbt_files where 0 = 1");
 		m_database.query("select fid, leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp from xbt_files_updates where 0 = 1");
-		m_database.query("select info_hash, uid, announced, completed, downloaded, `left`, uploaded from xbt_files_users where 0 = 1");
+		m_database.query("select info_hash, uid, active, announced, completed, downloaded, `left`, uploaded from xbt_files_users where 0 = 1");
 		m_database.query("select ipa, uid, mtime from xbt_ipas where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from xbt_scrape_log where 0 = 1");
 		m_database.query("select uid, name, pass, fid_end, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from xbt_users where 0 = 1");
