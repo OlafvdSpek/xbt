@@ -20,6 +20,7 @@ public:
 	string mysql_host;
 	string mysql_user;
 	string mysql_password;
+	string mysql_table_prefix;
 };
 
 #endif // !defined(AFX_STATIC_CONFIG_H__FA584986_2EA1_11D5_B606_0000B4936994__INCLUDED_)

@@ -163,7 +163,7 @@ public:
 	Cbvalue scrape(const Ctracker_input&);
 	int run();
 	static void term();
-	Cserver(Cdatabase&, bool use_sql);
+	Cserver(Cdatabase&, const string& table_prefix, bool use_sql);
 
 	int announce_interval() const
 	{
@@ -231,12 +231,25 @@ public:
 		return m_time;
 	}
 private:
+	enum
+	{
+		table_announce_log,
+		table_config,
+		table_files,
+		table_files_updates,
+		table_files_users,
+		table_ipas,
+		table_scrape_log,
+		table_users,
+	};
+
 	typedef list<Cconnection> t_connections;
 	typedef list<Cpeer_link> t_peer_links;
 	typedef list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef list<Cudp_listen_socket> t_udp_sockets;
 
 	static void sig_handler(int v);
+	string table_name(int) const;
 
 	Cconfig m_config;
 	Cstats m_stats;
@@ -263,6 +276,7 @@ private:
 	string m_announce_log_buffer;
 	string m_files_users_updates_buffer;
 	string m_scrape_log_buffer;
+	string m_table_prefix;
 	string m_users_updates_buffer;
 };
 

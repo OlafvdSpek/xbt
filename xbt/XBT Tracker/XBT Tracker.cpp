@@ -33,7 +33,7 @@ int main1()
 		cerr << error.message() << endl;
 		return 1;
 	}
-	return Cserver(database, static_config.mysql_host != "-").run();
+	return Cserver(database, static_config.mysql_table_prefix, static_config.mysql_host != "-").run();
 }
 
 #ifdef WIN32
