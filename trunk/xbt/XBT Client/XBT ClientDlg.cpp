@@ -442,12 +442,7 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 		return;
 	string path;
 	if (!m_server.incompletes_dir().empty() && !ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
-	{
-		path = m_server.completes_dir() + '/' + torrent.name().c_str();
-		struct _stati64 b;
-		if (_stati64(path.c_str(), &b))
-			path = m_server.incompletes_dir() + '/' + torrent.name().c_str();
-	}
+		;
 	else if (torrent.files().size() == 1)
 	{
 		SetForegroundWindow();

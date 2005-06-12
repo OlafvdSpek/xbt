@@ -924,7 +924,15 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 		if (i->m_info_hash == f.m_info_hash)
 			return 2;
 	}
-	f.m_name = name.empty() ? incompletes_dir() + '/' + f.m_name : name;
+	if (name.empty())
+	{
+		f.m_name = completes_dir() + '/' + f.m_name;
+		struct _stati64 b;
+		if (_stati64(f.m_name.c_str(), &b))
+			f.m_name = incompletes_dir() + '/' + f.m_name;
+	}
+	else
+		f.m_name = name;
 	f.m_peer_id = new_peer_id();
 	if (below_torrent_limit())
 		f.open();
