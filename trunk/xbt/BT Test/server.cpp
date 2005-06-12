@@ -198,7 +198,7 @@ int Cserver::run()
 			alert(Calert(Calert::error, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError())));
 		else
 		{
-			while (admin_port() < 0x10000 && la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
+			while (admin_port() < 0x10000 && la.setsockopt(SOL_SOCKET, SO_REUSEADDR, true), la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
 				m_admin_port++;
 			if (la.listen())
 			{
@@ -213,8 +213,9 @@ int Cserver::run()
 			alert(Calert(Calert::error, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError())));
 		else
 		{
+			l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true);
 			for (;  peer_port() < 0x10000; m_peer_port++)
-			{
+			{				
 				if (l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
 					continue;
 #ifdef WIN32
