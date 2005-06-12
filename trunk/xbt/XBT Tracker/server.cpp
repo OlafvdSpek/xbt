@@ -926,18 +926,22 @@ void Cserver::read_config()
 		{
 		}
 	}
-	else if (ifstream is("xbt_tracker.conf"))
+	else 
 	{
-		Cconfig config;
-		string s;
-		while (getline(is, s))
+		ifstream is("xbt_tracker.conf");
+		if (is)
 		{
-			int i = s.find('=');
-			if (i == string::npos)
-				continue;
-			config.set(s.substr(0, i), s.substr(i + 1));
+			Cconfig config;
+			string s;
+			while (getline(is, s))
+			{
+				int i = s.find('=');
+				if (i == string::npos)
+					continue;
+				config.set(s.substr(0, i), s.substr(i + 1));
+			}
+			m_config = config;
 		}
-		m_config = config;
 	}
 	if (m_config.m_listen_ipas.empty())
 		m_config.m_listen_ipas.insert(htonl(INADDR_ANY));
