@@ -12,8 +12,12 @@
 
 #pragma warning(disable: 4786)
 
+#include <ctime>
+#include <fstream>
 #include <iostream>
+#include <list>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -22,11 +26,17 @@ using namespace std;
 
 #pragma comment(lib, "ws2_32.lib")
 #else
+#include <stdint.h>
+
+#define stricmp strcasecmp
+
 typedef char __int8;
 typedef short __int16;
 typedef int __int32;
 typedef long long __int64;
 #endif
+#include "socket.h"
+#include "virtual_binary.h"
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
