@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <sys/stat.h>
 #include <algorithm>
 #include <signal.h>
 #include "bt_strings.h"
