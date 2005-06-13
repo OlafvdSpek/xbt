@@ -13,6 +13,7 @@
 #pragma warning(disable: 4786)
 
 #include <ctime>
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <map>
@@ -27,6 +28,8 @@ using namespace std;
 #else
 #include <stdint.h>
 #include <fcntl.h>
+
+#define stricmp strcasecmp
 
 typedef char __int8;
 typedef short __int16;
