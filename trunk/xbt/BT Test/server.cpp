@@ -927,10 +927,8 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	}
 	if (name.empty())
 	{
-		f.m_name = completes_dir() + '/' + f.m_name;
 		struct stat b;
-		if (stat(f.m_name.c_str(), &b))
-			f.m_name = incompletes_dir() + '/' + f.m_name;
+		f.m_name = (stat((completes_dir() + '/' + f.m_name).c_str(), &b) ? incompletes_dir() : completes_dir()) + '/' + f.m_name;
 	}
 	else
 		f.m_name = name;
