@@ -784,127 +784,93 @@ void Cserver::set_trackers(const Cvirtual_binary& d)
 int Cserver::announce(const string& id)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != id)
-			continue;
-		i->announce();
-		return 0;
-	}
-	return 1;
+	Cbt_file* f = find_torrent(id);
+	if (!f)
+		return 1;
+	f->announce();
+	return 0;
 }
 
 int Cserver::file_priority(const string& id, int priority)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != id)
-			continue;
-		i->priority(priority);
-		return 0;
-	}
-	return 1;
+	Cbt_file* f = find_torrent(id);
+	if (!f)
+		return 1;
+	f->priority(priority);
+	return 0;
 }
 
 int Cserver::file_state(const string& id, Cbt_file::t_state state)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != id)
-			continue;
-		i->state(state);
-		m_update_states_time = 0;
-		return 0;
-	}
-	return 1;
+	Cbt_file* f = find_torrent(id);
+	if (!f)
+		return 1;
+	f->state(state);
+	m_update_states_time = 0;
+	return 0;
 }
 
 void Cserver::sub_file_priority(const string& file_id, const string& sub_file_id, int priority)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != file_id)
-			continue;
-		i->sub_file_priority(sub_file_id, priority);
-		return;
-	}
+	Cbt_file* f = find_torrent(file_id);
+	if (f)
+		f->sub_file_priority(sub_file_id, priority);
 }
 
-void Cserver::torrent_seeding_ratio(const string &file_id, bool override, int v)
+void Cserver::torrent_seeding_ratio(const string& file_id, bool override, int v)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != file_id)
-			continue;
-		i->m_seeding_ratio = max(100, v);
-		i->m_seeding_ratio_override = override;
+	Cbt_file* f = find_torrent(file_id);
+	if (!f)
 		return;
-	}
+	f->m_seeding_ratio = max(100, v);
+	f->m_seeding_ratio_override = override;
 }
 
 void Cserver::torrent_trackers(const string& file_id, const string& v)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != file_id)
-			continue;
-		i->trackers(v);
-		return;
-	}
+	Cbt_file* f = find_torrent(file_id);
+	if (f)
+		f->trackers(v);
 }
 
 void Cserver::torrent_upload_slots_max(const string& file_id, bool override, int v)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != file_id)
-			continue;
-		i->m_upload_slots_max = max(0, v);
-		i->m_upload_slots_max_override = override;
+	Cbt_file* f = find_torrent(file_id);
+	if (!f)
 		return;
-	}
+	f->m_upload_slots_max = max(0, v);
+	f->m_upload_slots_max_override = override;
 }
 
 void Cserver::torrent_upload_slots_min(const string& file_id, bool override, int v)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != file_id)
-			continue;
-		i->m_upload_slots_min = max(0, v);
-		i->m_upload_slots_min_override = override;
+	Cbt_file* f = find_torrent(file_id);
+	if (!f)
 		return;
-	}
+	f->m_upload_slots_min = max(0, v);
+	f->m_upload_slots_min_override = override;
 }
 
 void Cserver::torrent_end_mode(const string& file_id, bool v)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != file_id)
-			continue;
-		i->m_allow_end_mode = v;
-		return;
-	}
+	Cbt_file* f = find_torrent(file_id);
+	if (f)
+		f->m_allow_end_mode = v;
 }
 
 string Cserver::get_url(const string& id)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash == id)
-			return i->get_url();
-	}
-	return "";
+	Cbt_file* f = find_torrent(id);
+	return f ? f->get_url() : "";
 }
 
 int Cserver::open(const Cvirtual_binary& info, const string& name)
@@ -1359,27 +1325,21 @@ void Cserver::user_agent(const string& v)
 int Cserver::peer_connect(const string& id, int ipa, int port)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != id)
-			continue;
-		i->peer_connect(ipa, port);
-		return 0;
-	}
-	return 1;
+	Cbt_file* f = find_torrent(id);
+	if (!f)
+		return 1;
+	f->peer_connect(ipa, port);
+	return 0;
 }
 
 int Cserver::peer_disconnect(const string& id, int ipa)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-	{
-		if (i->m_info_hash != id)
-			continue;
-		i->peer_disconnect(ipa);
-		return 0;
-	}
-	return 1;
+	Cbt_file* f = find_torrent(id);
+	if (!f)
+		return 1;
+	f->peer_disconnect(ipa);
+	return 0;
 }
 
 int Cserver::peer_block(int ipa)
@@ -1389,4 +1349,14 @@ int Cserver::peer_block(int ipa)
 		i->peer_disconnect(ipa);
 	m_block_list.insert(ipa);
 	return 0;
+}
+
+Cbt_file* Cserver::find_torrent(const string& id)
+{
+	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	{
+		if (i->m_info_hash == id)
+			return &*i;
+	}
+	return NULL;
 }
