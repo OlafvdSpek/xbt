@@ -115,7 +115,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				m_read_b.cb_r(20);
 				m_remote_pieces.resize(m_f->m_pieces.size());
 				write_get_peers();
-				if (0)
+				if (!m_f->m_info.size())
 					write_get_info();
 				write_bitfield();
 				m_state = 3;
@@ -162,19 +162,6 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			if (m_local_requests.empty() || m_f->m_server->time() - m_local_requests.back().stime > 120)
 				mc_local_requests_pending = 0;
 			*/
-			if (!m_local_choked && !m_remote_requests.empty() && m_write_b.size() < 2)
-			{
-				const t_remote_request& request = m_remote_requests.front();
-				Cvirtual_binary d;
-				if (!m_f->read_data(request.offset, d.write_start(request.size), request.size))
-				{
-					if (m_f->m_merkle)
-						write_merkle_piece(request.offset, request.size, d, m_f->get_hashes(request.offset, request.c_hashes));
-					else
-						write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size, d);
-				}
-				m_remote_requests.pop_front();
-			}
 			while (m_local_interested && m_f->state() == Cbt_file::s_running && !m_remote_choked && mc_local_requests_pending < c_max_requests_pending())
 			{
 				int a = m_f->next_invalid_piece(*this);
@@ -195,9 +182,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 				}					
 			}
-			if (!m_write_b.empty())
-				write_haves();
-			else if (m_f->m_server->time() - m_stime > 120)
+			if (m_f->m_server->time() - m_stime > 120)
 			{
 				write_haves();
 				if (m_write_b.empty())
@@ -241,6 +226,13 @@ int Cbt_peer_link::cb_write_buffer() const
 	int cb = 0;
 	for (t_write_buffer::const_iterator i = m_write_b.begin(); i != m_write_b.end(); i++)
 		cb += i->m_s_end - i->m_r;
+	if (!m_local_choked)
+	{
+		for (t_remote_requests::const_iterator i = m_remote_requests.begin(); i != m_remote_requests.end(); i++)
+			cb += i->size + (m_f->m_merkle ? 10 : 13);
+	}
+	if (cb)
+		cb += 9 * m_have_queue.size();
 	return cb;
 }
 
@@ -279,8 +271,27 @@ int Cbt_peer_link::recv()
 
 int Cbt_peer_link::send(int& send_quota)
 {
-	while (m_can_send && send_quota && !m_write_b.empty())
+	while (m_can_send && send_quota)
 	{
+		if (m_write_b.empty())
+		{
+			if (!m_local_choked && !m_remote_requests.empty())
+			{
+				const t_remote_request& request = m_remote_requests.front();
+				Cvirtual_binary d;
+				if (!m_f->read_data(request.offset, d.write_start(request.size), request.size))
+				{
+					if (m_f->m_merkle)
+						write_merkle_piece(request.offset, request.size, d, m_f->get_hashes(request.offset, request.c_hashes));
+					else
+						write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size, d);
+				}
+				m_remote_requests.pop_front();
+			}
+			if (m_write_b.empty())
+				return 0;
+		}
+		write_haves();
 		Cbt_pl_write_data& d = m_write_b.front();
 		int r = m_s.send(d.m_r, min(d.m_s_end - d.m_r, send_quota));
 		if (r == SOCKET_ERROR)
