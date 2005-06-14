@@ -515,7 +515,7 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case fc_size:
 		if (e.m_size)
-			buffer = b2a(e.m_size);
+			buffer = e.m_size == -1 ? "?" : b2a(e.m_size);
 		break;
 	case fc_total_downloaded:
 		if (e.m_total_downloaded)
