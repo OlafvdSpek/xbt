@@ -36,6 +36,7 @@ Cbt_file::Cbt_file()
 	m_completed_at = 0;
 	m_seeding_ratio_reached_at = 0;
 	m_priority = 0;
+	m_size = -1;
 	m_state = s_queued;
 	m_validate = true;
 }
@@ -194,6 +195,7 @@ void Cbt_file::open()
 		}
 		offset += i->size();
 	}
+	if (m_info.size())
 	{
 		Cvirtual_binary d;
 		m_left = 0;
@@ -732,6 +734,8 @@ void Cbt_file::load_state(Cstream_reader& r)
 	for (int c_trackers = r.read_int(4); c_trackers--; )
 		m_trackers.push_back(r.read_string());
 	info(r.read_data());
+	if (!m_info.size())
+		m_info_hash = r.read_string();
 	m_name = r.read_string();
 	m_total_downloaded = r.read_int(8);
 	m_total_uploaded = r.read_int(8);
@@ -772,6 +776,8 @@ void Cbt_file::load_state(Cstream_reader& r)
 int Cbt_file::pre_save_state(bool intermediate) const
 {
 	int c = m_info.size() + m_name.size() + m_sub_files.size() + 8 * m_old_peers.size() + 133;
+	if (!m_info.size())
+		c += m_info_hash.size() + 4;
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		c += i->size() + 4;
 	for (t_pieces::const_iterator i = m_pieces.begin(); i != m_pieces.end(); i++)
@@ -785,6 +791,8 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		w.write_string(*i);
 	w.write_data(m_info);
+	if (!m_info.size())
+		w.write_string(m_info_hash);
 	w.write_string(m_name);
 	w.write_int(8, m_total_downloaded);
 	w.write_int(8, m_total_uploaded);
