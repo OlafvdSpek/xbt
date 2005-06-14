@@ -45,6 +45,7 @@ public:
 	Cbvalue(t_value_type t);
 	Cbvalue(const string& v);
 	Cbvalue(const Cbvalue&);
+	Cbvalue(const void* s, int cb_s);
 	Cbvalue(const Cvirtual_binary&);
 	const Cbvalue& operator=(const Cbvalue&);
 	~Cbvalue();
