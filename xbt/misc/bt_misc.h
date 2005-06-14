@@ -42,9 +42,14 @@ inline void compute_sha1(const Cvirtual_binary& s, void* d)
 	Csha1(s, s.size()).read(d);
 }
 
+inline string compute_sha1(const void* s, int cb_s)
+{
+	return Csha1(s, cb_s).read();
+}
+
 inline string compute_sha1(const Cvirtual_binary& s)
 {
-	return Csha1(s, s.size()).read();
+	return compute_sha1(s, s.size());
 }
 
 inline __int64 htonll(__int64 v)
