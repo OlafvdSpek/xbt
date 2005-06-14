@@ -602,6 +602,10 @@ void Cbt_peer_link::write_get_info()
 
 void Cbt_peer_link::read_info(const char* r, const char* r_end)
 {
+	if (m_f->m_info.size() || compute_sha1(r, r_end - r) != m_f->m_info_hash)
+		return;
+	m_f->info(Cbvalue(r, r_end - r));
+	m_f->open();
 }
 
 void Cbt_peer_link::write_info()

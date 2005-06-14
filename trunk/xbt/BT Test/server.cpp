@@ -891,12 +891,7 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 		if (i->m_info_hash == f.m_info_hash)
 			return 2;
 	}
-	if (name.empty())
-	{
-		struct stat b;
-		f.m_name = (stat((completes_dir() + '/' + f.m_name).c_str(), &b) ? incompletes_dir() : completes_dir()) + '/' + f.m_name;
-	}
-	else
+	if (!name.empty())
 		f.m_name = name;
 	f.m_peer_id = new_peer_id();
 	if (below_torrent_limit())
@@ -946,6 +941,8 @@ int Cserver::open_url(const string& v)
 		f.insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
 	f.m_info_hash = info_hash;
 	f.m_peer_id = new_peer_id();
+	if (below_torrent_limit())
+		f.m_state = Cbt_file::s_running;
 	m_files.push_back(f);
 	save_state(true).save(state_fname());
 	return 0;
