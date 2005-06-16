@@ -241,11 +241,9 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_POPUP_PRIORITY_HIGH, OnPopupPriorityHigh)
 	ON_COMMAND(ID_POPUP_PRIORITY_LOW, OnPopupPriorityLow)
 	ON_COMMAND(ID_POPUP_PRIORITY_NORMAL, OnPopupPriorityNormal)
-	ON_COMMAND(ID_POPUP_VIEW_ADVANCED_COLUMNS, OnPopupViewAdvancedColumns)
 	ON_COMMAND(ID_POPUP_VIEW_TRAY_ICON, OnPopupViewTrayIcon)
 	ON_NOTIFY(NM_DBLCLK, IDC_PEERS, OnDblclkPeers)
 	ON_WM_INITMENUPOPUP()
-	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_ADVANCED_COLUMNS, OnUpdatePopupViewAdvancedColumns)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_TRAY_ICON, OnUpdatePopupViewTrayIcon)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_DETAILS, OnUpdatePopupViewDetails)
 	ON_UPDATE_COMMAND_UI(ID_POPUP_VIEW_EVENTS, OnUpdatePopupViewEvents)
@@ -365,7 +363,6 @@ BOOL CXBTClientDlg::OnInitDialog()
 		m_server.public_ipa(Csocket::get_host(public_ipa));
 	m_server.seeding_ratio(GetProfileInt("seeding_ratio", m_server.seeding_ratio()));
 	m_server.send_stop_event(GetProfileInt("send_stop_event", m_server.send_stop_event()));
-	m_show_advanced_columns = get_profile_show_advanced_columns();
 	m_show_tray_icon = get_profile_show_tray_icon();
 	m_server.torrent_limit(GetProfileInt("torrent_limit", m_server.torrent_limit()));
 	m_server.tracker_port(GetProfileInt("tracker_port", m_server.tracker_port()));
@@ -1682,6 +1679,9 @@ BOOL CXBTClientDlg::PreTranslateMessage(MSG* pMsg)
 
 void CXBTClientDlg::OnDestroy()
 {
+	write_profile_torrents_view(m_files.Conf());
+	if (m_bottom_view == v_peers)
+		write_profile_peers_view(m_peers.Conf());
 	stop_server();
 	unregister_tray();
 	ETSLayoutDialog::OnDestroy();
@@ -2155,10 +2155,7 @@ void CXBTClientDlg::insert_top_columns()
 	m_torrents_columns.push_back(fc_peers);
 	m_torrents_columns.push_back(fc_priority);
 	m_torrents_columns.push_back(fc_state);
-	if (m_show_advanced_columns)
-	{
-		m_torrents_columns.push_back(fc_hash);
-	}
+	m_torrents_columns.push_back(fc_hash);
 	m_torrents_columns.push_back(fc_end);
 	const char* torrents_columns_names[] =
 	{
@@ -2201,6 +2198,7 @@ void CXBTClientDlg::insert_top_columns()
 		LVCFMT_LEFT,
 	};
 	m_files.DeleteAllColumns();
+	m_files.Conf(get_profile_torrents_view());
 	for (t_columns::const_iterator i = m_torrents_columns.begin(); i != m_torrents_columns.end(); i++)
 		m_files.InsertColumn(*i, torrents_columns_names[*i], torrents_columns_formats[*i]);
 }
@@ -2244,20 +2242,17 @@ void CXBTClientDlg::insert_bottom_columns()
 		m_peers_columns.push_back(pc_local_interested);
 		m_peers_columns.push_back(pc_remote_choked);
 		m_peers_columns.push_back(pc_remote_interested);
-		if (m_show_advanced_columns)
-		{
-			m_peers_columns.push_back(pc_local_requests);
-			m_peers_columns.push_back(pc_remote_requests);
-			m_peers_columns.push_back(pc_recv_time);
-			m_peers_columns.push_back(pc_send_time);
+		m_peers_columns.push_back(pc_local_requests);
+		m_peers_columns.push_back(pc_remote_requests);
+		m_peers_columns.push_back(pc_recv_time);
+		m_peers_columns.push_back(pc_send_time);
 #ifdef _DEBUG
-			m_peers_columns.push_back(pc_debug);
+		m_peers_columns.push_back(pc_debug);
 #endif
-			m_peers_columns.push_back(pc_host);
-			m_peers_columns.push_back(pc_port);
-			m_peers_columns.push_back(pc_host_name);
-			m_peers_columns.push_back(pc_peer_id);
-		}
+		m_peers_columns.push_back(pc_host);
+		m_peers_columns.push_back(pc_port);
+		m_peers_columns.push_back(pc_host_name);
+		m_peers_columns.push_back(pc_peer_id);
 		m_peers_columns.push_back(pc_end);
 		break;
 	case v_pieces:
@@ -2410,6 +2405,8 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_LEFT,
 	};
 	m_peers.DeleteAllColumns();
+	if (m_bottom_view == v_peers)
+		m_peers.Conf(get_profile_peers_view());
 	for (t_columns::const_iterator i = m_peers_columns.begin(); i != m_peers_columns.end(); i++)
 		m_peers.InsertColumn(*i, peers_columns_names[*i], peers_columns_formats[*i]);
 }
@@ -2486,6 +2483,8 @@ void CXBTClientDlg::set_bottom_view(int v)
 	if (v == m_bottom_view)
 		return;
 	WriteProfileInt("bottom_view", v);
+	if (m_bottom_view == v_peers)
+		write_profile_peers_view(m_peers.Conf());
 	m_peers.DeleteAllItems();
 	m_bottom_view = v;
 	insert_bottom_columns();
@@ -2665,13 +2664,6 @@ void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	ShellExecute(m_hWnd, "open", (m_file->m_name + e.m_name).c_str(), NULL, NULL, SW_SHOW);
 }
 
-void CXBTClientDlg::OnPopupViewAdvancedColumns()
-{
-	m_show_advanced_columns = !get_profile_show_advanced_columns();
-	write_profile_show_advanced_columns(m_show_advanced_columns);
-	insert_columns(true);
-}
-
 void CXBTClientDlg::OnPopupViewTrayIcon()
 {
 	m_show_tray_icon = !get_profile_show_tray_icon();
@@ -2696,11 +2688,6 @@ void CXBTClientDlg::OnInitMenuPopup(CMenu* pMenu, UINT nIndex, BOOL bSysMenu)
 		state.m_nIndexMax = pMenu->GetMenuItemCount();
 		state.DoUpdate(this, true);
 	}
-}
-
-void CXBTClientDlg::OnUpdatePopupViewAdvancedColumns(CCmdUI* pCmdUI)
-{
-	pCmdUI->SetCheck(m_show_advanced_columns);
 }
 
 void CXBTClientDlg::OnUpdatePopupViewTrayIcon(CCmdUI* pCmdUI)
@@ -3042,7 +3029,6 @@ void CXBTClientDlg::OnToolsOptions()
 	data.public_ipa = GetProfileString("public_ipa");
 	data.seeding_ratio = m_server.seeding_ratio();
 	data.send_stop_event = m_server.send_stop_event();
-	data.show_advanced_columns = get_profile_show_advanced_columns();
 	data.show_confirm_exit_dialog = get_profile_show_confirm_exit_dialog();
 	data.show_tray_icon = get_profile_show_tray_icon();
 	data.start_minimized = get_profile_start_minimized();
@@ -3073,7 +3059,6 @@ void CXBTClientDlg::OnToolsOptions()
 		m_server.public_ipa(Csocket::get_host(data.public_ipa));
 	m_server.seeding_ratio(data.seeding_ratio);
 	m_server.send_stop_event(data.send_stop_event);
-	m_show_advanced_columns = data.show_advanced_columns;
 	m_show_tray_icon = data.show_tray_icon;
 	m_server.torrent_limit(data.torrent_limit);
 	m_server.tracker_port(data.tracker_port);
@@ -3094,7 +3079,6 @@ void CXBTClientDlg::OnToolsOptions()
 	WriteProfileString("public_ipa", data.public_ipa);
 	WriteProfileInt("seeding_ratio", data.seeding_ratio);
 	WriteProfileInt("send_stop_event", data.send_stop_event);
-	write_profile_show_advanced_columns(data.show_advanced_columns);
 	write_profile_show_confirm_exit_dialog(data.show_confirm_exit_dialog);
 	write_profile_show_tray_icon(data.show_tray_icon);
 	write_profile_start_minimized(data.start_minimized);
@@ -3105,7 +3089,6 @@ void CXBTClientDlg::OnToolsOptions()
 	WriteProfileInt("upload_slots", data.upload_slots);
 	write_profile_upnp(data.upnp);
 	write_profile_user_agent(data.user_agent);
-	insert_columns(true);
 	register_hot_key(data.hot_key);
 	if (m_show_tray_icon)
 		register_tray();
@@ -3281,6 +3264,14 @@ void CXBTClientDlg::unregister_hot_key()
 	UnregisterHotKey(GetSafeHwnd(), 0);
 }
 
+string CXBTClientDlg::GetProfileBinary(LPCTSTR Entry)
+{
+	BYTE* d;
+	UINT cb_d;
+	AfxGetApp()->GetProfileBinary(m_reg_key, Entry, &d, &cb_d);
+	return string(reinterpret_cast<char*>(d), cb_d);
+}
+
 int CXBTClientDlg::GetProfileInt(LPCTSTR Entry, int Default)
 {
 	return AfxGetApp()->GetProfileInt(m_reg_key, Entry, Default);
@@ -3289,6 +3280,11 @@ int CXBTClientDlg::GetProfileInt(LPCTSTR Entry, int Default)
 string CXBTClientDlg::GetProfileString(LPCTSTR Entry, LPCTSTR Default)
 {
 	return string(AfxGetApp()->GetProfileString(m_reg_key, Entry, Default));
+}
+
+BOOL CXBTClientDlg::WriteProfileBinary(LPCTSTR Entry, const string& Value)
+{
+	return AfxGetApp()->WriteProfileBinary(m_reg_key, Entry, const_cast<byte*>(reinterpret_cast<const byte*>(Value.c_str())), Value.size());
 }
 
 BOOL CXBTClientDlg::WriteProfileInt(LPCTSTR Entry, int Value)
@@ -3321,14 +3317,14 @@ void CXBTClientDlg::write_profile_lower_process_priority(bool v)
 	WriteProfileInt("lower_process_priority", v);
 }
 
-bool CXBTClientDlg::get_profile_show_advanced_columns()
+string CXBTClientDlg::get_profile_peers_view()
 {
-	return GetProfileInt("show_advanced_columns", false);
+	return GetProfileBinary("peers_view");
 }
 
-void CXBTClientDlg::write_profile_show_advanced_columns(bool v)
+void CXBTClientDlg::write_profile_peers_view(const string& v)
 {
-	WriteProfileInt("show_advanced_columns", v);
+	WriteProfileBinary("peers_view", v);
 }
 
 bool CXBTClientDlg::get_profile_show_confirm_exit_dialog()
@@ -3359,6 +3355,16 @@ bool CXBTClientDlg::get_profile_start_minimized()
 void CXBTClientDlg::write_profile_start_minimized(bool v)
 {
 	WriteProfileInt("start_minimized", v);
+}
+
+string CXBTClientDlg::get_profile_torrents_view()
+{
+	return GetProfileBinary("torrents_view");
+}
+
+void CXBTClientDlg::write_profile_torrents_view(const string& v)
+{
+	WriteProfileBinary("torrents_view", v);
 }
 
 bool CXBTClientDlg::get_profile_upnp()

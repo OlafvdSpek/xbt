@@ -82,8 +82,6 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,265,84,10
     CONTROL         "Send stop event",IDC_SEND_STOP_EVENT,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,131,270,68,10
-    CONTROL         "Show advanced columns",IDC_SHOW_ADVANCED_COLUMNS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,7,289,96,10
     CONTROL         "Show confirm exit dialog",IDC_SHOW_CONFIRM_EXIT_DIALOG,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,241,92,10
     CONTROL         "Show tray icon",IDC_SHOW_TRAY_ICON,"Button",
@@ -502,7 +500,6 @@ BEGIN
             MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
 
             MENUITEM SEPARATOR
-            MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
             MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END
@@ -542,7 +539,6 @@ BEGIN
             MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
 
             MENUITEM SEPARATOR
-            MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
             MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END
@@ -575,7 +571,6 @@ BEGIN
             MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
 
             MENUITEM SEPARATOR
-            MENUITEM "Advanced Columns",            ID_POPUP_VIEW_ADVANCED_COLUMNS
 
             MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END

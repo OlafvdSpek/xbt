@@ -33,7 +33,6 @@ public:
 		string public_ipa;
 		int seeding_ratio;
 		bool send_stop_event;
-		bool show_advanced_columns;
 		bool show_confirm_exit_dialog;
 		bool show_tray_icon;
 		bool start_minimized;
@@ -60,7 +59,6 @@ public:
 	int		m_upload_slots;
 	int		m_seeding_ratio;
 	BOOL	m_show_tray_icon;
-	BOOL	m_show_advanced_columns;
 	BOOL	m_start_minimized;
 	BOOL	m_ask_for_location;
 	int		m_tracker_port;

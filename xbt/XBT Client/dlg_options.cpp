@@ -27,7 +27,6 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_upload_slots = 0;
 	m_seeding_ratio = 0;
 	m_show_tray_icon = FALSE;
-	m_show_advanced_columns = FALSE;
 	m_start_minimized = FALSE;
 	m_ask_for_location = FALSE;
 	m_tracker_port = 0;
@@ -61,7 +60,6 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_UPLOAD_SLOTS, m_upload_slots);
 	DDX_Text(pDX, IDC_SEEDING_RATIO, m_seeding_ratio);
 	DDX_Check(pDX, IDC_SHOW_TRAY_ICON, m_show_tray_icon);
-	DDX_Check(pDX, IDC_SHOW_ADVANCED_COLUMNS, m_show_advanced_columns);
 	DDX_Check(pDX, IDC_START_MINIMIZED, m_start_minimized);
 	DDX_Check(pDX, IDC_ASK_FOR_LOCATION, m_ask_for_location);
 	DDX_Text(pDX, IDC_TRACKER_PORT, m_tracker_port);
@@ -113,7 +111,6 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.public_ipa = m_public_ipa;
 	v.seeding_ratio = m_seeding_ratio;
 	v.send_stop_event = m_send_stop_event;
-	v.show_advanced_columns = m_show_advanced_columns;
 	v.show_confirm_exit_dialog = m_show_confirm_exit_dialog;
 	v.show_tray_icon = m_show_tray_icon;
 	v.start_minimized = m_start_minimized;
@@ -142,7 +139,6 @@ void Cdlg_options::set(const t_data& v)
 	m_public_ipa = v.public_ipa.c_str();
 	m_seeding_ratio = v.seeding_ratio;
 	m_send_stop_event = v.send_stop_event;
-	m_show_advanced_columns = v.show_advanced_columns;
 	m_show_confirm_exit_dialog = v.show_confirm_exit_dialog;
 	m_show_tray_icon = v.show_tray_icon;
 	m_start_minimized = v.start_minimized;
@@ -238,7 +234,6 @@ BOOL Cdlg_options::OnInitDialog()
 				<< item(IDC_SEND_STOP_EVENT, NORESIZE)
 				)
 			<< (pane(VERTICAL)
-				<< item(IDC_SHOW_ADVANCED_COLUMNS, NORESIZE)
 				<< item(IDC_SHOW_CONFIRM_EXIT_DIALOG, NORESIZE)
 				<< item(IDC_SHOW_TRAY_ICON, NORESIZE)
 				<< item(IDC_START_MINIMIZED, NORESIZE)

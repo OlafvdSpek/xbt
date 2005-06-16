@@ -61,7 +61,6 @@
 #define IDC_USER_STATIC                 1021
 #define IDC_PASS_STATIC                 1022
 #define IDC_SHOW_TRAY_ICON              1023
-#define IDC_SHOW_ADVANCED_COLUMNS       1024
 #define IDC_ASK_FOR_LOCATION            1025
 #define IDC_SITE                        1026
 #define IDC_START_MINIMIZED             1027
@@ -146,7 +145,6 @@
 #define ID_POPUP_PRIORITY_NORMAL        32801
 #define ID_POPUP_PRIORITY_LOW           32802
 #define ID_POPUP_PRIORITY_EXCLUDE       32803
-#define ID_POPUP_VIEW_ADVANCED_COLUMNS  32804
 #define ID_POPUP_VIEW_TRAY_ICON         32805
 #define ID_POPUP_UPLOAD_RATE_LIMIT      32806
 #define ID_POPUP_TORRENT_PRIORITY_HIGH  32807
