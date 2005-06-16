@@ -15,6 +15,8 @@ public:
 	virtual void PreSubclassWindow();
 	//}}AFX_VIRTUAL
 public:
+	string Conf() const;
+	void Conf(const string&);
 	void DeleteAllColumns();
 	int GetColumnID(int index) const;
 	void InsertColumn(int id, const string& name, int format = LVCFMT_LEFT);
@@ -47,6 +49,7 @@ private:
 	typedef std::map<int, Ccolumn> Ccolumns;
 
 	Ccolumns m_columns;
+	string m_conf;
 };
 
 //{{AFX_INSERT_LOCATION}}

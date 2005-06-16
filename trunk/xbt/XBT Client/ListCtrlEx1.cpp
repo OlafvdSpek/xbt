@@ -61,7 +61,16 @@ void CListCtrlEx1::InsertColumn(int id, const string& name, int format)
 	e.format = format;
 	e.name = name;
 	e.order = m_columns.size() - 1;
-	ShowColumn(id, true);
+	bool show = true;
+	for (int i = 0; i + 3 <= m_conf.size(); i += 3)
+	{
+		if (m_conf[i] != id)
+			continue;
+		e.order = m_conf[i + 1];
+		show = m_conf[i + 2];
+		break;
+	}
+	ShowColumn(id, show);
 }
 
 void CListCtrlEx1::DeleteAllColumns()
@@ -111,4 +120,21 @@ int CListCtrlEx1::GetColumnID(int index) const
 			return i->first;
 	}
 	return -1;
+}
+
+string CListCtrlEx1::Conf() const
+{
+	string d;
+	for (Ccolumns::const_iterator i = m_columns.begin(); i != m_columns.end(); i++)
+	{
+		d += i->first;
+		d += i->second.order;
+		d += i->second.show();
+	}
+	return d;
+}
+
+void CListCtrlEx1::Conf(const string& v)
+{
+	m_conf = v;
 }
