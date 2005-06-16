@@ -155,7 +155,7 @@ void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 
 bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 {
-	m_f = ::open((parent_name + m_name).c_str(), oflag | O_BINARY, S_IREAD | S_IWRITE);
+	m_f = ::open((parent_name + m_name).c_str(), oflag | O_BINARY, 0666);
 	return *this;
 }
 
