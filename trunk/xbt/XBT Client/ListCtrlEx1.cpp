@@ -78,6 +78,7 @@ void CListCtrlEx1::DeleteAllColumns()
 	while (GetHeaderCtrl()->GetItemCount())
 		CListCtrl::DeleteColumn(0);
 	m_columns.clear();
+	m_conf.erase();
 }
 
 void CListCtrlEx1::ShowColumn(int id, bool show)
