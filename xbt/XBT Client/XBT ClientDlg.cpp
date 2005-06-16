@@ -77,7 +77,6 @@ enum
 	pc_remote_interested,
 	pc_local_requests,
 	pc_remote_requests,
-	pc_pieces,
 	pc_recv_time,
 	pc_send_time,
 	pc_host,
@@ -988,10 +987,6 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	case pc_remote_requests:
 		if (e.mc_remote_requests)
 			buffer = n(e.mc_remote_requests);
-		break;
-	case pc_pieces:
-		if (e.mc_pieces)
-			buffer = n(e.mc_pieces);
 		break;
 	case pc_recv_time:
 		buffer = n(time(NULL) - e.m_rtime);
@@ -1977,8 +1972,6 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 		return compare(a.m_remote_interested, b.m_remote_interested);
 	case pc_remote_requests:
 		return compare(b.mc_remote_requests, a.mc_remote_requests);
-	case pc_pieces:
-		return compare(b.mc_pieces, a.mc_pieces);
 	case pc_recv_time:
 		return compare(b.m_rtime, a.m_rtime);
 	case pc_send_time:
@@ -2160,13 +2153,13 @@ void CXBTClientDlg::insert_top_columns()
 	const char* torrents_columns_names[] =
 	{
 		"Name",
-		"%",
+		"%\t% Done",
 		"Left",
 		"Size",
 		"Downloaded",
-		"%",
+		"%\t% Downloaded",
 		"Uploaded",
-		"%",
+		"%\t% Uploaded",
 		"Down Rate",
 		"Up Rate",
 		"Leechers",
@@ -2297,16 +2290,15 @@ void CXBTClientDlg::insert_bottom_columns()
 		"Uploaded",
 		"Down Rate",
 		"Up Rate",
-		"D",
-		"L",
-		"L",
-		"R",
-		"R",
-		"LR",
-		"RR",
-		"P",
-		"RT",
-		"ST",
+		"D\tDirection",
+		"L\tLocal Choked",
+		"L\tLocal Interested",
+		"R\tRemote Choked",
+		"R\tRemote Interested",
+		"LR\tLocal Requests",
+		"RR\tRemote Requests",
+		"RT\tReceive Time",
+		"ST\tSend Time",
 		"Host",
 		"Host Name",
 		"Port",
@@ -2364,7 +2356,6 @@ void CXBTClientDlg::insert_bottom_columns()
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
 		LVCFMT_LEFT,
-		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,
 		LVCFMT_RIGHT,

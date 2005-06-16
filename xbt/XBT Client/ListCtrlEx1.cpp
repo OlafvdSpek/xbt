@@ -81,6 +81,12 @@ void CListCtrlEx1::DeleteAllColumns()
 	m_conf.erase();
 }
 
+static string short_name(const string& v)
+{
+	int i = v.find('\t');
+	return i == string::npos ? v : v.substr(0, i);
+}
+
 void CListCtrlEx1::ShowColumn(int id, bool show)
 {
 	Ccolumns::iterator i = m_columns.find(id);
@@ -98,7 +104,7 @@ void CListCtrlEx1::ShowColumn(int id, bool show)
 				j->second.index++;
 			}
 		}
-		i->second.index = CListCtrlEx::InsertColumn(index, i->second.name.c_str(), i->second.format);
+		i->second.index = CListCtrlEx::InsertColumn(index, short_name(i->second.name).c_str(), i->second.format);
 		SetColumnWidth(i->second.index, LVSCW_AUTOSIZE_USEHEADER);
 	}
 	else
