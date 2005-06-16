@@ -20,24 +20,28 @@ class CXBTClientDlg: public ETSLayoutDialog
 public:
 	bool get_profile_hide_on_deactivate();
 	bool get_profile_lower_process_priority();
-	bool get_profile_show_advanced_columns();
+	string get_profile_peers_view();
 	bool get_profile_show_confirm_exit_dialog();
 	bool get_profile_show_tray_icon();
 	bool get_profile_start_minimized();
+	string get_profile_torrents_view();
 	bool get_profile_upnp();
 	int get_profile_upload_rate();
 	string get_profile_user_agent();
 	void write_profile_hide_on_deactivate(bool);
 	void write_profile_lower_process_priority(bool);
-	void write_profile_show_advanced_columns(bool);
+	void write_profile_peers_view(const string&);
 	void write_profile_show_confirm_exit_dialog(bool);
 	void write_profile_show_tray_icon(bool v);
 	void write_profile_start_minimized(bool);
+	void write_profile_torrents_view(const string&);
 	void write_profile_upnp(bool);
 	void write_profile_upload_rate(int);
 	void write_profile_user_agent(const string&);
+	string GetProfileBinary(LPCTSTR Entry);
 	int GetProfileInt(LPCTSTR Entry, int Default = 0);
 	string GetProfileString(LPCTSTR Entry, LPCTSTR Default = "");
+	BOOL WriteProfileBinary(LPCTSTR Entry, const string& Value);
 	BOOL WriteProfileInt(LPCTSTR Entry, int Value);
 	BOOL WriteProfileString(LPCTSTR Entry, const string& Value);
 	void register_hot_key(DWORD v);
@@ -129,11 +133,9 @@ protected:
 	afx_msg void OnPopupPriorityHigh();
 	afx_msg void OnPopupPriorityLow();
 	afx_msg void OnPopupPriorityNormal();
-	afx_msg void OnPopupViewAdvancedColumns();
 	afx_msg void OnPopupViewTrayIcon();
 	afx_msg void OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnInitMenuPopup(CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
-	afx_msg void OnUpdatePopupViewAdvancedColumns(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupViewTrayIcon(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupViewDetails(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePopupViewEvents(CCmdUI* pCmdUI);
@@ -338,7 +340,6 @@ private:
 	bool m_peers_sort_reverse;
 	bool m_pieces_sort_reverse;
 	bool m_torrents_sort_reverse;
-	bool m_show_advanced_columns;
 	bool m_show_tray_icon;
 };
 
