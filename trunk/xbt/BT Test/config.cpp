@@ -16,7 +16,6 @@ Cconfig::Cconfig()
 	m_admin_port = 6879;
 	m_bind_before_connect = false;
 	m_completes_dir = "Completes";
-	m_end_mode = false;
 	m_incompletes_dir = "Incompletes";
 	m_local_app_data_dir = ".";
 	m_log_peer_connect_failures = false;
@@ -60,8 +59,6 @@ const Cconfig& Cconfig::write(const Cbvalue& v)
 		m_bind_before_connect = v.d("bind_before_connect").i();
 	if (v.d_has("completes_dir"))
 		m_completes_dir = v.d("completes_dir").s();
-	if (v.d_has("end_mode"))
-		m_end_mode = v.d("end_mode").i();
 	if (v.d_has("incompletes_dir"))
 		m_incompletes_dir = v.d("incompletes_dir").s();
 	if (v.d_has("log_peer_connect_failures"))
@@ -105,7 +102,6 @@ Cbvalue Cconfig::read() const
 	v.d("admin_port", m_admin_port);
 	v.d("bind_before_connect", m_bind_before_connect);
 	v.d("completes_dir", m_completes_dir);
-	v.d("end_mode", m_end_mode);
 	v.d("incompletes_dir", m_incompletes_dir);
 	v.d("log_peer_connect_failures", m_log_peer_connect_failures);
 	v.d("log_peer_connection_closures", m_log_peer_connection_closures);
