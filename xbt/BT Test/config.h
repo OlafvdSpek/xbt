@@ -19,7 +19,6 @@ public:
 	const Cconfig& write(const Cbvalue&);
 
 	bool m_bind_before_connect;
-	bool m_end_mode;
 	bool m_log_peer_connect_failures;
 	bool m_log_peer_connection_closures;
 	bool m_log_peer_recv_failures;
