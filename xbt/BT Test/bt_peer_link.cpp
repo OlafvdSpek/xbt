@@ -404,7 +404,10 @@ int Cbt_peer_link::read_handshake(const char* h)
 
 void Cbt_peer_link::write_handshake()
 {
-	write("\x13""BitTorrent protocol\0\0\0\0\0\0\0\3", 28);
+	if (1)
+		write("\x13""BitTorrent protocol\0\0\0\0\0\0\0\3", 28);
+	else
+		write("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3", 28);
 	write(m_f->m_info_hash.c_str(), 20);
 	write(m_f->m_peer_id.c_str(), 20);
 	m_local_choked = true;
@@ -854,7 +857,7 @@ Cbt_logger& Cbt_peer_link::logger()
 void Cbt_peer_link::check_pieces()
 {
 	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
-		m_f->m_pieces[i->offset / m_f->mcb_piece].check_peer(this, m_f->end_mode() ? 15 : 600);
+		m_f->m_pieces[i->offset / m_f->mcb_piece].check_peer(this, m_f->m_allow_end_mode && m_f->end_mode() ? 15 : 600);
 	m_check_pieces_time = m_f->m_server->time();
 }
 

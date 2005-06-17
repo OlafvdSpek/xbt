@@ -546,7 +546,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 		rank = piece_rank;
 		invalid_pieces.push_back(i);
 	}
-	if (c_unrequested_sub_pieces < 256 && m_allow_end_mode)
+	if (c_unrequested_sub_pieces < 256)
 		m_end_mode = true;
 	return invalid_pieces.empty() ? -1 : invalid_pieces[rand() % invalid_pieces.size()];
 }
