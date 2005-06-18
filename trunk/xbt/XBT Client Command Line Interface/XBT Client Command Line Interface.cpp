@@ -38,6 +38,7 @@ ostream& show_options(ostream& os, const Cbvalue& v)
 		<< "completes dir:   " << v.d(bts_completes_dir).s() << endl
 		<< "incompletes dir: " << v.d(bts_incompletes_dir).s() << endl
 		<< "torrents dir:    " << v.d(bts_torrents_dir).s() << endl
+		<< "user agent:      " << v.d(bts_user_agent).s() << endl
 		;
 	return os;
 }
@@ -143,6 +144,11 @@ int main(int argc, char* argv[])
 		{
 			v.d(bts_action, bts_set_options);
 			v.d(bts_upload_slots, atoi(argv[2]));
+		}
+		else if (!strcmp(argv[1], "user_agent"))
+		{
+			v.d(bts_action, bts_set_options);
+			v.d(bts_user_agent, string(strcmp(argv[2], "-") ? argv[2] : ""));
 		}
 		if (!v.d().empty() && send(s, v))
 			return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;

@@ -101,6 +101,7 @@ const string bts_unsupported_tracker_protocol = "unsupported tracker protocol, p
 const string bts_up_rate = "up rate";
 const string bts_upload_rate = "upload rate";
 const string bts_upload_slots = "upload slots";
+const string bts_user_agent = "user agent";
 const string bts_version = "version";
 const string bts_wait_time = "access denied, wait time in effect";
 
