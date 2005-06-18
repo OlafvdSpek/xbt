@@ -224,6 +224,7 @@
 		$d .= sprintf('<tr><td align=left>Seeding Ratio<td><input type=text name=seeding_ratio size=80 value=%d style="text-align: right"><td align=left>%%', $v['seeding ratio']['value']);
 		$d .= sprintf('<tr><td align=left>Peer Limit<td><input type=text name=peer_limit size=80 value=%d style="text-align: right"><td align=left>peers', $v['peer limit']['value']);
 		$d .= sprintf('<tr><td align=left>Torrent Limit<td><input type=text name=torrent_limit size=80 value=%d style="text-align: right"><td align=left>torrents', $v['torrent limit']['value']);
+		$d .= sprintf('<tr><td align=left>User Agent<td><input type=text name=user_agent size=80 value="%s"><td>', htmlspecialchars($v['user agent']['value']));
 		$d .= sprintf('<tr><td align=left>Completes Directory<td><input type=text name=completes_dir size=80 value="%s"><td>', htmlspecialchars($v['completes dir']['value']));
 		$d .= sprintf('<tr><td align=left>Incompletes Directory<td><input type=text name=incompletes_dir size=80 value="%s"><td>', htmlspecialchars($v['incompletes dir']['value']));
 		$d .= sprintf('<tr><td align=left>Torrents Directory<td><input type=text name=torrents_dir size=80 value="%s"><td>', htmlspecialchars($v['torrents dir']['value']));
