@@ -56,18 +56,20 @@
 			$completes_dir = $_REQUEST['completes_dir'];
 			$incompletes_dir = $_REQUEST['incompletes_dir'];
 			$torrents_dir = $_REQUEST['torrents_dir'];
+			$user_agent = $_REQUEST['user_agent'];
 			if (get_magic_quotes_gpc())
 			{
 				$completes_dir = stripslashes($completes_dir);
 				$incompletes_dir = stripslashes($incompletes_dir);
 				$torrents_dir = stripslashes($torrents_dir);
+				$user_agent = stripslashes($user_agent);
 			}
 			send_string
 			(
 				$s,
 				sprintf
 				(
-					'd6:action%d:%s13:completes dir%d:%s15:incompletes dir%d:%s10:peer limiti%de9:peer porti%de13:seeding ratioi%de13:torrent limiti%de12:torrents dir%d:%s12:tracker porti%de11:upload ratei%de12:upload slotsi%dee',
+					'd6:action%d:%s13:completes dir%d:%s15:incompletes dir%d:%s10:peer limiti%de9:peer porti%de13:seeding ratioi%de13:torrent limiti%de12:torrents dir%d:%s12:tracker porti%de11:upload ratei%de12:upload slotsi%de10:user agent%d:%se',
 					strlen($action),
 					$action,
 					strlen($completes_dir),
@@ -82,7 +84,9 @@
 					$torrents_dir,
 					$_REQUEST['tracker_port'],
 					$_REQUEST['upload_rate'] << 10,
-					$_REQUEST['upload_slots']
+					$_REQUEST['upload_slots'],
+					strlen($user_agent),
+					$user_agent
 				)
 			);
 			break;
