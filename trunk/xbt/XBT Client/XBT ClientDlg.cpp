@@ -317,6 +317,8 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_COMMAND(ID_TOOLS_BLOCK_LIST, OnToolsBlockList)
 	ON_WM_SIZE()
 	ON_WM_INITMENU()
+	ON_COMMAND(ID_POPUP_PAUSED, OnPopupPaused)
+	ON_UPDATE_COMMAND_UI(ID_POPUP_PAUSED, OnUpdatePopupPaused)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -3427,4 +3429,31 @@ void CXBTClientDlg::OnPopupBlock()
 void CXBTClientDlg::OnUpdatePopupBlock(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(m_bottom_view == v_peers && m_file && m_peers.GetNextItem(-1, LVNI_SELECTED) != -1);
+}
+
+void CXBTClientDlg::OnPopupPaused() 
+{
+	int c_running = 0;
+	for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
+		c_running += i->second.m_state == Cbt_file::s_running;
+	for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
+	{
+		if (i->second.m_state == Cbt_file::s_running)
+			m_server.file_state(i->second.m_info_hash, Cbt_file::s_paused);
+		else if (!c_running && i->second.m_state == Cbt_file::s_paused)
+			m_server.file_state(i->second.m_info_hash, Cbt_file::s_running);
+	}
+}
+
+void CXBTClientDlg::OnUpdatePopupPaused(CCmdUI* pCmdUI) 
+{
+	int c_paused = 0;
+	int c_running = 0;
+	for (t_files::iterator i = m_files_map.begin(); i != m_files_map.end(); i++)
+	{
+		c_paused += i->second.m_state == Cbt_file::s_paused;
+		c_running += i->second.m_state == Cbt_file::s_running;
+	}
+	pCmdUI->Enable(c_paused || c_running);
+	pCmdUI->SetCheck(!c_running);
 }

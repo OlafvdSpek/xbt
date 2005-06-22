@@ -500,7 +500,6 @@ BEGIN
             MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
 
             MENUITEM SEPARATOR
-
             MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END
         MENUITEM SEPARATOR
@@ -539,7 +538,6 @@ BEGIN
             MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
 
             MENUITEM SEPARATOR
-
             MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END
         MENUITEM SEPARATOR
@@ -571,7 +569,6 @@ BEGIN
             MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
 
             MENUITEM SEPARATOR
-
             MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
         END
         MENUITEM SEPARATOR
@@ -630,6 +627,7 @@ BEGIN
     POPUP "_POPUP_"
     BEGIN
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
+        MENUITEM "&Paused",                     ID_POPUP_PAUSED
         MENUITEM "E&xit",                       ID_FILE_EXIT
     END
 END

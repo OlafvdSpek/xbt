@@ -209,6 +209,8 @@ protected:
 	afx_msg void OnEditCopyHost();
 	afx_msg void OnUpdateEditCopyHost(CCmdUI* pCmdUI);
 	afx_msg void OnToolsBlockList();
+	afx_msg void OnPopupPaused();
+	afx_msg void OnUpdatePopupPaused(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
