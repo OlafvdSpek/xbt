@@ -74,8 +74,6 @@ private:
 
 	typedef map<int, t_map_entry> t_map;
 
-	string m_buffer[4];
-	int m_buffer_w;
 	t_map m_map;
 	int m_sort_column;
 };
