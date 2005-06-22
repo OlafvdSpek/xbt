@@ -628,6 +628,7 @@ BEGIN
     BEGIN
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
         MENUITEM "&Paused",                     ID_POPUP_PAUSED
+        MENUITEM "&Upload Rate Limit",          ID_POPUP_UPLOAD_RATE_LIMIT
         MENUITEM "E&xit",                       ID_FILE_EXIT
     END
 END
