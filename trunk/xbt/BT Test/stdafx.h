@@ -53,7 +53,7 @@ using namespace std;
 #define atoll xbt_atoll
 #endif
 #define O_BINARY 0
-#define _lseeki64 lseek
+#define _lseeki64 lseek64
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
