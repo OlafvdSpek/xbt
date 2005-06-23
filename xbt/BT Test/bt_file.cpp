@@ -158,7 +158,7 @@ bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
 #ifdef WIN32
 	m_f = ::open((parent_name + m_name).c_str(), oflag | O_BINARY, S_IREAD | S_IWRITE);
 #else
-	m_f = ::open((parent_name + m_name).c_str(), oflag | O_BINARY, 0666);
+	m_f = ::open((parent_name + m_name).c_str(), oflag | O_BINARY | O_LARGEFILE, 0666);
 #endif
 	return *this;
 }
