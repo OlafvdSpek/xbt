@@ -38,7 +38,7 @@ int Cbt_peer_link::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set*
 			close();
 			return 0;
 		}
-		if (m_f->m_server->bind_before_connect() && !m_s.setsockopt(SOL_SOCKET, SO_REUSEADDR, true))
+		if (server()->bind_before_connect() && !m_s.setsockopt(SOL_SOCKET, SO_REUSEADDR, true))
 			m_s.bind(htonl(INADDR_ANY), htons(m_f->local_port()));
 		if (m_s.connect(m_a.sin_addr.s_addr, m_a.sin_port) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
 		{
@@ -82,7 +82,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				}
 				return 0;
 			}
-			if (m_f->m_server->log_peer_connect_failures())
+			if (server()->log_peer_connect_failures())
 				alert(Calert::debug, "Peer: connect failed: " + Csocket::error2a(e));
 			return 1;
 		}
@@ -152,14 +152,14 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 		{
 			write_choke(m_local_choked_goal);
 			write_interested(m_local_interested_goal);
-			if (m_f->m_server->time() - m_check_pieces_time > (m_f->end_mode() ? 5 : 30))
+			if (server()->time() - m_check_pieces_time > (m_f->end_mode() ? 5 : 30))
 			{
 				check_pieces();
 				if (!m_local_interested && m_f->next_invalid_piece(*this) != -1)
 					interested(true);
 			}
 			/*
-			if (m_local_requests.empty() || m_f->m_server->time() - m_local_requests.back().stime > 120)
+			if (m_local_requests.empty() || server()->time() - m_local_requests.back().stime > 120)
 				mc_local_requests_pending = 0;
 			*/
 			while (m_local_interested && m_f->state() == Cbt_file::s_running && !m_remote_choked && mc_local_requests_pending < c_max_requests_pending())
@@ -182,7 +182,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 				}					
 			}
-			if (m_f->m_server->time() - m_stime > 120)
+			if (server()->time() - m_stime > 120)
 			{
 				write_haves();
 				if (m_write_b.empty())
@@ -193,7 +193,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 	}
 	if (!m_left && !m_f->m_left)
 	{
-		if (m_f->m_server->log_peer_connection_closures())
+		if (server()->log_peer_connection_closures())
 			alert(Calert::debug, "Peer: seeder to seeder link closed");
 		return 1;
 	}
@@ -250,21 +250,21 @@ int Cbt_peer_link::recv()
 				m_can_recv = false;
 				return 0;
 			}
-			if (m_f->m_server->log_peer_recv_failures())
+			if (server()->log_peer_recv_failures())
 				alert(Calert::debug, "Peer: recv failed: " + Csocket::error2a(e));
 			return 1;
 		}
 		if (r != m_read_b.cb_w())
 			m_can_recv = false;
 		m_downloaded += r;
-		m_down_counter.add(r, m_f->m_server->time());
-		m_rtime = m_f->m_server->time();
+		m_down_counter.add(r, server()->time());
+		m_rtime = server()->time();
 		m_read_b.cb_w(r);
 		m_f->m_downloaded_l5 += r;
 	}
 	if (!m_can_recv || !m_read_b.cb_w())
 		return 0;
-	if (m_f->m_server->log_peer_connection_closures())
+	if (server()->log_peer_connection_closures())
 		alert(Calert::debug, m_local_link ? "Peer: local link closed" : "Peer: remote link closed");
 	return 1;
 }
@@ -302,7 +302,7 @@ int Cbt_peer_link::send(int& send_quota)
 				m_can_send = false;
 				return 0;
 			}
-			if (m_f->m_server->log_peer_send_failures())
+			if (server()->log_peer_send_failures())
 				alert(Calert::debug, "Peer: send failed: " + Csocket::error2a(e));
 			return 1;
 		}
@@ -313,13 +313,13 @@ int Cbt_peer_link::send(int& send_quota)
 		if (d.m_vb.size() > 5 && d.m_s[4] == bti_piece)
 		{
 			m_uploaded += r;
-			m_up_counter.add(r, m_f->m_server->time());
+			m_up_counter.add(r, server()->time());
 			m_f->m_uploaded += r;
-			m_f->m_up_counter.add(r, m_f->m_server->time());
+			m_f->m_up_counter.add(r, server()->time());
 			m_f->m_total_uploaded += r;
 		}
 		send_quota -= r;
-		m_stime = m_f->m_server->time();
+		m_stime = server()->time();
 		d.m_r += r;
 		if (d.m_r == d.m_s_end)
 			m_write_b.pop_front();
@@ -422,7 +422,7 @@ void Cbt_peer_link::write_handshake()
 	mc_local_requests_pending = 0;
 	mc_max_requests_pending = 1;
 	m_peers_stime = 0;
-	m_check_pieces_time = m_rtime = m_stime = m_f->m_server->time();
+	m_check_pieces_time = m_rtime = m_stime = server()->time();
 }
 
 void Cbt_peer_link::write_keepalive()
@@ -631,7 +631,7 @@ void Cbt_peer_link::write_get_peers()
 	*w++ = bti_get_peers;
 	w = write16(w, m_f->local_port());
 	write(d);
-	m_get_peers_stime = m_f->m_server->time();
+	m_get_peers_stime = server()->time();
 }
 
 void Cbt_peer_link::write_peers()
@@ -647,7 +647,7 @@ void Cbt_peer_link::write_peers()
 		w = write16(w, ntohs(i->m_a.sin_port));
 	}
 	write(d);
-	m_peers_stime = m_f->m_server->time();
+	m_peers_stime = server()->time();
 }
 
 int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
@@ -664,11 +664,11 @@ int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	}
 	mc_local_requests_pending--;
 	t_local_requests::iterator i = m_local_requests.begin();
-	int t = m_f->m_server->time() - i->stime;
+	int t = server()->time() - i->stime;
 	mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
 	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
 	m_f->m_downloaded += size;
-	m_f->m_down_counter.add(size, m_f->m_server->time());
+	m_f->m_down_counter.add(size, server()->time());
 	m_f->m_total_downloaded += size;
 	m_local_requests.erase(i);
 	write_data(m_f->mcb_piece * piece + offset, s, size, t);
@@ -685,7 +685,7 @@ void Cbt_peer_link::read_merkle_piece(__int64 offset, int size, const char* s, c
 	}
 	write_data(offset, s, size, 0);
 	m_f->m_downloaded += size;
-	m_f->m_down_counter.add(size, m_f->m_server->time());
+	m_f->m_down_counter.add(size, server()->time());
 	m_f->m_total_downloaded += size;
 }
 
@@ -734,6 +734,8 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 			remote_has(ntohl(*reinterpret_cast<const __int32*>(r)));
 		break;
 	case bti_bitfield:
+		if (!m_f->m_info.size())
+			m_remote_pieces.resize(r_end - r << 3);
 		{
 			for (int i = 0; r < r_end; r++)
 			{
@@ -792,12 +794,12 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		break;
 	case bti_get_peers:
 		alert(Calert::debug, "Peer: get_peers");
-		if (r_end - r >= 2 && m_f->m_server->time() - m_peers_stime > 300)
+		if (r_end - r >= 2 && server()->time() - m_peers_stime > 300)
 			write_peers();
 		break;
 	case bti_peers:
 		alert(Calert::debug, "Peer: " + n((r_end - r - 2) / 6) + " peers");
-		if (r_end - r >= 2 && m_f->m_server->time() - m_get_peers_stime < 60)
+		if (r_end - r >= 2 && server()->time() - m_get_peers_stime < 60)
 		{
 			for (r += 2; r + 6 <= r_end; r += 6)
 				m_f->insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
@@ -821,8 +823,8 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(8, m_downloaded);
 	w.write_int(8, m_left);
 	w.write_int(8, m_uploaded);
-	w.write_int(4, m_down_counter.rate(m_f->m_server->time()));
-	w.write_int(4, m_up_counter.rate(m_f->m_server->time()));
+	w.write_int(4, m_down_counter.rate(server()->time()));
+	w.write_int(4, m_up_counter.rate(server()->time()));
 	w.write_int(1, m_local_link);
 	w.write_int(1, m_local_choked);
 	w.write_int(1, m_local_interested);
@@ -858,7 +860,7 @@ void Cbt_peer_link::check_pieces()
 {
 	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
 		m_f->m_pieces[i->offset / m_f->mcb_piece].check_peer(this, m_f->m_allow_end_mode && m_f->end_mode() ? 15 : 600);
-	m_check_pieces_time = m_f->m_server->time();
+	m_check_pieces_time = server()->time();
 }
 
 int Cbt_peer_link::c_max_requests_pending() const
@@ -878,4 +880,14 @@ string Cbt_peer_link::debug_string() const
 	if (m_can_send)
 		d += "w: 1; ";
 	return d;
+}
+
+Cserver* Cbt_peer_link::server()
+{
+	return server();
+}
+
+const Cserver* Cbt_peer_link::server() const
+{
+	return server();
 }
