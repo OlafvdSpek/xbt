@@ -1012,11 +1012,6 @@ void Cbt_file::peer_connect(int ipa, int port)
 
 void Cbt_file::peer_disconnect(int ipa)
 {
-	for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
-	{
-		if (i->m_a.sin_addr.s_addr != ipa)
-			continue;
-		i->close();
-		return;
-	}
+	if (Cbt_peer_link* peer = find_peer(ipa))
+		peer->close();
 }
