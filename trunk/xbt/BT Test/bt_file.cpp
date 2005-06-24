@@ -31,8 +31,8 @@ Cbt_file::Cbt_file()
 	mc_rejected_chunks = 0;
 	mc_rejected_pieces = 0;
 	m_hasher = NULL;
-	m_started_at = time(NULL);
-	m_session_started_at = time(NULL);
+	m_started_at = ::time(NULL);
+	m_session_started_at = ::time(NULL);
 	m_completed_at = 0;
 	m_seeding_ratio_reached_at = 0;
 	m_priority = 0;
@@ -189,7 +189,7 @@ void Cbt_file::open()
 	if (m_name.find_first_of("/\\") == string::npos)
 	{   
 		struct stat b;   
-		m_name = (stat((m_server->completes_dir() + '/' + m_name).c_str(), &b) ? m_server->incompletes_dir() : m_server->completes_dir()) + '/' + m_name;   
+		m_name = (stat((server()->completes_dir() + '/' + m_name).c_str(), &b) ? server()->incompletes_dir() : server()->completes_dir()) + '/' + m_name;   
 	} 
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
@@ -253,7 +253,7 @@ void Cbt_file::close()
 		i->close();
 	m_state = s_stopped;
 	
-	if (!m_server->send_stop_event() || m_trackers.empty())
+	if (!server()->send_stop_event() || m_trackers.empty())
 		return;
 	Cbt_tracker_url m_url = m_trackers.front();
 	if (!m_url.valid() || m_url.m_protocol != Cbt_tracker_url::tp_http)
@@ -262,7 +262,7 @@ void Cbt_file::close()
 	if (h == INADDR_NONE)
 		return;
 	m_tracker.event(Cbt_tracker_link::e_stopped);
-	m_server->http_request(h, htons(m_url.m_port), m_tracker.http_request(*this), NULL);
+	server()->http_request(h, htons(m_url.m_port), m_tracker.http_request(*this), NULL);
 	m_downloaded = 0;
 	m_uploaded = 0;
 }
@@ -293,15 +293,15 @@ int Cbt_file::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_e
 		return 0;
 	if (state() == s_running && !m_left && seeding_ratio() && 100 * m_total_uploaded / seeding_ratio() > m_size)
 	{
-		m_seeding_ratio_reached_at = m_server->time();
+		m_seeding_ratio_reached_at = time();
 		alert(Calert(Calert::notice, "Seeding ratio reached"));
 		close();
 	}
 	else if (state() == s_running)
 	{
-		for (t_new_peers::const_iterator i = m_new_peers.begin(); i != m_new_peers.end() && m_server->below_peer_limit(); )
+		for (t_new_peers::const_iterator i = m_new_peers.begin(); i != m_new_peers.end() && server()->below_peer_limit(); )
 		{
-			if (!find_peer(i->first) && !m_server->block_list_has(i->first))
+			if (!find_peer(i->first) && !server()->block_list_has(i->first))
 			{
 				Cbt_peer_link peer;
 				peer.m_a.sin_family = AF_INET;
@@ -459,7 +459,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 	m_left -= piece.size();
 	if (!m_left)
 	{
-		m_completed_at = m_server->time();
+		m_completed_at = time();
 		m_tracker.event(Cbt_tracker_link::e_completed);
 	}
 	{
@@ -483,18 +483,18 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 		for (t_peers::iterator i = m_peers.begin(); i != m_peers.end(); i++)
 			i->queue_have(a);
 	}
-	if (!m_left && m_name.substr(0, m_server->incompletes_dir().size()) == m_server->incompletes_dir())
+	if (!m_left && m_name.substr(0, server()->incompletes_dir().size()) == server()->incompletes_dir())
 	{
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->close();
-		string new_name = m_server->completes_dir() + m_name.substr(m_server->incompletes_dir().size());
-		mkpath(m_server->completes_dir());
+		string new_name = server()->completes_dir() + m_name.substr(server()->incompletes_dir().size());
+		mkpath(server()->completes_dir());
 		if (!rename(m_name.c_str(), new_name.c_str()))
 			m_name = new_name;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->open(m_name, O_RDONLY);
 	}
-	if (m_server->log_piece_valid())
+	if (server()->log_piece_valid())
 		alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
 	logger().valid(m_info_hash, false, a);
 	return 0;
@@ -623,8 +623,8 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(8, m_uploaded_l5);
 	w.write_int(8, m_total_downloaded);
 	w.write_int(8, m_total_uploaded);
-	w.write_int(4, m_down_counter.rate(m_server->time()));
-	w.write_int(4, m_up_counter.rate(m_server->time()));
+	w.write_int(4, m_down_counter.rate(time()));
+	w.write_int(4, m_up_counter.rate(time()));
 	w.write_int(4, c_leechers());
 	w.write_int(4, c_seeders());
 	w.write_int(4, mc_leechers_total);
@@ -868,12 +868,12 @@ Cbt_peer_link* Cbt_file::find_peer(int h)
 
 int Cbt_file::local_ipa() const
 {
-	return m_server->public_ipa();
+	return server()->public_ipa();
 }
 
 int Cbt_file::local_port() const
 {
-	return m_server->peer_port();
+	return server()->peer_port();
 }
 
 void Cbt_file::sub_file_priority(const string& id, int priority)
@@ -926,7 +926,7 @@ bool Cbt_file::test_and_set_hashes(__int64 offset, const string& v, const string
 
 Cbt_logger& Cbt_file::logger()
 {
-	return m_server->logger();
+	return server()->logger();
 }
 
 bool Cbt_file::begin_mode() const
@@ -971,17 +971,17 @@ void Cbt_file::state(t_state v)
 
 int Cbt_file::seeding_ratio() const
 {
-	return m_seeding_ratio_override ? m_seeding_ratio : m_server->seeding_ratio();
+	return m_seeding_ratio_override ? m_seeding_ratio : server()->seeding_ratio();
 }
 
 int Cbt_file::upload_slots_max() const
 {
-	return m_upload_slots_max_override ? m_upload_slots_max : m_server->torrent_upload_slots_max();
+	return m_upload_slots_max_override ? m_upload_slots_max : server()->torrent_upload_slots_max();
 }
 
 int Cbt_file::upload_slots_min() const
 {
-	return m_upload_slots_min_override ? m_upload_slots_min : m_server->torrent_upload_slots_min();
+	return m_upload_slots_min_override ? m_upload_slots_min : server()->torrent_upload_slots_min();
 }
 
 void Cbt_file::trackers(const string& v)
@@ -1011,4 +1011,19 @@ void Cbt_file::peer_disconnect(int ipa)
 {
 	if (Cbt_peer_link* peer = find_peer(ipa))
 		peer->close();
+}
+
+Cserver* Cbt_file::server()
+{
+	return m_server;
+}
+
+const Cserver* Cbt_file::server() const
+{
+	return m_server;
+}
+
+int Cbt_file::time() const
+{
+	return server()->time();
 }
