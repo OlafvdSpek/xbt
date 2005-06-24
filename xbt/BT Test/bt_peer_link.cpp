@@ -884,15 +884,15 @@ string Cbt_peer_link::debug_string() const
 
 Cserver* Cbt_peer_link::server()
 {
-	return server();
+	return m_f->server();
 }
 
 const Cserver* Cbt_peer_link::server() const
 {
-	return server();
+	return m_f->server();
 }
 
 int Cbt_peer_link::time() const
 {
-	return time();
+	return server()->time();
 }
