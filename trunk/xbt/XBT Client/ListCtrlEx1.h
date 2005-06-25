@@ -19,7 +19,7 @@ public:
 	void Conf(const string&);
 	void DeleteAllColumns();
 	int GetColumnID(int index) const;
-	void InsertColumn(int id, const string& name, int format = LVCFMT_LEFT, bool show = true);
+	void InsertColumn(int id, const string& name, const string& description = "", int format = LVCFMT_LEFT, bool show = true);
 	void ShowColumn(int id, bool show);
 protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
@@ -35,6 +35,7 @@ private:
 	public:
 		Ccolumn();
 
+		string description;
 		int format;
 		int index;
 		string name;

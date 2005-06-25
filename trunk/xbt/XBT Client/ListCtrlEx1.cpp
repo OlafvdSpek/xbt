@@ -40,7 +40,7 @@ void CListCtrlEx1::OnContextMenu(CWnd* pWnd, CPoint point)
 	for (Ccolumns::const_iterator i = m_columns.begin(); i != m_columns.end(); i++)
 	{
 		if (!i->second.name.empty())
-			menu.InsertMenu(-1, MF_BYPOSITION | (i->second.show() ? MF_CHECKED : 0) | MF_STRING, i->first, i->second.name.c_str());
+			menu.InsertMenu(-1, MF_BYPOSITION | (i->second.show() ? MF_CHECKED : 0) | MF_STRING, i->first, (i->second.name + '\t' + i->second.description).c_str());
 	}
 	CPoint pt;
 	GetCursorPos(&pt);
@@ -53,11 +53,12 @@ void CListCtrlEx1::PreSubclassWindow()
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_HEADERDRAGDROP);
 }
 
-void CListCtrlEx1::InsertColumn(int id, const string& name, int format, bool show)
+void CListCtrlEx1::InsertColumn(int id, const string& name, const string& description, int format, bool show)
 {
 	if (m_columns.count(id))
 		return;
 	Ccolumn& e = m_columns[id];
+	e.description = description;
 	e.format = format;
 	e.name = name;
 	e.order = m_columns.size() - 1;
@@ -80,12 +81,6 @@ void CListCtrlEx1::DeleteAllColumns()
 	m_conf.erase();
 }
 
-static string short_name(const string& v)
-{
-	int i = v.find('\t');
-	return i == string::npos ? v : v.substr(0, i);
-}
-
 void CListCtrlEx1::ShowColumn(int id, bool show)
 {
 	Ccolumns::iterator i = m_columns.find(id);
@@ -103,7 +98,7 @@ void CListCtrlEx1::ShowColumn(int id, bool show)
 				j->second.index++;
 			}
 		}
-		i->second.index = CListCtrlEx::InsertColumn(index, short_name(i->second.name).c_str(), i->second.format);
+		i->second.index = CListCtrlEx::InsertColumn(index, i->second.name.c_str(), i->second.format);
 		SetColumnWidth(i->second.index, LVSCW_AUTOSIZE_USEHEADER);
 	}
 	else
