@@ -2156,31 +2156,32 @@ void CXBTClientDlg::insert_top_columns()
 	{
 		const char* name;
 		int format;
+		bool show;
 	} 
 	columns[] =
 	{
-		"Name", LVCFMT_LEFT,
-		"%\t% Done", LVCFMT_RIGHT,
-		"Left", LVCFMT_RIGHT,
-		"Size", LVCFMT_RIGHT,
-		"Downloaded", LVCFMT_RIGHT,
-		"%\t% Downloaded", LVCFMT_RIGHT,
-		"Uploaded", LVCFMT_RIGHT,
-		"%\t% Uploaded", LVCFMT_RIGHT,
-		"Down Rate", LVCFMT_RIGHT,
-		"Up Rate", LVCFMT_RIGHT,
-		"Leechers", LVCFMT_RIGHT,
-		"Seeders", LVCFMT_RIGHT,
-		"Peers", LVCFMT_RIGHT,
-		"Priority", LVCFMT_RIGHT,
-		"State", LVCFMT_LEFT,
-		"Hash", LVCFMT_LEFT,
-		"", LVCFMT_LEFT,
+		"Name", LVCFMT_LEFT, true,
+		"%\t% Done", LVCFMT_RIGHT, true,
+		"Left", LVCFMT_RIGHT, true,
+		"Size", LVCFMT_RIGHT, true,
+		"Downloaded", LVCFMT_RIGHT, true,
+		"%\t% Downloaded", LVCFMT_RIGHT, true,
+		"Uploaded", LVCFMT_RIGHT, true,
+		"%\t% Uploaded", LVCFMT_RIGHT, true,
+		"Down Rate", LVCFMT_RIGHT, true,
+		"Up Rate", LVCFMT_RIGHT, true,
+		"Leechers", LVCFMT_RIGHT, true,
+		"Seeders", LVCFMT_RIGHT, true,
+		"Peers", LVCFMT_RIGHT, false,
+		"Priority", LVCFMT_RIGHT, true,
+		"State", LVCFMT_LEFT, true,
+		"Hash", LVCFMT_LEFT, false,
+		"", LVCFMT_LEFT, true,
 	};
 	m_files.DeleteAllColumns();
 	m_files.Conf(get_profile_torrents_view());
 	for (t_columns::const_iterator i = m_torrents_columns.begin(); i != m_torrents_columns.end(); i++)
-		m_files.InsertColumn(*i, columns[*i].name, columns[*i].format);
+		m_files.InsertColumn(*i, columns[*i].name, columns[*i].format, columns[*i].show);
 }
 
 void CXBTClientDlg::insert_bottom_columns()
@@ -2226,9 +2227,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		m_peers_columns.push_back(pc_remote_requests);
 		m_peers_columns.push_back(pc_recv_time);
 		m_peers_columns.push_back(pc_send_time);
-#ifdef _DEBUG
 		m_peers_columns.push_back(pc_debug);
-#endif
 		m_peers_columns.push_back(pc_host);
 		m_peers_columns.push_back(pc_port);
 		m_peers_columns.push_back(pc_host_name);
@@ -2263,73 +2262,75 @@ void CXBTClientDlg::insert_bottom_columns()
 	{
 		const char* name;
 		int format;
+		bool show;
 	} 
 	columns[] =
 	{
-		"Name", LVCFMT_LEFT,
-		"Value", LVCFMT_LEFT,
+		"Name", LVCFMT_LEFT, true,
+		"Value", LVCFMT_LEFT, true,
 
-		"Time", LVCFMT_LEFT,
-		"Level", LVCFMT_RIGHT,
-		"Source", LVCFMT_LEFT,
-		"Message", LVCFMT_LEFT,
-		"", LVCFMT_LEFT,
+		"Time", LVCFMT_LEFT, true,
+		"Level", LVCFMT_RIGHT, true,
+		"Source", LVCFMT_LEFT, true,
+		"Message", LVCFMT_LEFT, true,
+		"", LVCFMT_LEFT, true,
 
-		"Client", LVCFMT_LEFT,
-		"%", LVCFMT_RIGHT,
-		"Left", LVCFMT_RIGHT,
-		"Downloaded", LVCFMT_RIGHT,
-		"Uploaded", LVCFMT_RIGHT,
-		"Down Rate", LVCFMT_RIGHT,
-		"Up Rate", LVCFMT_RIGHT,
-		"D\tDirection", LVCFMT_LEFT,
-		"L\tLocal Choked", LVCFMT_LEFT,
-		"L\tLocal Interested", LVCFMT_LEFT,
-		"R\tRemote Choked", LVCFMT_LEFT,
-		"R\tRemote Interested", LVCFMT_LEFT,
-		"LR\tLocal Requests", LVCFMT_RIGHT,
-		"RR\tRemote Requests", LVCFMT_RIGHT,
-		"RT\tReceive Time", LVCFMT_RIGHT,
-		"ST\tSend Time", LVCFMT_RIGHT,
-		"Host", LVCFMT_LEFT,
-		"Host Name", LVCFMT_LEFT,
-		"Port", LVCFMT_RIGHT,
-		"Peer ID", LVCFMT_LEFT,
-		"Debug", LVCFMT_LEFT,
-		"", LVCFMT_LEFT,
-		"Name", LVCFMT_LEFT,
-		"Extension", LVCFMT_LEFT,
-		"%", LVCFMT_RIGHT,
-		"Left", LVCFMT_RIGHT,
-		"Size", LVCFMT_RIGHT,
-		"Priority", LVCFMT_RIGHT,
-		"Hash", LVCFMT_LEFT,
-		"", LVCFMT_LEFT,
+		"Client", LVCFMT_LEFT, true,
+		"%", LVCFMT_RIGHT, true,
+		"Left", LVCFMT_RIGHT, true,
+		"Downloaded", LVCFMT_RIGHT, true,
+		"Uploaded", LVCFMT_RIGHT, true,
+		"Down Rate", LVCFMT_RIGHT, true,
+		"Up Rate", LVCFMT_RIGHT, true,
+		"D\tDirection", LVCFMT_LEFT, true,
+		"L\tLocal Choked", LVCFMT_LEFT, true,
+		"L\tLocal Interested", LVCFMT_LEFT, true,
+		"R\tRemote Choked", LVCFMT_LEFT, true,
+		"R\tRemote Interested", LVCFMT_LEFT, true,
+		"LR\tLocal Requests", LVCFMT_RIGHT, false,
+		"RR\tRemote Requests", LVCFMT_RIGHT, false,
+		"RT\tReceive Time", LVCFMT_RIGHT, false,
+		"ST\tSend Time", LVCFMT_RIGHT, false,
+		"Host", LVCFMT_LEFT, true,
+		"Host Name", LVCFMT_LEFT, true,
+		"Port", LVCFMT_RIGHT, true,
+		"Peer ID", LVCFMT_LEFT, false,
+		"Debug", LVCFMT_LEFT, false,
+		"", LVCFMT_LEFT, true,
 
-		"Index", LVCFMT_RIGHT,
-		"Chunks", LVCFMT_RIGHT,
-		"Peers", LVCFMT_RIGHT,
-		"Priority", LVCFMT_RIGHT,
-		"Valid", LVCFMT_RIGHT,
-		"Rank", LVCFMT_RIGHT,
-		"", LVCFMT_LEFT,
+		"Name", LVCFMT_LEFT, true,
+		"Extension", LVCFMT_LEFT, true,
+		"%", LVCFMT_RIGHT, true,
+		"Left", LVCFMT_RIGHT, true,
+		"Size", LVCFMT_RIGHT, true,
+		"Priority", LVCFMT_RIGHT, true,
+		"Hash", LVCFMT_LEFT, true,
+		"", LVCFMT_LEFT, true,
 
-		"URL", LVCFMT_LEFT,
+		"Index", LVCFMT_RIGHT, true,
+		"Chunks", LVCFMT_RIGHT, true,
+		"Peers", LVCFMT_RIGHT, true,
+		"Priority", LVCFMT_RIGHT, true,
+		"Valid", LVCFMT_RIGHT, true,
+		"Rank", LVCFMT_RIGHT, true,
+		"", LVCFMT_LEFT, true,
 
-		"Name", LVCFMT_LEFT,
-		"Value", LVCFMT_LEFT,
+		"URL", LVCFMT_LEFT, true,
 
-		"Time", LVCFMT_LEFT,
-		"Level", LVCFMT_RIGHT,
-		"Source", LVCFMT_LEFT,
-		"Message", LVCFMT_LEFT,
-		"", LVCFMT_LEFT,
+		"Name", LVCFMT_LEFT, true,
+		"Value", LVCFMT_LEFT, true,
+
+		"Time", LVCFMT_LEFT, true,
+		"Level", LVCFMT_RIGHT, true,
+		"Source", LVCFMT_LEFT, true,
+		"Message", LVCFMT_LEFT, true,
+		"", LVCFMT_LEFT, true,
 	};
 	m_peers.DeleteAllColumns();
 	if (m_bottom_view == v_peers)
 		m_peers.Conf(get_profile_peers_view());
 	for (t_columns::const_iterator i = m_peers_columns.begin(); i != m_peers_columns.end(); i++)
-		m_peers.InsertColumn(*i, columns[*i].name, columns[*i].format);
+		m_peers.InsertColumn(*i, columns[*i].name, columns[*i].format, columns[*i].show);
 }
 
 void CXBTClientDlg::insert_columns(bool auto_size)
