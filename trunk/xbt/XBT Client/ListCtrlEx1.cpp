@@ -53,7 +53,7 @@ void CListCtrlEx1::PreSubclassWindow()
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_HEADERDRAGDROP);
 }
 
-void CListCtrlEx1::InsertColumn(int id, const string& name, int format)
+void CListCtrlEx1::InsertColumn(int id, const string& name, int format, bool show)
 {
 	if (m_columns.count(id))
 		return;
@@ -61,7 +61,6 @@ void CListCtrlEx1::InsertColumn(int id, const string& name, int format)
 	e.format = format;
 	e.name = name;
 	e.order = m_columns.size() - 1;
-	bool show = true;
 	for (int i = 0; i + 3 <= m_conf.size(); i += 3)
 	{
 		if (m_conf[i] != id)
