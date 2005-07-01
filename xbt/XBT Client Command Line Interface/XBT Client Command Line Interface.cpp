@@ -48,23 +48,25 @@ ostream& show_status(ostream& os, const Cbvalue& v)
 	const Cbvalue& files = v.d(bts_files);
 	for (Cbvalue::t_map::const_iterator i = files.d().begin(); i != files.d().end(); i++)
 	{
-		cout << hex_encode(i->first) 
-			<< "\tl: " << static_cast<int>(i->second.d(bts_incomplete).i());
-		if (i->second.d(bts_incomplete_total).i())
-			cout << " / " << static_cast<int>(i->second.d(bts_incomplete_total).i());
-		cout << "\ts: " << static_cast<int>(i->second.d(bts_complete).i());
-		if (i->second.d(bts_complete_total).i())
-			cout << " / " << static_cast<int>(i->second.d(bts_complete_total).i());
-		cout << endl
-			<< '\t' << strip_name(i->second.d(bts_name).s())
+		cout << strip_name(i->second.d(bts_name).s())
 			<< endl
-			<< "\tl: " << b2a(i->second.d(bts_left).i()) 
-			<< "\ts: " << b2a(i->second.d(bts_size).i()) 
-			<< "\td: " << b2a(i->second.d(bts_total_downloaded).i()) 
-			<< "\tu: " << b2a(i->second.d(bts_total_uploaded).i()) 
-			<< "\td: " << b2a(i->second.d(bts_down_rate).i()) 
-			<< "\tu: " << b2a(i->second.d(bts_up_rate).i()) 
-			<< endl;
+			<< "  " << hex_encode(i->first)
+			<< endl
+			<< "  l: " << setw(6) << b2a(i->second.d(bts_left).i()) 
+			<< " s: " << setw(6) << b2a(i->second.d(bts_size).i()) 
+			<< " d: " << setw(6) << b2a(i->second.d(bts_total_downloaded).i()) 
+			<< " u: " << setw(6) << b2a(i->second.d(bts_total_uploaded).i()) 
+			<< " d: " << setw(6) << b2a(i->second.d(bts_down_rate).i()) 
+			<< " u: " << setw(6) << b2a(i->second.d(bts_up_rate).i()) 
+			<< " l: " << setw(3) << static_cast<int>(i->second.d(bts_incomplete).i());
+		if (i->second.d(bts_incomplete_total).i())
+			cout << " / " << setw(3) << static_cast<int>(i->second.d(bts_incomplete_total).i());
+		else
+			cout << "      ";
+		cout << " s: " << setw(3) << static_cast<int>(i->second.d(bts_complete).i());
+		if (i->second.d(bts_complete_total).i())
+			cout << " / " << setw(3) << static_cast<int>(i->second.d(bts_complete_total).i());
+		cout << endl;
 	}
 	return os;
 }
