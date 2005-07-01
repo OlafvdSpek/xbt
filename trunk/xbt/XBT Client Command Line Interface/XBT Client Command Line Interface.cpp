@@ -45,28 +45,30 @@ ostream& show_options(ostream& os, const Cbvalue& v)
 
 ostream& show_status(ostream& os, const Cbvalue& v)
 {
+	cout << "    left     size downloaded  uploaded down_rate   up_rate leechers     seeders" << endl;
 	const Cbvalue& files = v.d(bts_files);
 	for (Cbvalue::t_map::const_iterator i = files.d().begin(); i != files.d().end(); i++)
 	{
 		cout << strip_name(i->second.d(bts_name).s())
 			<< endl
-			<< "  " << hex_encode(i->first)
-			<< endl
-			<< "  l: " << setw(6) << b2a(i->second.d(bts_left).i()) 
-			<< " s: " << setw(6) << b2a(i->second.d(bts_size).i()) 
-			<< " d: " << setw(6) << b2a(i->second.d(bts_total_downloaded).i()) 
-			<< " u: " << setw(6) << b2a(i->second.d(bts_total_uploaded).i()) 
-			<< " d: " << setw(6) << b2a(i->second.d(bts_down_rate).i()) 
-			<< " u: " << setw(6) << b2a(i->second.d(bts_up_rate).i()) 
-			<< " l: " << setw(3) << static_cast<int>(i->second.d(bts_incomplete).i());
+			<< setw(8) << b2a(i->second.d(bts_left).i()) 
+			<< setw(10) << b2a(i->second.d(bts_size).i()) 
+			<< setw(10) << b2a(i->second.d(bts_total_downloaded).i()) 
+			<< setw(10) << b2a(i->second.d(bts_total_uploaded).i()) 
+			<< setw(10) << b2a(i->second.d(bts_down_rate).i()) 
+			<< setw(10) << b2a(i->second.d(bts_up_rate).i()) 
+			<< setw(7) << static_cast<int>(i->second.d(bts_incomplete).i());
 		if (i->second.d(bts_incomplete_total).i())
 			cout << " / " << setw(3) << static_cast<int>(i->second.d(bts_incomplete_total).i());
 		else
 			cout << "      ";
-		cout << " s: " << setw(3) << static_cast<int>(i->second.d(bts_complete).i());
+		cout << "    " << setw(3) << static_cast<int>(i->second.d(bts_complete).i());
 		if (i->second.d(bts_complete_total).i())
 			cout << " / " << setw(3) << static_cast<int>(i->second.d(bts_complete_total).i());
-		cout << endl;
+		else
+			cout << "      ";
+		cout << "    " << hex_encode(i->first)
+			<< endl;
 	}
 	return os;
 }
