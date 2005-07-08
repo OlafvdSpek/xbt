@@ -150,14 +150,14 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 		}
 		if (m_state == 3)
 		{
-			write_choke(m_local_choked_goal);
-			write_interested(m_local_interested_goal);
 			if (time() - m_check_pieces_time > (m_f->end_mode() ? 5 : 30))
 			{
 				check_pieces();
 				if (!m_local_interested && m_f->next_invalid_piece(*this) != -1)
 					interested(true);
 			}
+			write_choke(m_local_choked_goal);
+			write_interested(m_local_interested_goal);
 			/*
 			if (m_local_requests.empty() || time() - m_local_requests.back().stime > 120)
 				mc_local_requests_pending = 0;
