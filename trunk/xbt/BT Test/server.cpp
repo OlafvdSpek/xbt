@@ -216,7 +216,7 @@ int Cserver::run()
 		{
 			l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true);
 			for (;  peer_port() < 0x10000; m_peer_port++)
-			{				
+			{
 				if (l.bind(htonl(INADDR_ANY), htons(peer_port())) && WSAGetLastError() == WSAEADDRINUSE)
 					continue;
 #ifdef WIN32
@@ -1283,7 +1283,7 @@ void Cserver::term()
 
 int Cserver::version()
 {
-	return 60;
+	return 61;
 }
 
 Chttp_link* Cserver::http_request(int h, int p, const string& request, Chttp_response_handler* response_handler)
