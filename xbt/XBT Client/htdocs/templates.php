@@ -194,11 +194,14 @@
 		$d .= '<tr>';
 		$d .= '<th align=left>Time';
 		$d .= '<th align=left>Message';
-		foreach ($v as $event)
+		if (is_array($v))
 		{
-			$d .= '<tr>';
-			$d .= sprintf('<td align=left>%s', date('H:i:s', $event['value']['time']['value']));
-			$d .= sprintf('<td align=left>%s', htmlspecialchars($event['value']['message']['value']));
+			foreach ($v as $event)
+			{
+				$d .= '<tr>';
+				$d .= sprintf('<td align=left>%s', date('H:i:s', $event['value']['time']['value']));
+				$d .= sprintf('<td align=left>%s', htmlspecialchars($event['value']['message']['value']));
+			}
 		}
 		$d .= '</table>';
 		$d .= '</center>';
