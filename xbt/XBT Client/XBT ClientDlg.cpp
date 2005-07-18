@@ -1843,7 +1843,7 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	case fc_done:
 		return compare(b.m_size ? b.m_left * 1000 / b.m_size : 0, a.m_size ? a.m_left * 1000 / a.m_size : 0);
 	case fc_left:
-		return compare(a.m_left, b.m_left);
+		return compare(a.m_left, b.m_left, compare(a.m_display_name, b.m_display_name));
 	case fc_size:
 		return compare(a.m_size, b.m_size);
 	case fc_total_downloaded:
