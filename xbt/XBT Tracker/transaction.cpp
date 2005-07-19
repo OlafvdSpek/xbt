@@ -177,7 +177,7 @@ void Ctransaction::send_scrape(const char* r, const char* r_end)
 	write_int(4, d + uto_action, uta_scrape);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	char* w = d + utos_size;
-	for (; r + 20 <= r_end && w + 12 <= d + cb_d; r += 20)
+	for (r += utis_size; r + 20 <= r_end && w + 12 <= d + cb_d; r += 20)
 	{
 		const Cserver::t_file* file = m_server.file(string(r, 20));
 		if (file)
