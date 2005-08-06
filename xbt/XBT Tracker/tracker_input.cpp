@@ -91,5 +91,6 @@ bool Ctracker_input::valid() const
 		&& m_info_hash.length() == 20
 		&& m_left >= -1
 		&& m_peer_id.length() == 20
+		&& m_port >= 0
 		&& m_uploaded >= 0;
 }
