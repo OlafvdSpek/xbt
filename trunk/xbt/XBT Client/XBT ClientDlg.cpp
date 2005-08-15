@@ -3165,8 +3165,11 @@ string CXBTClientDlg::GetProfileBinary(LPCTSTR Entry)
 {
 	BYTE* d;
 	UINT cb_d;
-	AfxGetApp()->GetProfileBinary(m_reg_key, Entry, &d, &cb_d);
-	return string(reinterpret_cast<char*>(d), cb_d);
+	if (!AfxGetApp()->GetProfileBinary(m_reg_key, Entry, &d, &cb_d) || !d || !cb_d)
+		return "";
+	string d1(reinterpret_cast<char*>(d), cb_d);
+	delete[] d;
+	return d1;
 }
 
 int CXBTClientDlg::GetProfileInt(LPCTSTR Entry, int Default)
