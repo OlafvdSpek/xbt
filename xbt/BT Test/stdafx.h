@@ -52,8 +52,13 @@ using namespace std;
 #ifdef BSD
 #define atoll xbt_atoll
 #endif
-#define O_BINARY 0
+#if defined(__APPLE__) && defined(__MACH__)
+#define O_LARGEFILE 0
+#define _lseeki64 lseek
+#else
 #define _lseeki64 lseek64
+#endif
+#define O_BINARY 0
 #define stricmp strcasecmp
 #define strnicmp strncasecmp
 
