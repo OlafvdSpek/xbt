@@ -3,10 +3,10 @@
 	{
 		if (!$v)
 			return '';
-		for ($l = 0; $v < -9999 || $v > 9999; $l++)
+		for ($l = 0; $v < -999 || $v > 999; $l++)
 			$v /= 1024;
-		$a = array('', ' k', ' m', ' g', ' t', ' p');
-		return sprintf('%d%s', $v, $a[$l]);
+		$a = array('', 'k', 'm', 'g', 't', 'p');
+		return sprintf("%.2f %s", $v, $a[$l]);
 	}
 
 	function nz($v)
