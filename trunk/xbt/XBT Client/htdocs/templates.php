@@ -215,7 +215,7 @@
 			foreach ($v as $event)
 			{
 				$d .= '<tr>';
-				$d .= sprintf('<td align=left>%s', date('H:i:s', $event['value']['time']['value']));
+				$d .= sprintf('<td align=left>%s', date('Y-m-d H:i:s', $event['value']['time']['value']));
 				$d .= sprintf('<td align=left>%s', htmlspecialchars($event['value']['message']['value']));
 			}
 		}
