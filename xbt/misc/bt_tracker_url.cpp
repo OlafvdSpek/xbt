@@ -1,7 +1,3 @@
-// bt_tracker_url.cpp: implementation of the Cbt_tracker_url class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_tracker_url.h"
 

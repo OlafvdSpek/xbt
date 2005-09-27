@@ -1,7 +1,3 @@
-// bt_torrent.cpp: implementation of the Cbt_torrent class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_torrent.h"
 

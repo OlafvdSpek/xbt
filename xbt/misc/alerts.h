@@ -1,7 +1,3 @@
-// alerts.h: interface for the Calerts class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_ALERTS_H__FE59568B_F1B9_45F4_9148_369A1454BC33__INCLUDED_)
 #define AFX_ALERTS_H__FE59568B_F1B9_45F4_9148_369A1454BC33__INCLUDED_
 

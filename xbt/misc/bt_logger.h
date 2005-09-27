@@ -1,7 +1,3 @@
-// bt_logger.h: interface for the Cbt_logger class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_LOGGER_H__ED1D62AA_A8C0_4E89_81E0_3D9989BE6E37__INCLUDED_)
 #define AFX_BT_LOGGER_H__ED1D62AA_A8C0_4E89_81E0_3D9989BE6E37__INCLUDED_
 

@@ -1,7 +1,3 @@
-// socket.h: interface for the Csocket class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_SOCKET_H__7FCC2721_54CD_4609_8737_92478B4090EA__INCLUDED_)
 #define AFX_SOCKET_H__7FCC2721_54CD_4609_8737_92478B4090EA__INCLUDED_
 

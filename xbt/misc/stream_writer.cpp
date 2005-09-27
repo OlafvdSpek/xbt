@@ -1,7 +1,3 @@
-// stream_writer.cpp: implementation of the Cstream_writer class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "stream_writer.h"
 

@@ -1,7 +1,3 @@
-// virtual_binary.h: interface for the Cvirtual_binary class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_VIRTUAL_BINARY_H__B59C9DC0_DB25_11D4_A95D_0050042229FC__INCLUDED_)
 #define AFX_VIRTUAL_BINARY_H__B59C9DC0_DB25_11D4_A95D_0050042229FC__INCLUDED_
 

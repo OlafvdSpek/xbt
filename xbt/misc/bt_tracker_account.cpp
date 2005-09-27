@@ -1,7 +1,3 @@
-// bt_tracker_account.cpp: implementation of the Cbt_tracker_account class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_tracker_account.h"
 

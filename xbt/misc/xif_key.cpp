@@ -1,7 +1,3 @@
-// xif_key.cpp: implementation of the Cxif_key class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "xif_key.h"
 

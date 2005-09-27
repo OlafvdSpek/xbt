@@ -1,7 +1,3 @@
-// bt_logger.cpp: implementation of the Cbt_logger class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_logger.h"
 

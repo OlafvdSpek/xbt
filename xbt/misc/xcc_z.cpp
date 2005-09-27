@@ -1,7 +1,3 @@
-// xcc_z.cpp: implementation of the xcc_z class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "xcc_z.h"
 

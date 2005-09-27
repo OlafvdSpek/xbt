@@ -1,7 +1,3 @@
-// xif_key.h: interface for the Cxif_key class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_XIF_KEY_H__99A07CE4_FA5D_11D2_B601_8B199B22657D__INCLUDED_)
 #define AFX_XIF_KEY_H__99A07CE4_FA5D_11D2_B601_8B199B22657D__INCLUDED_
 

@@ -1,7 +1,3 @@
-// bt_tracker_account.h: interface for the Cbt_tracker_account class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_TRACKER_ACCOUNT_H__D495C350_CA0C_4582_B420_B73A2BC105CC__INCLUDED_)
 #define AFX_BT_TRACKER_ACCOUNT_H__D495C350_CA0C_4582_B420_B73A2BC105CC__INCLUDED_
 

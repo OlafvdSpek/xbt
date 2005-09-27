@@ -1,7 +1,3 @@
-// alerts.cpp: implementation of the Calerts class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "alerts.h"
 
