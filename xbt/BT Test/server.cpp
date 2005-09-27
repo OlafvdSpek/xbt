@@ -172,20 +172,20 @@ int Cserver::run()
 	HRESULT hr;
 	hr = CoInitialize(NULL);
 	if (FAILED(hr))
-		alert(Calert(Calert::warn, "Server", "CoInitialize failed: " + n(hr)));
+		alert(Calert(Calert::warn, "Server", "CoInitialize failed: " + hex_encode(8, hr)));
 	IStaticPortMappingCollection* static_port_mapping_collection = NULL;
 	if (m_config.m_upnp)
 	{
 		IUPnPNAT* upnp_nat;
 		hr = CoCreateInstance(CLSID_UPnPNAT, NULL, CLSCTX_INPROC_SERVER, IID_IUPnPNAT, reinterpret_cast<void**>(&upnp_nat));
 		if (FAILED(hr) || !upnp_nat)
-			alert(Calert(Calert::warn, "UPnP NAT", "CoCreateInstance failed: " + n(hr)));
+			alert(Calert(Calert::warn, "UPnP NAT", "CoCreateInstance failed: " + hex_encode(8, hr)));
 		else
 		{
 			hr = upnp_nat->get_StaticPortMappingCollection(&static_port_mapping_collection);
 			upnp_nat->Release();
 			if (FAILED(hr) || !static_port_mapping_collection)
-				alert(Calert(Calert::warn, "UPnP NAT", "get_StaticPortMappingCollection failed: " + n(hr)));
+				alert(Calert(Calert::warn, "UPnP NAT", "get_StaticPortMappingCollection failed: " + hex_encode(8, hr)));
 		}
 	}
 #endif
@@ -234,7 +234,7 @@ int Cserver::run()
 					SysFreeString(bstrDescription);
 					if (FAILED(hr) || !static_port_mapping)
 					{
-						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping_collection->Add failed failed: " + n(hr)));
+						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping_collection->Add failed failed: " + hex_encode(8, hr)));
 						break;
 					}
 					BSTR bstrExternalIPA;
@@ -242,7 +242,7 @@ int Cserver::run()
 					static_port_mapping->Release();
 					if (FAILED(hr))
 					{
-						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping->get_ExternalIPAddress failed: " + n(hr)));
+						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping->get_ExternalIPAddress failed: " + hex_encode(8, hr)));
 						break;
 					}
 					alert(Calert(Calert::info, "UPnP NAT", "External IPA: " + wchar_to_mbyte(bstrExternalIPA)));
