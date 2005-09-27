@@ -1,6 +1,3 @@
-// dlg_peer_connect.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_peer_connect.h"
 

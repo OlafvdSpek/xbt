@@ -1,6 +1,3 @@
-// dlg_make_torrent.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_make_torrent.h"
 

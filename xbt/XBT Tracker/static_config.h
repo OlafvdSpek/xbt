@@ -1,7 +1,3 @@
-// static_config.h: interface for the Cstatic_config class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_STATIC_CONFIG_H__FA584986_2EA1_11D5_B606_0000B4936994__INCLUDED_)
 #define AFX_STATIC_CONFIG_H__FA584986_2EA1_11D5_B606_0000B4936994__INCLUDED_
 

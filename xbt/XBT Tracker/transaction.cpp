@@ -1,7 +1,3 @@
-// transaction.cpp: implementation of the Ctransaction class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "transaction.h"
 

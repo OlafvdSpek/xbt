@@ -1,6 +1,3 @@
-// dlg_block_list.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_block_list.h"
 

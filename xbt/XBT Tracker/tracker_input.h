@@ -1,7 +1,3 @@
-// tracker_input.h: interface for the Ctracker_input class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_TRACKER_INPUT_H__E4F9E6ED_97B7_4526_B310_82F149E42EA8__INCLUDED_)
 #define AFX_TRACKER_INPUT_H__E4F9E6ED_97B7_4526_B310_82F149E42EA8__INCLUDED_
 

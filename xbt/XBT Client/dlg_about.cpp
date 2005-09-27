@@ -1,6 +1,3 @@
-// dlg_about.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_about.h"
 

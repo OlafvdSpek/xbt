@@ -1,6 +1,3 @@
-// dlg_profiles.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_profiles.h"
 

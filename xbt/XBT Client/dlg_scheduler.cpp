@@ -1,6 +1,3 @@
-// dlg_scheduler.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_scheduler.h"
 

@@ -1,7 +1,3 @@
-// tracker_input.cpp: implementation of the Ctracker_input class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "tracker_input.h"
 

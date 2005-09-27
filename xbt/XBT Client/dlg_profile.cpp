@@ -1,6 +1,3 @@
-// dlg_profile.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "xbt client.h"
 #include "dlg_profile.h"

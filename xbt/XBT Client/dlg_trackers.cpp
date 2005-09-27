@@ -1,6 +1,3 @@
-// dlg_trackers.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_trackers.h"
 

@@ -1,7 +1,3 @@
-// connection.cpp: implementation of the Cconnection class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "connection.h"
 

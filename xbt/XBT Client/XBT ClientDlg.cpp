@@ -1,6 +1,3 @@
-// XBT ClientDlg.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "XBT ClientDlg.h"
 

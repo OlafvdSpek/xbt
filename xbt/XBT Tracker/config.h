@@ -1,7 +1,3 @@
-// config.h: interface for the Cconfig class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_CONFIG_H__9BC23017_7D28_49AE_BDBC_6B920E27CA97__INCLUDED_)
 #define AFX_CONFIG_H__9BC23017_7D28_49AE_BDBC_6B920E27CA97__INCLUDED_
 
