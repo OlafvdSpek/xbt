@@ -1,7 +1,3 @@
-// http_response_handler.h: interface for the Chttp_response_handler class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_HTTP_RESPONSE_HANDLER_H__765E9C6F_C59E_4A87_9B8A_8AA52F815B18__INCLUDED_)
 #define AFX_HTTP_RESPONSE_HANDLER_H__765E9C6F_C59E_4A87_9B8A_8AA52F815B18__INCLUDED_
 

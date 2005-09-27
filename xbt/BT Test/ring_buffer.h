@@ -1,7 +1,3 @@
-// ring_buffer.h: interface for the Cring_buffer class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_RING_BUFFER_H__67856C4E_F9FE_4D73_8553_27AF76B4C5F2__INCLUDED_)
 #define AFX_RING_BUFFER_H__67856C4E_F9FE_4D73_8553_27AF76B4C5F2__INCLUDED_
 

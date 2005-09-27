@@ -1,7 +1,3 @@
-// http_link.cpp: implementation of the Chttp_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "http_link.h"
 

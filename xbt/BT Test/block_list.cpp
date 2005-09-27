@@ -1,7 +1,3 @@
-// block_list.cpp: implementation of the Cblock_list class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "block_list.h"
 

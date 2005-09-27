@@ -1,7 +1,3 @@
-// scheduler.h: interface for the Cscheduler class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_SCHEDULER_H__86853B35_06D7_4678_A9AB_C966ECA148C0__INCLUDED_)
 #define AFX_SCHEDULER_H__86853B35_06D7_4678_A9AB_C966ECA148C0__INCLUDED_
 

@@ -1,7 +1,3 @@
-// data_counter.cpp: implementation of the Cdata_counter class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "data_counter.h"
 

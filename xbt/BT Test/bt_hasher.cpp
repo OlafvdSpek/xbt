@@ -1,7 +1,3 @@
-// bt_hasher.cpp: implementation of the Cbt_hasher class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_hasher.h"
 

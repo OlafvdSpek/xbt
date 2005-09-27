@@ -1,7 +1,3 @@
-// bt_peer_link.cpp: implementation of the Cbt_peer_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_peer_link.h"
 

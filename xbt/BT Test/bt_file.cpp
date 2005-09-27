@@ -1,7 +1,3 @@
-// bt_file.cpp: implementation of the Cbt_file class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_file.h"
 

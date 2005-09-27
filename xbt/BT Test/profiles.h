@@ -1,7 +1,3 @@
-// profiles.h: interface for the Cprofiles class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_PROFILES_H__70020ECF_1C5D_4352_9726_6F34081BAFC5__INCLUDED_)
 #define AFX_PROFILES_H__70020ECF_1C5D_4352_9726_6F34081BAFC5__INCLUDED_
 

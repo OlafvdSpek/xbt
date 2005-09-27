@@ -1,7 +1,3 @@
-// http_response_handler.cpp: implementation of the Chttp_response_handler class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "http_response_handler.h"
 
