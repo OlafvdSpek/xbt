@@ -1,7 +1,3 @@
-// bt_misc.cpp: implementation of the Cbt_misc class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_misc.h"
 
@@ -242,18 +238,18 @@ string peer_id2a(const string& v)
 	return "Unknown";
 }
 
-string duration2a(int v)
+string duration2a(float v)
 {
-	if (v < 120)
-		return n(v) + " seconds";
-	v /= 60;
-	if (v < 120)
-		return n(v) + " minutes";
-	v /= 60;
-	if (v < 48)
-		return n(v) + " hours";
-	v /= 24;
-	return n(v) + " days";
+	char d[32];
+	if (v > 86400)
+		sprintf(d, "%.1f days", v / 86400);
+	else if (v > 3600)
+		sprintf(d, "%.1f hours", v / 3600);
+	else if (v > 60)
+		sprintf(d, "%.1f minutes", v / 60);
+	else
+		sprintf(d, "%.1f seconds", v);
+	return d;
 }
 
 string time2a(time_t v)
