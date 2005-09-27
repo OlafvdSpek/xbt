@@ -1,7 +1,3 @@
-// static_config.cpp: implementation of the Cstatic_config class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "static_config.h"
 

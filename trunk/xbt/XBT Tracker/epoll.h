@@ -1,7 +1,3 @@
-// epoll.h: interface for the Cepoll class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_EPOLL_H__54CD3A68_E8A0_421F_991B_2A387A8893DC__INCLUDED_)
 #define AFX_EPOLL_H__54CD3A68_E8A0_421F_991B_2A387A8893DC__INCLUDED_
 

@@ -1,6 +1,3 @@
-// dlg_torrent_options.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_torrent_options.h"
 

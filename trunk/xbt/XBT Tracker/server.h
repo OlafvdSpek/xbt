@@ -1,7 +1,3 @@
-// server.h: interface for the Cserver class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_)
 #define AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_
 

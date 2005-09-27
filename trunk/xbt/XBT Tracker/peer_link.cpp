@@ -1,7 +1,3 @@
-// peer_link.cpp: implementation of the Cpeer_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "peer_link.h"
 

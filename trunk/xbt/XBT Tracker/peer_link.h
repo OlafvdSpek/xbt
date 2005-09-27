@@ -1,7 +1,3 @@
-// peer_link.h: interface for the Cpeer_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_PEER_LINK_H__55B9FC9B_26A7_42D7_A950_691FBA0B4910__INCLUDED_)
 #define AFX_PEER_LINK_H__55B9FC9B_26A7_42D7_A950_691FBA0B4910__INCLUDED_
 

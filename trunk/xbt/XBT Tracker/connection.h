@@ -1,7 +1,3 @@
-// connection.h: interface for the Cconnection class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_CONNECTION_H__CB2C61F4_A0ED_4996_9CFE_D6694BE24CC9__INCLUDED_)
 #define AFX_CONNECTION_H__CB2C61F4_A0ED_4996_9CFE_D6694BE24CC9__INCLUDED_
 

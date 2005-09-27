@@ -1,7 +1,3 @@
-// transaction.h: interface for the Ctransaction class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_TRANSACTION_H__4AEAFC18_CCA7_41C7_A3C1_71D871C7DA04__INCLUDED_)
 #define AFX_TRANSACTION_H__4AEAFC18_CCA7_41C7_A3C1_71D871C7DA04__INCLUDED_
 

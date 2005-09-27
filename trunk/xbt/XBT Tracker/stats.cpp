@@ -1,7 +1,3 @@
-// stats.cpp: implementation of the Cstats class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "stats.h"
 

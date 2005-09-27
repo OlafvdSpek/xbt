@@ -1,6 +1,3 @@
-// dlg_options.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "dlg_options.h"
 

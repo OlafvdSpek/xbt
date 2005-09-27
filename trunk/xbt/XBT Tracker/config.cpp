@@ -1,7 +1,3 @@
-// config.cpp: implementation of the Cconfig class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "config.h"
 

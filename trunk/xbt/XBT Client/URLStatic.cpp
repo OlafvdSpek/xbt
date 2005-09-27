@@ -1,6 +1,3 @@
-// URLStatic.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "URLStatic.h"
 

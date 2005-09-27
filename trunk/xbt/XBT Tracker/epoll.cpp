@@ -1,7 +1,3 @@
-// epoll.cpp: implementation of the Cepoll class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "epoll.h"
 
