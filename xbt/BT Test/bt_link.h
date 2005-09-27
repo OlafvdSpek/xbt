@@ -1,7 +1,3 @@
-// bt_link.h: interface for the Cbt_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_LINK_H__E306F9D6_A5E5_474E_A85F_88BEF876F3B8__INCLUDED_)
 #define AFX_BT_LINK_H__E306F9D6_A5E5_474E_A85F_88BEF876F3B8__INCLUDED_
 

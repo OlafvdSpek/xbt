@@ -1,7 +1,3 @@
-// bt_pl_write_data.h: interface for the Cbt_pl_write_data class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_PL_WRITE_DATA_H__112E7038_6C60_48B6_8244_BF5D79172F3A__INCLUDED_)
 #define AFX_BT_PL_WRITE_DATA_H__112E7038_6C60_48B6_8244_BF5D79172F3A__INCLUDED_
 

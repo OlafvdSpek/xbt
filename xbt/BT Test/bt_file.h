@@ -1,7 +1,3 @@
-// bt_file.h: interface for the Cbt_file class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_FILE_H__E64A5C96_20E5_4C90_8267_F9BC96F99888__INCLUDED_)
 #define AFX_BT_FILE_H__E64A5C96_20E5_4C90_8267_F9BC96F99888__INCLUDED_
 

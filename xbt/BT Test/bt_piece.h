@@ -1,7 +1,3 @@
-// bt_piece.h: interface for the Cbt_piece class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_)
 #define AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_
 

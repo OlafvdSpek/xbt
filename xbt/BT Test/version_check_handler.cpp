@@ -1,7 +1,3 @@
-// version_check_handler.cpp: implementation of the Cversion_check_handler class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "version_check_handler.h"
 

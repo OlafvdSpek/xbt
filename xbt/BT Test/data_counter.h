@@ -1,7 +1,3 @@
-// data_counter.h: interface for the Cdata_counter class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_DATA_COUNTER_H__F3C125B1_D612_41A0_B2D2_AB9240FDC72E__INCLUDED_)
 #define AFX_DATA_COUNTER_H__F3C125B1_D612_41A0_B2D2_AB9240FDC72E__INCLUDED_
 

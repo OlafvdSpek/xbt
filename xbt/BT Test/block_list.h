@@ -1,7 +1,3 @@
-// block_list.h: interface for the Cblock_list class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BLOCK_LIST_H__2DB02634_8686_4627_BC2C_113884ADD499__INCLUDED_)
 #define AFX_BLOCK_LIST_H__2DB02634_8686_4627_BC2C_113884ADD499__INCLUDED_
 
