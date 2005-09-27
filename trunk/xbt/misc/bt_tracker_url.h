@@ -1,7 +1,3 @@
-// bt_tracker_url.h: interface for the Cbt_tracker_url class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_TRACKER_URL_H__0DBE3C91_1952_433F_A351_2EF87ABC1C7C__INCLUDED_)
 #define AFX_BT_TRACKER_URL_H__0DBE3C91_1952_433F_A351_2EF87ABC1C7C__INCLUDED_
 

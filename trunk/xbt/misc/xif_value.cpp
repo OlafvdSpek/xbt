@@ -1,7 +1,3 @@
-// xif_value.cpp: implementation of the Cxif_value class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "xif_value.h"
 

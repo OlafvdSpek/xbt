@@ -1,7 +1,3 @@
-// xcc_error.cpp: implementation of the Cxcc_error class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "xcc_error.h"
 

@@ -1,7 +1,3 @@
-// bt_strings.h: interface for the Cbt_strings class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_STRINGS_H__2BC4A814_E7F6_45BF_AEA3_59B270DA3A9A__INCLUDED_)
 #define AFX_BT_STRINGS_H__2BC4A814_E7F6_45BF_AEA3_59B270DA3A9A__INCLUDED_
 

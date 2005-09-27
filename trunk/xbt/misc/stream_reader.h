@@ -1,7 +1,3 @@
-// stream_reader.h: interface for the Cstream_reader class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_STREAM_READER_H__FC96F4EB_360D_4836_9D31_2C0D0D0377A8__INCLUDED_)
 #define AFX_STREAM_READER_H__FC96F4EB_360D_4836_9D31_2C0D0D0377A8__INCLUDED_
 

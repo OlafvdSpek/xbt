@@ -1,7 +1,3 @@
-// socket.cpp: implementation of the Csocket class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "socket.h"
 

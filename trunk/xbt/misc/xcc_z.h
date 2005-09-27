@@ -1,7 +1,3 @@
-// xcc_z.h: interface for the xcc_z class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_XCC_Z_H__63B3CD06_15B5_11D6_B606_C89000A7846E__INCLUDED_)
 #define AFX_XCC_Z_H__63B3CD06_15B5_11D6_B606_C89000A7846E__INCLUDED_
 

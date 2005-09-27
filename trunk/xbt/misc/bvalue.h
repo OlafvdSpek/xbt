@@ -1,7 +1,3 @@
-// bvalue.h: interface for the Cbvalue class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BVALUE_H__AE7DA755_2638_4709_8C54_495AA3840EFB__INCLUDED_)
 #define AFX_BVALUE_H__AE7DA755_2638_4709_8C54_495AA3840EFB__INCLUDED_
 

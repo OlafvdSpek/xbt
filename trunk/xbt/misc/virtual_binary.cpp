@@ -1,7 +1,3 @@
-// virtual_binary.cpp: implementation of the Cvirtual_binary class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "virtual_binary.h"
 

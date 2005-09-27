@@ -1,7 +1,3 @@
-// xcc_error.h: interface for the Cxcc_error class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_XCC_ERROR_H__EA1254C7_2222_11D5_B606_0000B4936994__INCLUDED_)
 #define AFX_XCC_ERROR_H__EA1254C7_2222_11D5_B606_0000B4936994__INCLUDED_
 

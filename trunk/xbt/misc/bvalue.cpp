@@ -1,7 +1,3 @@
-// bvalue.cpp: implementation of the Cbvalue class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bvalue.h"
 
