@@ -1,7 +1,3 @@
-// profiles.cpp: implementation of the Cprofiles class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "profiles.h"
 

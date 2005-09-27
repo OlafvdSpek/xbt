@@ -1,7 +1,3 @@
-// merkle_tree.cpp: implementation of the Cmerkle_tree class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "merkle_tree.h"
 

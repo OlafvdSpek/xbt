@@ -1,7 +1,3 @@
-// bt_tracker_link.h: interface for the Cbt_tracker_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_TRACKER_LINK_H__19566F35_0475_4CE0_BF87_19345BBD0E42__INCLUDED_)
 #define AFX_BT_TRACKER_LINK_H__19566F35_0475_4CE0_BF87_19345BBD0E42__INCLUDED_
 

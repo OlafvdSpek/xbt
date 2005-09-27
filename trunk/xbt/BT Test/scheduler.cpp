@@ -1,7 +1,3 @@
-// scheduler.cpp: implementation of the Cscheduler class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "scheduler.h"
 

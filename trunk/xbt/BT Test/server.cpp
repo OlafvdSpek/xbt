@@ -1,7 +1,3 @@
-// server.cpp: implementation of the Cserver class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "server.h"
 

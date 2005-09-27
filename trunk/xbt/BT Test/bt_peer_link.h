@@ -1,7 +1,3 @@
-// bt_peer_link.h: interface for the Cbt_peer_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_PEER_LINK_H__50DC0701_DE7E_4A9D_B266_8C3188C24072__INCLUDED_)
 #define AFX_BT_PEER_LINK_H__50DC0701_DE7E_4A9D_B266_8C3188C24072__INCLUDED_
 

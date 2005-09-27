@@ -1,7 +1,3 @@
-// bt_admin_link.h: interface for the Cbt_admin_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_BT_ADMIN_LINK_H__C5AA1CA0_8023_42E9_A747_00CF206F5833__INCLUDED_)
 #define AFX_BT_ADMIN_LINK_H__C5AA1CA0_8023_42E9_A747_00CF206F5833__INCLUDED_
 

@@ -1,7 +1,3 @@
-// udp_tracker.cpp: implementation of the Cudp_tracker class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "udp_tracker.h"
 

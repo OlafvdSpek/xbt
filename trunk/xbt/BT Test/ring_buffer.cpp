@@ -1,7 +1,3 @@
-// ring_buffer.cpp: implementation of the Cring_buffer class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "ring_buffer.h"
 
