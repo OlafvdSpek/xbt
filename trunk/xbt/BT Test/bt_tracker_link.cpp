@@ -1,7 +1,3 @@
-// bt_tracker_link.cpp: implementation of the Cbt_tracker_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_tracker_link.h"
 

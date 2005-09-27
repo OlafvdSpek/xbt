@@ -1,7 +1,3 @@
-// udp_tracker.h: interface for the Cudp_tracker class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_UDP_TRACKER_H__12DAD37E_1E30_4E4C_832E_44105A312226__INCLUDED_)
 #define AFX_UDP_TRACKER_H__12DAD37E_1E30_4E4C_832E_44105A312226__INCLUDED_
 

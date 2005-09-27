@@ -1,7 +1,3 @@
-// bt_admin_link.cpp: implementation of the Cbt_admin_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_admin_link.h"
 

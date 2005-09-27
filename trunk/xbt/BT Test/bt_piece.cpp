@@ -1,7 +1,3 @@
-// bt_piece.cpp: implementation of the Cbt_piece class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_piece.h"
 

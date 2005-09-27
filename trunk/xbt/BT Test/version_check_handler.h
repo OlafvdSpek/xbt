@@ -1,7 +1,3 @@
-// version_check_handler.h: interface for the Cversion_check_handler class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_VERSION_CHECK_HANDLER_H__4B9397C3_6058_46EA_B1EA_AC260B78CC18__INCLUDED_)
 #define AFX_VERSION_CHECK_HANDLER_H__4B9397C3_6058_46EA_B1EA_AC260B78CC18__INCLUDED_
 

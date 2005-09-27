@@ -1,7 +1,3 @@
-// bt_pl_write_data.cpp: implementation of the Cbt_pl_write_data class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_pl_write_data.h"
 

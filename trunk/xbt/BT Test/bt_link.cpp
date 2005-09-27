@@ -1,7 +1,3 @@
-// bt_link.cpp: implementation of the Cbt_link class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "bt_link.h"
 
