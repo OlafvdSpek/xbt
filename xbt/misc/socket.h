@@ -16,6 +16,7 @@ typedef int socklen_t;
 #else
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <errno.h>
 
 #define closesocket close
 #define ioctlsocket ioctl
