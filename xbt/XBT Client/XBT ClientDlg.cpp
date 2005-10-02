@@ -2329,7 +2329,7 @@ void CXBTClientDlg::set_dir(const string& completes, const string& incompletes, 
 	}
 	{
 		char path[MAX_PATH];
-		if (FAILED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)))
+		if (!SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true))
 			strcpy(path, "C:");
 		personal_default = path;
 	}
