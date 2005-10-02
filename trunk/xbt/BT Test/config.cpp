@@ -34,7 +34,7 @@ Cconfig::Cconfig()
 	m_upnp = true;
 #ifdef WIN32
 	char path[MAX_PATH];
-	string home = FAILED(SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true)) ? "C:" : path;
+	string home = SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true) ? path : "C:";
 #else
 	string home = get_env("HOME");
 #endif
