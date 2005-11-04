@@ -11,8 +11,10 @@
 Cxcc_error Cdatabase::open(const char* host, const char* user, const char* password, const char* database, bool echo_errors)
 {
 	m_echo_errors = echo_errors;
+	bool a0 = true;
 	return !mysql_init(&m_handle)
 		|| !mysql_real_connect(&m_handle, host, user, password, database, MYSQL_PORT, NULL, 0)
+		|| !mysql_options(&m_handle, MYSQL_OPT_RECONNECT, reinterpret_cast<const char*>(&a0))
 		? Cxcc_error(mysql_error(&m_handle)) : Cxcc_error();
 }
 
@@ -23,9 +25,9 @@ Cxcc_error Cdatabase::open(const string& host, const string& user, const string&
 
 Cxcc_error Cdatabase::open(const string& conf_file, bool echo_errors)
 {
-	string host; 
-	string user; 
-	string password; 
+	string host;
+	string user;
+	string password;
 	string database;
 	ifstream is(conf_file.c_str());
 	is >> database >> host >> user >> password;
