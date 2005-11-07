@@ -20,6 +20,12 @@ CREATE TABLE xbt_config
   value varchar(255) NOT NULL
 );
 
+CREATE TABLE xbt_deny_from_hosts
+(
+  begin int NOT NULL,
+  end int NOT NULL
+);
+
 CREATE TABLE xbt_files
 (
   fid int NOT NULL auto_increment,
