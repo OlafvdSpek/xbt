@@ -1212,7 +1212,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	}
 	else if (action == bts_get_status)
 	{
-		Cbvalue files(Cbvalue::vt_list);
+		Cbvalue files(Cbvalue::vt_dictionary);
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			Cbvalue events;
