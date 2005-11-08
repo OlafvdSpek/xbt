@@ -35,9 +35,15 @@ public:
 	int m_scrape_interval;
 	int m_write_db_interval;
 	int m_update_files_method;
+	string m_column_files_completed;
+	string m_column_files_fid;
+	string m_column_files_leechers;
+	string m_column_files_seeders;
+	string m_column_users_uid;
 	string m_pid_file;
 	string m_redirect_url;
 	string m_table_announce_log;
+	string m_table_deny_from_hosts;
 	string m_table_files;
 	string m_table_files_updates;
 	string m_table_files_users;
