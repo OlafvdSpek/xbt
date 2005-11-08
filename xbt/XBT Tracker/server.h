@@ -71,6 +71,12 @@ public:
 		int m_interval;
 	};
 
+	struct t_deny_from_host
+	{
+		unsigned int end;
+		bool marked;
+	};
+
 	struct t_file
 	{
 		void clean_up(time_t t, Cserver&);
@@ -111,8 +117,6 @@ public:
 		int stopped;
 	};
 
-	typedef map<string, t_file> t_files;
-	typedef map<int, int> t_ipas;
 
 	struct t_user
 	{
@@ -133,6 +137,9 @@ public:
 		__int64 torrent_pass_secret;
 	};
 
+	typedef map<string, t_file> t_files;
+	typedef map<int, int> t_ipas;
+	typedef map<unsigned int, t_deny_from_host> t_deny_from_hosts;
 	typedef map<int, t_user> t_users;
 	typedef map<string, t_user*> t_users_names;
 	typedef map<string, t_user*> t_users_torrent_passes;
@@ -146,6 +153,7 @@ public:
 	void read_config();
 	void write_db_files();
 	void write_db_users();
+	void read_db_deny_from_hosts();
 	void read_db_files();
 	void read_db_files_sql();
 	void read_db_ipas();
@@ -229,8 +237,14 @@ public:
 private:
 	enum
 	{
+		column_files_completed,
+		column_files_fid,
+		column_files_leechers,
+		column_files_seeders,
+		column_users_uid,
 		table_announce_log,
 		table_config,
+		table_deny_from_hosts,
 		table_files,
 		table_files_updates,
 		table_files_users,
@@ -245,6 +259,7 @@ private:
 	typedef list<Cudp_listen_socket> t_udp_sockets;
 
 	static void sig_handler(int v);
+	string column_name(int v) const;
 	string table_name(int) const;
 
 	Cconfig m_config;
@@ -252,6 +267,7 @@ private:
 	bool m_use_sql;
 	time_t m_clean_up_time;
 	time_t m_read_config_time;
+	time_t m_read_db_deny_from_hosts_time;
 	time_t m_read_db_files_time;
 	time_t m_read_db_ipas_time;
 	time_t m_read_db_users_time;
@@ -264,6 +280,7 @@ private:
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
 	Cepoll m_epoll;
+	t_deny_from_hosts m_deny_from_hosts;
 	t_files m_files;
 	t_ipas m_ipas;
 	t_users m_users;

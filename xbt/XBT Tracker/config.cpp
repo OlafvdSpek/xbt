@@ -29,7 +29,7 @@ Cconfig::Cconfig()
 	m_read_db_interval = 60;
 	m_redirect_url.erase();
 	m_scrape_interval = 0;
-	m_update_files_method = 1;
+	m_update_files_method = 2;
 	m_write_db_interval = 60;
 }
 
@@ -41,8 +41,20 @@ void Cconfig::set(const string& name, const string& value)
 		m_pid_file = value;
 	else if (name == "redirect_url")
 		m_redirect_url = value;
+	else if (name == "column_files_completed")
+		m_column_files_completed = value;
+	else if (name == "column_files_fid")
+		m_column_files_fid = value;
+	else if (name == "column_files_leechers")
+		m_column_files_leechers = value;
+	else if (name == "column_files_seeders")
+		m_column_files_seeders = value;
+	else if (name == "column_users_uid")
+		m_column_users_uid = value;
 	else if (name == "table_announce_log")
 		m_table_announce_log = value;
+	else if (name == "table_deny_from_hosts")
+		m_table_deny_from_hosts = value;
 	else if (name == "table_files")
 		m_table_files = value;
 	else if (name == "table_files_updates")
