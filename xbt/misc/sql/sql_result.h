@@ -1,7 +1,3 @@
-// sql_result.h: interface for the Csql_result class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_SQL_RESULT_H__EA1254C8_2222_11D5_B606_0000B4936994__INCLUDED_)
 #define AFX_SQL_RESULT_H__EA1254C8_2222_11D5_B606_0000B4936994__INCLUDED_
 

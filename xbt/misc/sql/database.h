@@ -1,7 +1,3 @@
-// database.h: interface for the Cdatabase class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_DATABASE_H__EA1254C6_2222_11D5_B606_0000B4936994__INCLUDED_)
 #define AFX_DATABASE_H__EA1254C6_2222_11D5_B606_0000B4936994__INCLUDED_
 

@@ -1,7 +1,3 @@
-// sql_query.cpp: implementation of the Csql_query class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "sql_query.h"
 

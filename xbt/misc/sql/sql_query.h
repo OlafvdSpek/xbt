@@ -1,7 +1,3 @@
-// sql_query.h: interface for the Csql_query class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_SQL_QUERY_H__D925D760_22F7_11D5_B606_0000B4936994__INCLUDED_)
 #define AFX_SQL_QUERY_H__D925D760_22F7_11D5_B606_0000B4936994__INCLUDED_
 
