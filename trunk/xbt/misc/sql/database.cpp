@@ -1,7 +1,3 @@
-// database.cpp: implementation of the Cdatabase class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "database.h"
 

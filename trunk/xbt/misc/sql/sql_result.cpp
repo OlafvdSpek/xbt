@@ -1,7 +1,3 @@
-// sql_result.cpp: implementation of the Csql_result class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "sql_result.h"
 
