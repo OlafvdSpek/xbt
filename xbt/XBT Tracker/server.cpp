@@ -685,8 +685,8 @@ void Cserver::read_db_files_sql()
 					continue;
 				m_files.erase(row.f(0));
 				q = "delete from ? where ? = ?";
-				q.p(column_name(column_files_fid));
 				q.p(table_name(table_files));
+				q.p(column_name(column_files_fid));
 				q.p(row.f_int(1));
 				q.execute();
 			}
