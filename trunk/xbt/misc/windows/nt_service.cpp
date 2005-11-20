@@ -1,7 +1,3 @@
-// nt_service.cpp: implementation of the Cnt_service class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "nt_service.h"
 
