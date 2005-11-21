@@ -12,11 +12,6 @@
 #include "resource.h"		// main symbols
 #include "../bt test/server.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CXBTClientApp:
-// See XBT Client.cpp for the implementation of this class
-//
-
 class CXBTClientApp: public CWinApp
 {
 public:
@@ -35,10 +30,6 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-
-/////////////////////////////////////////////////////////////////////////////
-
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_XBTCLIENT_H__6B17AE51_6DFB_4F6A_B9AF_170611514AFE__INCLUDED_)
