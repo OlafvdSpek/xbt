@@ -123,7 +123,7 @@ int Csocket::listen()
 const Csocket& Csocket::open(int t, bool _blocking)
 {
 	*this = socket(AF_INET, t, 0);
-	if (!_blocking && blocking(false))
+	if (*this != INVALID_SOCKET && !_blocking && blocking(false))
 		close();
 	return *this;
 }
