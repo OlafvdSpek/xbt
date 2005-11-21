@@ -104,6 +104,10 @@ SOURCE=..\..\misc\ETSLayout.cpp
 # End Source File
 # Begin Source File
 
+SOURCE="..\XBT Client\ListCtrlEx.cpp"
+# End Source File
+# Begin Source File
+
 SOURCE=..\misc\sha1.cpp
 # End Source File
 # Begin Source File

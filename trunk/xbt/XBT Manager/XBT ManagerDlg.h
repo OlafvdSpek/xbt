@@ -1,6 +1,3 @@
-// XBT ManagerDlg.h : header file
-//
-
 #if !defined(AFX_XBTMANAGERDLG_H__7EF696C3_D9AD_467D_8F2E_9DC97F402FCB__INCLUDED_)
 #define AFX_XBTMANAGERDLG_H__7EF696C3_D9AD_467D_8F2E_9DC97F402FCB__INCLUDED_
 
@@ -8,15 +5,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "ListCtrlEx.h"
 #include "bvalue.h"
 #include "tracker_socket.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CXBTManagerDlg dialog
-
 class CXBTManagerDlg: public ETSLayoutDialog
 {
-// Construction
 public:
 	void tracker_output(const string& hash, const Cbvalue& v);
 	void sort(int column);
@@ -25,25 +19,20 @@ public:
 	void save(const char* name);
 	void insert(const string& name);
 	void auto_resize();
-	CXBTManagerDlg(CWnd* pParent = NULL);	// standard constructor
+	CXBTManagerDlg(CWnd* pParent = NULL);
 
-// Dialog Data
 	//{{AFX_DATA(CXBTManagerDlg)
 	enum { IDD = IDD_XBTMANAGER_DIALOG };
-	CListCtrl	m_list;
+	CListCtrlEx	m_list;
 	//}}AFX_DATA
 
-	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CXBTManagerDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+	virtual void DoDataExchange(CDataExchange* pDX);
 	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
 	HICON m_hIcon;
 
-	// Generated message map functions
 	//{{AFX_MSG(CXBTManagerDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
@@ -79,6 +68,5 @@ private:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_XBTMANAGERDLG_H__7EF696C3_D9AD_467D_8F2E_9DC97F402FCB__INCLUDED_)
