@@ -9,10 +9,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_about dialog
-
-
 Cdlg_about::Cdlg_about(CWnd* pParent /*=NULL*/)
 	: CDialog(Cdlg_about::IDD, pParent)
 {
@@ -39,9 +35,6 @@ BEGIN_MESSAGE_MAP(Cdlg_about, CDialog)
 	ON_BN_CLICKED(IDC_LICENSE, OnLicense)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_about message handlers
 
 void Cdlg_about::OnSite()
 {
