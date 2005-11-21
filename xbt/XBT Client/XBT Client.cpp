@@ -10,21 +10,12 @@ static char THIS_FILE[] = __FILE__;
 
 const extern UINT g_are_you_me_message_id;
 
-/////////////////////////////////////////////////////////////////////////////
-// CXBTClientApp
-
 BEGIN_MESSAGE_MAP(CXBTClientApp, CWinApp)
 	//{{AFX_MSG_MAP(CXBTClientApp)
 	//}}AFX_MSG
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// The one and only CXBTClientApp object
-
 CXBTClientApp theApp;
-
-/////////////////////////////////////////////////////////////////////////////
-// CXBTClientApp initialization
 
 BOOL CXBTClientApp::InitInstance()
 {
