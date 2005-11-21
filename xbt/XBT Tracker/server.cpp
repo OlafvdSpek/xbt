@@ -9,10 +9,6 @@
 static volatile bool g_sig_hup = false;
 static volatile bool g_sig_term = false;
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 class Cannounce_output_http_compact: public Cserver::Cannounce_output
 {
 public:
