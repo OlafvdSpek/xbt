@@ -34,6 +34,10 @@ Cxcc_error Cdatabase::open(const string& conf_file, bool echo_errors)
 
 Csql_result Cdatabase::query(const string& q)
 {
+#ifndef NDEBUG
+	static ofstream f("/temp/query_log.txt");
+	f << q << endl;
+#endif
 	if (mysql_real_query(&m_handle, q.c_str(), q.size()))
 	{
 		if (m_echo_errors)
