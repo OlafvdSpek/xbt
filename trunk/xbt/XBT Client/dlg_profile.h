@@ -5,22 +5,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// dlg_profile.h : header file
-//
-
 #include "resource.h"
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_profile dialog
 
 class Cdlg_profile: public ETSLayoutDialog
 {
-// Construction
 public:
 	void update_controls();
-	Cdlg_profile(CWnd* pParent = NULL);   // standard constructor
+	Cdlg_profile(CWnd* pParent = NULL);
 
-// Dialog Data
 	//{{AFX_DATA(Cdlg_profile)
 	enum { IDD = IDD_PROFILE };
 	CEdit	m_upload_slots;
@@ -41,18 +33,11 @@ public:
 	CString	m_name;
 	//}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(Cdlg_profile)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual void DoDataExchange(CDataExchange* pDX);
 	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
-
-	// Generated message map functions
 	//{{AFX_MSG(Cdlg_profile)
 	afx_msg void OnSeedingRatioEnable();
 	afx_msg void OnUploadRateEnable();
@@ -65,6 +50,5 @@ protected:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_DLG_PROFILE_H__D6763518_01E4_4119_A02F_3701B5BFE69C__INCLUDED_)

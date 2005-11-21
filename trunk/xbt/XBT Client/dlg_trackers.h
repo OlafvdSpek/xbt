@@ -5,18 +5,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// dlg_trackers.h : header file
-//
-
 #include "ListCtrlEx.h"
 #include "resource.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_trackers dialog
-
 class Cdlg_trackers: public ETSLayoutDialog
 {
-// Construction
 public:
 	struct t_tracker
 	{
@@ -28,14 +21,13 @@ public:
 	typedef map<int, t_tracker> t_trackers;
 
 	void insert(const t_tracker&);
-	Cdlg_trackers(CWnd* pParent);   // standard constructor
+	Cdlg_trackers(CWnd* pParent);
 
 	const t_trackers& trackers() const
 	{
 		return m_trackers;
 	}
 
-// Dialog Data
 	//{{AFX_DATA(Cdlg_trackers)
 	enum { IDD = IDD_TRACKERS };
 	CButton	m_delete;
@@ -43,19 +35,13 @@ public:
 	CListCtrlEx	m_list;
 	//}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(Cdlg_trackers)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual void DoDataExchange(CDataExchange* pDX);
 	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
 	void update_controls();
 
-	// Generated message map functions
 	//{{AFX_MSG(Cdlg_trackers)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnInsert();
@@ -71,6 +57,5 @@ private:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_DLG_TRACKERS_H__4F7D710B_0573_4CEE_8776_CFE2D4399201__INCLUDED_)

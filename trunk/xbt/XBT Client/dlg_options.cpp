@@ -9,10 +9,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_options dialog
-
-
 Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_options::IDD, pParent, "Cdlg_options")
 {
@@ -88,9 +84,6 @@ BEGIN_MESSAGE_MAP(Cdlg_options, ETSLayoutDialog)
 	ON_BN_CLICKED(IDC_TORRENTS_DIRECTORY_BROWSE, OnTorrentsDirectoryBrowse)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_options message handlers
 
 Cdlg_options::t_data Cdlg_options::get() const
 {
@@ -175,7 +168,7 @@ void Cdlg_options::OnTorrentsDirectoryBrowse()
 	UpdateData(false);
 }
 
-BOOL Cdlg_options::OnInitDialog() 
+BOOL Cdlg_options::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)

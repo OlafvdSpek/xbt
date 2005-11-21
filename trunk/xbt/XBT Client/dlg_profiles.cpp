@@ -9,15 +9,10 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_profiles dialog
-
-
-Cdlg_profiles::Cdlg_profiles(CWnd* pParent /*=NULL*/): 
+Cdlg_profiles::Cdlg_profiles(CWnd* pParent /*=NULL*/):
 	ETSLayoutDialog(Cdlg_profiles::IDD, pParent, "Cdlg_profiles")
 {
 	//{{AFX_DATA_INIT(Cdlg_profiles)
-		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
@@ -46,10 +41,7 @@ BEGIN_MESSAGE_MAP(Cdlg_profiles, ETSLayoutDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_profiles message handlers
-
-BOOL Cdlg_profiles::OnInitDialog() 
+BOOL Cdlg_profiles::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	update_controls();
@@ -80,7 +72,7 @@ BOOL Cdlg_profiles::OnInitDialog()
 	return true;
 }
 
-void Cdlg_profiles::OnInsert() 
+void Cdlg_profiles::OnInsert()
 {
 	Cdlg_profile dlg(this);
 	if (IDOK != dlg.DoModal())
@@ -101,7 +93,7 @@ void Cdlg_profiles::OnInsert()
 	m_list.auto_size();
 }
 
-void Cdlg_profiles::OnEdit() 
+void Cdlg_profiles::OnEdit()
 {
 	int index = m_list.GetNextItem(-1, LVNI_SELECTED);
 	if (index == -1)
@@ -136,7 +128,7 @@ void Cdlg_profiles::OnEdit()
 	m_list.Update(index);
 }
 
-void Cdlg_profiles::OnDelete() 
+void Cdlg_profiles::OnDelete()
 {
 	int index;
 	while ((index = m_list.GetNextItem(-1, LVNI_SELECTED)) != -1)
@@ -154,7 +146,7 @@ void Cdlg_profiles::insert(const t_entry& e)
 		m_list.InsertItemData(id);
 }
 
-void Cdlg_profiles::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_profiles::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	string& buffer = m_list.get_buffer();
@@ -189,13 +181,13 @@ void Cdlg_profiles::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-void Cdlg_profiles::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_profiles::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	OnEdit();
 	*pResult = 0;
 }
 
-void Cdlg_profiles::OnActivate() 
+void Cdlg_profiles::OnActivate()
 {
 	if (m_list.GetSelectedCount() != 1)
 		return;
@@ -210,7 +202,7 @@ void Cdlg_profiles::update_controls()
 	m_delete.EnableWindow(m_list.GetSelectedCount());
 }
 
-void Cdlg_profiles::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_profiles::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	update_controls();
 	*pResult = 0;

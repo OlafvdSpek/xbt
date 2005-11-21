@@ -9,15 +9,10 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_trackers dialog
-
-
 Cdlg_trackers::Cdlg_trackers(CWnd* pParent):
 	ETSLayoutDialog(Cdlg_trackers::IDD, pParent, "Cdlg_trackers")
 {
 	//{{AFX_DATA_INIT(Cdlg_trackers)
-		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
@@ -44,9 +39,6 @@ BEGIN_MESSAGE_MAP(Cdlg_trackers, ETSLayoutDialog)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, OnItemchangedList)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_trackers message handlers
 
 BOOL Cdlg_trackers::OnInitDialog()
 {
@@ -156,7 +148,7 @@ void Cdlg_trackers::update_controls()
 	m_delete.EnableWindow(m_list.GetSelectedCount());
 }
 
-void Cdlg_trackers::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_trackers::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	update_controls();
 	*pResult = 0;

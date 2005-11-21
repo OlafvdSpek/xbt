@@ -18,10 +18,6 @@ static char THIS_FILE[] = __FILE__;
 
 #define for if (0) {} else for
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_make_torrent dialog
-
-
 Cdlg_make_torrent::Cdlg_make_torrent(CWnd* pParent):
 	ETSLayoutDialog(Cdlg_make_torrent::IDD, pParent, "Cdlg_make_torrent")
 {
@@ -60,9 +56,6 @@ BEGIN_MESSAGE_MAP(Cdlg_make_torrent, ETSLayoutDialog)
 	ON_BN_CLICKED(IDC_LOAD_TRACKERS, OnLoadTrackers)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_make_torrent message handlers
 
 BOOL Cdlg_make_torrent::OnInitDialog()
 {
