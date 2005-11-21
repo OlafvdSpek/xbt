@@ -1,6 +1,3 @@
-// XBT ManagerDlg.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "XBT Manager.h"
 #include "XBT ManagerDlg.h"
@@ -29,7 +26,6 @@ CXBTManagerDlg::CXBTManagerDlg(CWnd* pParent /*=NULL*/)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	m_buffer_w = 0;
 }
 
 void CXBTManagerDlg::DoDataExchange(CDataExchange* pDX)
@@ -170,30 +166,29 @@ void CXBTManagerDlg::insert(const string& name)
 void CXBTManagerDlg::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
+	string& buffer = m_list.get_buffer();
 	const t_map_entry& e = m_map.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{
 	case 0:
-		m_buffer[m_buffer_w] = e.name;
+		buffer = e.name;
 		break;
 	case 1:
-		m_buffer[m_buffer_w] = e.leechers == -1 ? "" : n(e.leechers);
+		buffer = e.leechers == -1 ? "" : n(e.leechers);
 		break;
 	case 2:
-		m_buffer[m_buffer_w] = e.seeders == -1 ? "" : n(e.seeders);
+		buffer = e.seeders == -1 ? "" : n(e.seeders);
 		break;
 	case 3:
-		m_buffer[m_buffer_w] = e.tracker;
+		buffer = e.tracker;
 		break;
 	case 4:
-		m_buffer[m_buffer_w] = e.error;
+		buffer = e.error;
 		break;
 	default:
-		m_buffer[m_buffer_w].erase();
+		buffer.erase();
 	}
-	pDispInfo->item.pszText = const_cast<char*>(m_buffer[m_buffer_w--].c_str());
-	if (m_buffer_w < 0)
-		m_buffer_w += 4;
+	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
 }
 

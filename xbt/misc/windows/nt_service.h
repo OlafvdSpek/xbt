@@ -1,7 +1,3 @@
-// nt_service.h: interface for the Cnt_service class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #if !defined(AFX_NT_SERVICE_H__42D4E866_3774_4D76_B3A4_67E38CE5934E__INCLUDED_)
 #define AFX_NT_SERVICE_H__42D4E866_3774_4D76_B3A4_67E38CE5934E__INCLUDED_
 

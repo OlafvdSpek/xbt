@@ -16,14 +16,10 @@ class CXBTClientApp: public CWinApp
 {
 public:
 	static BOOL CALLBACK enumerator(HWND, LPARAM);
-// Overrides
-	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CXBTClientApp)
 	public:
 	virtual BOOL InitInstance();
 	//}}AFX_VIRTUAL
-
-// Implementation
 
 	//{{AFX_MSG(CXBTClientApp)
 	//}}AFX_MSG
