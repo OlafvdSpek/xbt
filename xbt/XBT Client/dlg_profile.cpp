@@ -8,11 +8,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_profile dialog
-
-
-Cdlg_profile::Cdlg_profile(CWnd* pParent /*=NULL*/): 
+Cdlg_profile::Cdlg_profile(CWnd* pParent /*=NULL*/):
 	ETSLayoutDialog(Cdlg_profile::IDD, pParent, "Cdlg_profile")
 {
 	//{{AFX_DATA_INIT(Cdlg_profile)
@@ -65,10 +61,7 @@ BEGIN_MESSAGE_MAP(Cdlg_profile, ETSLayoutDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_profile message handlers
-
-BOOL Cdlg_profile::OnInitDialog() 
+BOOL Cdlg_profile::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	update_controls();
@@ -112,27 +105,27 @@ void Cdlg_profile::update_controls()
 	m_torrent_limit.EnableWindow(m_torrent_limit_enable);
 }
 
-void Cdlg_profile::OnSeedingRatioEnable() 
+void Cdlg_profile::OnSeedingRatioEnable()
 {
 	update_controls();
 }
 
-void Cdlg_profile::OnUploadRateEnable() 
+void Cdlg_profile::OnUploadRateEnable()
 {
 	update_controls();
 }
 
-void Cdlg_profile::OnUploadSlotsEnable() 
+void Cdlg_profile::OnUploadSlotsEnable()
 {
 	update_controls();
 }
 
-void Cdlg_profile::OnPeerLimitEnable() 
+void Cdlg_profile::OnPeerLimitEnable()
 {
 	update_controls();
 }
 
-void Cdlg_profile::OnTorrentLimitEnable() 
+void Cdlg_profile::OnTorrentLimitEnable()
 {
 	update_controls();
 }

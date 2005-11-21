@@ -9,15 +9,10 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_block_list dialog
-
-
 Cdlg_block_list::Cdlg_block_list(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_block_list::IDD, pParent, "Cdlg_block_list")
 {
 	//{{AFX_DATA_INIT(Cdlg_block_list)
-		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
@@ -40,10 +35,7 @@ BEGIN_MESSAGE_MAP(Cdlg_block_list, ETSLayoutDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_block_list message handlers
-
-BOOL Cdlg_block_list::OnInitDialog() 
+BOOL Cdlg_block_list::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
@@ -65,7 +57,7 @@ BOOL Cdlg_block_list::OnInitDialog()
 	return true;
 }
 
-void Cdlg_block_list::OnDelete() 
+void Cdlg_block_list::OnDelete()
 {
 	int index;
 	while ((index = m_list.GetNextItem(-1, LVNI_SELECTED)) != -1)
@@ -75,7 +67,7 @@ void Cdlg_block_list::OnDelete()
 	}
 }
 
-void Cdlg_block_list::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_block_list::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	string& buffer = m_list.get_buffer();
@@ -94,7 +86,7 @@ void Cdlg_block_list::update_controls()
 	m_delete.EnableWindow(m_list.GetSelectedCount());
 }
 
-void Cdlg_block_list::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_block_list::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	update_controls();
 	*pResult = 0;

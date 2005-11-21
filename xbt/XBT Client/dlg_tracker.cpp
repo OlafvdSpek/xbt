@@ -7,10 +7,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_tracker dialog
-
-
 Cdlg_tracker::Cdlg_tracker(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_tracker::IDD, pParent, "Cdlg_tracker")
 {
@@ -37,9 +33,6 @@ BEGIN_MESSAGE_MAP(Cdlg_tracker, ETSLayoutDialog)
 	//{{AFX_MSG_MAP(Cdlg_tracker)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_tracker message handlers
 
 BOOL Cdlg_tracker::OnInitDialog()
 {

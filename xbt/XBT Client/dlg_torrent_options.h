@@ -5,17 +5,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// dlg_torrent_options.h : header file
-//
-
 #include "resource.h"
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_torrent_options dialog
 
 class Cdlg_torrent_options: public ETSLayoutDialog
 {
-// Construction
 public:
 	struct t_data
 	{
@@ -32,9 +25,8 @@ public:
 
 	const t_data& get() const;
 	void set(const t_data&);
-	Cdlg_torrent_options(CWnd* pParent = NULL);   // standard constructor
+	Cdlg_torrent_options(CWnd* pParent = NULL);
 
-// Dialog Data
 	//{{AFX_DATA(Cdlg_torrent_options)
 	enum { IDD = IDD_TORRENT_OPTIONS };
 	CEdit	m_upload_slots_max;
@@ -51,19 +43,13 @@ public:
 	CString	m_trackers;
 	//}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(Cdlg_torrent_options)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual void DoDataExchange(CDataExchange* pDX);
 	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
 	void update_controls();
 
-	// Generated message map functions
 	//{{AFX_MSG(Cdlg_torrent_options)
 	afx_msg void OnSeedingRatioOverride();
 	virtual BOOL OnInitDialog();
@@ -77,6 +63,5 @@ private:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_DLG_TORRENT_OPTIONS_H__6925B405_EACA_4518_B562_CE2E525AF1E7__INCLUDED_)

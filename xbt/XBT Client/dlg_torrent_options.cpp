@@ -7,10 +7,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_torrent_options dialog
-
-
 Cdlg_torrent_options::Cdlg_torrent_options(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_torrent_options::IDD, pParent, "Cdlg_torrent_options")
 {
@@ -53,9 +49,6 @@ BEGIN_MESSAGE_MAP(Cdlg_torrent_options, ETSLayoutDialog)
 	ON_BN_CLICKED(IDC_UPLOAD_SLOTS_MAX_OVERRIDE, OnUploadSlotsMaxOverride)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_torrent_options message handlers
 
 BOOL Cdlg_torrent_options::OnInitDialog()
 {
@@ -112,14 +105,14 @@ void Cdlg_torrent_options::OnSeedingRatioOverride()
 	update_controls();
 }
 
-void Cdlg_torrent_options::OnUploadSlotsMinOverride() 
+void Cdlg_torrent_options::OnUploadSlotsMinOverride()
 {
-	update_controls();	
+	update_controls();
 }
 
-void Cdlg_torrent_options::OnUploadSlotsMaxOverride() 
+void Cdlg_torrent_options::OnUploadSlotsMaxOverride()
 {
-	update_controls();		
+	update_controls();
 }
 
 void Cdlg_torrent_options::OnOK()

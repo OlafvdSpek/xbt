@@ -7,10 +7,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_peer_connect dialog
-
-
 Cdlg_peer_connect::Cdlg_peer_connect(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_peer_connect::IDD, pParent, "Cdlg_peer_connect")
 {
@@ -36,9 +32,6 @@ BEGIN_MESSAGE_MAP(Cdlg_peer_connect, ETSLayoutDialog)
 	//{{AFX_MSG_MAP(Cdlg_peer_connect)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_peer_connect message handlers
 
 BOOL Cdlg_peer_connect::OnInitDialog() 
 {

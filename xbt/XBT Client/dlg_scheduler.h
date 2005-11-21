@@ -5,27 +5,20 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-// dlg_scheduler.h : header file
-//
-
 #include "ListCtrlEx.h"
 #include "../bt test/profiles.h"
 #include "../bt test/scheduler.h"
 #include "resource.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_scheduler dialog
-
 class Cdlg_scheduler: public ETSLayoutDialog
 {
-// Construction
 public:
 	typedef Cprofiles t_profiles;
 	typedef Cscheduler_entry t_entry;
 	typedef Cscheduler t_entries;
 
 	void insert(const t_entry&);
-	Cdlg_scheduler(CWnd* pParent = NULL);   // standard constructor
+	Cdlg_scheduler(CWnd* pParent = NULL);
 
 	const t_entries& entries() const
 	{
@@ -42,7 +35,6 @@ public:
 		m_profiles = v;
 	}
 
-// Dialog Data
 	//{{AFX_DATA(Cdlg_scheduler)
 	enum { IDD = IDD_SCHEDULER };
 	CButton	m_delete;
@@ -50,19 +42,13 @@ public:
 	CListCtrlEx	m_list;
 	//}}AFX_DATA
 
-
-// Overrides
-	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(Cdlg_scheduler)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual void DoDataExchange(CDataExchange* pDX);
 	//}}AFX_VIRTUAL
-
-// Implementation
 protected:
 	void update_controls();
 
-	// Generated message map functions
 	//{{AFX_MSG(Cdlg_scheduler)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnInsert();
@@ -79,6 +65,5 @@ private:
 };
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_DLG_SCHEDULER_H__E6C3F345_9345_47C0_9239_5954C1CADA62__INCLUDED_)

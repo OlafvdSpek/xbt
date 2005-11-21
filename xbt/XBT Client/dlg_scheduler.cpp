@@ -9,15 +9,10 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_scheduler dialog
-
-
 Cdlg_scheduler::Cdlg_scheduler(CWnd* pParent):
 	ETSLayoutDialog(Cdlg_scheduler::IDD, pParent, "Cdlg_scheduler")
 {
 	//{{AFX_DATA_INIT(Cdlg_scheduler)
-		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 }
 
@@ -43,9 +38,6 @@ BEGIN_MESSAGE_MAP(Cdlg_scheduler, ETSLayoutDialog)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, OnItemchangedList)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_scheduler message handlers
 
 BOOL Cdlg_scheduler::OnInitDialog()
 {
@@ -157,7 +149,7 @@ void Cdlg_scheduler::update_controls()
 	m_delete.EnableWindow(m_list.GetSelectedCount());
 }
 
-void Cdlg_scheduler::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult) 
+void Cdlg_scheduler::OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	update_controls();
 	*pResult = 0;

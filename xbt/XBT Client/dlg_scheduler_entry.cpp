@@ -7,10 +7,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_scheduler_entry dialog
-
-
 Cdlg_scheduler_entry::Cdlg_scheduler_entry(CWnd* pParent /*=NULL*/):
 	ETSLayoutDialog(Cdlg_scheduler_entry::IDD, pParent, "Cdlg_scheduler_entry")
 {
@@ -44,9 +40,6 @@ BEGIN_MESSAGE_MAP(Cdlg_scheduler_entry, ETSLayoutDialog)
 	ON_CBN_SELCHANGE(IDC_PROFILE, OnSelchangeProfile)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// Cdlg_scheduler_entry message handlers
 
 BOOL Cdlg_scheduler_entry::OnInitDialog() 
 {
