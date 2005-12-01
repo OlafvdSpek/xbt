@@ -160,7 +160,8 @@ void Cconnection::read(const string& v)
 			if (c++ == string::npos)
 				break;
 			int d = v.find_first_of(" &", c);
-			assert(d != string::npos);
+			if (d == string::npos)
+				break;
 			ti.set(v.substr(a, c - a - 1), uri_decode(v.substr(c, d - c)));
 			a = d + 1;
 		}
