@@ -1229,6 +1229,8 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 			file.d(bts_down_rate, i->m_down_counter.rate(time()));
 			file.d(bts_up_rate, i->m_up_counter.rate(time()));
 			file.d(bts_name, i->m_name);
+			file.d(bts_completed_at, i->m_completed_at);
+			file.d(bts_started_at, i->m_started_at);
 			files.d(i->m_info_hash, file);
 		}
 		d.d(bts_files, files);
