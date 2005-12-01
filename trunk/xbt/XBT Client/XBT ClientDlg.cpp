@@ -46,6 +46,8 @@ enum
 	fc_priority,
 	fc_state,
 	fc_hash,
+	fc_completed_at,
+	fc_started_at,
 	fc_end,
 };
 
@@ -566,6 +568,19 @@ void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		break;
 	case fc_name:
 		buffer = e.m_display_name;
+		break;
+	case fc_completed_at:
+		if (e.m_completed_at)
+			buffer = duration2a(time(NULL) - e.m_completed_at) + " ago";
+		else if (e.m_downloaded && e.m_left && time(NULL) - e.m_session_started_at > 300 && e.m_state == Cbt_file::s_running)
+		{
+			int duration = e.m_left * (time(NULL) - e.m_session_started_at) / e.m_downloaded;
+			buffer = duration2a(duration) + " to go";
+		}
+		break;
+	case fc_started_at:
+		if (e.m_started_at)
+			buffer = duration2a(time(NULL) - e.m_started_at) + " ago";
 		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
@@ -2143,6 +2158,8 @@ void CXBTClientDlg::insert_top_columns()
 		fc_priority, "Priority", "", LVCFMT_RIGHT, true,
 		fc_state, "State", "", LVCFMT_LEFT, true,
 		fc_hash, "Hash", "", LVCFMT_LEFT, false,
+		fc_completed_at, "Completed", "", LVCFMT_LEFT, false,
+		fc_started_at, "Started", "", LVCFMT_LEFT, false,
 		fc_end, "", "", LVCFMT_LEFT, true,
 		0, NULL
 	};
