@@ -1868,6 +1868,10 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 		return compare(a.m_display_name, b.m_display_name);
 	case fc_priority:
 		return compare(b.m_priority, a.m_priority);
+	case fc_completed_at:
+		return compare(b.m_completed_at, a.m_completed_at);
+	case fc_started_at:
+		return compare(b.m_started_at, a.m_started_at);
 	}
 	return 0;
 }
