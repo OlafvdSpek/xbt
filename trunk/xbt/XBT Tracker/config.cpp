@@ -21,7 +21,7 @@ Cconfig::Cconfig()
 	m_log_announce = false;
 	m_log_scrape = false;
 	m_pid_file = "xbt_tracker.pid";
-	m_read_config_interval = 300;
+	m_read_config_interval = 60;
 	m_read_db_interval = 60;
 	m_redirect_url.erase();
 	m_scrape_interval = 0;
@@ -47,6 +47,8 @@ void Cconfig::set(const string& name, const string& value)
 		m_column_files_seeders = value;
 	else if (name == "column_users_uid")
 		m_column_users_uid = value;
+	else if (name == "offline_message")
+		m_offline_message = value;
 	else if (name == "table_announce_log")
 		m_table_announce_log = value;
 	else if (name == "table_deny_from_hosts")

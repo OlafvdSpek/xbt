@@ -354,6 +354,8 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		q.p(time());
 		m_announce_log_buffer += q.read();
 	}
+	if (!m_config.m_offline_message.empty())
+		return m_config.m_offline_message;
 	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
 		return bts_unregistered_torrent;
 	t_file& file = m_files[v.m_info_hash];

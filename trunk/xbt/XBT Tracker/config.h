@@ -40,6 +40,7 @@ public:
 	string m_column_files_leechers;
 	string m_column_files_seeders;
 	string m_column_users_uid;
+	string m_offline_message;
 	string m_pid_file;
 	string m_redirect_url;
 	string m_table_announce_log;
