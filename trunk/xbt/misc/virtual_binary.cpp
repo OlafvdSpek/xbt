@@ -37,10 +37,6 @@ Cvirtual_binary_source* Cvirtual_binary_source::pre_edit()
 	return new Cvirtual_binary_source(t.data(), t.size());
 }	
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
 Cvirtual_binary::Cvirtual_binary()
 {
 	m_source = NULL;
