@@ -90,6 +90,24 @@ string hex_encode(const string& v)
 	return r;
 }
 
+string js_encode(const string& v)
+{
+	string r;
+	for (int i = 0; i < v.length(); i++)
+	{
+		switch (v[i])
+		{
+		case '\"':
+		case '\'':
+		case '\\':
+			r += '\\';
+		default:
+			r += v[i];
+		}
+	}
+	return r;
+}
+
 string uri_decode(const string& v)
 {
 	string r;
