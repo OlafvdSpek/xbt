@@ -12,26 +12,27 @@
 using namespace std;
 
 string b2a(__int64 v, const char* postfix = NULL);
-string backward_slashes(string v);
-string duration2a(float v);
-string escape_string(const string& v);
-string forward_slashes(string v);
-string get_env(const string& v);
+string backward_slashes(string);
+string duration2a(float);
+string escape_string(const string&);
+string forward_slashes(string);
+string get_env(const string&);
 int hms2i(int h, int m, int s);
 bool is_private_ipa(int a);
 int merkle_tree_size(int v);
-int mkpath(const string& v);
-string n(__int64 v);
+int mkpath(const string&);
+string n(__int64);
 string native_slashes(const string&);
 string hex_decode(const string&);
 string hex_encode(int l, int v);
-string hex_encode(const string& v);
-string peer_id2a(const string& v);
-string time2a(time_t v);
-string uri_decode(const string& v);
-string uri_encode(const string& v);
+string hex_encode(const string&);
+string js_encode(const string&);
+string peer_id2a(const string&);
+string time2a(time_t);
+string uri_decode(const string&);
+string uri_encode(const string&);
 __int64 xbt_atoll(const char*);
-string xbt_version2a(int v);
+string xbt_version2a(int);
 
 inline void compute_sha1(const Cvirtual_binary& s, void* d)
 {
