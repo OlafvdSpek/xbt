@@ -44,6 +44,7 @@ const string bts_completed_at = "completed at";
 const string bts_completes_dir = "completes dir";
 const string bts_down_rate = "down rate";
 const string bts_downloaded = "downloaded";
+const string bts_erase_torrent = "erase torrent";
 const string bts_events = "events";
 const string bts_failure_reason = "failure reason";
 const string bts_files = "files";

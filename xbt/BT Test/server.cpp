@@ -1190,7 +1190,9 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	Cbvalue d;
 	string action = s.d(bts_action).s();
 	if (action == bts_close_torrent)
-		close(s.d(bts_hash).s());
+		close(s.d(bts_hash).s(), false);
+	else if (action == bts_erase_torrent)
+		close(s.d(bts_hash).s(), true);
 	else if (action == bts_get_options)
 	{
 		d.d(bts_admin_port, admin_port());
