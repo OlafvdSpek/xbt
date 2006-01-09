@@ -23,6 +23,22 @@ int nt_service_install(const char* name)
 		NULL);
 	if (!service)
 	{
+		service = CreateService(scm, 
+			name, 
+			name, 
+			SERVICE_ALL_ACCESS, 
+			SERVICE_WIN32_OWN_PROCESS, 
+			SERVICE_AUTO_START, 
+			SERVICE_ERROR_NORMAL,
+			file_name, 
+			NULL, 
+			NULL, 
+			NULL, 
+			NULL, 
+			NULL);	
+	}
+	if (!service)
+	{
 		CloseServiceHandle(scm);
 		return 1;
 	}
