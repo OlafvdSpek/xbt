@@ -39,11 +39,38 @@ public:
 #endif
 };
 
+static string new_peer_id()
+{
+	string v;
+	v = "XBT-----";
+	v[3] = '0' + Cserver::version() / 100 % 10;
+	v[4] = '0' + Cserver::version() / 10 % 10;
+	v[5] = '0' + Cserver::version() % 10;
+	v.resize(20);
+	for (size_t i = 8; i < v.size(); i++)
+		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
+#ifndef NDEBUG
+	v[6] = 'd';
+#endif
+	return v;
+}
+
+static string new_peer_key()
+{
+	string v;
+	v.resize(8);
+	for (size_t i = 0; i < v.size(); i++)
+		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
+	return v;
+}
+
 Cserver::Cserver():
 	m_version_check_handler(*this)
 {
 	m_admin_port = m_config.m_admin_port;
 	m_check_remote_links_time = 0;
+	m_peer_id = new_peer_id();
+	m_peer_key = new_peer_key();
 	m_peer_port = m_config.m_peer_port;
 	m_run = false;
 	m_run_scheduler_time = 0;
@@ -69,22 +96,6 @@ Cserver::~Cserver()
 #ifdef WIN32
 	DeleteCriticalSection(&m_cs);
 #endif
-}
-
-static string new_peer_id()
-{
-	string v;
-	v = "XBT-----";
-	v[3] = '0' + Cserver::version() / 100 % 10;
-	v[4] = '0' + Cserver::version() / 10 % 10;
-	v[5] = '0' + Cserver::version() % 10;
-	v.resize(20);
-	for (size_t i = 8; i < v.size(); i++)
-		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
-#ifndef NDEBUG
-	v[6] = 'd';
-#endif
-	return v;
 }
 
 void Cserver::admin_port(int v)
@@ -885,7 +896,6 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	}
 	if (!name.empty())
 		f.m_name = name;
-	f.m_peer_id = new_peer_id();
 	if (below_torrent_limit())
 		f.open();
 	m_files.push_back(f);
@@ -932,7 +942,6 @@ int Cserver::open_url(const string& v)
 	for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
 		f.insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
 	f.m_info_hash = info_hash;
-	f.m_peer_id = new_peer_id();
 	if (below_torrent_limit())
 		f.m_state = Cbt_file::s_running;
 	m_files.push_back(f);
@@ -968,7 +977,6 @@ void Cserver::load_state(const Cvirtual_binary& d)
 		Cbt_file f;
 		f.m_server = this;
 		f.load_state(r);
-		f.m_peer_id = new_peer_id();
 		m_files.push_back(f);
 	}
 	assert(r.r() == d.data_end());

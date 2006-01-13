@@ -1015,6 +1015,16 @@ const Cserver* Cbt_file::server() const
 	return m_server;
 }
 
+string Cbt_file::peer_id() const
+{
+	return server()->peer_id();
+}
+
+string Cbt_file::peer_key() const
+{
+	return server()->peer_key();
+}
+
 int Cbt_file::time() const
 {
 	return server()->time();

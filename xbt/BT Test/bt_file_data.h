@@ -48,7 +48,6 @@ public:
 	int mc_seeders_total;
 	string m_info_hash;
 	string m_name;
-	string m_peer_id;
 	t_state m_state;
 };
 

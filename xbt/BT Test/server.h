@@ -179,6 +179,16 @@ public:
 		return m_logger;
 	}
 
+	const string& peer_id() const
+	{
+		return m_peer_id;
+	}
+
+	const string& peer_key() const
+	{
+		return m_peer_key;
+	}
+
 	int peer_limit() const
 	{
 		return m_config.m_peer_limit;
@@ -282,6 +292,8 @@ private:
 	int m_update_chokes_time;
 	int m_update_send_quotas_time;
 	int m_update_states_time;
+	string m_peer_id;
+	string m_peer_key;
 	Cversion_check_handler m_version_check_handler;
 
 #ifdef WIN32

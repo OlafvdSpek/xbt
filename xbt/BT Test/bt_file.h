@@ -23,6 +23,8 @@ class Cserver;
 class Cbt_file: public Cbt_file_data
 {
 public:
+	string peer_id() const;
+	string peer_key() const;
 	Cserver* server();
 	const Cserver* server() const;
 	int time() const;
