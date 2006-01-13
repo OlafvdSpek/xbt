@@ -167,7 +167,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				write_int(4, b + uti_action, uta_announce);
 				write_int(4, b + uti_transaction_id, m_transaction_id = rand());
 				memcpy(b + utia_info_hash, f.m_info_hash.c_str(), 20);
-				memcpy(b + utia_peer_id, f.m_peer_id.c_str(), 20);
+				memcpy(b + utia_peer_id, f.peer_id().c_str(), 20);
 				write_int(8, b + utia_downloaded, f.m_downloaded);
 				write_int(8, b + utia_left, f.m_left);
 				write_int(8, b + utia_uploaded, f.m_uploaded);
@@ -328,7 +328,8 @@ string Cbt_tracker_link::http_request(const Cbt_file& f)
 	stringstream os;
 	os << "GET " << m_url.m_path 
 		<< "?info_hash=" << uri_encode(f.m_info_hash) 
-		<< "&peer_id=" << uri_encode(f.m_peer_id) 
+		<< "&key=" << uri_encode(f.peer_key()) 
+		<< "&peer_id=" << uri_encode(f.peer_id()) 
 		<< "&port=" << f.local_port()
 		<< "&downloaded=" << n(f.m_downloaded)
 		<< "&left=" << n(f.m_left)
