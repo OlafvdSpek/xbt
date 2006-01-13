@@ -4,11 +4,6 @@
 #include "bt_strings.h"
 #include "bvalue.h"
 
-int send(Csocket& s, const string& v)
-{
-	return s.send(v.c_str(), v.size()) != v.size();
-}
-
 int send(Csocket& s, const Cbvalue& v)
 {
 	char d0[5];
