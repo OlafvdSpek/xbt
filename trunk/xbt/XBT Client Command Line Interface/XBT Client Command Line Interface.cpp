@@ -89,6 +89,11 @@ int main(int argc, char* argv[])
 			v.d(bts_action, bts_close_torrent);
 			v.d(bts_hash, hash);
 		}
+		else if (!strcmp(argv[1], "erase"))
+		{
+			v.d(bts_action, bts_erase_torrent);
+			v.d(bts_hash, hash);
+		}
 		else if (!strcmp(argv[1], "open"))
 		{
 			Cvirtual_binary a;
