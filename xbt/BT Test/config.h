@@ -36,6 +36,7 @@ public:
 	string m_completes_dir;
 	string m_incompletes_dir;
 	string m_local_app_data_dir;
+	string m_peer_id_prefix;
 	string m_torrents_dir;
 	string m_user_agent;
 };

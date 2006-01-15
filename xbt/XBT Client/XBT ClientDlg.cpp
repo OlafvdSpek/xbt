@@ -349,6 +349,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 		GetProfileString("torrents_dir"));
 	m_hide_on_deactivate = get_profile_hide_on_deactivate();
 	lower_process_priority(get_profile_lower_process_priority());
+	m_server.peer_id_prefix(get_profile_peer_id_prefix());
 	m_server.peer_limit(GetProfileInt("peer_limit", m_server.peer_limit()));
 	m_server.peer_port(GetProfileInt("peer_port", m_server.peer_port()));
 	string public_ipa = GetProfileString("public_ipa");
@@ -2930,6 +2931,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.hot_key = GetProfileInt("hot_key", (HOTKEYF_CONTROL | HOTKEYF_SHIFT) << 8 |'Q');
 	data.incompletes_dir = m_server.incompletes_dir();
 	data.lower_process_priority = get_profile_lower_process_priority();
+	data.peer_id = m_server.peer_id_prefix();
 	data.peer_limit = m_server.peer_limit();
 	data.peer_port = GetProfileInt("peer_port", m_server.peer_port());
 	data.public_ipa = GetProfileString("public_ipa");
@@ -2959,6 +2961,7 @@ void CXBTClientDlg::OnToolsOptions()
 	m_hide_on_deactivate = data.hide_on_deactivate;
 	lower_process_priority(data.lower_process_priority);
 	set_dir(data.completes_dir, data.incompletes_dir, "", data.torrents_dir);
+	m_server.peer_id_prefix(data.peer_id);
 	m_server.peer_limit(data.peer_limit);
 	m_server.peer_port(data.peer_port);
 	if (!data.public_ipa.empty())
@@ -2980,6 +2983,7 @@ void CXBTClientDlg::OnToolsOptions()
 	WriteProfileInt("hot_key", data.hot_key);
 	WriteProfileString("incompletes_dir", data.incompletes_dir);
 	write_profile_lower_process_priority(data.lower_process_priority);
+	write_profile_peer_id_prefix(data.peer_id);
 	WriteProfileInt("peer_limit", data.peer_limit);
 	WriteProfileInt("peer_port", data.peer_port);
 	WriteProfileString("public_ipa", data.public_ipa);
@@ -3224,6 +3228,16 @@ bool CXBTClientDlg::get_profile_lower_process_priority()
 void CXBTClientDlg::write_profile_lower_process_priority(bool v)
 {
 	WriteProfileInt("lower_process_priority", v);
+}
+
+string CXBTClientDlg::get_profile_peer_id_prefix()
+{
+	return GetProfileString("peer_id_prefix");
+}
+
+void CXBTClientDlg::write_profile_peer_id_prefix(const string& v)
+{
+	WriteProfileString("peer_id_prefix", v);
 }
 
 string CXBTClientDlg::get_profile_peers_view()
