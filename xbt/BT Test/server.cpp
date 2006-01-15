@@ -39,19 +39,25 @@ public:
 #endif
 };
 
-static string new_peer_id()
+static string new_peer_id(const string& prefix)
 {
 	string v;
-	v = "XBT-----";
-	v[3] = '0' + Cserver::version() / 100 % 10;
-	v[4] = '0' + Cserver::version() / 10 % 10;
-	v[5] = '0' + Cserver::version() % 10;
-	v.resize(20);
-	for (size_t i = 8; i < v.size(); i++)
-		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
+	if (prefix.empty())
+	{
+		v = "XBT-----";
+		v[3] = '0' + Cserver::version() / 100 % 10;
+		v[4] = '0' + Cserver::version() / 10 % 10;
+		v[5] = '0' + Cserver::version() % 10;
 #ifndef NDEBUG
-	v[6] = 'd';
+		v[6] = 'd';
 #endif
+	}
+	else
+		v = prefix;
+	size_t i = v.size();
+	v.resize(20);
+	for (; i < v.size(); i++)
+		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
 	return v;
 }
 
@@ -69,7 +75,6 @@ Cserver::Cserver():
 {
 	m_admin_port = m_config.m_admin_port;
 	m_check_remote_links_time = 0;
-	m_peer_id = new_peer_id();
 	m_peer_key = new_peer_key();
 	m_peer_port = m_config.m_peer_port;
 	m_run = false;
@@ -193,6 +198,7 @@ int Cserver::run()
 	}
 #endif
 	m_admin_port = m_config.m_admin_port;
+	m_peer_id = new_peer_id(peer_id_prefix());
 	m_peer_port = m_config.m_peer_port;
 	m_tracker_port = m_config.m_tracker_port;
 	Csocket l, la, lt;
@@ -1314,6 +1320,16 @@ void Cserver::check_remote_links()
 		return;
 	alert(Calert(Calert::warn, "Did you forget to open a port in your firewall or router?"));
 	alert(Calert(Calert::warn, n(c_local_links) + " local links, but no remote links have been established."));
+}
+
+string Cserver::peer_id_prefix() const
+{
+	return m_config.m_peer_id_prefix;
+}
+
+void Cserver::peer_id_prefix(const string& v)
+{
+	m_config.m_peer_id_prefix = v;
 }
 
 string Cserver::user_agent() const
