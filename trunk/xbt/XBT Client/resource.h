@@ -119,8 +119,10 @@
 #define IDC_HOT_KEY_STATIC              1082
 #define IDC_USER_AGENT_STATIC           1083
 #define IDC_USER_AGENT                  1084
+#define IDC_PEER_ID                     1085
 #define IDC_HOST_STATIC                 1086
 #define IDC_PORT_STATIC                 1087
+#define IDC_PEER_ID_STATIC              1087
 #define IDC_HOST                        1088
 #define IDC_PORT                        1089
 #define IDC_PRIORITY                    1089

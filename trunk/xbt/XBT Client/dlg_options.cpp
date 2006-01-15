@@ -35,6 +35,7 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_send_stop_event = FALSE;
 	m_upnp = FALSE;
 	m_user_agent = _T("");
+	m_peer_id = _T("");
 	//}}AFX_DATA_INIT
 }
 
@@ -69,6 +70,7 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_SEND_STOP_EVENT, m_send_stop_event);
 	DDX_Check(pDX, IDC_UPNP, m_upnp);
 	DDX_CBString(pDX, IDC_USER_AGENT, m_user_agent);
+	DDX_CBString(pDX, IDC_PEER_ID, m_peer_id);
 	//}}AFX_DATA_MAP
 	if (pDX->m_bSaveAndValidate)
 		m_hot_key_value = m_hot_key.GetHotKey();
@@ -96,6 +98,7 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.hot_key = m_hot_key_value;
 	v.incompletes_dir = m_incompletes_dir;
 	v.lower_process_priority = m_lower_process_priority;
+	v.peer_id = m_peer_id;
 	v.peer_limit = m_peer_limit;
 	v.peer_port = m_peer_port;
 	v.public_ipa = m_public_ipa;
@@ -124,6 +127,7 @@ void Cdlg_options::set(const t_data& v)
 	m_hot_key_value = v.hot_key;
 	m_incompletes_dir = backward_slashes(v.incompletes_dir).c_str();
 	m_lower_process_priority = v.lower_process_priority;
+	m_peer_id = v.peer_id.c_str();
 	m_peer_limit = v.peer_limit;
 	m_peer_port = v.peer_port;
 	m_public_ipa = v.public_ipa.c_str();
@@ -187,6 +191,7 @@ BOOL Cdlg_options::OnInitDialog()
 				<< item(IDC_PEER_PORT_STATIC, NORESIZE)
 				<< item(IDC_TRACKER_PORT_STATIC, NORESIZE)
 				<< item(IDC_HOT_KEY_STATIC, NORESIZE)
+				<< item(IDC_PEER_ID_STATIC, NORESIZE)
 				<< item(IDC_USER_AGENT_STATIC, NORESIZE)
 				)
 			<< (pane(VERTICAL)
@@ -212,6 +217,7 @@ BOOL Cdlg_options::OnInitDialog()
 				<< item(IDC_PEER_PORT, ABSOLUTE_VERT)
 				<< item(IDC_TRACKER_PORT, ABSOLUTE_VERT)
 				<< item(IDC_HOT_KEY, ABSOLUTE_VERT)
+				<< item(IDC_PEER_ID, ABSOLUTE_VERT)
 				<< item(IDC_USER_AGENT, ABSOLUTE_VERT)
 				)
 			)

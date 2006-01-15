@@ -63,6 +63,8 @@ const Cconfig& Cconfig::write(const Cbvalue& v)
 		m_log_peer_send_failures = v.d("log_peer_send_failures").i();
 	if (v.d_has("log_piece_valid"))
 		m_log_piece_valid = v.d("log_piece_valid").i();
+	if (v.d_has("peer_id_prefix"))
+		m_peer_id_prefix = v.d("peer_id_prefix").s();
 	if (v.d_has("peer_limit"))
 		m_peer_limit = v.d("peer_limit").i();
 	if (v.d_has("peer_port"))
@@ -100,6 +102,7 @@ Cbvalue Cconfig::read() const
 	v.d("log_peer_recv_failures", m_log_peer_recv_failures);
 	v.d("log_peer_send_failures", m_log_peer_send_failures);
 	v.d("log_piece_valid", m_log_piece_valid);
+	v.d("peer_id_prefix", m_peer_id_prefix);
 	v.d("peer_limit", m_peer_limit);
 	v.d("peer_port", m_peer_port);
 	v.d("public_ipa", m_public_ipa);

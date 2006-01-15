@@ -61,6 +61,7 @@ public:
 	string incompletes_dir() const;
 	string local_app_data_dir() const;
 	string options_fname() const;
+	string peer_id_prefix() const;
 	string profiles_fname() const;
 	string scheduler_fname() const;
 	string state_fname() const;
@@ -77,6 +78,7 @@ public:
 	void load_state(const Cvirtual_binary&);
 	void local_app_data_dir(const string&);
 	void lock();
+	void peer_id_prefix(const string&);
 	void peer_port(int);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void public_ipa(int);

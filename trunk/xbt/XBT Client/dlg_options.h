@@ -21,6 +21,7 @@ public:
 		string incompletes_dir;
 		string torrents_dir;
 		bool lower_process_priority;
+		string peer_id;
 		int peer_limit;
 		int peer_port;
 		string public_ipa;
@@ -66,6 +67,7 @@ public:
 	BOOL	m_send_stop_event;
 	BOOL	m_upnp;
 	CString	m_user_agent;
+	CString	m_peer_id;
 	//}}AFX_DATA
 
 	//{{AFX_VIRTUAL(Cdlg_options)

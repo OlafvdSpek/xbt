@@ -70,6 +70,8 @@ BEGIN
                     ES_NUMBER
     CONTROL         "HotKey1",IDC_HOT_KEY,"msctls_hotkey32",WS_BORDER | 
                     WS_TABSTOP,7,223,37,14
+    COMBOBOX        IDC_PEER_ID,182,188,48,164,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_USER_AGENT,183,205,48,164,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "Ask for location",IDC_ASK_FOR_LOCATION,"Button",
@@ -113,6 +115,7 @@ BEGIN
     LTEXT           "Peer Limit:",IDC_PEER_LIMIT_STATIC,288,187,34,14
     LTEXT           "Torrent Limit:",IDC_TORRENT_LIMIT_STATIC,288,205,42,14
     LTEXT           "Hot Key:",IDC_HOT_KEY_STATIC,288,223,28,14
+    LTEXT           "Peer ID:",IDC_PEER_ID_STATIC,240,228,38,14
     LTEXT           "User Agent:",IDC_USER_AGENT_STATIC,281,243,38,14
 END
 
@@ -672,6 +675,10 @@ END
 
 IDD_OPTIONS DLGINIT
 BEGIN
+    IDC_PEER_ID, 0x403, 1, 0
+"\000" 
+    IDC_PEER_ID, 0x403, 9, 0
+0x4258, 0x2d54, 0x2d2d, 0x2d2d, "\000" 
     IDC_USER_AGENT, 0x403, 1, 0
 "\000" 
     IDC_USER_AGENT, 0x403, 11, 0
