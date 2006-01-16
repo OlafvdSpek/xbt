@@ -788,7 +788,7 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		case gdr_down_rate:
 			buffer = b2a(m_global_details.m_down_rate, "b/s");
 			if (int duration = time(NULL) - m_global_details.m_start_time)
-				buffer += " - "+ b2a(m_global_details.m_downloaded / duration, "b/s");
+				buffer += " - average: "+ b2a(m_global_details.m_downloaded / duration, "b/s");
 			break;
 		case gdr_files:
 			buffer = n(m_global_details.mc_files);
@@ -827,7 +827,7 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		case gdr_up_rate:
 			buffer = b2a(m_global_details.m_up_rate, "b/s");
 			if (int duration = time(NULL) - m_global_details.m_start_time)
-				buffer += " - "+ b2a(m_global_details.m_uploaded / duration, "b/s");
+				buffer += " - average: "+ b2a(m_global_details.m_uploaded / duration, "b/s");
 			break;
 		}
 		break;
