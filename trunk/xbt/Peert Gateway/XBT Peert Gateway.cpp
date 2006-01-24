@@ -6,6 +6,7 @@ const char* g_service_name = "XBT Peert Gateway";
 
 int main1()
 {
+	srand(time(NULL));
 	return Cserver().run();
 }
 

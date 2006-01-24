@@ -100,7 +100,7 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 				string value = uri_decode(v.substr(c, d - c));
 				if (name == "info_hash")
 					info_hash = hex_decode(value);
-				else if (name == "pass_id")
+				else if (name == "session_token")
 					pass_id = value;
 				else if (name == "priority")
 					priority = atoi(value.c_str());
@@ -114,15 +114,32 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 			}
 		}
 	}
-	if (script_name == "/accept")
+	bool pass_valid = pass_id == con->server()->pass();
+	if (script_name == "/accept/")
 	{
 		s += "passid = '" + pass_id + "'\n";
 		s += "sessionid = '" + session_id + "'\n";
 		s += "alert('ACCEPT');\n";
 		s += "alert('DECLINED');\n";
 	}
-	else if (script_name == "/close")
+	else if (script_name == "/port/")
 	{
+		s += "_xbt.callback_port(" + n(con->server()->port()) + ");\n";
+	}
+	else if (script_name == "/session/")
+	{
+		string d;
+		string service = "http://test.peert.com/services/rest/";
+		con->server()->http_get(service + "?method=peert.session.setToken&session_id=" + uri_encode(session_id) + "&session_token=" + uri_encode(con->server()->pass()), d);
+		s += "_xbt.callback_session();\n";
+	}
+	else if (!pass_valid)
+	{
+		s += "_xbt.callback_error(0, 'authentication error');\n";
+	}
+	else if (script_name == "/close/")
+	{
+		s += "_xbt.callback_error();\n";
 		Cbvalue v;
 		v.d(bts_action, bts_close_torrent);
 		v.d(bts_hash, info_hash);
@@ -133,7 +150,7 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 			s += "_xbt.callback_close('" + hex_encode(info_hash) + "');\n";
 		}
 	}
-	else if (script_name == "/delete")
+	else if (script_name == "/delete/")
 	{
 		Cbvalue v;
 		v.d(bts_action, bts_erase_torrent);
@@ -145,10 +162,10 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 			s += "_xbt.callback_delete('" + hex_encode(info_hash) + "');\n";
 		}
 	}
-	else if (script_name == "/make")
+	else if (script_name == "/make/")
 	{
 	}
-	else if (script_name == "/open")
+	else if (script_name == "/open/")
 	{
 		string d;
 		con->server()->http_get(url, d);
@@ -163,14 +180,10 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 			s += "_xbt.callback_open('" + hex_encode(compute_sha1(d1.d(bts_info).read())) + "', '" + d1.d(bts_info).d(bts_name).s() + "', " + n(d1.d(bts_info).d(bts_length).i()) + ");\n";
 		}
 	}
-	else if (script_name == "/options")
+	else if (script_name == "/options/")
 	{
 	}
-	else if (script_name == "/port")
-	{
-		s += "_xbt.callback_port(80);\n";
-	}
-	else if (script_name == "/priority")
+	else if (script_name == "/priority/")
 	{
 		Cbvalue v;
 		v.d(bts_action, bts_set_priority);
@@ -183,11 +196,7 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 			s += "_xbt.callback_priority('" + hex_encode(info_hash) + "', " + n(state) + ");\n";
 		}		
 	}
-	else if (script_name == "/session")
-	{
-		s += "_xbt.callback_session();\n";
-	}
-	else if (script_name == "/state")
+	else if (script_name == "/state/")
 	{
 		Cbvalue v;
 		v.d(bts_action, bts_set_state);
@@ -200,7 +209,7 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 			s += "_xbt.callback_state('" + hex_encode(info_hash) + "', " + n(state) + ");\n";
 		}		
 	}
-	else if (script_name == "/status")
+	else if (script_name == "/update/")
 	{
 		Cbvalue v, d;
 		v.d(bts_action, bts_get_status);
@@ -232,10 +241,20 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 			s += "_xbt.callback_endUpdate();\n";
 		}
 	}
+	else if (script_name == "/version/")
+	{
+		Cbvalue v, d;
+		v.d(bts_action, bts_get_status);
+		if (::send(v, &d))
+			s += "_xbt.callback_error();\n";
+		else
+		{
+			s += "_xbt.callback_version(0, '" + (d.d(bts_version).s()) + "');\n";;
+		}
+	}
 	else
 	{
-		s += "<title>Hello World!</title>";
-		s += "<h1>Hello World!</h1>";
+		h = "HTTP/1.0 404 Not Found\r\n";
 	}
 	h += "\r\n";
 	Cvirtual_binary d;

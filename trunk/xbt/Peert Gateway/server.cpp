@@ -5,8 +5,19 @@
 
 static volatile bool g_sig_term = false;
 
+static string new_peer_key()
+{
+	string v;
+	v.resize(8);
+	for (size_t i = 0; i < v.size(); i++)
+		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
+	return v;
+}
+
 Cserver::Cserver()
 {
+	m_pass = new_peer_key();
+	m_port = 51885;
 }
 
 int Cserver::run()
@@ -17,7 +28,7 @@ int Cserver::run()
 		return 1;
 	}
 	if (m_s.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-		m_s.bind(htonl(INADDR_LOOPBACK), htons(51885)))
+		m_s.bind(htonl(INADDR_LOOPBACK), htons(port())))
 	{
 		cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 		return 1;
