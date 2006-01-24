@@ -115,14 +115,7 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 		}
 	}
 	bool pass_valid = pass_id == con->server()->pass();
-	if (script_name == "/accept/")
-	{
-		s += "passid = '" + pass_id + "'\n";
-		s += "sessionid = '" + session_id + "'\n";
-		s += "alert('ACCEPT');\n";
-		s += "alert('DECLINED');\n";
-	}
-	else if (script_name == "/port/")
+	if (script_name == "/port/")
 	{
 		s += "_xbt.callback_port(" + n(con->server()->port()) + ");\n";
 	}
