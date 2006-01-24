@@ -16,10 +16,22 @@ public:
 	void sig_handler(int);
 	static void term();
 	Cserver();
+
+	const string& pass() const
+	{
+		return m_pass;
+	}
+
+	int port() const
+	{
+		return m_port;
+	}
 private:
 	typedef list<Cconnection> t_connections;
 
 	t_connections m_connections;
+	string m_pass;
+	int m_port;
 	Csocket m_s;
 	time_t m_time;
 };
