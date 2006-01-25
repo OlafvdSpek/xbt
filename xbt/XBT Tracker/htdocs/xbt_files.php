@@ -1,10 +1,8 @@
 <?php
-	ob_start("ob_gzhandler");
 	require_once("xbt_config.php");
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <link rel=stylesheet href="xbt.css">
-<meta http-equiv=refresh content=60>
 <title>XBT Files</title>
 <?php
 	mysql_connect($mysql_host, $mysql_user, $mysql_pass);
