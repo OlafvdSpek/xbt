@@ -77,6 +77,7 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 	int priority = 0;
 	string session_id;
 	int state = 0;
+	string sub_domain;
 	string url;
 	a++;
 	int b = v.find_first_of(" ?", a);
@@ -108,6 +109,8 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 					session_id = value;
 				else if (name == "state")
 					state = atoi(value.c_str());
+				else if (name == "sub_domain")
+					sub_domain = value;
 				else if (name == "url")
 					url = value;
 				a = d + 1;
@@ -121,10 +124,15 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 	}
 	else if (script_name == "/session/")
 	{
-		string d;
-		string service = "http://test.peert.com/services/rest/";
-		con->server()->http_get(service + "?method=peert.session.setToken&session_id=" + uri_encode(session_id) + "&session_token=" + uri_encode(con->server()->pass()), d);
-		s += "_xbt.callback_session();\n";
+		if (sub_domain.empty() || sub_domain.size() > 64 || sub_domain.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789") != string::npos)
+			s += "_xbt.callback_error();\n";
+		else
+		{
+			string d;
+			string service = "http://" + sub_domain + ".peert.com/services/rest/";
+			con->server()->http_get(service + "?method=peert.session.setToken&session_id=" + uri_encode(session_id) + "&session_token=" + uri_encode(con->server()->pass()), d);
+			s += "_xbt.callback_session();\n";
+		}
 	}
 	else if (!pass_valid)
 	{

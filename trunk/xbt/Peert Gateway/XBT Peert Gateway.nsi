@@ -14,7 +14,6 @@ UninstPage instfiles
 Section "Install"
 	SetShellVarContext all
 	SetOutPath "$INSTDIR"
-	# !insertmacro UpgradeDLL "libcurl.dll" "$SYSDIR\libcurl.dll" "$SYSDIR"
 	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
 	Delete "$INSTDIR\XBT Client Backend.exe"
@@ -25,6 +24,7 @@ Section "Install"
 	Rename "$INSTDIR\XBT Peert Gateway.exe" "$INSTDIR\XBT Peert Gateway Old.exe"
 	File "..\BT Test\release\XBT Client Backend.exe"
 	File "release\XBT Peert Gateway.exe"
+	File "libcurl.dll"
 	ExecWait "$INSTDIR\XBT Client Backend.exe --install"
 	ExecWait "$INSTDIR\XBT Peert Gateway.exe --install"
 	ExecWait 'net start "XBT Client"'
