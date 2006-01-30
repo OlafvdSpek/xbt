@@ -222,6 +222,8 @@ string peer_id2a(const string& v)
 		case '-':
 			if (v[1] == 'A' && v[2] == 'Z')
 				return peer_id2a("Azureus ", v, 3);
+			if (v[1] == 'B' && v[2] == 'C')
+				return peer_id2a("BitComet ", v, 3);
 			if (v[1] == 'U' && v[2] == 'T')
 				return peer_id2a("uTorrent ", v, 3);
 			if (v[1] == 'T' && v[2] == 'S')
