@@ -26,19 +26,19 @@ Section "Install"
 	File "..\BT Test\release\XBT Client Backend.exe"
 	File "release\XBT Peert Gateway.exe"
 	File "VLC\activex\axpeertvlc.dll"
-	File "VLC\plugins\"
+	File /r "VLC\plugins"
 	File "libcurl.dll"
-	Exec "$INSTDIR\XBT Client Backend.exe --install"
-	Exec "$INSTDIR\XBT Peert Gateway.exe --install"
+	ExecWait "$INSTDIR\XBT Client Backend.exe --install"
+	ExecWait "$INSTDIR\XBT Peert Gateway.exe --install"
 	Exec 'net start "XBT Client"'
 	Exec 'net start "XBT Peert Gateway"'
-	Exec 'regsvr32 "$INSTDIR\axpeertvlc.dll"'
+	Exec 'regsvr32 "$INSTDIR\axpeertvlc.dll" /s'
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	CreateShortCut "$SMPROGRAMS\Peert.lnk" "http://peert.com/"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Peert Gateway" "DisplayName" "XBT Peert Gateway ${VERSION}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Peert Gateway" "UninstallString" '"$INSTDIR\Uninstall.exe"'
 	WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Peert Gateway" "NoModify" 1
-	WriteRegStr HKLM "Software\Peert" "VLC" "$INSTDIR"
+	WriteRegStr HKLM "Software\Peert\VLC" "Installdir" "$INSTDIR"
 	WriteRegStr HKLM "Software\XBT\Peert Gateway" "InstallDir" "$INSTDIR"
 SectionEnd
 
