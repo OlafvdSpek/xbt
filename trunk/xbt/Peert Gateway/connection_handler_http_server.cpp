@@ -124,10 +124,12 @@ void Cconnection_handler_http_server::read(Cconnection* con, const string& v)
 	}
 	else if (script_name == "/session/")
 	{
-		if (sub_domain.empty() || sub_domain.size() > 64 || sub_domain.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789") != string::npos)
+		if (sub_domain.size() > 64 || sub_domain.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789") != string::npos)
 			s += "_xbt.callback_error();\n";
 		else
 		{
+			if (sub_domain.empty())
+				sub_domain = "www";
 			string d;
 			string service = "http://" + sub_domain + ".peert.com/services/rest/";
 			con->server()->http_get(service + "?method=peert.session.setToken&session_id=" + uri_encode(session_id) + "&session_token=" + uri_encode(con->server()->pass()), d);

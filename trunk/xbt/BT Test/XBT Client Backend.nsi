@@ -21,8 +21,8 @@ Section "Install"
 	File release\*.exe
 	SetOutPath "$INSTDIR\htdocs"
 	File "..\XBT Client\htdocs\*"
-	ExecWait "$INSTDIR\XBT Client Backend.exe --install"
-	ExecWait 'net start "XBT Client"'
+	Exec "$INSTDIR\XBT Client Backend.exe --install"
+	Exec 'net start "XBT Client"'
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client Backend" "DisplayName" "XBT Client Backend ${VERSION}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client Backend" "UninstallString" '"$INSTDIR\Uninstall.exe"'
