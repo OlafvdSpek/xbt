@@ -248,6 +248,7 @@ private:
 		table_files,
 		table_files_updates,
 		table_files_users,
+		table_hashes,
 		table_ipas,
 		table_scrape_log,
 		table_users,
