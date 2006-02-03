@@ -201,8 +201,6 @@ void Cconnection::read(const string& v)
 			else
 			{
 				Cserver::t_user* user = m_server->find_user_by_torrent_pass(torrent_pass0);
-				if (!user)
-					user = m_server->find_user_by_ipa(ntohl(ti.m_ipa));
 				if (!m_server->anonymous_announce() && !user)
 					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 				else if (user && user->torrent_pass_secret && calculate_torrent_pass1(ti.m_info_hash, user->torrent_pass_secret) != hex_decode(torrent_pass1))

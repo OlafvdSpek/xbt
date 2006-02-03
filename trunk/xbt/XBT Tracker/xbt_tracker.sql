@@ -55,21 +55,6 @@ CREATE TABLE xbt_files_users
   KEY (uid)
 );
 
-CREATE TABLE xbt_hashes
-(
-  hid int NOT NULL auto_increment,
-  hash blob NOT NULL,
-  PRIMARY KEY (hid)
-);
-
-CREATE TABLE xbt_ipas
-(
-  ipa int NOT NULL,
-  uid int NOT NULL,
-  mtime timestamp NOT NULL,
-  PRIMARY KEY (ipa)
-);
-
 CREATE TABLE xbt_scrape_log
 (
   id int NOT NULL auto_increment,
