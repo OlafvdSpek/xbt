@@ -25,7 +25,6 @@ Cconfig::Cconfig()
 	m_read_db_interval = 60;
 	m_redirect_url.erase();
 	m_scrape_interval = 0;
-	m_update_files_method = 2;
 	m_write_db_interval = 60;
 }
 
@@ -59,6 +58,8 @@ void Cconfig::set(const string& name, const string& value)
 		m_table_files_updates = value;
 	else if (name == "table_files_users")
 		m_table_files_users = value;
+	else if (name == "table_hashes")
+		m_table_hashes = value;
 	else if (name == "table_ipas")
 		m_table_ipas = value;
 	else if (name == "table_scrape_log")
@@ -109,8 +110,6 @@ void Cconfig::set(const string& name, int value)
 		m_read_db_interval = value;
 	else if (name == "scrape_interval")
 		m_scrape_interval = value;
-	else if (name == "update_files_method")
-		m_update_files_method = value;
 	else if (name == "write_db_interval")
 		m_write_db_interval = value;
 }

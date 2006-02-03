@@ -34,7 +34,6 @@ public:
 	int m_read_db_interval;
 	int m_scrape_interval;
 	int m_write_db_interval;
-	int m_update_files_method;
 	string m_column_files_completed;
 	string m_column_files_fid;
 	string m_column_files_leechers;
@@ -48,6 +47,7 @@ public:
 	string m_table_files;
 	string m_table_files_updates;
 	string m_table_files_users;
+	string m_table_hashes;
 	string m_table_ipas;
 	string m_table_scrape_log;
 	string m_table_users;
