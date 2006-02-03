@@ -1102,8 +1102,6 @@ string Cserver::table_name(int v) const
 		return m_config.m_table_files_updates.empty() ? m_table_prefix + "files_updates" : m_config.m_table_files_updates;
 	case table_files_users:
 		return m_config.m_table_files_users.empty() ? m_table_prefix + "files_users" : m_config.m_table_files_users;
-	case table_hashes:
-		return m_config.m_table_hashes.empty() ? m_table_prefix + "hashes" : m_config.m_table_hashes;
 	case table_ipas:
 		return m_config.m_table_ipas.empty() ? m_table_prefix + "ipas" : m_config.m_table_ipas;
 	case table_scrape_log:
@@ -1124,10 +1122,8 @@ int Cserver::test_sql()
 		m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from " + table_name(table_announce_log) + " where 0 = 1");
 		m_database.query("select name, value from " + table_name(table_config) + " where 0 = 1");
 		m_database.query("select begin, end from " + table_name(table_deny_from_hosts) + " where 0 = 1");
-		m_database.query("select " + column_name(column_files_fid) + ", hid, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, " + column_name(column_files_completed) + ", started, stopped, flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
-		m_database.query("select fid, leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp from " + table_name(table_files_updates) + " where 0 = 1");
-		m_database.query("select hid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
-		m_database.query("select hid, hash from " + table_name(table_hashes) + " where 0 = 1");
+		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
+		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
 		m_database.query("select ipa, uid, mtime from " + table_name(table_ipas) + " where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0 = 1");
 		m_database.query("select " + column_name(column_users_uid) + ", name, pass, fid_end, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");

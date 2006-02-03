@@ -47,7 +47,6 @@ public:
 	string m_table_files;
 	string m_table_files_updates;
 	string m_table_files_users;
-	string m_table_hashes;
 	string m_table_ipas;
 	string m_table_scrape_log;
 	string m_table_users;
