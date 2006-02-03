@@ -29,7 +29,7 @@ CREATE TABLE xbt_deny_from_hosts
 CREATE TABLE xbt_files
 (
   fid int NOT NULL auto_increment,
-  hid int NOT NULL,
+  info_hash blob NOT NULL,
   leechers int NOT NULL,
   seeders int NOT NULL,
   completed int NOT NULL,
@@ -37,12 +37,12 @@ CREATE TABLE xbt_files
   mtime timestamp NOT NULL,
   ctime timestamp NOT NULL,
   PRIMARY KEY (fid),
-  UNIQUE KEY (hid)
+  UNIQUE KEY (info_hash(20))
 );
 
 CREATE TABLE xbt_files_users
 (
-  hid int NOT NULL,
+  fid int NOT NULL,
   uid int NOT NULL,
   active tinyint NOT NULL,
   announced int NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE xbt_files_users
   `left` bigint(20) NOT NULL,
   uploaded bigint(20) NOT NULL,
   mtime timestamp NOT NULL,
-  UNIQUE KEY (hid, uid),
+  UNIQUE KEY (fid, uid),
   KEY (uid)
 );
 
