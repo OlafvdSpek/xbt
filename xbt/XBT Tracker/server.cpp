@@ -167,7 +167,6 @@ int Cserver::run()
 	clean_up();
 	read_db_deny_from_hosts();
 	read_db_files();
-	read_db_ipas();
 	read_db_users();
 	write_db_files();
 	write_db_users();
@@ -286,8 +285,6 @@ int Cserver::run()
 			read_db_deny_from_hosts();
 		else if (time() - m_read_db_files_time > m_config.m_read_db_interval)
 			read_db_files();
-		else if (time() - m_read_db_ipas_time > m_config.m_read_db_interval)
-			read_db_ipas();
 		else if (time() - m_read_db_users_time > m_config.m_read_db_interval)
 			read_db_users();
 		else if (m_config.m_write_db_interval && time() - m_write_db_files_time > m_config.m_write_db_interval)
@@ -379,7 +376,7 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		if (c >= user->peers_limit)
 			return bts_peers_limit_reached;
 	}
-	if (m_use_sql && user)
+	if (m_use_sql && user && file.fid)
 	{
 		__int64 downloaded = 0;
 		__int64 uploaded = 0;
@@ -397,7 +394,7 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		q.p(downloaded);
 		q.p(v.m_left);
 		q.p(uploaded);
-		q.pe(v.m_info_hash);
+		q.p(file.fid);
 		q.p(user->uid);
 		m_files_users_updates_buffer += q.read();
 		if (downloaded || uploaded)
@@ -702,25 +699,6 @@ void Cserver::read_db_files_sql()
 	}
 }
 
-void Cserver::read_db_ipas()
-{
-	if (!m_use_sql)
-		return;
-	try
-	{
-		Csql_query q(m_database, "select ipa, uid from ?");
-		q.p(table_name(table_ipas));
-		Csql_result result = q.execute();
-		m_ipas.clear();
-		for (Csql_row row; row = result.fetch_row(); )
-			m_ipas[row.f_int(0)] = row.f_int(1);
-	}
-	catch (Cxcc_error)
-	{
-	}
-	m_read_db_ipas_time = time();
-}
-
 void Cserver::read_db_users()
 {
 	if (!m_use_sql)
@@ -796,7 +774,7 @@ void Cserver::write_db_files()
 		if (!buffer.empty())
 		{
 			buffer.erase(buffer.size() - 1);
-			m_database.query("insert into " + table_name(table_files) + " (" + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", " + column_name(column_files_completed) + ", started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, " + column_name(column_files_fid) + ") values " 
+			m_database.query("insert into " + table_name(table_files) + " (" + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", " + column_name(column_files_completed) + ", " + column_name(column_files_fid) + ") values " 
 				+ buffer
 				+ " on duplicate key update"
 				+ "  " + column_name(column_files_leechers) + " = values(" + column_name(column_files_leechers) + "),"
@@ -843,7 +821,7 @@ void Cserver::write_db_users()
 		m_files_users_updates_buffer.erase(m_files_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into " + table_name(table_files_users) + " (active, announced, completed, downloaded, `left`, uploaded, info_hash, uid) values "
+			m_database.query("insert into " + table_name(table_files_users) + " (active, announced, completed, downloaded, `left`, uploaded, fid, uid) values "
 				+ m_files_users_updates_buffer
 				+ " on duplicate key update"
 				+ "  active = values(active),"
@@ -1014,8 +992,7 @@ string Cserver::statistics() const
 		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_config.m_read_db_interval);
 	if (m_use_sql)
 	{
-		page += "<tr><td>read db ipas time<td align=right>" + n(t - m_read_db_ipas_time) + " / " + n(m_config.m_read_db_interval)
-			+ "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_config.m_read_db_interval)
+		page += "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_config.m_read_db_interval)
 			+ "<tr><td>write db files time<td align=right>" + n(t - m_write_db_files_time) + " / " + n(m_config.m_write_db_interval)
 			+ "<tr><td>write db users time<td align=right>" + n(t - m_write_db_users_time) + " / " + n(m_config.m_write_db_interval);
 	}
@@ -1027,12 +1004,6 @@ Cserver::t_user* Cserver::find_user_by_name(const string& v)
 {
 	t_users_names::const_iterator i = m_users_names.find(v);
 	return i == m_users_names.end() ? NULL : i->second;
-}
-
-Cserver::t_user* Cserver::find_user_by_ipa(int v)
-{
-	t_ipas::const_iterator i = m_ipas.find(v);
-	return i == m_ipas.end() ? NULL : find_user_by_uid(i->second);
 }
 
 Cserver::t_user* Cserver::find_user_by_torrent_pass(const string& v)
@@ -1102,8 +1073,6 @@ string Cserver::table_name(int v) const
 		return m_config.m_table_files_updates.empty() ? m_table_prefix + "files_updates" : m_config.m_table_files_updates;
 	case table_files_users:
 		return m_config.m_table_files_users.empty() ? m_table_prefix + "files_users" : m_config.m_table_files_users;
-	case table_ipas:
-		return m_config.m_table_ipas.empty() ? m_table_prefix + "ipas" : m_config.m_table_ipas;
 	case table_scrape_log:
 		return m_config.m_table_scrape_log.empty() ? m_table_prefix + "scrape_log" : m_config.m_table_scrape_log;
 	case table_users:
@@ -1124,7 +1093,6 @@ int Cserver::test_sql()
 		m_database.query("select begin, end from " + table_name(table_deny_from_hosts) + " where 0 = 1");
 		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
 		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
-		m_database.query("select ipa, uid, mtime from " + table_name(table_ipas) + " where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0 = 1");
 		m_database.query("select " + column_name(column_users_uid) + ", name, pass, fid_end, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");
 		return 0;

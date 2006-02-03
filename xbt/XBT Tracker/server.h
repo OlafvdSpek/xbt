@@ -122,7 +122,6 @@ public:
 	};
 
 	typedef map<string, t_file> t_files;
-	typedef map<int, int> t_ipas;
 	typedef map<unsigned int, t_deny_from_host> t_deny_from_hosts;
 	typedef map<int, t_user> t_users;
 	typedef map<string, t_user*> t_users_names;
@@ -131,7 +130,6 @@ public:
 	int test_sql();
 	void accept(const Csocket& l);
 	t_user* find_user_by_name(const string&);
-	t_user* find_user_by_ipa(int);
 	t_user* find_user_by_torrent_pass(const string&);
 	t_user* find_user_by_uid(int);
 	void read_config();
@@ -140,7 +138,6 @@ public:
 	void read_db_deny_from_hosts();
 	void read_db_files();
 	void read_db_files_sql();
-	void read_db_ipas();
 	void read_db_users();
 	void clean_up();
 	string insert_peer(const Ctracker_input&, bool listen_check, bool udp, t_user*);
@@ -232,7 +229,6 @@ private:
 		table_files,
 		table_files_updates,
 		table_files_users,
-		table_ipas,
 		table_scrape_log,
 		table_users,
 	};
@@ -253,7 +249,6 @@ private:
 	time_t m_read_config_time;
 	time_t m_read_db_deny_from_hosts_time;
 	time_t m_read_db_files_time;
-	time_t m_read_db_ipas_time;
 	time_t m_read_db_users_time;
 	time_t m_time;
 	time_t m_write_db_files_time;
@@ -266,7 +261,6 @@ private:
 	Cepoll m_epoll;
 	t_deny_from_hosts m_deny_from_hosts;
 	t_files m_files;
-	t_ipas m_ipas;
 	t_users m_users;
 	t_users_names m_users_names;
 	t_users_torrent_passes m_users_torrent_passes;
