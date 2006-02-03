@@ -58,8 +58,6 @@ void Cconfig::set(const string& name, const string& value)
 		m_table_files_updates = value;
 	else if (name == "table_files_users")
 		m_table_files_users = value;
-	else if (name == "table_hashes")
-		m_table_hashes = value;
 	else if (name == "table_ipas")
 		m_table_ipas = value;
 	else if (name == "table_scrape_log")
