@@ -29,7 +29,7 @@ CREATE TABLE xbt_deny_from_hosts
 CREATE TABLE xbt_files
 (
   fid int NOT NULL auto_increment,
-  info_hash blob NOT NULL,
+  hid int NOT NULL,
   leechers int NOT NULL,
   seeders int NOT NULL,
   announced_http int NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE xbt_files
   mtime timestamp NOT NULL,
   ctime timestamp NOT NULL,
   PRIMARY KEY (fid),
-  UNIQUE KEY (info_hash(20))
+  UNIQUE KEY (hid)
 );
 
 CREATE TABLE xbt_files_updates
@@ -66,7 +66,7 @@ CREATE TABLE xbt_files_updates
 
 CREATE TABLE xbt_files_users
 (
-  info_hash blob NOT NULL,
+  hid int NOT NULL,
   uid int NOT NULL,
   active tinyint NOT NULL,
   announced int NOT NULL,
@@ -75,8 +75,15 @@ CREATE TABLE xbt_files_users
   `left` bigint(20) NOT NULL,
   uploaded bigint(20) NOT NULL,
   mtime timestamp NOT NULL,
-  UNIQUE KEY (info_hash(20), uid),
+  UNIQUE KEY (hid, uid),
   KEY (uid)
+);
+
+CREATE TABLE xbt_hashes
+(
+  hid int NOT NULL auto_increment,
+  hash blob NOT NULL,
+  PRIMARY KEY (hid)
 );
 
 CREATE TABLE xbt_ipas
