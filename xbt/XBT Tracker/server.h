@@ -86,35 +86,19 @@ public:
 
 		t_file()
 		{
-			announced_http = 0;
-			announced_http_compact = 0;
-			announced_http_no_peer_id = 0;
-			announced_udp = 0;
 			completed = 0;
 			dirty = true;
 			fid = 0;
 			leechers = 0;
-			scraped_http = 0;
-			scraped_udp = 0;
 			seeders = 0;
-			started = 0;
-			stopped = 0;
 		}
 
 		t_peers peers;
-		int announced_http;
-		int announced_http_compact;
-		int announced_http_no_peer_id;
-		int announced_udp;
 		int completed;
 		bool dirty;
 		int fid;
 		int leechers;
-		int scraped_http;
-		int scraped_udp;
 		int seeders;
-		int started;
-		int stopped;
 	};
 
 
