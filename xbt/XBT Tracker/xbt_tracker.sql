@@ -32,36 +32,12 @@ CREATE TABLE xbt_files
   hid int NOT NULL,
   leechers int NOT NULL,
   seeders int NOT NULL,
-  announced_http int NOT NULL,
-  announced_http_compact int NOT NULL,
-  announced_http_no_peer_id int NOT NULL,
-  announced_udp int NOT NULL,
-  scraped_http int NOT NULL,
-  scraped_udp int NOT NULL,
   completed int NOT NULL,
-  started int NOT NULL,
-  stopped int NOT NULL,
   flags int NOT NULL,
   mtime timestamp NOT NULL,
   ctime timestamp NOT NULL,
   PRIMARY KEY (fid),
   UNIQUE KEY (hid)
-);
-
-CREATE TABLE xbt_files_updates
-(
-  fid int NOT NULL,
-  leechers int NOT NULL,
-  seeders int NOT NULL,
-  completed int NOT NULL,
-  started int NOT NULL,
-  stopped int NOT NULL,
-  announced_http int NOT NULL,
-  announced_http_compact int NOT NULL,
-  announced_http_no_peer_id int NOT NULL,
-  announced_udp int NOT NULL,
-  scraped_http int NOT NULL,
-  scraped_udp int NOT NULL
 );
 
 CREATE TABLE xbt_files_users
