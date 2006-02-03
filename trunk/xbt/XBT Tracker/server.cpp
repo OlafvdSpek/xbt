@@ -437,36 +437,20 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		}
 		peer.mtime = time();
 	}
-	switch (v.m_event)
-	{
-	case Ctracker_input::e_completed:
-		file.completed++;
-		break;
-	case Ctracker_input::e_started:
-		file.started++;
-		break;
-	case Ctracker_input::e_stopped:
-		file.stopped++;
-		break;
-	}
 	if (udp)
 	{
-		file.announced_udp++;
 		m_stats.announced_udp++;
 	}
 	else if (v.m_compact)
 	{
-		file.announced_http_compact++;
 		m_stats.announced_http_compact++;
 	}
 	else if (v.m_no_peer_id)
 	{
-		file.announced_http_no_peer_id++;
 		m_stats.announced_http_no_peer_id++;
 	}
 	else
 	{
-		file.announced_http++;
 		m_stats.announced_http++;
 	}
 	file.dirty = true;
@@ -595,7 +579,6 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 		t_files::iterator i = m_files.find(ti.m_info_hash);
 		if (i != m_files.end())
 		{
-			i->second.scraped_http++;
 			m_stats.scraped_http++;
 			i->second.dirty = true;
 			files.d(i->first, i->second.scrape());
@@ -694,7 +677,7 @@ void Cserver::read_db_files_sql()
 			m_database.query("update " + table_name(table_files) + " set " + column_name(column_files_leechers) + " = 0, " + column_name(column_files_seeders) + " = 0");
 		else if (m_config.m_auto_register)
 			return;
-		q = "select info_hash, " + column_name(column_files_completed) + ", ?, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp"
+		q = "select info_hash, " + column_name(column_files_completed) + ", ?"
 			" from ? where ? >= ?";
 		q.p(column_name(column_files_fid));
 		q.p(table_name(table_files));
@@ -712,14 +695,6 @@ void Cserver::read_db_files_sql()
 			file.completed = row.f_int(1, 0);
 			file.dirty = false;
 			file.fid = row.f_int(2, 0);
-			file.started = row.f_int(3, 0);
-			file.stopped = row.f_int(4, 0);
-			file.announced_http = row.f_int(5, 0);
-			file.announced_http_compact = row.f_int(6, 0);
-			file.announced_http_no_peer_id = row.f_int(7, 0);
-			file.announced_udp = row.f_int(8, 0);
-			file.scraped_http = row.f_int(9, 0);
-			file.scraped_udp = row.f_int(10, 0);
 		}
 	}
 	catch (Cxcc_error)
@@ -810,18 +785,10 @@ void Cserver::write_db_files()
 				q.execute();
 				file.fid = m_database.insert_id();
 			}
-			q = "(?,?,?,?,?,?,?,?,?,?,?,?),";
+			q = "(?,?,?,?),";
 			q.p(file.leechers);
 			q.p(file.seeders);
 			q.p(file.completed);
-			q.p(file.started);
-			q.p(file.stopped);
-			q.p(file.announced_http);
-			q.p(file.announced_http_compact);
-			q.p(file.announced_http_no_peer_id);
-			q.p(file.announced_udp);
-			q.p(file.scraped_http);
-			q.p(file.scraped_udp);
 			q.p(file.fid);
 			buffer += q.read();
 			file.dirty = false;
@@ -829,41 +796,12 @@ void Cserver::write_db_files()
 		if (!buffer.empty())
 		{
 			buffer.erase(buffer.size() - 1);
-			if (m_config.m_update_files_method == 1)
-			{
-				m_database.query("insert into " + table_name(table_files_updates) + " (leechers, seeders, completed, started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, fid) values " + buffer);
-				m_database.query("update " + table_name(table_files) + " f inner join " + table_name(table_files_updates) + " fu using (fid)"
-					" set" 
-					"  f." + column_name(column_files_leechers) + " = fu.leechers,"
-					"  f." + column_name(column_files_seeders) + " = fu.seeders,"
-					"  f." + column_name(column_files_completed) + " = fu.completed,"
-					"  f.started = fu.started,"
-					"  f.stopped = fu.stopped,"
-					"  f.announced_http = fu.announced_http,"
-					"  f.announced_http_compact = fu.announced_http_compact,"
-					"  f.announced_http_no_peer_id = fu.announced_http_no_peer_id,"
-					"  f.announced_udp = fu.announced_udp,"
-					"  f.scraped_http = fu.scraped_http,"
-					"  f.scraped_udp = fu.scraped_udp");
-				m_database.query("delete from " + table_name(table_files_updates));
-			}
-			else
-			{
-				m_database.query("insert into " + table_name(table_files) + " (" + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", " + column_name(column_files_completed) + ", started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, " + column_name(column_files_fid) + ") values " 
-					+ buffer
-					+ " on duplicate key update"
-					+ "  " + column_name(column_files_leechers) + " = values(" + column_name(column_files_leechers) + "),"
-					+ "  " + column_name(column_files_seeders) + " = values(" + column_name(column_files_seeders) + "),"
-					+ "  " + column_name(column_files_completed) + " = values(" + column_name(column_files_completed) + "),"
-					+ "  started = values(started),"
-					+ "  stopped = values(stopped)," 
-					+ "  announced_http = values(announced_http),"
-					+ "  announced_http_compact = values(announced_http_compact)," 
-					+ "  announced_http_no_peer_id = values(announced_http_no_peer_id),"
-					+ "  announced_udp = values(announced_udp),"
-					+ "  scraped_http = values(scraped_http),"
-					+ "  scraped_udp = values(scraped_udp)");
-			}
+			m_database.query("insert into " + table_name(table_files) + " (" + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", " + column_name(column_files_completed) + ", started, stopped, announced_http, announced_http_compact, announced_http_no_peer_id, announced_udp, scraped_http, scraped_udp, " + column_name(column_files_fid) + ") values " 
+				+ buffer
+				+ " on duplicate key update"
+				+ "  " + column_name(column_files_leechers) + " = values(" + column_name(column_files_leechers) + "),"
+				+ "  " + column_name(column_files_seeders) + " = values(" + column_name(column_files_seeders) + "),"
+				+ "  " + column_name(column_files_completed) + " = values(" + column_name(column_files_completed) + ")");
 		}
 	}
 	catch (Cxcc_error)
@@ -1015,12 +953,7 @@ string Cserver::debug(const Ctracker_input& ti) const
 				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
 				+ "<td>" + (i->second.dirty ? '*' : ' ')
 				+ "<td align=right>" + n(i->second.leechers)
-				+ "<td align=right>" + n(i->second.seeders)
-				+ "<td align=right>" + n(i->second.announced_http + i->second.announced_http_compact + i->second.announced_http_no_peer_id + i->second.announced_udp)
-				+ "<td align=right>" + n(i->second.scraped_http + i->second.scraped_udp)
-				+ "<td align=right>" + n(i->second.completed)
-				+ "<td align=right>" + n(i->second.started)
-				+ "<td align=right>" + n(i->second.stopped);
+				+ "<td align=right>" + n(i->second.seeders);
 		}
 	}
 	else
