@@ -6,7 +6,16 @@ create table xbt_hashes
 );
 insert ignore into xbt_hashes (hash) select info_hash from xbt_files;
 insert ignore into xbt_hashes (hash) select info_hash from xbt_files_users;
-alter table xbt_files add hid int not null;
+alter table xbt_files
+	drop started,
+	drop stopped,
+	drop announced_http,
+	drop announced_http_compact,
+	drop announced_http_no_peer_id,
+	drop announced_udp,
+	drop scraped_http,
+	drop scraped_udp,
+	add hid int not null;
 alter table xbt_files_users add hid int not null;
 update xbt_files f inner join xbt_hashes h on info_hash = hash set f.hid = h.hid;
 update xbt_files_users fu inner join xbt_hashes h on info_hash = hash set fu.hid = h.hid;
