@@ -166,9 +166,5 @@ int Cserver::http_get(const string& url, string& d)
 	curl_easy_setopt(handle, CURLOPT_WRITEDATA, &d);	
 	curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data);
 	CURLcode result = curl_easy_perform(handle);
-	if (!result)
-		return 0;
-	curl_easy_setopt(handle, CURLOPT_PROXY, "wemea01.pixs.philips.com:8080");
-	result = curl_easy_perform(handle);
 	return 0;
 }
