@@ -334,7 +334,7 @@ void Cbt_peer_link::remote_has(int v)
 
 void Cbt_peer_link::remote_requests(int piece, int offset, int size)
 {
-	if (piece < 0 || piece >= m_f->c_pieces() || offset < 0 || size < 0 || size > min(m_f->m_pieces[piece].size(), 1 << 17) 
+	if (piece < 0 || piece >= m_f->c_pieces() || offset < 0 || size < 0 || size > min(m_f->m_pieces[piece].size(), 1 << 15) 
 		|| m_remote_requests.size() >= 256 || !m_f->m_pieces[piece].valid() || m_local_choked)
 		return;
 	m_remote_requests.push_back(t_remote_request(m_f->mcb_piece * piece + offset, size, 0));
