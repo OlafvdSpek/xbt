@@ -69,7 +69,7 @@ public:
 
 	int cb_sub_piece() const
 	{
-		return 32 << 10;
+		return 16 << 10;
 	}
 
 	int priority() const
