@@ -627,7 +627,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, mc_rejected_pieces);
 	w.write_int(4, c_valid_chunks);
 	w.write_int(4, c_valid_pieces());
-	w.write_int(4, 32 << 10);
+	w.write_int(4, 16 << 10);
 	w.write_int(4, mcb_piece);
 	w.write_int(4, state());
 	w.write_int(4, m_started_at);
