@@ -397,7 +397,7 @@ int Cbt_peer_link::read_handshake(const char* h)
 void Cbt_peer_link::write_handshake()
 {
 	if (1)
-		write("\x13""BitTorrent protocol\0\0\0\0\0\0\0\3", 28);
+		write("\x13""BitTorrent protocol\0\0\0\0\0\0\0\2", 28);
 	else
 		write("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3", 28);
 	write(m_f->m_info_hash.c_str(), 20);
