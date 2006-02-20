@@ -317,7 +317,7 @@ void Cserver::accept(const Csocket& l)
 		{
 			t_deny_from_hosts::const_iterator i = m_deny_from_hosts.lower_bound(ntohl(a.sin_addr.s_addr));
 			if (i != m_deny_from_hosts.begin())
-			{		
+			{
 				i--;
 				if (ntohl(a.sin_addr.s_addr) <= i->second.end)
 					continue;
@@ -434,8 +434,8 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		}
 		peer.mtime = time();
 	}
-	if (v.m_event == Ctracker_input::e_completed)   
-		file.completed++;   
+	if (v.m_event == Ctracker_input::e_completed)
+		file.completed++;
 	if (udp)
 	{
 		m_stats.announced_udp++;
@@ -776,7 +776,7 @@ void Cserver::write_db_files()
 		if (!buffer.empty())
 		{
 			buffer.erase(buffer.size() - 1);
-			m_database.query("insert into " + table_name(table_files) + " (" + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", " + column_name(column_files_completed) + ", " + column_name(column_files_fid) + ") values " 
+			m_database.query("insert into " + table_name(table_files) + " (" + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", " + column_name(column_files_completed) + ", " + column_name(column_files_fid) + ") values "
 				+ buffer
 				+ " on duplicate key update"
 				+ "  " + column_name(column_files_leechers) + " = values(" + column_name(column_files_leechers) + "),"
@@ -873,7 +873,7 @@ void Cserver::read_config()
 		{
 		}
 	}
-	else 
+	else
 	{
 		ifstream is("xbt_tracker.conf");
 		if (is)
