@@ -26,7 +26,7 @@ int main1()
 	}
 #else
 		cerr << error.message() << endl;
-#endif	
+#endif
 	if (static_config.mysql_host != "-"
 		&& (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true)))
 	{
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
 		return cerr << "Unable to start WSA" << endl, 1;
 #ifdef NDEBUG
-	SERVICE_TABLE_ENTRY st[] = 
+	SERVICE_TABLE_ENTRY st[] =
 	{
 		{ "", nt_service_main },
 		{ NULL, NULL }
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 	if (StartServiceCtrlDispatcher(st))
 		return 0;
 	if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED
-		&& GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)		
+		&& GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)
 		return 1;
 #endif
 #endif

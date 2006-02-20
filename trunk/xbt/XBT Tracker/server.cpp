@@ -434,6 +434,8 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		}
 		peer.mtime = time();
 	}
+	if (v.m_event == Ctracker_input::e_completed)   
+		file.completed++;   
 	if (udp)
 	{
 		m_stats.announced_udp++;
