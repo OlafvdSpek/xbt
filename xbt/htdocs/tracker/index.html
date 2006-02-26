@@ -54,11 +54,13 @@ Just start the executable. An empty DOS window should appear.
 <hr>
 <h2>Installing under Linux</h2>
 
-Enter the following commands in a terminal. Replace the "database host user pass" line with details that apply to your setup.
+Enter the following commands in a terminal.
+Replace the "database host user pass xbt_" line with details that apply to your setup.
+Be patient while g++ is running, it'll take a few minutes.
 <pre>
-cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xbtt co xbt/misc xbt/XBT\ Tracker
-cd xbt/XBT\ Tracker/
-chmod 755 make.sh
+svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt/misc xbt/misc
+svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt/Tracker xbt/Tracker
+cd xbt/Tracker
 ./make.sh
 cat>xbt_tracker.conf
 database host user pass table_prefix
