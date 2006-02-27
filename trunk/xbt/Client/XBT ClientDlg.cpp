@@ -2804,7 +2804,7 @@ void CXBTClientDlg::OnFileNew()
 
 void CXBTClientDlg::OnFileOpen()
 {
-	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
+	CFileDialog dlg(true, "torrent", NULL, OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, "Torrents|*.torrent|", this);
 	if (IDOK == dlg.DoModal())
 		open(static_cast<string>(dlg.GetPathName()), m_ask_for_location);
 }
