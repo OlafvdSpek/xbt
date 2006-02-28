@@ -34,8 +34,8 @@ CREATE TABLE xbt_files
   seeders int NOT NULL,
   completed int NOT NULL,
   flags int NOT NULL,
-  mtime timestamp NOT NULL,
-  ctime timestamp NOT NULL,
+  mtime int NOT NULL,
+  ctime int NOT NULL,
   PRIMARY KEY (fid),
   UNIQUE KEY (info_hash(20))
 );
@@ -50,7 +50,7 @@ CREATE TABLE xbt_files_users
   downloaded bigint(20) NOT NULL,
   `left` bigint(20) NOT NULL,
   uploaded bigint(20) NOT NULL,
-  mtime timestamp NOT NULL,
+  mtime int NOT NULL,
   UNIQUE KEY (fid, uid),
   KEY (uid)
 );
