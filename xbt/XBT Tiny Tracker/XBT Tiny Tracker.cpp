@@ -17,7 +17,7 @@ using namespace std;
 struct t_peer
 {
 	int port; 
-	int mtime;
+	time_t mtime;
 };
 
 typedef map<int, t_peer> t_peers;
