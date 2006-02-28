@@ -759,7 +759,7 @@ void Cserver::write_db_files()
 			Csql_query q(m_database);
 			if (!file.fid)
 			{
-				q = "insert into ? (info_hash, ctime) values (?, NULL)";
+				q = "insert into ? (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())";
 				q.p(table_name(table_files));
 				q.pe(i->first);
 				q.execute();
@@ -781,7 +781,8 @@ void Cserver::write_db_files()
 				+ " on duplicate key update"
 				+ "  " + column_name(column_files_leechers) + " = values(" + column_name(column_files_leechers) + "),"
 				+ "  " + column_name(column_files_seeders) + " = values(" + column_name(column_files_seeders) + "),"
-				+ "  " + column_name(column_files_completed) + " = values(" + column_name(column_files_completed) + ")");
+				+ "  " + column_name(column_files_completed) + " = values(" + column_name(column_files_completed) + ")"
+				+ "  mtime = unix_timestamp()");
 		}
 	}
 	catch (Cxcc_error)
