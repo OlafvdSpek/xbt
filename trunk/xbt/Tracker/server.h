@@ -99,6 +99,7 @@ public:
 		int fid;
 		int leechers;
 		int seeders;
+		time_t ctime;
 	};
 
 
@@ -112,11 +113,11 @@ public:
 
 		bool marked;
 		int uid;
-		int fid_end;
 		int completes;
 		int incompletes;
 		int peers_limit;
 		int torrents_limit;
+		int wait_time;
 		string pass;
 		__int64 torrent_pass_secret;
 	};

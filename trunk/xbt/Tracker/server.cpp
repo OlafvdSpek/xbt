@@ -356,7 +356,9 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
 		return bts_unregistered_torrent;
 	t_file& file = m_files[v.m_info_hash];
-	if (v.m_left && user && user->fid_end && file.fid > user->fid_end)
+	if (!file.ctime)
+		file.ctime = time();
+	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > time())
 		return bts_wait_time;
 	t_peers::iterator i = file.peers.find(v.m_ipa);
 	if (i != file.peers.end())
@@ -670,14 +672,14 @@ void Cserver::read_db_files_sql()
 				q.p(row.f_int(1));
 				q.execute();
 			}
-
 		}
 		if (m_files.empty())
 			m_database.query("update " + table_name(table_files) + " set " + column_name(column_files_leechers) + " = 0, " + column_name(column_files_seeders) + " = 0");
 		else if (m_config.m_auto_register)
 			return;
-		q = "select info_hash, " + column_name(column_files_completed) + ", ?"
+		q = "select info_hash, ?, ?, ctime"
 			" from ? where ? >= ?";
+		q.p(column_name(column_files_completed));
 		q.p(column_name(column_files_fid));
 		q.p(table_name(table_files));
 		q.p(column_name(column_files_fid));
@@ -694,6 +696,7 @@ void Cserver::read_db_files_sql()
 			file.completed = row.f_int(1, 0);
 			file.dirty = false;
 			file.fid = row.f_int(2, 0);
+			file.ctime = row.f_int(3, 0);
 		}
 	}
 	catch (Cxcc_error)
@@ -707,7 +710,7 @@ void Cserver::read_db_users()
 		return;
 	try
 	{
-		Csql_query q(m_database, "select ?, name, pass, torrent_pass, fid_end, torrents_limit, peers_limit, torrent_pass_secret from ?");
+		Csql_query q(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret from ?");
 		q.p(column_name(column_users_uid));
 		q.p(table_name(table_users));
 		Csql_result result = q.execute();
@@ -720,7 +723,7 @@ void Cserver::read_db_users()
 			t_user& user = m_users[row.f_int(0)];
 			user.marked = false;
 			user.uid = row.f_int(0);
-			user.fid_end = row.f_int(4);
+			user.wait_time = row.f_int(4);
 			user.pass.assign(row.f(2));
 			user.torrents_limit = row.f_int(5);
 			user.peers_limit = row.f_int(6);
@@ -1097,7 +1100,7 @@ int Cserver::test_sql()
 		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
 		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0 = 1");
-		m_database.query("select " + column_name(column_users_uid) + ", name, pass, fid_end, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");
+		m_database.query("select " + column_name(column_users_uid) + ", name, pass, wait_time, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");
 		return 0;
 	}
 	catch (Cxcc_error)
