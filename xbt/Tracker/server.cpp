@@ -390,12 +390,13 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 			downloaded = v.m_downloaded - i->second.downloaded;
 			uploaded = v.m_uploaded - i->second.uploaded;
 		}
-		Csql_query q(m_database, "(?,1,?,?,?,?,?,?),");
+		Csql_query q(m_database, "(?,1,?,?,?,?,?,?,?),");
 		q.p(v.m_event != Ctracker_input::e_stopped);
 		q.p(v.m_event == Ctracker_input::e_completed);
 		q.p(downloaded);
 		q.p(v.m_left);
 		q.p(uploaded);
+		q.p(time());
 		q.p(file.fid);
 		q.p(user->uid);
 		m_files_users_updates_buffer += q.read();
@@ -674,7 +675,7 @@ void Cserver::read_db_files_sql()
 			}
 		}
 		if (m_files.empty())
-			m_database.query("update " + table_name(table_files) + " set " + column_name(column_files_leechers) + " = 0, " + column_name(column_files_seeders) + " = 0");
+			am_database.query("update " + table_name(table_files) + " set " + column_name(column_files_leechers) + " = 0, " + column_name(column_files_seeders) + " = 0");
 		else if (m_config.m_auto_register)
 			return;
 		q = "select info_hash, ?, ?, ctime"
@@ -784,7 +785,7 @@ void Cserver::write_db_files()
 				+ " on duplicate key update"
 				+ "  " + column_name(column_files_leechers) + " = values(" + column_name(column_files_leechers) + "),"
 				+ "  " + column_name(column_files_seeders) + " = values(" + column_name(column_files_seeders) + "),"
-				+ "  " + column_name(column_files_completed) + " = values(" + column_name(column_files_completed) + ")"
+				+ "  " + column_name(column_files_completed) + " = values(" + column_name(column_files_completed) + "),"
 				+ "  mtime = unix_timestamp()");
 		}
 	}
@@ -827,7 +828,7 @@ void Cserver::write_db_users()
 		m_files_users_updates_buffer.erase(m_files_users_updates_buffer.size() - 1);
 		try
 		{
-			m_database.query("insert into " + table_name(table_files_users) + " (active, announced, completed, downloaded, `left`, uploaded, fid, uid) values "
+			m_database.query("insert into " + table_name(table_files_users) + " (active, announced, completed, downloaded, `left`, uploaded, mtime, fid, uid) values "
 				+ m_files_users_updates_buffer
 				+ " on duplicate key update"
 				+ "  active = values(active),"
@@ -835,7 +836,8 @@ void Cserver::write_db_users()
 				+ "  completed = completed + values(completed),"
 				+ "  downloaded = downloaded + values(downloaded),"
 				+ "  `left` = values(`left`),"
-				+ "  uploaded = uploaded + values(uploaded)");
+				+ "  uploaded = uploaded + values(uploaded),"
+				+ "  mtime = values(mtime)");
 		}
 		catch (Cxcc_error)
 		{
