@@ -675,7 +675,7 @@ void Cserver::read_db_files_sql()
 			}
 		}
 		if (m_files.empty())
-			am_database.query("update " + table_name(table_files) + " set " + column_name(column_files_leechers) + " = 0, " + column_name(column_files_seeders) + " = 0");
+			m_database.query("update " + table_name(table_files) + " set " + column_name(column_files_leechers) + " = 0, " + column_name(column_files_seeders) + " = 0");
 		else if (m_config.m_auto_register)
 			return;
 		q = "select info_hash, ?, ?, ctime"
