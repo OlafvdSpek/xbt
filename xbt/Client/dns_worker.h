@@ -7,9 +7,6 @@
 
 #include <boost/thread.hpp>
 
-using namespace boost;
-using namespace std;
-
 class Cdns_worker  
 {
 public:
@@ -22,12 +19,12 @@ private:
 
 	void run();
 
-	condition m_condition;
-	mutex m_mutex;
+	boost::condition m_condition;
+	boost::mutex m_mutex;
 	t_reverse_map m_reverse_map;
 	t_reverse_map_queue m_reverse_map_queue;
 	bool m_run;
-	thread_group m_threads;
+	boost::thread_group m_threads;
 };
 
 #endif
