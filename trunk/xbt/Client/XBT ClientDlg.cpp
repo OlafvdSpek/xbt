@@ -1800,6 +1800,12 @@ static int compare(const T& a, const T& b, int c = 0)
 	return a < b ? -1 : a == b ? c : 1;
 }
 
+template <class T>
+static int icompare(const T& a, const T& b, int c = 0)
+{
+	return compare(to_lower_copy(a), to_lower_copy(b), c);
+}
+
 int compare_host_names(const string& a, const string& b)
 {
 	int a1 = a.size() - 1;
@@ -1873,7 +1879,7 @@ int CXBTClientDlg::files_compare(int id_a, int id_b) const
 	case fc_state:
 		return compare(a.m_state, b.m_state);
 	case fc_name:
-		return compare(to_lower_copy(a.m_display_name), to_lower_copy(b.m_display_name));
+		return icompare(a.m_display_name, b.m_display_name);
 	case fc_priority:
 		return compare(b.m_priority, a.m_priority);
 	case fc_completed_at:
@@ -2033,9 +2039,9 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 	switch (m_files_sort_column)
 	{
 	case sfc_name:
-		return compare(to_lower_copy(a.m_name), to_lower_copy(b.m_name));
+		return icompare(a.m_name, b.m_name);
 	case sfc_extension:
-		return compare(get_extension(a.m_name), get_extension(b.m_name), compare(a.m_name, b.m_name));
+		return icompare(get_extension(a.m_name), get_extension(b.m_name), icompare(a.m_name, b.m_name));
 	case sfc_done:
 		return compare(b.m_left * 1000 / b.m_size, a.m_left * 1000 / a.m_size);
 	case sfc_left:
