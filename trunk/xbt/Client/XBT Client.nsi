@@ -14,7 +14,6 @@ UninstPage instfiles
 Section "Install"
 	SetShellVarContext all
 	SetOutPath "$INSTDIR"
-	!insertmacro UpgradeDLL "pthreadVC2.dll" "$SYSDIR\pthreadVC2.dll" "$SYSDIR"
 	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
 	Delete "$INSTDIR\XBT Client.exe"
