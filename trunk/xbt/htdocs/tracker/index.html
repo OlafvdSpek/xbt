@@ -220,7 +220,7 @@ If auto_register is on, the tracker will track any torrent.
 If it's off, the tracker will only track torrents (identified by info_hash) that are in the xbt_files table.
 
 <pre>
-insert into xbt_files (info_hash, ctime) values ('&lt;info_hash>', null); // insert
+insert into xbt_files (info_hash, mtime, ctime) values ('&lt;info_hash>', unix_timestamp(), unix_timestamp()); // insert
 update xbt_files set flags = 1 where info_hash = '&lt;info_hash>'; // delete
 </pre>
 <hr>
