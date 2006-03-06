@@ -33,15 +33,15 @@ public:
 	Cbt_tracker_link();
 	~Cbt_tracker_link();
 
-	int m_announce_time;
+	time_t m_announce_time;
 private:
 	__int64 m_connection_id;
 	byte* m_w;
 	Cbt_tracker_url m_url;
 	Csocket m_s;
 	Cvirtual_binary m_d;
-	int m_announce_send;
-	int m_connect_send;
+	time_t m_announce_send;
+	time_t m_connect_send;
 	int m_current_tracker;
 	int m_event;
 	int m_state;

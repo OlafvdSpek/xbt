@@ -12,7 +12,7 @@
 class Cbt_sub_piece
 {
 public:
-	typedef map<Cbt_peer_link*, int> t_peers;
+	typedef map<Cbt_peer_link*, time_t> t_peers;
 
 	t_peers m_peers;
 

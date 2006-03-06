@@ -21,7 +21,7 @@ private:
 		}
 
 		bool left;
-		int mtime;
+		time_t mtime;
 		int port;
 	};
 
@@ -29,7 +29,7 @@ private:
 
 	struct t_file
 	{
-		void clean_up(int t);
+		void clean_up(time_t t);
 		string debug() const;
 		// void select_peers(const Ctracker_input&, Cannounce_output&) const;
 		// Cbvalue scrape() const;
@@ -66,7 +66,7 @@ private:
 	void send_error(Csocket&, sockaddr_in&, const char* r, const char* r_end, const string& msg);
 
 	int m_announce_interval;
-	int m_clean_up_time;
+	time_t m_clean_up_time;
 	t_files m_files;
 	__int64 m_secret;
 };

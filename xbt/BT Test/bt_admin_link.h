@@ -35,8 +35,8 @@ private:
 	Csocket m_s;
 	Cserver* m_server;
 	bool m_close;
-	int m_ctime;
-	int m_mtime;
+	time_t m_ctime;
+	time_t m_mtime;
 };
 
 #endif // !defined(AFX_BT_ADMIN_LINK_H__C5AA1CA0_8023_42E9_A747_00CF206F5833__INCLUDED_)

@@ -23,7 +23,7 @@ public:
 		debug,
 	};
 
-	int time() const
+	time_t time() const
 	{
 		return m_time;
 	}
@@ -61,7 +61,7 @@ public:
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 private:
-	int m_time;
+	time_t m_time;
 	t_level m_level;
 	string m_message;
 	string m_source;

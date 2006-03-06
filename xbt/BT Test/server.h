@@ -221,7 +221,7 @@ public:
 		return m_config.m_send_stop_event;
 	}
 
-	int time() const
+	time_t time() const
 	{
 		return m_time;
 	}
@@ -284,16 +284,16 @@ private:
 	int m_admin_port;
 	int m_peer_port;
 	int m_send_quota;
-	int m_check_remote_links_time;
+	time_t m_check_remote_links_time;
 	bool m_run;
-	int m_run_scheduler_time;
-	int m_save_state_time;
-	int m_start_time;
-	int m_time;
+	time_t m_run_scheduler_time;
+	time_t m_save_state_time;
+	time_t m_start_time;
+	time_t m_time;
 	int m_tracker_port;
-	int m_update_chokes_time;
-	int m_update_send_quotas_time;
-	int m_update_states_time;
+	time_t m_update_chokes_time;
+	time_t m_update_send_quotas_time;
+	time_t m_update_states_time;
 	string m_peer_id;
 	string m_peer_key;
 	Cversion_check_handler m_version_check_handler;

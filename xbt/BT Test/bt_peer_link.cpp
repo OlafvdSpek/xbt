@@ -884,7 +884,7 @@ const Cserver* Cbt_peer_link::server() const
 	return m_f->server();
 }
 
-int Cbt_peer_link::time() const
+time_t Cbt_peer_link::time() const
 {
 	return server()->time();
 }

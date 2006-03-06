@@ -16,7 +16,7 @@ private:
 
 	int m_got;
 	int m_rate;
-	int m_start_time;
+	time_t m_start_time;
 };
 
 #endif // !defined(AFX_DATA_COUNTER_H__F3C125B1_D612_41A0_B2D2_AB9240FDC72E__INCLUDED_)

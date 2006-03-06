@@ -30,8 +30,8 @@ private:
 	sockaddr_in m_a;
 	Csocket m_s;
 	Cserver* m_server;
-	int m_ctime;
-	int m_mtime;
+	time_t m_ctime;
+	time_t m_mtime;
 };
 
 #endif // !defined(AFX_BT_LINK_H__E306F9D6_A5E5_474E_A85F_88BEF876F3B8__INCLUDED_)
