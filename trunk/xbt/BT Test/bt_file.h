@@ -27,7 +27,7 @@ public:
 	string peer_key() const;
 	Cserver* server();
 	const Cserver* server() const;
-	int time() const;
+	time_t time() const;
 	void peer_connect(int ipa, int port);
 	void peer_disconnect(int ipa);
 	void trackers(const string&);

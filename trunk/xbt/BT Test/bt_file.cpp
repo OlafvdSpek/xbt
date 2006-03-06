@@ -1025,7 +1025,7 @@ string Cbt_file::peer_key() const
 	return server()->peer_key();
 }
 
-int Cbt_file::time() const
+time_t Cbt_file::time() const
 {
 	return server()->time();
 }

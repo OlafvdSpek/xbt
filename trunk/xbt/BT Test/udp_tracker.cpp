@@ -191,7 +191,7 @@ void Cudp_tracker::send(Csocket& s, sockaddr_in& a, const void* b, int cb_b)
 	s.sendto(b, cb_b, reinterpret_cast<const sockaddr*>(&a), sizeof(sockaddr_in));
 }
 
-void Cudp_tracker::t_file::clean_up(int t)
+void Cudp_tracker::t_file::clean_up(time_t t)
 {
 	for (t_peers::iterator i = peers.begin(); i != peers.end(); )
 	{

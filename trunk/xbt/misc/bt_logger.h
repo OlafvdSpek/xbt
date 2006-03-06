@@ -21,7 +21,7 @@ private:
 	typedef map<string, int> t_strings;
 
 	ofstream m_os;
-	int m_start_time;
+	time_t m_start_time;
 	t_strings m_strings;
 };
 

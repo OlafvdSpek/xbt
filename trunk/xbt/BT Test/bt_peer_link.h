@@ -23,7 +23,7 @@ class Cbt_peer_link: public Cbt_peer_data
 public:
 	Cserver* server();
 	const Cserver* server() const;
-	int time() const;
+	time_t time() const;
 	string debug_string() const;
 	int write_data(__int64 o, const char* s, int cb_s, int latency);
 	int c_max_requests_pending() const;
@@ -83,13 +83,13 @@ public:
 	{
 		__int64 offset;
 		int size;
-		int stime;
+		time_t stime;
 
 		t_local_request()
 		{
 		}
 
-		t_local_request(__int64 _offset, int _size, int _time)
+		t_local_request(__int64 _offset, int _size, time_t _time)
 		{
 			offset = _offset;
 			size = _size;
@@ -128,9 +128,9 @@ public:
 	Cring_buffer m_read_b;
 	t_write_buffer m_write_b;
 	t_have_queue m_have_queue;
-	int m_rtime;
-	int m_stime;
-	int m_check_pieces_time;
+	time_t m_rtime;
+	time_t m_stime;
+	time_t m_check_pieces_time;
 	int mc_max_requests_pending;
 
 	t_local_requests m_local_requests;
@@ -139,8 +139,8 @@ public:
 	t_remote_requests m_remote_requests;
 	Cdata_counter m_down_counter;
 	Cdata_counter m_up_counter;
-	int m_get_peers_stime;
-	int m_peers_stime;
+	time_t m_get_peers_stime;
+	time_t m_peers_stime;
 	bool m_get_info_extension;
 	bool m_get_peers_extension;
 	bool m_local_choked_goal;
