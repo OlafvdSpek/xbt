@@ -1,6 +1,4 @@
-!define UPGRADEDLL_NOREGISTER
 !define VERSION "0.7.0"
-!include "UpgradeDLL.nsh"
 
 Name "XBT Client Backend ${VERSION}"
 Outfile "XBT_Client_Backend-${VERSION}.exe"
@@ -13,14 +11,13 @@ UninstPage instfiles
 
 Section "Install"
 	SetOutPath "$INSTDIR"
-	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
 	Delete "$INSTDIR\XBT Client Backend.exe"
 	Delete "$INSTDIR\XBT Client Backend Old.exe"
 	Rename "$INSTDIR\XBT Client Backend.exe" "$INSTDIR\XBT Client Backend Old.exe"
 	File release\*.exe
 	SetOutPath "$INSTDIR\htdocs"
-	File "..\XBT Client\htdocs\*"
+	File "..\Client\htdocs\*"
 	ExecWait "$INSTDIR\XBT Client Backend.exe --install"
 	Exec 'net start "XBT Client"'
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
