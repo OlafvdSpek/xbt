@@ -605,9 +605,9 @@ void Cserver::read_db_deny_from_hosts()
 			i->second.marked = true;
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			t_deny_from_host& deny_from_host = m_deny_from_hosts[row.f_int(0)];
+			t_deny_from_host& deny_from_host = m_deny_from_hosts[row.f(0).i()];
 			deny_from_host.marked = false;
-			deny_from_host.end = row.f_int(1);
+			deny_from_host.end = row.f(1).i();
 		}
 		for (t_deny_from_hosts::iterator i = m_deny_from_hosts.begin(); i != m_deny_from_hosts.end(); )
 		{
@@ -664,13 +664,13 @@ void Cserver::read_db_files_sql()
 			Csql_result result = q.execute();
 			for (Csql_row row; row = result.fetch_row(); )
 			{
-				if (row.size(0) != 20)
+				if (row.f(0).size() != 20)
 					continue;
-				m_files.erase(row.f(0));
+				m_files.erase(row.f(0).s());
 				q = "delete from ? where ? = ?";
 				q.p(table_name(table_files));
 				q.p(column_name(column_files_fid));
-				q.p(row.f_int(1));
+				q.p(row.f(1).i());
 				q.execute();
 			}
 		}
@@ -688,16 +688,16 @@ void Cserver::read_db_files_sql()
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			m_fid_end = max(m_fid_end, static_cast<int>(row.f_int(2, 0)) + 1);
-			if (row.size(0) != 20 || m_files.find(row.f(0)) != m_files.end())
+			m_fid_end = max(m_fid_end, static_cast<int>(row.f(2).i()) + 1);
+			if (row.f(0).size() != 20 || m_files.find(row.f(0).s()) != m_files.end())
 				continue;
-			t_file& file = m_files[row.f(0)];
+			t_file& file = m_files[row.f(0).s()];
 			if (file.fid)
 				continue;
-			file.completed = row.f_int(1, 0);
+			file.completed = row.f(1).i();
 			file.dirty = false;
-			file.fid = row.f_int(2, 0);
-			file.ctime = row.f_int(3, 0);
+			file.fid = row.f(2).i();
+			file.ctime = row.f(3).i();
 		}
 	}
 	catch (Cxcc_error)
@@ -721,18 +721,18 @@ void Cserver::read_db_users()
 		m_users_torrent_passes.clear();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			t_user& user = m_users[row.f_int(0)];
+			t_user& user = m_users[row.f(0).i()];
 			user.marked = false;
-			user.uid = row.f_int(0);
-			user.wait_time = row.f_int(4);
-			user.pass.assign(row.f(2));
-			user.torrents_limit = row.f_int(5);
-			user.peers_limit = row.f_int(6);
-			user.torrent_pass_secret = row.f_int(7);
-			if (row.size(1))
-				m_users_names[row.f(1)] = &user;
-			if (row.size(3))
-				m_users_torrent_passes[row.f(3)] = &user;
+			user.uid = row.f(0).i();
+			user.wait_time = row.f(4).i();
+			user.pass.assign(row.f(2).s());
+			user.torrents_limit = row.f(5).i();
+			user.peers_limit = row.f(6).i();
+			user.torrent_pass_secret = row.f(7).i();
+			if (row.f(1).size())
+				m_users_names[row.f(1).s()] = &user;
+			if (row.f(3).size())
+				m_users_torrent_passes[row.f(3).s()] = &user;
 		}
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); )
 		{
@@ -872,7 +872,7 @@ void Cserver::read_config()
 			Csql_result result = m_database.query("select name, value from " + table_name(table_config) + " where value is not null");
 			Cconfig config;
 			for (Csql_row row; row = result.fetch_row(); )
-				config.set(row.f(0), row.f(1));
+				config.set(row.f(0).s(), row.f(1).s());
 			m_config = config;
 		}
 		catch (Cxcc_error)
