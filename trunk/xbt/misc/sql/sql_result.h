@@ -43,6 +43,44 @@ private:
 	int mc_references;
 };
 
+class Csql_field
+{
+public:
+	Csql_field(const char* begin, int size)
+	{
+		m_begin = begin;
+		m_size = size;
+	}
+
+	const char* raw() const
+	{
+		return m_begin;
+	}
+
+	int size() const
+	{
+		return m_size;
+	}
+
+	int i(int d = 0) const
+	{
+		return raw() ? atoi(raw()) : d;
+	}
+
+	string s(const string& d = "") const
+	{
+		return raw() ? string(raw(), size()) : d;
+	}
+
+	Cvirtual_binary vdata() const
+	{
+		return Cvirtual_binary(raw(), size());
+	}
+private:
+	const char* m_begin;
+	int m_size;
+};
+
 class Csql_row  
 {
 public:
@@ -57,29 +95,9 @@ public:
 		return m_data;
 	}
 
-	const char* f_raw(int i) const
+	Csql_field f(int i) const
 	{
-		return m_data[i];
-	}
-
-	int size(int i) const
-	{
-		return m_sizes[i];
-	}
-
-	string f(int i, const string& d = "") const
-	{
-		return f_raw(i) ? string(f_raw(i), size(i)) : d;
-	}
-
-	int f_int(int i, int d = 0) const
-	{
-		return f_raw(i) ? atoi(f_raw(i)) : d;
-	}
-
-	Cvirtual_binary f_vdata(int i) const
-	{
-		return Cvirtual_binary(f_raw(i), size(i));
+		return Csql_field(m_data[i], m_sizes[i]);
 	}
 private:
 	MYSQL_ROW m_data;
