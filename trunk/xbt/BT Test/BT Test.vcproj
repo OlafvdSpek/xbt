@@ -48,7 +48,7 @@
 				AdditionalIncludeDirectories="..\misc"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
@@ -72,12 +72,13 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib zdll.lib"
+				AdditionalDependencies="zlib_static.lib"
 				OutputFile="Release/XBT Client Backend.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/XBT Client Backend.pdb"
 				SubSystem="1"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -165,7 +166,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib zdll.lib"
+				AdditionalDependencies="zdll.lib"
 				OutputFile="Debug/XBT Client Backend.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"

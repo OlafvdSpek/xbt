@@ -1,6 +1,4 @@
-!define UPGRADEDLL_NOREGISTER
 !define VERSION "0.7.0"
-!include "UpgradeDLL.nsh"
 
 Name "XBT Client ${VERSION}"
 Outfile "XBT_Client-${VERSION}.exe"
@@ -14,7 +12,6 @@ UninstPage instfiles
 Section "Install"
 	SetShellVarContext all
 	SetOutPath "$INSTDIR"
-	!insertmacro UpgradeDLL "zlib1.dll" "$SYSDIR\zlib1.dll" "$SYSDIR"
 
 	Delete "$INSTDIR\XBT Client.exe"
 	Delete "$INSTDIR\XBT Client Old.exe"
