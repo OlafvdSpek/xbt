@@ -4,6 +4,16 @@
 #include <fstream>
 #include <iostream>
 
+Cdatabase::Cdatabase()
+{
+	mysql_init(&m_handle);
+}
+
+Cdatabase::~Cdatabase()
+{
+	close();
+}
+
 Cxcc_error Cdatabase::open(const char* host, const char* user, const char* password, const char* database, bool echo_errors)
 {
 	m_echo_errors = echo_errors;
