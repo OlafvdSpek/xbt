@@ -18,12 +18,16 @@ public:
 	Csql_result query(const string& q);
 	int insert_id();
 	void close();
+	Cdatabase();
+	~Cdatabase();
 
 	MYSQL& handle()
 	{
 		return m_handle;
 	}
 private:
+	Cdatabase(const Cdatabase&);
+
 	bool m_echo_errors;
 	MYSQL m_handle;
 };
