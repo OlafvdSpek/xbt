@@ -10,7 +10,7 @@ string escape_string(const string& v)
 {
 	string w;
 	w.reserve(v.length());
-	for (int i = 0; i < v.length(); i++)
+	for (size_t i = 0; i < v.length(); i++)
 	{
 		if (isgraph(v[i]))
 			w += v[i];
@@ -50,7 +50,7 @@ string hex_decode(const string& v)
 {
 	string r;
 	r.resize(v.length() >> 1);
-	for (int i = 0; i + 2 <= v.length(); i += 2)
+	for (size_t i = 0; i + 2 <= v.length(); i += 2)
 	{
 		int a = hex_decode(v[i]);
 		r[i >> 1] = a << 4 | hex_decode(v[i + 1]);
@@ -85,7 +85,7 @@ string hex_encode(const string& v)
 {
 	string r;
 	r.reserve(v.length() << 1);
-	for (int i = 0; i < v.length(); i++)
+	for (size_t i = 0; i < v.length(); i++)
 		r += hex_encode(2, v[i]);
 	return r;
 }
@@ -93,7 +93,7 @@ string hex_encode(const string& v)
 string js_encode(const string& v)
 {
 	string r;
-	for (int i = 0; i < v.length(); i++)
+	for (size_t i = 0; i < v.length(); i++)
 	{
 		switch (v[i])
 		{
@@ -112,7 +112,7 @@ string uri_decode(const string& v)
 {
 	string r;
 	r.reserve(v.length());
-	for (int i = 0; i < v.length(); i++)
+	for (size_t i = 0; i < v.length(); i++)
 	{
 		char c = v[i];
 		switch (c)
@@ -139,7 +139,7 @@ string uri_encode(const string& v)
 {
 	string r;
 	r.reserve(v.length());
-	for (int i = 0; i < v.length(); i++)
+	for (size_t i = 0; i < v.length(); i++)
 	{
 		char c = v[i];
 		if (isalpha(c & 0xff) || isdigit(c & 0xff))
@@ -203,7 +203,7 @@ string b2a(__int64 v, const char* postfix)
 
 static string peer_id2a(const string& name, const string& peer_id, int i)
 {
-	for (int j = i; j < peer_id.size(); j++)
+	for (size_t j = i; j < peer_id.size(); j++)
 	{
 		if (!isalnum(peer_id[j]))
 			return name + peer_id.substr(i, j - i);
@@ -322,7 +322,7 @@ string native_slashes(const string& v)
 
 int mkpath(const string& v)
 {
-	for (int i = 0; i < v.size(); )
+	for (size_t i = 0; i < v.size(); )
 	{
 		int a = v.find_first_of("/\\", i);
 		if (a == string::npos)
