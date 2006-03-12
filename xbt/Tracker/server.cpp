@@ -482,7 +482,7 @@ void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o
 		if ((ti.m_left || i->second.left) && i->second.listening)
 			candidates.push_back(i);
 	}
-	int c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
+	size_t c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
 	if (candidates.size() > c)
 	{
 		while (c--)

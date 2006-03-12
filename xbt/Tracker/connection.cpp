@@ -148,10 +148,10 @@ void Cconnection::read(const string& v)
 		f << m_server->time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << endl;
 	}
 	Ctracker_input ti;
-	int a = v.find('?');
+	size_t a = v.find('?');
 	if (a++ != string::npos)
 	{
-		int b = v.find(' ', a);
+		size_t b = v.find(' ', a);
 		if (b == string::npos)
 			return;
 		while (a < b)
