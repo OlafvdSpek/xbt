@@ -169,7 +169,7 @@ void Cxif_key::external_save(byte*& data) const
 	}
 }
 
-int Cxif_key::load_key(const byte* data, int size)
+int Cxif_key::load_key(const byte* data, size_t size)
 {
 	const byte* read_p = data;
 	const t_xif_header_fast& header = *reinterpret_cast<const t_xif_header_fast*>(read_p);
@@ -194,7 +194,6 @@ int Cxif_key::load_key(const byte* data, int size)
 				error = Z_OK != uncompress(d.write_start(cb_d), &cb_d, data + sizeof(t_xif_header_old), size - sizeof(t_xif_header_old));
 			else
 				error = Z_OK != uncompress(d.write_start(cb_d), &cb_d, data + sizeof(t_xif_header_fast), header.size_compressed);
-			// d.export("c:/temp/xif data.bin");
 			if (!error)
 			{
 				read_p = d.data();

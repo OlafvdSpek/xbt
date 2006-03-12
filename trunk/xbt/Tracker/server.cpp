@@ -888,7 +888,7 @@ void Cserver::read_config()
 			string s;
 			while (getline(is, s))
 			{
-				int i = s.find('=');
+				size_t i = s.find('=');
 				if (i == string::npos)
 					continue;
 				config.set(s.substr(0, i), s.substr(i + 1));

@@ -243,7 +243,7 @@ public:
 	void dump(ostream& os, bool show_ratio, int depth = 0, Cvirtual_binary* t = NULL) const;
 	void dump_ratio(ostream& os, Cvirtual_binary* t) const;
 	Cvirtual_binary export_bz() const;
-	int load_key(const byte* data, int size);
+	int load_key(const byte* data, size_t size);
 	Cvirtual_binary vdata(bool fast = false) const;
 
 	t_xif_key_map& m_keys;
