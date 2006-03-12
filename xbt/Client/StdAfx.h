@@ -3,9 +3,8 @@
 
 #if _MSC_VER > 1000
 #pragma once
+#pragma warning(disable: 4244 4554 4800)
 #endif // _MSC_VER > 1000
-
-#pragma warning(disable: 4018 4244 4554 4786 4800)
 
 #define _WIN32_IE 0x0500
 #define FD_SETSIZE 1024

@@ -406,13 +406,13 @@ int Cserver::run()
 			static ofstream f("/temp/select log.txt");
 			f << time();
 			f << "\tR:";
-			for (int i = 0; i < fd_read_set.fd_count; i++)
+			for (size_t i = 0; i < fd_read_set.fd_count; i++)
 				f << ' ' << fd_read_set.fd_array[i];
 			f << "\tW:";
-			for (int i = 0; i < fd_write_set.fd_count; i++)
+			for (size_t i = 0; i < fd_write_set.fd_count; i++)
 				f << ' ' << fd_write_set.fd_array[i];
 			f << "\tE:";
-			for (int i = 0; i < fd_except_set.fd_count; i++)
+			for (size_t i = 0; i < fd_except_set.fd_count; i++)
 				f << ' ' << fd_except_set.fd_array[i];
 			f << endl;
 #endif
