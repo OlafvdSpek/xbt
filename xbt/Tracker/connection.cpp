@@ -156,10 +156,10 @@ void Cconnection::read(const string& v)
 			return;
 		while (a < b)
 		{
-			int c = v.find('=', a);
+			size_t c = v.find('=', a);
 			if (c++ == string::npos)
 				break;
-			int d = v.find_first_of(" &", c);
+			size_t d = v.find_first_of(" &", c);
 			if (d == string::npos)
 				break;
 			ti.set(v.substr(a, c - a - 1), uri_decode(v.substr(c, d - c)));

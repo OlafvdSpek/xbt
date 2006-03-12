@@ -42,7 +42,7 @@ Cserver::t_user* Ctransaction::authenticate(const void* s0, const char* s_end) c
 	if (s_end - s < 16)
 		return NULL;
 	string name(s_end - 16, 8);
-	int i = name.find('\0');
+	size_t i = name.find('\0');
 	Cserver::t_user* user = m_server.find_user_by_name(i == string::npos ? name : name.substr(0, i));
 	if (!user)
 		return NULL;

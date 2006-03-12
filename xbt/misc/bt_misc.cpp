@@ -299,14 +299,14 @@ int merkle_tree_size(int v)
 
 string backward_slashes(string v)
 {
-	for (int i = 0; (i = v.find('/', i)) != string::npos; i++)
+	for (size_t i = 0; (i = v.find('/', i)) != string::npos; i++)
 		v[i] = '\\';
 	return v;
 }
 
 string forward_slashes(string v)
 {
-	for (int i = 0; (i = v.find('\\', i)) != string::npos; i++)
+	for (size_t i = 0; (i = v.find('\\', i)) != string::npos; i++)
 		v[i] = '/';
 	return v;
 }
@@ -324,7 +324,7 @@ int mkpath(const string& v)
 {
 	for (size_t i = 0; i < v.size(); )
 	{
-		int a = v.find_first_of("/\\", i);
+		size_t a = v.find_first_of("/\\", i);
 		if (a == string::npos)
 			a = v.size();
 #ifdef WIN32
