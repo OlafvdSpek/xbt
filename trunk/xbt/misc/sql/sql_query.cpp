@@ -19,7 +19,7 @@ string Csql_query::read() const
 {
 	string r;
 	t_list::const_iterator l = m_list.begin();
-	for (int i = 0; i < m_data.length(); i++)
+	for (size_t i = 0; i < m_data.length(); i++)
 	{
 		if (m_data[i] == '?')
 		{
