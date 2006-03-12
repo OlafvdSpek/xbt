@@ -3,9 +3,8 @@
 
 #if _MSC_VER > 1000
 #pragma once
+#pragma warning(disable: 4800)
 #endif // _MSC_VER > 1000
-
-#pragma warning(disable: 4503 4786 4800)
 
 #include <cassert>
 #include <ctime>
