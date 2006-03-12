@@ -5,7 +5,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <cassert>
 #include <string>
 #include "vartypes.h"
 
@@ -14,7 +13,7 @@ using namespace std;
 class Cvirtual_binary_source
 {
 public:
-	Cvirtual_binary_source(const void* d, int cb_d);
+	Cvirtual_binary_source(const void* d, size_t cb_d);
 	Cvirtual_binary_source* attach();
 	void detach();
 	Cvirtual_binary_source* pre_edit();
@@ -35,19 +34,19 @@ public:
 		return m_data;
 	}
 
-	int size() const
+	size_t size() const
 	{
 		return m_size;
 	}
 
-	void size(int v)
+	void size(size_t v)
 	{
 		assert(mc_references == 1 && v <= m_size);
 		m_size = v;
 	}
 private:
 	byte* m_data;
-	int m_size;
+	size_t m_size;
 	int mc_references;
 };
 
@@ -57,13 +56,13 @@ public:
 	int save(const string& fname) const;
 	int load(const string& fname);
 	void clear();
-	int read(void* d) const;
-	byte* write_start(int cb_d);
-	void write(const void* d, int cb_d);
+	size_t read(void* d) const;
+	byte* write_start(size_t cb_d);
+	void write(const void* d, size_t cb_d);
 	const Cvirtual_binary& operator=(const Cvirtual_binary& v);
 	Cvirtual_binary();
 	Cvirtual_binary(const Cvirtual_binary& v);
-	Cvirtual_binary(const void* d, int cb_d);
+	Cvirtual_binary(const void* d, size_t cb_d);
 	explicit Cvirtual_binary(const string& fname);
 	~Cvirtual_binary();
 
@@ -84,12 +83,12 @@ public:
 		return m_source->data_edit();
 	}
 
-	int size() const
+	size_t size() const
 	{
 		return m_source ? m_source->size() : 0;
 	}
 
-	void size(int v)
+	void size(size_t v)
 	{
 		assert(m_source);
 		m_source = m_source->pre_edit();
