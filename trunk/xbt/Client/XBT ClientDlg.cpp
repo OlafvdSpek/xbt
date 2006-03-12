@@ -1130,11 +1130,11 @@ void CXBTClientDlg::fill_peers()
 			m_peers.InsertItemData(i);
 		break;
 	case v_events:
-		for (int i = 0; i < m_file->events.size(); i++)
+		for (size_t i = 0; i < m_file->events.size(); i++)
 			m_peers.InsertItemData(0, i);
 		break;
 	case v_files:
-		for (int i = 0; i < m_file->m_sub_files.size(); i++)
+		for (size_t i = 0; i < m_file->m_sub_files.size(); i++)
 			m_peers.InsertItemData(i);
 		break;
 	case v_peers:
@@ -1142,7 +1142,7 @@ void CXBTClientDlg::fill_peers()
 			m_peers.InsertItemData(i->first);
 		break;
 	case v_pieces:
-		for (int i = 0; i < m_file->pieces.size(); i++)
+		for (size_t i = 0; i < m_file->pieces.size(); i++)
 			m_peers.InsertItemData(i);
 		break;
 	case v_trackers:
@@ -1154,7 +1154,7 @@ void CXBTClientDlg::fill_peers()
 			m_peers.InsertItemData(i);
 		break;
 	case v_global_events:
-		for (int i = 0; i < m_events.size(); i++)
+		for (size_t i = 0; i < m_events.size(); i++)
 			m_peers.InsertItemData(0, i);
 		break;
 	}

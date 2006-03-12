@@ -111,7 +111,7 @@ int Cbt_file::info(const Cbvalue& info)
 	string piece_hashes = info.d(bts_pieces).s();
 	if (piece_hashes.length() != 20 * m_pieces.size())
 		return 1;
-	for (int i = 0; i < m_pieces.size(); i++)
+	for (size_t i = 0; i < m_pieces.size(); i++)
 	{
 		m_pieces[i].resize(min(m_size - mcb_piece * i, mcb_piece));
 		memcpy(m_pieces[i].m_hash, piece_hashes.c_str() + 20 * i, 20);
@@ -525,7 +525,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	bool end_mode = Cbt_file::end_mode();
 	int rank = INT_MAX;
 	int c_unrequested_sub_pieces = 0;
-	for (int i = 0; i < m_pieces.size(); i++)
+	for (size_t i = 0; i < m_pieces.size(); i++)
 	{
 		if (m_pieces[i].valid()
 			|| m_pieces[i].priority() == -10
@@ -882,7 +882,7 @@ void Cbt_file::sub_file_priority(const string& id, int priority)
 
 void Cbt_file::update_piece_priorities()
 {
-	for (int i = 0; i < m_pieces.size(); i++)
+	for (size_t i = 0; i < m_pieces.size(); i++)
 		m_pieces[i].priority(-128);
 	__int64 offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
@@ -979,9 +979,9 @@ int Cbt_file::upload_slots_min() const
 void Cbt_file::trackers(const string& v)
 {
 	m_trackers.clear();
-	for (int i = 0; i < v.length(); )
+	for (size_t i = 0; i < v.length(); )
 	{
-		int j = v.find_first_of("\t\n\r ", i);
+		size_t j = v.find_first_of("\t\n\r ", i);
 		if (i == j)
 		{
 			i++;

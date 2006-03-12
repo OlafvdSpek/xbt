@@ -198,7 +198,7 @@ void Cbt_peer_link::close()
 	clear_local_requests();
 	m_read_b.size(0);
 	m_state = -1;
-	for (int i = 0; i < m_remote_pieces.size(); i++)
+	for (size_t i = 0; i < m_remote_pieces.size(); i++)
 		m_f->m_pieces[i].mc_peers -= m_remote_pieces[i];
 	m_remote_pieces.clear();
 }
