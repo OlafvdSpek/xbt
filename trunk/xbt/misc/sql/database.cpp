@@ -20,7 +20,9 @@ Cxcc_error Cdatabase::open(const char* host, const char* user, const char* passw
 	bool a0 = true;
 	return !mysql_init(&m_handle)
 		|| !mysql_real_connect(&m_handle, host, user, password, database, MYSQL_PORT, NULL, 0)
+#if MYSQL_VERSION_ID >= 50000
 		|| !mysql_options(&m_handle, MYSQL_OPT_RECONNECT, reinterpret_cast<const char*>(&a0))
+#endif
 		? Cxcc_error(mysql_error(&m_handle)) : Cxcc_error();
 }
 
