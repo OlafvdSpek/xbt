@@ -355,6 +355,8 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		return m_config.m_offline_message;
 	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
 		return bts_unregistered_torrent;
+	if (v.m_left && user && !user->can_leech)
+		return bts_can_not_leech;
 	t_file& file = m_files[v.m_info_hash];
 	if (!file.ctime)
 		file.ctime = time();
@@ -711,7 +713,7 @@ void Cserver::read_db_users()
 		return;
 	try
 	{
-		Csql_query q(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret from ?");
+		Csql_query q(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret, can_leech from ?");
 		q.p(column_name(column_users_uid));
 		q.p(table_name(table_users));
 		Csql_result result = q.execute();
@@ -729,6 +731,7 @@ void Cserver::read_db_users()
 			user.torrents_limit = row.f(5).i();
 			user.peers_limit = row.f(6).i();
 			user.torrent_pass_secret = row.f(7).i();
+			user.can_leech = row.f(8).i();
 			if (row.f(1).size())
 				m_users_names[row.f(1).s()] = &user;
 			if (row.f(3).size())
@@ -1102,7 +1105,7 @@ int Cserver::test_sql()
 		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
 		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0 = 1");
-		m_database.query("select " + column_name(column_users_uid) + ", name, pass, wait_time, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");
+		m_database.query("select " + column_name(column_users_uid) + ", name, pass, can_leech, wait_time, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");
 		return 0;
 	}
 	catch (Cxcc_error)
