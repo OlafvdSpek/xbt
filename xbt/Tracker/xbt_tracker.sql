@@ -70,6 +70,7 @@ CREATE TABLE xbt_users
   uid int NOT NULL auto_increment,
   name char(8) NOT NULL,
   pass blob NOT NULL,
+  can_leech tinyint NOT NULL default 1,
   wait_time int NOT NULL,
   peers_limit int NOT NULL,
   torrents_limit int NOT NULL,

@@ -111,6 +111,7 @@ public:
 			incompletes = 0;
 		}
 
+		bool can_leech;
 		bool marked;
 		int uid;
 		int completes;

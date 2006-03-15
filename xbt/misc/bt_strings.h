@@ -37,6 +37,7 @@ const string bts_action = "action";
 const string bts_admin_port = "admin port";
 const string bts_announce = "announce";
 const string bts_announce_list = "announce-list";
+const string bts_can_not_leech = "access denied, leeching forbidden, you are only allowed to seed";
 const string bts_close_torrent = "close torrent";
 const string bts_complete = "complete";
 const string bts_complete_total = "complete total";
