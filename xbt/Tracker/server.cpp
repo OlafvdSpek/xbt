@@ -2,6 +2,7 @@
 #include "server.h"
 
 #include <signal.h>
+#include "sql/sql_query.h"
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "transaction.h"
