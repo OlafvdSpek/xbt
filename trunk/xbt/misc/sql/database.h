@@ -5,7 +5,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "sql_query.h"
 #include "sql_result.h"
 #include "xcc_error.h"
 
