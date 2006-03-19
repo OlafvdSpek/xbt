@@ -12,6 +12,12 @@ XBT is high-performance low-overhead BitTorrent software.
 <a href="client_backend">XBT Client Backend</a>
 
 <p>
+<a href="client_command_line_interface">XBT Client Command Line Interface</a>
+
+<p>
+<a href="client_web_interface">XBT Client Web Interface</a>
+
+<p>
 <a href="ipb2_mod">XBT IPB2 Mod</a>
 
 <p>
