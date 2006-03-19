@@ -1,5 +1,5 @@
 <?php
-	$title = 'Extended BitTorrent by Olaf van der Spek';
+	$title = 'Extended BitTorrent';
 	include('top.php');
 ?>
 <p>
