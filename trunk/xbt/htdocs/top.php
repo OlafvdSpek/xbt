@@ -4,6 +4,10 @@
 <table width="100%">
 	<tr>
 		<td align=left valign=bottom><h1><?=$title?></h1>
-		<td align=right valign=bottom><a href="/">Home</a>
+		<td align=right valign=bottom>
+				<a href="/">Home</a> |
+				<a href="/client/">Client</a> |
+				<a href="/client_backend/">Client Backend</a> |
+				<a href="/tracker/">Tracker</a>
 </table>
 <hr>
