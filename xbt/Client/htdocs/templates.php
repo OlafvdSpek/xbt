@@ -85,6 +85,7 @@
 		$d .= '<hr>';
 		$d .= '<center>';
 		$d .= '<a href="http://sourceforge.net/projects/xbtt/"><img src="http://sourceforge.net/sflogo.php?group_id=94951;type=1" alt="XBT project at SF"></a>';
+		$d .= '<a href="http://sourceforge.net/donate/?group_id=94951"><img src="http://images.sourceforge.net/images/project-support.jpg" alt="Donate to this project"></a>';
 		$d .= '</center>';
 		return $d;
 	};
