@@ -1,12 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<link rel=stylesheet href="/xbt.css">
-<title>XBT IPB2 Mod</title>
-<table width="100%">
-	<tr>
-		<td align=left valign=bottom><h1>XBT IPB2 Mod</h1>
-		<td align=right valign=bottom><a href="/">Home</a>
-</table>
-<hr>
+<?php
+	$title = 'XBT IPB2 Mod';
+	include('../top.php');
+?>
 <h2>Overview</h2>
 
 XBT IPB2 Mod is a mod for Invision Power Board 2 and it's a frontend for XBT Tracker.<br>

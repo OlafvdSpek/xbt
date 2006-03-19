@@ -1,8 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<link rel=stylesheet href="/xbt.css">
-<title>Extended BitTorrent by Olaf van der Spek</title>
-<h1>Extended BitTorrent</h1>
-<hr>
+<?php
+	$title = 'Extended BitTorrent by Olaf van der Spek';
+	include('top.php');
+?>
 <p>
 XBT is high-performance low-overhead BitTorrent software.
 

@@ -1,12 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<link rel=stylesheet href="/xbt.css">
-<title>XBT Tracker</title>
-<table width="100%">
-	<tr>
-		<td align=left valign=bottom><h1>XBT Tracker</h1>
-		<td align=right valign=bottom><a href="/">Home</a>
-</table>
-<hr>
+<?php
+	$title = 'XBT Tracker';
+	include('../top.php');
+?>
 <h2>Overview</h2>
 
 XBT Tracker is a BitTorrent tracker written in C++.
