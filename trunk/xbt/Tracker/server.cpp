@@ -90,7 +90,8 @@ Cserver::Cserver(Cdatabase& database, const string& table_prefix, bool use_sql):
 int Cserver::run()
 {
 	read_config();
-	test_sql();
+	if (test_sql())
+		return 1;
 	if (m_epoll.create(1 << 10) == -1)
 	{
 		cerr << "epoll_create failed" << endl;

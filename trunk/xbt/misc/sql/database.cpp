@@ -51,7 +51,10 @@ Csql_result Cdatabase::query(const string& q)
 	if (mysql_real_query(&m_handle, q.c_str(), q.size()))
 	{
 		if (m_echo_errors)
-			cerr << mysql_error(&m_handle) << endl;
+		{
+			cerr << mysql_error(&m_handle) << endl
+				<< q << endl;
+		}
 		throw Cxcc_error(mysql_error(&m_handle));
 	}
 	return Csql_result(mysql_store_result(&m_handle));
