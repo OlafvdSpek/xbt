@@ -229,7 +229,6 @@ private:
 		table_config,
 		table_deny_from_hosts,
 		table_files,
-		table_files_updates,
 		table_files_users,
 		table_scrape_log,
 		table_users,

@@ -1082,8 +1082,6 @@ string Cserver::table_name(int v) const
 		return m_config.m_table_deny_from_hosts.empty() ? m_table_prefix + "deny_from_hosts" : m_config.m_table_deny_from_hosts;
 	case table_files:
 		return m_config.m_table_files.empty() ? m_table_prefix + "files" : m_config.m_table_files;
-	case table_files_updates:
-		return m_config.m_table_files_updates.empty() ? m_table_prefix + "files_updates" : m_config.m_table_files_updates;
 	case table_files_users:
 		return m_config.m_table_files_users.empty() ? m_table_prefix + "files_users" : m_config.m_table_files_users;
 	case table_scrape_log:
