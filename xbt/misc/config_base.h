@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <string>
+
 class Cconfig_base
 {
 public:
@@ -16,7 +18,7 @@ public:
 	};
 
 	template <class T>
-	t_attribute<T>* find(t_attribute<T>* attributes, const string& key)
+	t_attribute<T>* find(t_attribute<T>* attributes, const std::string& key)
 	{
 		t_attribute<T>* i = attributes; 
 		while (i->key && i->key != key)
