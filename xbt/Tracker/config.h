@@ -5,7 +5,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cconfig
+#include "config_base.h"
+
+class Cconfig: private Cconfig_base
 {
 public:
 	typedef set<int> t_listen_ipas;
