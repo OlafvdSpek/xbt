@@ -30,11 +30,7 @@ Cconfig::Cconfig()
 
 void Cconfig::set(const string& name, const string& value)
 {
-	struct t_attribute
-	{
-		const char* key;
-		string* value;
-	} attributes[] =
+	t_attribute<string> attributes[] =
 	{
 		"column_files_completed", &m_column_files_completed,
 		"column_files_fid", &m_column_files_fid, 
@@ -52,10 +48,7 @@ void Cconfig::set(const string& name, const string& value)
 		"table_users", &m_table_users,
 		NULL
 	};
-	t_attribute* i = attributes; 
-	while (i->key && i->key != name)
-		i++;
-	if (i->key)
+	if (t_attribute<string>* i = find(attributes, name))
 		*i->value = value;
 	else if (name == "listen_ipa" && value != "*")
 		m_listen_ipas.insert(inet_addr(value.c_str()));
@@ -65,11 +58,7 @@ void Cconfig::set(const string& name, const string& value)
 
 void Cconfig::set(const string& name, int value)
 {
-	struct t_attribute
-	{
-		const char* key;
-		int* value;
-	} attributes[] =
+	t_attribute<int> attributes[] =
 	{
 		"announce_interval", &m_announce_interval,
 		"clean_up_interval", &m_clean_up_interval,
@@ -79,10 +68,7 @@ void Cconfig::set(const string& name, int value)
 		"write_db_interval", &m_write_db_interval,
 		NULL
 	};
-	t_attribute* i = attributes; 
-	while (i->key && i->key != name)
-		i++;
-	if (i->key)
+	if (t_attribute<int>* i = find(attributes, name))
 		*i->value = value;
 	else if (name == "listen_port")
 		m_listen_ports.insert(value);
@@ -92,11 +78,7 @@ void Cconfig::set(const string& name, int value)
 
 void Cconfig::set(const string& name, bool value)
 {
-	struct t_attribute
-	{
-		const char* key;
-		bool* value;
-	} attributes[] =
+	t_attribute<bool> attributes[] =
 	{
 		"auto_register", &m_auto_register,
 		"anonymous_connect", &m_anonymous_connect,
@@ -113,9 +95,6 @@ void Cconfig::set(const string& name, bool value)
 		"log_scrape", &m_log_scrape,
 		NULL
 	};
-	t_attribute* i = attributes; 
-	while (i->key && i->key != name)
-		i++;
-	if (i->key)
+	if (t_attribute<bool>* i = find(attributes, name))
 		*i->value = value;
 }
