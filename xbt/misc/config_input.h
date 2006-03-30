@@ -16,7 +16,7 @@ istream& read_config(istream& is, T& config)
 	{
 		size_t i = s.find('=');
 		if (i != string::npos)
-			config.set(trim_copy(s.substr(0, i)), trim_copy(s.substr(i + 1)));
+			config.set(boost::trim_copy(s.substr(0, i)), boost::trim_copy(s.substr(i + 1)));
 	}
 	return is;
 }
