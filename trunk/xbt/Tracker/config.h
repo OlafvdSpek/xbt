@@ -18,8 +18,8 @@ public:
 	void set(const string& name, bool value);
 	Cconfig();
 
-	bool m_anonymous_connect;
 	bool m_anonymous_announce;
+	bool m_anonymous_connect;
 	bool m_anonymous_scrape;
 	bool m_auto_register;
 	bool m_daemon;
@@ -42,6 +42,11 @@ public:
 	string m_column_files_leechers;
 	string m_column_files_seeders;
 	string m_column_users_uid;
+	string m_mysql_database;
+	string m_mysql_host;
+	string m_mysql_password;
+	string m_mysql_table_prefix;
+	string m_mysql_user;
 	string m_offline_message;
 	string m_pid_file;
 	string m_redirect_url;
