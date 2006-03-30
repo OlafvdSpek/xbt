@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "windows/nt_service.h"
 #include "config.h"
-#include "config_input.h"
 #include "server.h"
 
 string g_conf_file = "xbt_tracker.conf";
@@ -13,7 +12,7 @@ int main1()
 	Cdatabase database;
 	Cxcc_error error;
 	Cconfig config;
-	if (read_config(g_conf_file, config))
+	if (config.load(g_conf_file))
 #ifdef WIN32
 	{
 		char b[MAX_PATH];
@@ -22,7 +21,7 @@ int main1()
 		if (*b)
 			strrchr(b, '\\')[1] = 0;
 		strcat(b, "xbt_tracker.conf");
-		if (read_config(b, config))
+		if (config.load(b))
 			cerr << "Unable to read " << g_conf_file << endl;
 	}
 #else

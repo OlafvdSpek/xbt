@@ -7,11 +7,11 @@
 
 #include "config_base.h"
 
-class Cconfig: private Cconfig_base
+class Cconfig: public Cconfig_base
 {
 public:
-	typedef set<int> t_listen_ipas;
-	typedef set<int> t_listen_ports;
+	typedef std::set<int> t_listen_ipas;
+	typedef std::set<int> t_listen_ports;
 
 	void set(const string& name, const string& value);
 	void set(const string& name, int value);

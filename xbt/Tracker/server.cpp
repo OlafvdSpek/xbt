@@ -5,7 +5,6 @@
 #include "sql/sql_query.h"
 #include "bt_misc.h"
 #include "bt_strings.h"
-#include "config_input.h"
 #include "transaction.h"
 
 static volatile bool g_sig_hup = false;
@@ -884,7 +883,7 @@ void Cserver::read_config()
 			Cconfig config;
 			for (Csql_row row; row = result.fetch_row(); )
 				config.set(row.f(0).s(), row.f(1).s());
-			::read_config("xbt_tracker.conf", config);
+			config.load("xbt_tracker.conf");
 			m_config = config;
 		}
 		catch (Cxcc_error)
@@ -894,7 +893,7 @@ void Cserver::read_config()
 	else
 	{
 		Cconfig config;
-		if (!::read_config("xbt_tracker.conf", config))
+		if (!config.load("xbt_tracker.conf"))
 			m_config = config;
 	}
 	if (m_config.m_listen_ipas.empty())
