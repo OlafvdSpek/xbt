@@ -1,1 +1,5 @@
-database host user pass xbt_
+mysql_host = host
+mysql_user = user
+mysql_pass = pass
+mysql_database = database
+mysql_table_prefix = xbt_
