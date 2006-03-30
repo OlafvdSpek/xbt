@@ -519,28 +519,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="static_config.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="stats.cpp"
 				>
 				<FileConfiguration
@@ -801,10 +779,6 @@
 			</File>
 			<File
 				RelativePath="..\misc\sha1.h"
-				>
-			</File>
-			<File
-				RelativePath="static_config.h"
 				>
 			</File>
 			<File

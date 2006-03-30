@@ -20,6 +20,8 @@ Cconfig::Cconfig()
 	m_log_access = false;
 	m_log_announce = false;
 	m_log_scrape = false;
+	m_mysql_host = "localhost";
+	m_mysql_table_prefix = "xbt_";
 	m_pid_file = "xbt_tracker.pid";
 	m_read_config_interval = 60;
 	m_read_db_interval = 60;
@@ -37,6 +39,11 @@ void Cconfig::set(const string& name, const string& value)
 		"column_files_leechers", &m_column_files_leechers, 
 		"column_files_seeders", &m_column_files_seeders, 
 		"column_users_uid", &m_column_users_uid, 
+		"mysql_database", &m_mysql_database,
+		"mysql_host", &m_mysql_host,
+		"mysql_password", &m_mysql_password,
+		"mysql_table_prefix", &m_mysql_table_prefix,
+		"mysql_user", &m_mysql_user,
 		"pid_file", &m_pid_file,
 		"redirect_url", &m_redirect_url,
 		"offline_message", &m_offline_message,

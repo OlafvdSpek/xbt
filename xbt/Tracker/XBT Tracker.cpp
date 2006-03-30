@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "windows/nt_service.h"
+#include "config.h"
+#include "config_input.h"
 #include "server.h"
-#include "static_config.h"
 
 string g_conf_file = "xbt_tracker.conf";
 const char* g_service_name = "XBT Tracker";
@@ -11,8 +12,8 @@ int main1()
 	srand(time(NULL));
 	Cdatabase database;
 	Cxcc_error error;
-	Cstatic_config static_config;
-	if (error = static_config.read(g_conf_file.c_str()))
+	Cconfig config;
+	if (read_config(g_conf_file, config))
 #ifdef WIN32
 	{
 		char b[MAX_PATH];
@@ -21,19 +22,19 @@ int main1()
 		if (*b)
 			strrchr(b, '\\')[1] = 0;
 		strcat(b, "xbt_tracker.conf");
-		if (error = static_config.read(b))
-			cerr << error.message() << endl;
+		if (read_config(b, config))
+			cerr << "Unable to read " << g_conf_file << endl;
 	}
 #else
 		cerr << error.message() << endl;
 #endif
-	if (static_config.mysql_host != "-"
-		&& (error = database.open(static_config.mysql_host, static_config.mysql_user, static_config.mysql_password, static_config.mysql_db, true)))
+	if (config.m_mysql_host != "-"
+		&& (error = database.open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true)))
 	{
 		cerr << error.message() << endl;
 		return 1;
 	}
-	return Cserver(database, static_config.mysql_table_prefix, static_config.mysql_host != "-").run();
+	return Cserver(database, config.m_mysql_table_prefix, config.m_mysql_host != "-").run();
 }
 
 #ifdef WIN32
