@@ -5,6 +5,7 @@
 #include "sql/sql_query.h"
 #include "bt_misc.h"
 #include "bt_strings.h"
+#include "config_input.h"
 #include "transaction.h"
 
 static volatile bool g_sig_hup = false;
@@ -139,19 +140,24 @@ int Cserver::run()
 		}
 	}
 #ifndef WIN32
-#if 1
-	if (m_config.m_daemon && daemon(true, false))
-		cerr << "daemon failed" << endl;
-#else
-	switch (fork())
+	if (m_config.m_daemon)
 	{
-	case -1:
-		cerr << "fork failed" << endl;
-		break;
-	case 0:
-		break;
-	default:
-		exit(0);
+#if 1
+		if (daemon(true, false))
+			cerr << "daemon failed" << endl;
+		else if (setsid() == -1)
+			cerr << "setsid failed" << endl;
+#else
+		switch (fork())
+		{
+		case -1:
+			cerr << "fork failed" << endl;
+			break;
+		case 0:
+			break;
+		default:
+			exit(0);
+		}
 	}
 #endif
 	ofstream(m_config.m_pid_file.c_str()) << getpid() << endl;
@@ -878,6 +884,7 @@ void Cserver::read_config()
 			Cconfig config;
 			for (Csql_row row; row = result.fetch_row(); )
 				config.set(row.f(0).s(), row.f(1).s());
+			::read_config("xbt_tracker.conf", config);
 			m_config = config;
 		}
 		catch (Cxcc_error)
@@ -886,20 +893,9 @@ void Cserver::read_config()
 	}
 	else
 	{
-		ifstream is("xbt_tracker.conf");
-		if (is)
-		{
-			Cconfig config;
-			string s;
-			while (getline(is, s))
-			{
-				size_t i = s.find('=');
-				if (i == string::npos)
-					continue;
-				config.set(s.substr(0, i), s.substr(i + 1));
-			}
+		Cconfig config;
+		if (!::read_config("xbt_tracker.conf", config))
 			m_config = config;
-		}
 	}
 	if (m_config.m_listen_ipas.empty())
 		m_config.m_listen_ipas.insert(htonl(INADDR_ANY));
