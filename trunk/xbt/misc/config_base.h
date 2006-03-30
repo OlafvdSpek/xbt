@@ -6,6 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include <boost/algorithm/string.hpp>
+#include <fstream>
 #include <string>
 
 class Cconfig_base
