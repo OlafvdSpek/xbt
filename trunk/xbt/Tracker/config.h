@@ -13,6 +13,7 @@ public:
 
 	void set(const string& name, const string& value);
 	void set(const string& name, int value);
+	void set(const string& name, bool value);
 	Cconfig();
 
 	bool m_anonymous_connect;
@@ -45,9 +46,7 @@ public:
 	string m_table_announce_log;
 	string m_table_deny_from_hosts;
 	string m_table_files;
-	string m_table_files_updates;
 	string m_table_files_users;
-	string m_table_ipas;
 	string m_table_scrape_log;
 	string m_table_users;
 	t_listen_ipas m_listen_ipas;

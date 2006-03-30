@@ -30,84 +30,92 @@ Cconfig::Cconfig()
 
 void Cconfig::set(const string& name, const string& value)
 {
-	if (name == "listen_ipa" && value != "*")
+	struct t_attribute
+	{
+		const char* key;
+		string* value;
+	} attributes[] =
+	{
+		"column_files_completed", &m_column_files_completed,
+		"column_files_fid", &m_column_files_fid, 
+		"column_files_leechers", &m_column_files_leechers, 
+		"column_files_seeders", &m_column_files_seeders, 
+		"column_users_uid", &m_column_users_uid, 
+		"pid_file", &m_pid_file,
+		"redirect_url", &m_redirect_url,
+		"offline_message", &m_offline_message,
+		"table_announce_log", &m_table_announce_log,
+		"table_deny_from_hosts", &m_table_deny_from_hosts,
+		"table_files", &m_table_files,
+		"table_files_users", &m_table_files_users,
+		"table_scrape_log", &m_table_scrape_log,
+		"table_users", &m_table_users,
+		NULL
+	};
+	t_attribute* i = attributes; 
+	while (i->key && i->key != name)
+		i++;
+	if (i->key)
+		*i->value = value;
+	else if (name == "listen_ipa" && value != "*")
 		m_listen_ipas.insert(inet_addr(value.c_str()));
-	else if (name == "pid_file")
-		m_pid_file = value;
-	else if (name == "redirect_url")
-		m_redirect_url = value;
-	else if (name == "column_files_completed")
-		m_column_files_completed = value;
-	else if (name == "column_files_fid")
-		m_column_files_fid = value;
-	else if (name == "column_files_leechers")
-		m_column_files_leechers = value;
-	else if (name == "column_files_seeders")
-		m_column_files_seeders = value;
-	else if (name == "column_users_uid")
-		m_column_users_uid = value;
-	else if (name == "offline_message")
-		m_offline_message = value;
-	else if (name == "table_announce_log")
-		m_table_announce_log = value;
-	else if (name == "table_deny_from_hosts")
-		m_table_deny_from_hosts = value;
-	else if (name == "table_files")
-		m_table_files = value;
-	else if (name == "table_files_updates")
-		m_table_files_updates = value;
-	else if (name == "table_files_users")
-		m_table_files_users = value;
-	else if (name == "table_ipas")
-		m_table_ipas = value;
-	else if (name == "table_scrape_log")
-		m_table_scrape_log = value;
-	else if (name == "table_users")
-		m_table_users = value;
 	else
 		set(name, atoi(value.c_str()));
 }
 
 void Cconfig::set(const string& name, int value)
 {
-	if (name == "announce_interval")
-		m_announce_interval = value;
-	else if (name == "auto_register")
-		m_auto_register = value;
-	else if (name == "anonymous_connect")
-		m_anonymous_connect = value;
-	else if (name == "anonymous_announce")
-		m_anonymous_announce = value;
-	else if (name == "anonymous_scrape")
-		m_anonymous_scrape = value;
-	else if (name == "clean_up_interval")
-		m_clean_up_interval = value;
-	else if (name == "daemon")
-		m_daemon = value;
-	else if (name == "debug")
-		m_debug = value;
-	else if (name == "gzip_announce")
-		m_gzip_announce = value;
-	else if (name == "gzip_debug")
-		m_gzip_debug = value;
-	else if (name == "gzip_scrape")
-		m_gzip_scrape = value;
-	else if (name == "listen_check")
-		m_listen_check = value;
+	struct t_attribute
+	{
+		const char* key;
+		int* value;
+	} attributes[] =
+	{
+		"announce_interval", &m_announce_interval,
+		"clean_up_interval", &m_clean_up_interval,
+		"read_config_interval", &m_read_config_interval,
+		"read_db_interval", &m_read_db_interval,
+		"scrape_interval", &m_scrape_interval,
+		"write_db_interval", &m_write_db_interval,
+		NULL
+	};
+	t_attribute* i = attributes; 
+	while (i->key && i->key != name)
+		i++;
+	if (i->key)
+		*i->value = value;
 	else if (name == "listen_port")
 		m_listen_ports.insert(value);
-	else if (name == "log_access")
-		m_log_access = value;
-	else if (name == "log_announce")
-		m_log_announce = value;
-	else if (name == "log_scrape")
-		m_log_scrape = value;
-	else if (name == "read_config_interval")
-		m_read_config_interval = value;
-	else if (name == "read_db_interval")
-		m_read_db_interval = value;
-	else if (name == "scrape_interval")
-		m_scrape_interval = value;
-	else if (name == "write_db_interval")
-		m_write_db_interval = value;
+	else
+		set(name, static_cast<bool>(value));
+}
+
+void Cconfig::set(const string& name, bool value)
+{
+	struct t_attribute
+	{
+		const char* key;
+		bool* value;
+	} attributes[] =
+	{
+		"auto_register", &m_auto_register,
+		"anonymous_connect", &m_anonymous_connect,
+		"anonymous_announce", &m_anonymous_announce,
+		"anonymous_scrape", &m_anonymous_scrape,
+		"daemon", &m_daemon,
+		"debug", &m_debug,
+		"gzip_announce", &m_gzip_announce,
+		"gzip_debug", &m_gzip_debug,
+		"gzip_scrape", &m_gzip_scrape,
+		"listen_check", &m_listen_check,
+		"log_access", &m_log_access,
+		"log_announce", &m_log_announce,
+		"log_scrape", &m_log_scrape,
+		NULL
+	};
+	t_attribute* i = attributes; 
+	while (i->key && i->key != name)
+		i++;
+	if (i->key)
+		*i->value = value;
 }
