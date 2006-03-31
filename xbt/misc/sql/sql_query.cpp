@@ -44,7 +44,7 @@ void Csql_query::operator+=(const string& v)
 	m_data += v;
 }
 
-void Csql_query::p(const string& v)
+void Csql_query::p_raw(const string& v)
 {
 	m_list.push_back(v);
 }
@@ -57,25 +57,25 @@ void Csql_query::p(__int64 v)
 #else
 	sprintf(b, "%lld", v);
 #endif
-	p(b);
+	p_raw(b);
 }
 
-void Csql_query::pe(const string& v)
+void Csql_query::p(const string& v)
 {
 	char* r = new char[2 * v.length() + 3];
 	r[0] = '\'';
 	mysql_real_escape_string(&m_database.handle(), r + 1, v.c_str(), v.length());
 	strcat(r, "\'");
-	p(r);
+	p_raw(r);
 	delete[] r;
 }
 
-void Csql_query::pe(const Cvirtual_binary& v)
+void Csql_query::p(const Cvirtual_binary& v)
 {
 	char* r = new char[2 * v.size() + 3];
 	r[0] = '\'';
 	mysql_real_escape_string(&m_database.handle(), r + 1, reinterpret_cast<const char*>(v.data()), v.size());
 	strcat(r, "\'");
-	p(r);
+	p_raw(r);
 	delete[] r;
 }

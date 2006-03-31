@@ -349,8 +349,8 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 		q.p(ntohl(v.m_ipa));
 		q.p(ntohs(v.m_port));
 		q.p(v.m_event);
-		q.pe(v.m_info_hash);
-		q.pe(v.m_peer_id);
+		q.p(v.m_info_hash);
+		q.p(v.m_peer_id);
 		q.p(v.m_downloaded);
 		q.p(v.m_left);
 		q.p(v.m_uploaded);
@@ -569,9 +569,9 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 		Csql_query q(m_database, "(?,?,?),");
 		q.p(ntohl(ti.m_ipa));
 		if (ti.m_info_hash.empty())
-			q.p("NULL");
+			q.p("null");
 		else
-			q.pe(ti.m_info_hash);
+			q.p(ti.m_info_hash);
 		q.p(time());
 		m_scrape_log_buffer += q.read();
 	}
@@ -608,7 +608,7 @@ void Cserver::read_db_deny_from_hosts()
 	try
 	{
 		Csql_query q(m_database, "select begin, end from ?");
-		q.p(table_name(table_deny_from_hosts));
+		q.p_raw(table_name(table_deny_from_hosts));
 		Csql_result result = q.execute();
 		for (t_deny_from_hosts::iterator i = m_deny_from_hosts.begin(); i != m_deny_from_hosts.end(); i++)
 			i->second.marked = true;
@@ -668,8 +668,8 @@ void Cserver::read_db_files_sql()
 		if (!m_config.m_auto_register)
 		{
 			q = "select info_hash, ? from ? where flags & 1";
-			q.p(column_name(column_files_fid));
-			q.p(table_name(table_files));
+			q.p_raw(column_name(column_files_fid));
+			q.p_raw(table_name(table_files));
 			Csql_result result = q.execute();
 			for (Csql_row row; row = result.fetch_row(); )
 			{
@@ -677,8 +677,8 @@ void Cserver::read_db_files_sql()
 					continue;
 				m_files.erase(row.f(0).s());
 				q = "delete from ? where ? = ?";
-				q.p(table_name(table_files));
-				q.p(column_name(column_files_fid));
+				q.p_raw(table_name(table_files));
+				q.p_raw(column_name(column_files_fid));
 				q.p(row.f(1).i());
 				q.execute();
 			}
@@ -689,10 +689,10 @@ void Cserver::read_db_files_sql()
 			return;
 		q = "select info_hash, ?, ?, ctime"
 			" from ? where ? >= ?";
-		q.p(column_name(column_files_completed));
-		q.p(column_name(column_files_fid));
-		q.p(table_name(table_files));
-		q.p(column_name(column_files_fid));
+		q.p_raw(column_name(column_files_completed));
+		q.p_raw(column_name(column_files_fid));
+		q.p_raw(table_name(table_files));
+		q.p_raw(column_name(column_files_fid));
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
@@ -721,8 +721,8 @@ void Cserver::read_db_users()
 	try
 	{
 		Csql_query q(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret, can_leech from ?");
-		q.p(column_name(column_users_uid));
-		q.p(table_name(table_users));
+		q.p_raw(column_name(column_users_uid));
+		q.p_raw(table_name(table_users));
 		Csql_result result = q.execute();
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
 			i->second.marked = true;
@@ -774,8 +774,8 @@ void Cserver::write_db_files()
 			if (!file.fid)
 			{
 				q = "insert into ? (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())";
-				q.p(table_name(table_files));
-				q.pe(i->first);
+				q.p_raw(table_name(table_files));
+				q.p(i->first);
 				q.execute();
 				file.fid = m_database.insert_id();
 			}
