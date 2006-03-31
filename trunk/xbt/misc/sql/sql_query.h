@@ -18,10 +18,10 @@ public:
 	string read() const;
 	void operator=(const string&);
 	void operator+=(const string&);
-	void p(const string& v);
-	void p(__int64 v);
-	void pe(const string& v);
-	void pe(const Cvirtual_binary& v);
+	void p_raw(const string&);
+	void p(__int64);
+	void p(const string&);
+	void p(const Cvirtual_binary&);
 	Csql_query(Cdatabase&, const string& = "");
 private:
 	typedef list<string> t_list;
