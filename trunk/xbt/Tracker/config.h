@@ -48,6 +48,7 @@ public:
 	string m_mysql_table_prefix;
 	string m_mysql_user;
 	string m_offline_message;
+	string m_query_log;
 	string m_pid_file;
 	string m_redirect_url;
 	string m_table_announce_log;

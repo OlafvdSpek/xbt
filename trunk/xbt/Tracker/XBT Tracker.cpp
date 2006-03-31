@@ -33,6 +33,7 @@ int main1()
 		cerr << error.message() << endl;
 		return 1;
 	}
+	database.set_query_log(config.m_query_log);
 	return Cserver(database, config.m_mysql_table_prefix, config.m_mysql_host != "-").run();
 }
 
