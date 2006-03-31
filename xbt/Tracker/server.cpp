@@ -144,8 +144,6 @@ int Cserver::run()
 #if 1
 		if (daemon(true, false))
 			cerr << "daemon failed" << endl;
-		else if (setsid() == -1)
-			cerr << "setsid failed" << endl;
 #else
 		switch (fork())
 		{
@@ -157,19 +155,21 @@ int Cserver::run()
 		default:
 			exit(0);
 		}
-	}
+		if (setsid() == -1)
+			cerr << "setsid failed" << endl;
 #endif
-	ofstream(m_config.m_pid_file.c_str()) << getpid() << endl;
-	struct sigaction act;
-	act.sa_handler = sig_handler;
-	sigemptyset(&act.sa_mask);
-	act.sa_flags = 0;
-	if (sigaction(SIGHUP, &act, NULL)
-		|| sigaction(SIGTERM, &act, NULL))
-		cerr << "sigaction failed" << endl;
-	act.sa_handler = SIG_IGN;
-	if (sigaction(SIGPIPE, &act, NULL))
-		cerr << "sigaction failed" << endl;
+		ofstream(m_config.m_pid_file.c_str()) << getpid() << endl;
+		struct sigaction act;
+		act.sa_handler = sig_handler;
+		sigemptyset(&act.sa_mask);
+		act.sa_flags = 0;
+		if (sigaction(SIGHUP, &act, NULL)
+			|| sigaction(SIGTERM, &act, NULL))
+			cerr << "sigaction failed" << endl;
+		act.sa_handler = SIG_IGN;
+		if (sigaction(SIGPIPE, &act, NULL))
+			cerr << "sigaction failed" << endl;
+	}
 #endif
 	clean_up();
 	read_db_deny_from_hosts();
