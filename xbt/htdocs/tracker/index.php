@@ -17,8 +17,7 @@ An experimental UDP tracker extension is also supported via announce URL udp://.
 <h2>MySQL</h2>
 
 The tracker stores stats in a MySQL database/table.
-Version >= 4.1 is required if you want to use per user stats (in the xbt_files_users and xbt_users tables).
-Otherwise, version >= 4 is sufficient.
+Version >= 4.1 is required.
 Create a database (xbt) and a user (xbt) with password for the tracker and use these in the next step.
 Create the tables defined in xbt_tracker.sql.
 
@@ -57,9 +56,7 @@ svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt/misc xbt/misc
 svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt/Tracker xbt/Tracker
 cd xbt/Tracker
 ./make.sh
-cat>xbt_tracker.conf
-database host user pass table_prefix
-&lt;Ctrl+D>
+cp xbt_tracker.conf.default xbt_tracker.conf
 </pre>
 <hr>
 <h2>Starting under Linux</h2>
