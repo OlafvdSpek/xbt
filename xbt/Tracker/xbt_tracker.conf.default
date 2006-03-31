@@ -1,5 +1,5 @@
 mysql_host = host
 mysql_user = user
-mysql_pass = pass
+mysql_password = pass
 mysql_database = database
 mysql_table_prefix = xbt_
