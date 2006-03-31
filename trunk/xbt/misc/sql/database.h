@@ -14,6 +14,7 @@ public:
 	Cxcc_error open(const char* host, const char* user, const char* password, const char* database, bool echo_errors = false);
 	Cxcc_error open(const string& host, const string& user, const string& password, const string& database, bool echo_errors = false);
 	Csql_result query(const string& q);
+	void set_query_log(const string&);
 	int insert_id();
 	void close();
 	Cdatabase();
@@ -28,6 +29,7 @@ private:
 
 	bool m_echo_errors;
 	MYSQL m_handle;
+	string m_query_log;
 };
 
 #endif // !defined(AFX_DATABASE_H__EA1254C6_2222_11D5_B606_0000B4936994__INCLUDED_)

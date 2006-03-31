@@ -33,10 +33,11 @@ Cxcc_error Cdatabase::open(const string& host, const string& user, const string&
 
 Csql_result Cdatabase::query(const string& q)
 {
-#ifndef NDEBUG
-	static ofstream f("/temp/query_log.txt");
-	f << q << endl;
-#endif
+	if (!m_query_log.empty())
+	{
+		static ofstream f(m_query_log.c_str());
+		f << q << endl;
+	}
 	if (mysql_real_query(&m_handle, q.c_str(), q.size()))
 	{
 		if (m_echo_errors)
@@ -57,4 +58,9 @@ void Cdatabase::close()
 int Cdatabase::insert_id()
 {
 	return mysql_insert_id(&m_handle);
+}
+
+void Cdatabase::set_query_log(const string& v)
+{
+	m_query_log = v;
 }
