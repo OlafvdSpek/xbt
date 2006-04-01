@@ -12,7 +12,7 @@
 class Cconfig_base
 {
 public:
-	virtual void set(const string& name, const string& value) = 0;
+	virtual int set(const string& name, const string& value) = 0;
 
 	template <class T>
 	struct t_attribute

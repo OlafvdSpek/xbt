@@ -32,7 +32,7 @@ Cconfig::Cconfig()
 	m_write_db_interval = 60;
 }
 
-void Cconfig::set(const string& name, const string& value)
+int Cconfig::set(const string& name, const string& value)
 {
 	t_attribute<string> attributes[] =
 	{
@@ -63,10 +63,11 @@ void Cconfig::set(const string& name, const string& value)
 	else if (name == "listen_ipa" && value != "*")
 		m_listen_ipas.insert(inet_addr(value.c_str()));
 	else
-		set(name, atoi(value.c_str()));
+		return set(name, atoi(value.c_str()));
+	return 0;
 }
 
-void Cconfig::set(const string& name, int value)
+int Cconfig::set(const string& name, int value)
 {
 	t_attribute<int> attributes[] =
 	{
@@ -83,10 +84,11 @@ void Cconfig::set(const string& name, int value)
 	else if (name == "listen_port")
 		m_listen_ports.insert(value);
 	else
-		set(name, static_cast<bool>(value));
+		return set(name, static_cast<bool>(value));
+	return 0;
 }
 
-void Cconfig::set(const string& name, bool value)
+int Cconfig::set(const string& name, bool value)
 {
 	t_attribute<bool> attributes[] =
 	{
@@ -107,4 +109,7 @@ void Cconfig::set(const string& name, bool value)
 	};
 	if (t_attribute<bool>* i = find(attributes, name))
 		*i->value = value;
+	else
+		return 1;
+	return 0;
 }

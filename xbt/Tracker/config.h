@@ -13,9 +13,9 @@ public:
 	typedef std::set<int> t_listen_ipas;
 	typedef std::set<int> t_listen_ports;
 
-	void set(const string& name, const string& value);
-	void set(const string& name, int value);
-	void set(const string& name, bool value);
+	int set(const string& name, const string& value);
+	int set(const string& name, int value);
+	int set(const string& name, bool value);
 	Cconfig();
 
 	bool m_anonymous_announce;
