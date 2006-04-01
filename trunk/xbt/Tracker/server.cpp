@@ -569,7 +569,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 		Csql_query q(m_database, "(?,?,?),");
 		q.p(ntohl(ti.m_ipa));
 		if (ti.m_info_hash.empty())
-			q.p("null");
+			q.p_raw("null");
 		else
 			q.p(ti.m_info_hash);
 		q.p(time());
