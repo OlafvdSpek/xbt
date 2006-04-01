@@ -20,8 +20,10 @@ Cconfig::Cconfig()
 	m_log_access = false;
 	m_log_announce = false;
 	m_log_scrape = false;
+	m_mysql_database = "xbt";
 	m_mysql_host = "localhost";
 	m_mysql_table_prefix = "xbt_";
+	m_mysql_user = "xbt";
 	m_pid_file = "xbt_tracker.pid";
 	m_read_config_interval = 60;
 	m_read_db_interval = 60;
