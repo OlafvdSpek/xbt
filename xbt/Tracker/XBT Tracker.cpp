@@ -9,8 +9,6 @@ const char* g_service_name = "XBT Tracker";
 int main1()
 {
 	srand(time(NULL));
-	Cdatabase database;
-	Cxcc_error error;
 	Cconfig config;
 	if (config.load(g_conf_file))
 #ifdef WIN32
@@ -25,8 +23,10 @@ int main1()
 			cerr << "Unable to read " << g_conf_file << endl;
 	}
 #else
-		cerr << error.message() << endl;
+		cerr << "Unable to read " << g_conf_file << endl;
 #endif
+	Cdatabase database;
+	Cxcc_error error;
 	if (config.m_mysql_host != "-"
 		&& (error = database.open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true)))
 	{
