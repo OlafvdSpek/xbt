@@ -67,7 +67,7 @@ public:
 		return raw() ? atoi(raw()) : d;
 	}
 
-	string s(const string& d = "") const
+	const string s(const string& d = "") const
 	{
 		return raw() ? string(raw(), size()) : d;
 	}
