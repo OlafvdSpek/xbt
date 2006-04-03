@@ -47,7 +47,7 @@ public:
 		if (!is)
 			return 1;
 		load(is);
-		return is.bad();
+		return !is.eof();
 	}
 };
 
