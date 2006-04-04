@@ -49,7 +49,6 @@ Just start the executable. An empty DOS window should appear.
 <h2>Installing under Linux</h2>
 
 Enter the following commands in a terminal.
-Replace the "database host user pass xbt_" line with details that apply to your setup.
 Be patient while g++ is running, it'll take a few minutes.
 <pre>
 svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt/misc xbt/misc
