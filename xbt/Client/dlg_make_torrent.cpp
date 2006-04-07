@@ -224,7 +224,7 @@ void Cdlg_make_torrent::OnSave()
 		return;
 	m_name.TrimRight(" ");
 	m_tracker.TrimRight(" ");
-	CFileDialog dlg(false, "torrent", m_name + ".torrent", OFN_HIDEREADONLY | OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT, "Torrents|*.torrent|", this);
+	CFileDialog dlg(false, "torrent", m_name + ".torrent", OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
 	CWaitCursor wc;
@@ -388,7 +388,7 @@ void Cdlg_make_torrent::sort()
 void Cdlg_make_torrent::OnLoadTrackers()
 {
 	UpdateData(true);
-	CFileDialog dlg(true, "torrent", NULL, OFN_HIDEREADONLY | OFN_FILEMUSTEXIST, "Torrents|*.torrent|", this);
+	CFileDialog dlg(true, "torrent", NULL, OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
 	Cvirtual_binary d(static_cast<string>(dlg.GetPathName()));
