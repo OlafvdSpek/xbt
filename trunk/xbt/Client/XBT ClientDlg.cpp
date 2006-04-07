@@ -433,7 +433,7 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 	else if (torrent.files().size() == 1)
 	{
 		SetForegroundWindow();
-		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
+		CFileDialog dlg(false, NULL, torrent.name().c_str(), OFN_ENABLESIZING | OFN_HIDEREADONLY | OFN_PATHMUSTEXIST, "All files|*|", this);
 		if (!m_server.incompletes_dir().empty())
 			dlg.m_ofn.lpstrInitialDir = m_server.incompletes_dir().c_str();
 		if (IDOK != dlg.DoModal())
