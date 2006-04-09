@@ -23,6 +23,7 @@ using namespace std;
 
 #ifdef WIN32
 #define FD_SETSIZE 1024
+#define NOMINMAX
 
 #include <io.h>
 #include <natupnp.h>
@@ -61,6 +62,17 @@ typedef short __int16;
 typedef int __int32;
 typedef long long __int64;
 #endif
+
+inline __int64 max(__int64 a, __int64 b)
+{
+	return a > b ? a : b;
+}
+
+inline __int64 min(__int64 a, __int64 b)
+{
+	return a < b ? a : b;
+}
+
 #include "bt_misc.h"
 #include "bvalue.h"
 #include "socket.h"
