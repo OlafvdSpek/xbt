@@ -3,9 +3,8 @@
 
 #if _MSC_VER > 1000
 #pragma once
+#pragma warning(disable: 4244 4554 4800)
 #endif // _MSC_VER > 1000
-
-#pragma warning(disable: 4503 4554 4786 4800)
 
 #include <cassert>
 #include <ctime>
@@ -45,23 +44,11 @@ using namespace std;
 
 #define O_BINARY 0
 #define _lseeki64 lseek
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
 
 typedef char __int8;
 typedef short __int16;
 typedef int __int32;
 typedef long long __int64;
-
-inline __int64 max(__int64 a, __int64 b)
-{
-	return a > b ? a : b;
-}
-
-inline __int64 min(__int64 a, __int64 b)
-{
-	return a < b ? a : b;
-}
 #endif
 #include "bt_misc.h"
 #include "bvalue.h"

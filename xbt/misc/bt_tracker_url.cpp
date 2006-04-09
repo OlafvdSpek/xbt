@@ -41,24 +41,23 @@ bool Cbt_tracker_url::valid() const
 void Cbt_tracker_url::write(const string& v)
 {
 	clear();
-	int a = v.find("://");
-	if (a == string::npos)
-		return;
+	int a;
 	int protocol;
 	int port;
-	if (!stricmp(v.substr(0, a).c_str(), "http"))
+	if (istarts_with(v, "http://"))
 	{
+		a = 7;
 		protocol = tp_http;
 		port = 80;
 	}
-	else if (!stricmp(v.substr(0, a).c_str(), "udp"))
+	else if (istarts_with(v, "udp://"))
 	{
+		a = 6;
 		protocol = tp_udp;
 		port = 2710;
 	}
 	else
 		return;
-	a += 3;
 	int b = v.find_first_of("/:", a);
 	string host;
 	if (b == string::npos)

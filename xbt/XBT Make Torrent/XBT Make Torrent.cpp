@@ -45,8 +45,8 @@ static Cvirtual_binary gzip(const Cvirtual_binary& s)
 void insert(const string& name)
 {
 	struct _stati64 b;
-	if (!stricmp(base_name(name).c_str(), "desktop.ini")
-		|| !stricmp(base_name(name).c_str(), "thumbs.db")
+	if (iequals(base_name(name), "desktop.ini")
+		|| iequals(base_name(name), "thumbs.db")
 		|| _stati64(name.c_str(), &b))
 		return;
 	if (g_map.empty())

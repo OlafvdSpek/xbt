@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "XBT ClientDlg.h"
 
-#include <boost/algorithm/string.hpp>
 #include <sys/stat.h>
 #include "windows/browse_for_directory.h"
 #include "bt_misc.h"
@@ -24,8 +23,6 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-using namespace boost;
 
 const extern UINT g_are_you_me_message_id = RegisterWindowMessage("XBT Client Are You Me Message");
 const static UINT g_taskbar_created_message_id = RegisterWindowMessage("TaskbarCreated");
