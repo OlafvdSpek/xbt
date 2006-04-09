@@ -8,7 +8,7 @@ int send(Csocket& s, const Cbvalue& v)
 {
 	char d0[5];
 	Cvirtual_binary d1 = v.read();
-	*reinterpret_cast<__int32*>(d0) = htonl(d1.size() + 1);
+	write_int(4, d0, d1.size() + 1);
 	d0[4] = bti_bvalue;
 	if (s.send(d0, 5) != 5)
 		return 1;
@@ -179,10 +179,10 @@ int main(int argc, char* argv[])
 		if (r == SOCKET_ERROR)
 			break;
 		w += r;
-		if (w - d.begin() >= 5 && w - d.begin() - 4 >= ntohl(*reinterpret_cast<__int32*>(&d.front())))
+		if (w - d.begin() >= 5 && w - d.begin() - 4 >= read_int(4, &d.front()))
 		{
 			Cbvalue v;
-			if (v.write(&d.front() + 5, ntohl(*reinterpret_cast<__int32*>(&d.front())) - 1))
+			if (v.write(&d.front() + 5, read_int(4, &d.front()) - 1))
 				break;
 			if (v.d().empty())
 				break;
