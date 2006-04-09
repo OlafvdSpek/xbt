@@ -171,19 +171,18 @@ int main(int argc, char* argv[])
 		if (send(s, v))
 			return cerr << "Csocket::send failed: " << Csocket::error2a(WSAGetLastError()) << endl, 1;
 	}
-	const int cb_d = 1 << 20;
-	char d[cb_d];
-	char* w = d;
+	vector<char> d(1 << 20);
+	vector<char>::iterator w = d.begin();
 	int r;
-	while (w - d != cb_d && (r = s.recv(w, d + cb_d - w)))
+	while (w != d.end() && (r = s.recv(&*w, d.end() - w)))
 	{
 		if (r == SOCKET_ERROR)
 			break;
 		w += r;
-		if (w - d >= 4 && w - d >= ntohl(*reinterpret_cast<__int32*>(d)))
+		if (w - d.begin() >= 5 && w - d.begin() - 4 >= ntohl(*reinterpret_cast<__int32*>(&d.front())))
 		{
 			Cbvalue v;
-			if (v.write(d + 5, ntohl(*reinterpret_cast<__int32*>(d)) - 1))
+			if (v.write(&d.front() + 5, ntohl(*reinterpret_cast<__int32*>(&d.front())) - 1))
 				break;
 			if (v.d().empty())
 				break;
