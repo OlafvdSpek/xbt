@@ -40,7 +40,7 @@ int Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 		{
 			while (m_read_b.cb_r() >= 4)
 			{
-				int cb_m = ntohl(*reinterpret_cast<const __int32*>(m_read_b.r()));
+				int cb_m = read_int(4, m_read_b.r());
 				if (cb_m)
 				{
 					if (m_read_b.cb_r() < 4 + cb_m)
@@ -106,12 +106,6 @@ void Cbt_admin_link::close()
 	m_s.close();
 }
 
-static byte* write(byte* w, int v)
-{
-	*reinterpret_cast<__int32*>(w) = htonl(v);
-	return w + 4;
-}
-
 void Cbt_admin_link::read_message(const char* r, const char* r_end)
 {
 	switch (*r++)
@@ -125,7 +119,7 @@ void Cbt_admin_link::read_message(const char* r, const char* r_end)
 			if (m_write_b.cb_write() < 5 + d1.size())
 				break;
 			byte d0[5];
-			*reinterpret_cast<__int32*>(d0) = htonl(d1.size() + 1);
+			write_int(4, d0, d1.size() + 1);
 			d0[4] = bti_bvalue;
 			m_write_b.write(d0, 5);
 			m_write_b.write(d1, d1.size());

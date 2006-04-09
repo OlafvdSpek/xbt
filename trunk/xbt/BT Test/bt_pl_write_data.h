@@ -10,7 +10,7 @@ class Cbt_pl_write_data
 public:
 	Cbt_pl_write_data();
 	Cbt_pl_write_data(const Cvirtual_binary&);
-	Cbt_pl_write_data(const char* s, int cb_s);
+	Cbt_pl_write_data(const void* s, int cb_s);
 
 	const char* m_s;
 	const char* m_s_end;

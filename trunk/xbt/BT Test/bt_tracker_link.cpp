@@ -29,9 +29,9 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		if (m_current_tracker >= f.m_trackers.size())
 			m_current_tracker = 0;
 		if (f.state() != Cbt_file::s_running
-			|| !m_current_tracker && m_announce_time > f.m_server->time() 
-			|| m_current_tracker < 0 
-			|| m_current_tracker >= f.m_trackers.size() 
+			|| !m_current_tracker && m_announce_time > f.m_server->time()
+			|| m_current_tracker < 0
+			|| m_current_tracker >= f.m_trackers.size()
 			|| !f.m_server->below_peer_limit())
 			return 0;
 		m_url = f.m_trackers[m_current_tracker];
@@ -69,7 +69,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 			if (m_s.connect(h, htons(m_url.m_port)) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
 				return 0;
 			f.alert(Calert(Calert::info, "Tracker: IPA: " + Csocket::inet_ntoa(h)));
-		}		
+		}
 		if (m_url.m_protocol == Cbt_tracker_url::tp_udp)
 		{
 			char d[utic_size];
@@ -155,7 +155,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			const int cb_d = 2 << 10;
 			char d[cb_d];
 			int r = m_s.recv(d, cb_d);
-			if (r != SOCKET_ERROR 
+			if (r != SOCKET_ERROR
 				&& r >= utoc_size
 				&& read_int(4, d + uto_transaction_id, d + r) == m_transaction_id
 				&& read_int(4, d + uto_action, d + r) == uta_connect)
@@ -195,7 +195,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				f.alert(Calert(Calert::debug, "Tracker: UDP: announce send"));
 				m_announce_send = f.m_server->time();
 				m_state = 4;
-			}				
+			}
 		}
 		else if (f.m_server->time() - m_connect_send > 15)
 			close(f);
@@ -206,8 +206,8 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 			const int cb_d = 2 << 10;
 			char d[cb_d];
 			int r = m_s.recv(d, cb_d);
-			if (r != SOCKET_ERROR 
-				&& r >= uto_size 
+			if (r != SOCKET_ERROR
+				&& r >= uto_size
 				&& read_int(4, d + uto_transaction_id, d + r) == m_transaction_id)
 			{
 				if (r >= utoa_size
@@ -219,10 +219,10 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					mc_attempts = 0;
 					f.alert(Calert(Calert::info, "Tracker: " + n((r - utoa_size) / 6) + " peers (" + n(r) + " bytes)"));
 					for (int o = utoa_size; o + 6 <= r; o += 6)
-						f.insert_peer(*reinterpret_cast<const __int32*>(d + o), *reinterpret_cast<__int16*>(d + o + 4));
+						f.insert_peer(read_int(4, d + o), read_int(2, d + o + 4));
 					close(f);
 				}
-				else if (r >= utoe_size 
+				else if (r >= utoe_size
 					&& read_int(4, d + uto_action, d + r) == uta_error)
 				{
 					f.alert(Calert(Calert::error, "Tracker: failure reason: " + string(d + utoe_size, r - utoe_size)));
@@ -277,7 +277,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 							string peers = v.d(bts_peers).s();
 							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
 							for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
-								f.insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
+								f.insert_peer(read_int(4, r), read_int(2, r + 4));
 						}
 						return 0;
 					}
@@ -326,10 +326,10 @@ void Cbt_tracker_link::event(int v)
 string Cbt_tracker_link::http_request(const Cbt_file& f)
 {
 	stringstream os;
-	os << "GET " << m_url.m_path 
-		<< "?info_hash=" << uri_encode(f.m_info_hash) 
-		<< "&key=" << uri_encode(f.peer_key()) 
-		<< "&peer_id=" << uri_encode(f.peer_id()) 
+	os << "GET " << m_url.m_path
+		<< "?info_hash=" << uri_encode(f.m_info_hash)
+		<< "&key=" << uri_encode(f.peer_key())
+		<< "&peer_id=" << uri_encode(f.peer_id())
 		<< "&port=" << f.local_port()
 		<< "&downloaded=" << n(f.m_downloaded)
 		<< "&left=" << n(f.m_left)
@@ -353,7 +353,7 @@ string Cbt_tracker_link::http_request(const Cbt_file& f)
 		os << "&event=stopped";
 		break;
 	}
-	m_event = e_none;			
+	m_event = e_none;
 	os << " HTTP/1.0\r" << endl
 		<< "accept-encoding: gzip\r" << endl
 		<< "host: " << m_url.m_host;
