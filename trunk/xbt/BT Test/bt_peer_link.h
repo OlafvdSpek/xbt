@@ -56,8 +56,6 @@ public:
 	void write_peers();
 	void choked(bool);
 	void interested(bool);
-	static byte* write16(byte* w, int v);
-	static byte* write(byte* w, int v);
 	void write_bitfield();
 	void remote_requests(int, int, int);
 	void remote_has(int);
