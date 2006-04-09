@@ -43,10 +43,10 @@ int send(Csocket& s, const Cbvalue& v)
 Cbvalue send_recv(Csocket& s, const Cbvalue& v)
 {
 	if (int r = send(s, v))
-		throw exception(("Csocket::send failed: " + Csocket::error2a(WSAGetLastError())).c_str());
+		throw runtime_error(("Csocket::send failed: " + Csocket::error2a(WSAGetLastError())));
 	Cbvalue w;
 	if (int r = recv(s, &w))
-		throw exception(("Csocket::recv failed: " + Csocket::error2a(WSAGetLastError())).c_str());
+		throw runtime_error(("Csocket::recv failed: " + Csocket::error2a(WSAGetLastError())));
 	return w;
 }
 
@@ -131,13 +131,13 @@ int main(int argc, char* argv[])
 #ifdef WIN32
 		WSADATA wsadata;
 		if (WSAStartup(MAKEWORD(2, 0), &wsadata))
-			throw exception("Unable to start WSA");
+			throw runtime_error("Unable to start WSA");
 #endif
 		Csocket s;
 		if (s.open(SOCK_STREAM, true) == INVALID_SOCKET)
-			throw exception(("Csocket::open failed: " + Csocket::error2a(WSAGetLastError())).c_str());
+			throw runtime_error(("Csocket::open failed: " + Csocket::error2a(WSAGetLastError())));
 		if (s.connect(htonl(INADDR_LOOPBACK), htons(6879)))
-			throw exception(("Csocket::connect failed: " + Csocket::error2a(WSAGetLastError())).c_str());
+			throw runtime_error(("Csocket::connect failed: " + Csocket::error2a(WSAGetLastError())));
 		Cbvalue v;	
 		if (vm.count("close"))
 		{
@@ -153,10 +153,10 @@ int main(int argc, char* argv[])
 		{
 			Cvirtual_binary a;
 			if (a.load(vm["open"].as<string>()))
-				throw exception("Unable to load .torrent");
+				throw runtime_error("Unable to load .torrent");
 			Cbvalue b;
 			if (b.write(a))
-				throw exception("Unable to parse .torrent");
+				throw runtime_error("Unable to parse .torrent");
 			v.d(bts_action, bts_open_torrent);
 			v.d(bts_torrent, string(reinterpret_cast<const char*>(a.data()), a.size()));
 		}
