@@ -22,6 +22,7 @@ using namespace std;
 
 #ifdef WIN32
 #define FD_SETSIZE 1024
+#define NOMINMAX
 
 #include <io.h>
 #include <windows.h>

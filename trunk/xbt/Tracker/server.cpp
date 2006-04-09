@@ -239,12 +239,12 @@ int Cserver::run()
 		for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 		{
 			FD_SET(i->s(), &fd_read_set);
-			n = max(n, static_cast<SOCKET>(i->s()));
+			n = max<int>(n, i->s());
 		}
 		for (t_udp_sockets::iterator i = lu.begin(); i != lu.end(); i++)
 		{
 			FD_SET(i->s(), &fd_read_set);
-			n = max(n, static_cast<SOCKET>(i->s()));
+			n = max<int>(n, i->s());
 		}
 		timeval tv;
 		tv.tv_sec = 1;

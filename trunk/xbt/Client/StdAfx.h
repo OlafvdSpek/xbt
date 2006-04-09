@@ -8,6 +8,7 @@
 
 #define _WIN32_IE 0x0500
 #define FD_SETSIZE 1024
+#define NOMINMAX
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define atoll _atoi64
 
@@ -39,6 +40,16 @@
 
 using namespace boost;
 using namespace std;
+
+inline __int64 max(__int64 a, __int64 b)
+{
+	return a > b ? a : b;
+}
+
+inline __int64 min(__int64 a, __int64 b)
+{
+	return a < b ? a : b;
+}
 
 //{{AFX_INSERT_LOCATION}}
 
