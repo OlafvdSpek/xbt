@@ -56,7 +56,7 @@ void Cudp_tracker::recv(Csocket& s)
 
 __int64 Cudp_tracker::connection_id(sockaddr_in& a) const
 {
-	const int cb_s = 8 + sizeof(int);
+	const int cb_s = 12;
 	char s[cb_s];
 	memcpy(s, &m_secret, 8);
 	memcpy(s + 8, &a.sin_addr.s_addr, 4);

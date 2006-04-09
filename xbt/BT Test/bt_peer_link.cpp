@@ -370,19 +370,6 @@ void Cbt_peer_link::remote_merkle_cancels(__int64 offset)
 	}
 }
 
-byte* Cbt_peer_link::write16(byte* w, int v)
-{
-
-	write_int(2, w, v);
-	return w + 2;
-}
-
-byte* Cbt_peer_link::write(byte* w, int v)
-{
-	write_int(4, w, v);
-	return w + 4;
-}
-
 int Cbt_peer_link::read_handshake(const char* h)
 {
 	if (string(h + hs_info_hash, 20) != m_f->m_info_hash)
@@ -422,7 +409,7 @@ void Cbt_peer_link::write_keepalive()
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(4);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	write(d);
 }
 
@@ -437,9 +424,9 @@ void Cbt_peer_link::write_have(int a)
 		return;
 	Cvirtual_binary d;
 	byte* w = d.write_start(9);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_have;
-	w = write(w, a);
+	w = write_int(4, w, a);
 	write(d);
 }
 
@@ -456,7 +443,7 @@ void Cbt_peer_link::write_bitfield()
 		return;
 	Cvirtual_binary d;
 	byte* w = d.write_start(5 + (m_f->m_pieces.size() + 7 >> 3));
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_bitfield;
 	int j = 0;
 	for (Cbt_file::t_pieces::const_iterator i = m_f->m_pieces.begin(); i != m_f->m_pieces.end(); i++, j++)
@@ -478,10 +465,10 @@ void Cbt_peer_link::write_piece(int piece, int offset, int size, const void* s)
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(13 + size);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_piece;
-	w = write(w, piece);
-	w = write(w, offset);
+	w = write_int(4, w, piece);
+	w = write_int(4, w, offset);
 	memcpy(w, s, size);
 	write(d);
 }
@@ -490,9 +477,9 @@ void Cbt_peer_link::write_merkle_piece(__int64 offset, int size, const void* s, 
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(10 + size + hashes.size());
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_piece;
-	w = write(w, offset >> 15);
+	w = write_int(4, w, offset >> 15);
 	*w++ = hashes.size() / 20;
 	memcpy(w, s, size);
 	w += size;
@@ -514,7 +501,7 @@ void Cbt_peer_link::write_choke(bool v)
 	m_local_choked = v;
 	Cvirtual_binary d;
 	byte* w = d.write_start(5);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_unchoke - v;
 	write(d);
 	if (v)
@@ -533,7 +520,7 @@ void Cbt_peer_link::write_interested(bool v)
 	m_local_interested = v;
 	Cvirtual_binary d;
 	byte* w = d.write_start(5);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_uninterested - v;
 	write(d);
 }
@@ -542,11 +529,11 @@ void Cbt_peer_link::write_request(int piece, int offset, int size)
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(17);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_request;
-	w = write(w, piece);
-	w = write(w, offset);
-	w = write(w, size);
+	w = write_int(4, w, piece);
+	w = write_int(4, w, offset);
+	w = write_int(4, w, size);
 	write(d);
 	mc_local_requests_pending++;
 }
@@ -555,9 +542,9 @@ void Cbt_peer_link::write_merkle_request(__int64 offset, int c_hashes)
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(10);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_request;
-	w = write(w, offset >> 15);
+	w = write_int(4, w, offset >> 15);
 	*w++ = c_hashes;
 	write(d);
 	mc_local_requests_pending++;
@@ -567,11 +554,11 @@ void Cbt_peer_link::write_cancel(int piece, int offset, int size)
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(17);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_cancel;
-	w = write(w, piece);
-	w = write(w, offset);
-	w = write(w, size);
+	w = write_int(4, w, piece);
+	w = write_int(4, w, offset);
+	w = write_int(4, w, size);
 	write(d);
 }
 
@@ -579,9 +566,9 @@ void Cbt_peer_link::write_merkle_cancel(__int64 offset)
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(9);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_cancel;
-	w = write(w, offset >> 15);
+	w = write_int(4, w, offset >> 15);
 	write(d);
 }
 
@@ -591,7 +578,7 @@ void Cbt_peer_link::write_get_info()
 		return;
 	Cvirtual_binary d;
 	byte* w = d.write_start(5);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_get_info;
 	write(d);
 }
@@ -608,7 +595,7 @@ void Cbt_peer_link::write_info()
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(5 + m_f->m_info.size());
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_info;
 	m_f->m_info.read(w);
 	write(d);
@@ -620,9 +607,9 @@ void Cbt_peer_link::write_get_peers()
 		return;
 	Cvirtual_binary d;
 	byte* w = d.write_start(7);
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_get_peers;
-	w = write16(w, m_f->local_port());
+	w = write_int(2, w, m_f->local_port());
 	write(d);
 	m_get_peers_stime = time();
 }
@@ -631,13 +618,13 @@ void Cbt_peer_link::write_peers()
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(7 + 6 * m_f->m_peers.size());
-	w = write(w, d.size() - 4);
+	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_peers;
-	w = write16(w, m_f->local_port());
+	w = write_int(2, w, m_f->local_port());
 	for (Cbt_file::t_peers::const_iterator i = m_f->m_peers.begin(); i != m_f->m_peers.end(); i++)
 	{
-		w = write(w, ntohl(i->m_a.sin_addr.s_addr));
-		w = write16(w, ntohs(i->m_a.sin_port));
+		w = write_int(4, w, ntohl(i->m_a.sin_addr.s_addr));
+		w = write_int(2, w, ntohs(i->m_a.sin_port));
 	}
 	write(d);
 	m_peers_stime = time();
