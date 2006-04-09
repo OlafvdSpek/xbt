@@ -16,6 +16,7 @@ Section "Install"
 	Delete "$INSTDIR\XBT Client Backend Old.exe"
 	Rename "$INSTDIR\XBT Client Backend.exe" "$INSTDIR\XBT Client Backend Old.exe"
 	File release\*.exe
+	File "..\Client Command Line Interface\release\*.exe"
 	SetOutPath "$INSTDIR\htdocs"
 	File "..\Client\htdocs\*"
 	ExecWait "$INSTDIR\XBT Client Backend.exe --install"
