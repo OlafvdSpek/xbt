@@ -6,6 +6,7 @@
 #pragma warning(disable: 4244 4554 4800)
 #endif // _MSC_VER > 1000
 
+#include <boost/algorithm/string.hpp>
 #include <cassert>
 #include <ctime>
 #include <fstream>
@@ -17,6 +18,7 @@
 #include <string>
 #include <vector>
 
+using namespace boost;
 using namespace std;
 
 #ifdef WIN32
