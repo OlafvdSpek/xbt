@@ -43,9 +43,6 @@ using namespace std;
 #define atoll xbt_atoll
 #endif
 
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
-
 typedef char __int8;
 typedef short __int16;
 typedef int __int32;

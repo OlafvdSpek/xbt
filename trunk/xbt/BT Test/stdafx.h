@@ -53,23 +53,11 @@ using namespace std;
 #define _lseeki64 lseek64
 #endif
 #define O_BINARY 0
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
 
 typedef char __int8;
 typedef short __int16;
 typedef int __int32;
 typedef long long __int64;
-
-inline __int64 max(__int64 a, __int64 b)
-{
-	return a > b ? a : b;
-}
-
-inline __int64 min(__int64 a, __int64 b)
-{
-	return a < b ? a : b;
-}
 #endif
 #include "bt_misc.h"
 #include "bvalue.h"

@@ -24,8 +24,6 @@ using namespace std;
 #include <stdint.h>
 #include <fcntl.h>
 
-#define stricmp strcasecmp
-
 typedef char __int8;
 typedef short __int16;
 typedef int __int32;

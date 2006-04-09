@@ -23,8 +23,6 @@ using namespace std;
 #else
 #include <stdint.h>
 
-#define stricmp strcasecmp
-
 typedef char __int8;
 typedef short __int16;
 typedef int __int32;
