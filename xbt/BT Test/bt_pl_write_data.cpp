@@ -12,9 +12,9 @@ Cbt_pl_write_data::Cbt_pl_write_data(const Cvirtual_binary& s)
 	m_s_end = reinterpret_cast<const char*>(m_vb.data_end());
 }
 
-Cbt_pl_write_data::Cbt_pl_write_data(const char* s, int cb_s)
+Cbt_pl_write_data::Cbt_pl_write_data(const void* s, int cb_s)
 {
-	m_s = m_r = s;
-	m_s_end = s + cb_s;
+	m_s = m_r = reinterpret_cast<const char*>(s);
+	m_s_end = m_s + cb_s;
 }
 

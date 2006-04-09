@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "bt_tracker_url.h"
 
+#include <boost/algorithm/string.hpp>
+
+using namespace boost;
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;

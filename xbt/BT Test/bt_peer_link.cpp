@@ -62,7 +62,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 		{
 			int e = 0;
 			socklen_t size = sizeof(int);
-			getsockopt(m_s, SOL_SOCKET, SO_ERROR, reinterpret_cast<char*>(&e), &size);
+			m_s.getsockopt(SOL_SOCKET, SO_ERROR, &e, size);
 			if (e == WSAEADDRINUSE)
 			{
 				if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
@@ -116,7 +116,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				{
 					while (m_read_b.cb_r() >= 4)
 					{
-						int cb_m = ntohl(*reinterpret_cast<const __int32*>(m_read_b.r()));
+						int cb_m = read_int(4, m_read_b.r());
 						if (cb_m)
 						{
 							if (cb_m < 0 || cb_m > 64 << 10)
@@ -138,7 +138,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				if (!m_read_b.cb_r())
 					m_read_b.size(0);
 				break;
-			}					
+			}
 		}
 		if (m_state == 3)
 		{
@@ -172,7 +172,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						write_merkle_request(request.offset, 127);
 					else
 						write_request(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
-				}					
+				}
 			}
 			if (time() - m_stime > 120)
 			{
@@ -210,7 +210,7 @@ void Cbt_peer_link::write(const Cvirtual_binary& s)
 
 void Cbt_peer_link::write(const void* s, int cb_s)
 {
-	m_write_b.push_back(Cbt_pl_write_data(reinterpret_cast<const char*>(s), cb_s));
+	m_write_b.push_back(Cbt_pl_write_data(s, cb_s));
 }
 
 int Cbt_peer_link::cb_write_buffer() const
@@ -334,7 +334,7 @@ void Cbt_peer_link::remote_has(int v)
 
 void Cbt_peer_link::remote_requests(int piece, int offset, int size)
 {
-	if (piece < 0 || piece >= m_f->c_pieces() || offset < 0 || size < 0 || size > min(m_f->m_pieces[piece].size(), 1 << 15) 
+	if (piece < 0 || piece >= m_f->c_pieces() || offset < 0 || size < 0 || size > min(m_f->m_pieces[piece].size(), 1 << 15)
 		|| m_remote_requests.size() >= 256 || !m_f->m_pieces[piece].valid() || m_local_choked)
 		return;
 	m_remote_requests.push_back(t_remote_request(m_f->mcb_piece * piece + offset, size, 0));
@@ -372,13 +372,14 @@ void Cbt_peer_link::remote_merkle_cancels(__int64 offset)
 
 byte* Cbt_peer_link::write16(byte* w, int v)
 {
-	*reinterpret_cast<__int16*>(w) = htons(v);
+
+	write_int(2, w, v);
 	return w + 2;
 }
 
 byte* Cbt_peer_link::write(byte* w, int v)
 {
-	*reinterpret_cast<__int32*>(w) = htonl(v);
+	write_int(4, w, v);
 	return w + 4;
 }
 
@@ -723,7 +724,7 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		break;
 	case bti_have:
 		if (r_end - r >= 4)
-			remote_has(ntohl(*reinterpret_cast<const __int32*>(r)));
+			remote_has(read_int(4, r));
 		break;
 	case bti_bitfield:
 		if (!m_f->m_info.size())
@@ -744,14 +745,12 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		{
 			if (r_end - r >= 5)
 			{
-				const __int32* a = reinterpret_cast<const __int32*>(r);
-				remote_merkle_requests(static_cast<__int64>(ntohl(a[0])) << 15, r[4]);
+				remote_merkle_requests(static_cast<__int64>(read_int(4, r)) << 15, r[4]);
 			}
 		}
 		else if (r_end - r >= 12)
 		{
-			const __int32* a = reinterpret_cast<const __int32*>(r);
-			remote_requests(ntohl(a[0]), ntohl(a[1]), ntohl(a[2]));
+			remote_requests(read_int(4, r), read_int(4, r + 4), read_int(4, r + 8));
 		}
 		break;
 	case bti_piece:
@@ -759,23 +758,20 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		{
 			if (r_end - r >= 5 && r[4] >= 0 && r_end - r >= 20 * r[4] + 5)
 			{
-				const __int32* a = reinterpret_cast<const __int32*>(r);
 				r += 5;
-				read_merkle_piece(static_cast<__int64>(ntohl(a[0])) << 15, r_end - r - 20 * r[-1], r, string(r_end - 20 * r[-1], 20 * r[-1]));
+				read_merkle_piece(static_cast<__int64>(read_int(4, r - 4)) << 15, r_end - r - 20 * r[-1], r, string(r_end - 20 * r[-1], 20 * r[-1]));
 			}
 		}
 		else if (r_end - r >= 8)
 		{
-			const __int32* a = reinterpret_cast<const __int32*>(r);
 			r += 8;
-			return read_piece(ntohl(a[0]), ntohl(a[1]), r_end - r, r);
+			return read_piece(read_int(4, r - 8), read_int(4, r - 4), r_end - r, r);
 		}
 		break;
 	case bti_cancel:
 		if (r_end - r >= 12)
 		{
-			const __int32* a = reinterpret_cast<const __int32*>(r);
-			remote_cancels(ntohl(a[0]), ntohl(a[1]), ntohl(a[2]));
+			remote_cancels(read_int(4, r), read_int(4, r + 4), read_int(4, r + 8));
 		}
 		break;
 	case bti_get_info:
@@ -794,7 +790,7 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		if (r_end - r >= 2 && time() - m_get_peers_stime < 60)
 		{
 			for (r += 2; r + 6 <= r_end; r += 6)
-				m_f->insert_peer(*reinterpret_cast<const __int32*>(r), *reinterpret_cast<const __int16*>(r + 4));
+				m_f->insert_peer(read_int(4, r), read_int(2, r + 4));
 		}
 		break;
 	}

@@ -58,8 +58,8 @@ __int64 Cudp_tracker::connection_id(sockaddr_in& a) const
 {
 	const int cb_s = 8 + sizeof(int);
 	char s[cb_s];
-	*reinterpret_cast<__int64*>(s) = m_secret;
-	*reinterpret_cast<int*>(s + 8) = a.sin_addr.s_addr;
+	memcpy(s, &m_secret, 8);
+	memcpy(s + 8, &a.sin_addr.s_addr, 4);
 	char d[20];
 	Csha1(&s, cb_s).read(d);
 	return *reinterpret_cast<__int64*>(d);
@@ -126,7 +126,7 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 			candidates.push_back(i);
 	}
 	int c = read_int(4, r + utia_num_want, r_end) < 0 ? 100 : min(read_int(4, r + utia_num_want, r_end), 200);
-	if (candidates.size() > c)	
+	if (candidates.size() > c)
 	{
 		while (c--)
 		{
