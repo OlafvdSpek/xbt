@@ -43,7 +43,7 @@ Csql_result Cdatabase::query(const string& q)
 		if (m_echo_errors)
 		{
 			cerr << mysql_error(&m_handle) << endl
-				<< q << endl;
+				<< q.substr(0, 79) << endl;
 		}
 		throw Cxcc_error(mysql_error(&m_handle));
 	}
