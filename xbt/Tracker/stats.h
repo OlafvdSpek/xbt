@@ -26,7 +26,7 @@ public:
 	int announced_udp;
 	int scraped_http;
 	int scraped_udp;
-	int start_time;
+	time_t start_time;
 };
 
 #endif // !defined(AFX_STATS_H__6D5525CA_266C_4F62_B2DD_61A0CA34C290__INCLUDED_)
