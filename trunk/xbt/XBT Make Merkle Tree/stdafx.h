@@ -22,9 +22,6 @@ using namespace std;
 #pragma comment(lib, "ws2_32.lib")
 #else
 #include <stdint.h>
-
-typedef short __int16;
-typedef long long __int64;
 #endif
 #include "socket.h"
 #include "virtual_binary.h"

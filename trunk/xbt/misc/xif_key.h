@@ -12,25 +12,25 @@
 
 using namespace std;
 
-const static __int32 file_id = 0x1a464958; // *reinterpret_cast<const __int32*>("XIF\x1a");
+const static int file_id = 0x1a464958; // *reinterpret_cast<const int*>("XIF\x1a");
 const static int file_version_old = 0;
 const static int file_version_new = 1;
 const static int file_version_fast = 2;
 
 struct t_xif_header_old
 {
-	__int32 id;
-	__int32 version;
-	__int32 size_uncompressed;
+	int id;
+	int version;
+	int size_uncompressed;
 };
 
 struct t_xif_header_fast
 {
-	__int32 id;
-	__int32 version;
-	__int32 size_uncompressed;
-	__int32 size_compressed;
-	__int32 size_external;
+	int id;
+	int version;
+	int size_uncompressed;
+	int size_compressed;
+	int size_external;
 };
 
 class Cxif_key;

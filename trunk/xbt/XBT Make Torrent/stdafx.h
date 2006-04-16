@@ -23,9 +23,6 @@ using namespace std;
 #else
 #include <stdint.h>
 #include <fcntl.h>
-
-typedef short __int16;
-typedef long long __int64;
 #endif
 #include "bvalue.h"
 #include "sha1.h"

@@ -51,7 +51,7 @@ t_vt Cxif_value::get_type() const
 		}
 		if (c == -1)
 			return vt_string;
-	}	
+	}
 	if (size == 4)
 		return vt_int32;
 	return vt_binary;
@@ -129,7 +129,7 @@ int Cxif_value::skip(const byte* s)
 
 void Cxif_value::save(byte*& data) const
 {
-	*reinterpret_cast<__int8*>(data++) = external_data() ? vt_external_binary : m_type;
+	*data++ = external_data() ? vt_external_binary : m_type;
 	switch (m_type)
 	{
 	case vt_bin32:

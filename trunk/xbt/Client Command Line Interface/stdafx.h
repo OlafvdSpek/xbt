@@ -45,9 +45,6 @@ using namespace std;
 
 #define O_BINARY 0
 #define _lseeki64 lseek
-
-typedef char __int8;
-typedef int __int32;
 #endif
 #include "bt_misc.h"
 #include "bvalue.h"
