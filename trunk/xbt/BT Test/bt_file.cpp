@@ -43,7 +43,7 @@ int Cbt_file::torrent(const Cbvalue& v)
 	for (Cbvalue::t_list::const_iterator i = trackers.begin(); i != trackers.end(); i++)
 	{
 		for (Cbvalue::t_list::const_iterator j = i->l().begin(); j != i->l().end(); j++)
-			m_trackers.push_back(j->s());		
+			m_trackers.push_back(j->s());
 	}
 	if (m_trackers.empty())
 		m_trackers.push_back(v.d(bts_announce).s());
@@ -61,7 +61,7 @@ int Cbt_file::info(const Cbvalue& info)
 	mcb_piece = info.d(bts_piece_length).i();
 	{
 		m_size = 0;
-		__int64 offset = 0;
+		long long offset = 0;
 		const Cbvalue::t_list& files = info.d(bts_files).l();
 		for (Cbvalue::t_list::const_iterator i = files.begin(); i != files.end(); i++)
 		{
@@ -71,7 +71,7 @@ int Cbt_file::info(const Cbvalue& info)
 				for (Cbvalue::t_list::const_iterator i = path.begin(); i != path.end(); i++)
 					name += '/' + i->s();
 			}
-			__int64 size = i->d(bts_length).i();
+			long long size = i->d(bts_length).i();
 			if (name.empty() || size < 0)
 				return 1;
 			m_size += size;
@@ -83,7 +83,7 @@ int Cbt_file::info(const Cbvalue& info)
 	}
 	if (m_sub_files.empty())
 		m_sub_files.push_back(t_sub_file(info.d(bts_merkle_hash).s(), "", 0, 0, m_size = info.d(bts_length).i()));
-	if (m_size < 1 
+	if (m_size < 1
 		|| mcb_piece < 16 << 10
 		|| mcb_piece > 16 << 20)
 		return 1;
@@ -100,7 +100,7 @@ int Cbt_file::info(const Cbvalue& info)
 		Cbt_piece* piece = &m_pieces.front();
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		{
-			__int64 size = i->size();
+			long long size = i->size();
 			while (size)
 				size -= piece++->resize(min(size, mcb_piece));
 		}
@@ -160,14 +160,14 @@ int Cbt_file::t_sub_file::pre_dump() const
 	return name().size() + merkle_hash().size() + 28;
 }
 
-int Cbt_file::t_sub_file::read(__int64 offset, void* s, int cb_s)
+int Cbt_file::t_sub_file::read(long long offset, void* s, int cb_s)
 {
 	return !*this
 		|| _lseeki64(m_f, offset, SEEK_SET) != offset
 		|| ::read(m_f, s, cb_s) != cb_s;
 }
 
-int Cbt_file::t_sub_file::write(__int64  offset, const void* s, int cb_s)
+int Cbt_file::t_sub_file::write(long long  offset, const void* s, int cb_s)
 {
 	return !*this
 		|| ::_lseeki64(m_f, offset, SEEK_SET) != offset
@@ -179,11 +179,11 @@ void Cbt_file::open()
 	if (is_open())
 		return;
 	if (m_name.find_first_of("/\\") == string::npos)
-	{   
-		struct stat b;   
-		m_name = (stat((server()->completes_dir() + '/' + m_name).c_str(), &b) ? server()->incompletes_dir() : server()->completes_dir()) + '/' + m_name;   
-	} 
-	__int64 offset = 0;
+	{
+		struct stat b;
+		m_name = (stat((server()->completes_dir() + '/' + m_name).c_str(), &b) ? server()->incompletes_dir() : server()->completes_dir()) + '/' + m_name;
+	}
+	long long offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
 		if (!i->open(m_name, O_RDWR)
@@ -244,7 +244,7 @@ void Cbt_file::close()
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 		i->close();
 	m_state = s_stopped;
-	
+
 	if (!server()->send_stop_event() || m_trackers.empty())
 		return;
 	Cbt_tracker_url m_url = m_trackers.front();
@@ -391,7 +391,7 @@ int Cbt_file::c_valid_pieces() const
 	return (m_size - m_left + mcb_piece - 1) / mcb_piece;
 }
 
-int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*)
+int Cbt_file::write_data(long long offset, const char* s, int cb_s, Cbt_peer_link*)
 {
 	if (offset < 0 || cb_s < 0)
 		return 1;
@@ -492,7 +492,7 @@ int Cbt_file::write_data(__int64 offset, const char* s, int cb_s, Cbt_peer_link*
 	return 0;
 }
 
-int Cbt_file::read_data(__int64 offset, byte* d, int cb_d)
+int Cbt_file::read_data(long long offset, byte* d, int cb_d)
 {
 	int size = cb_d;
 	byte* w = d;
@@ -651,7 +651,7 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 			i->dump(w);
 	}
 	else
-		w.write_int(4, 0);	
+		w.write_int(4, 0);
 	if (flags & Cserver::df_alerts)
 	{
 		w.write_int(4, m_alerts.size());
@@ -722,7 +722,7 @@ int Cbt_file::c_remote_links() const
 	return c;
 }
 
-__int64 Cbt_file::size() const
+long long Cbt_file::size() const
 {
 	return m_size;
 }
@@ -785,7 +785,7 @@ int Cbt_file::pre_save_state(bool intermediate) const
 
 void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 {
-	w.write_int(4, m_trackers.size());	
+	w.write_int(4, m_trackers.size());
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		w.write_string(*i);
 	w.write_data(m_info);
@@ -884,7 +884,7 @@ void Cbt_file::update_piece_priorities()
 {
 	for (size_t i = 0; i < m_pieces.size(); i++)
 		m_pieces[i].priority(-128);
-	__int64 offset = 0;
+	long long offset = 0;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
 		int b = (offset + i->size() - 1) / mcb_piece;
@@ -894,7 +894,7 @@ void Cbt_file::update_piece_priorities()
 	}
 }
 
-string Cbt_file::get_hashes(__int64 offset, int c) const
+string Cbt_file::get_hashes(long long offset, int c) const
 {
 	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
@@ -905,7 +905,7 @@ string Cbt_file::get_hashes(__int64 offset, int c) const
 	return "";
 }
 
-bool Cbt_file::test_and_set_hashes(__int64 offset, const string& v, const string& w)
+bool Cbt_file::test_and_set_hashes(long long offset, const string& v, const string& w)
 {
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
@@ -951,7 +951,7 @@ void Cbt_file::state(t_state v)
 		if (is_open())
 			m_state = v;
 		else
-			open();		
+			open();
 		break;
 	case s_queued:
 	case s_stopped:

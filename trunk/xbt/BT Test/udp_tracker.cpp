@@ -54,7 +54,7 @@ void Cudp_tracker::recv(Csocket& s)
 	}
 }
 
-__int64 Cudp_tracker::connection_id(sockaddr_in& a) const
+long long Cudp_tracker::connection_id(sockaddr_in& a) const
 {
 	const int cb_s = 12;
 	char s[cb_s];
@@ -62,7 +62,7 @@ __int64 Cudp_tracker::connection_id(sockaddr_in& a) const
 	memcpy(s + 8, &a.sin_addr.s_addr, 4);
 	char d[20];
 	Csha1(&s, cb_s).read(d);
-	return *reinterpret_cast<__int64*>(d);
+	return *reinterpret_cast<long long*>(d);
 }
 
 void Cudp_tracker::send_connect(Csocket& s, sockaddr_in& a, const char* r, const char* r_end)

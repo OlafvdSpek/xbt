@@ -25,7 +25,7 @@ public:
 	const Cserver* server() const;
 	time_t time() const;
 	string debug_string() const;
-	int write_data(__int64 o, const char* s, int cb_s, int latency);
+	int write_data(long long o, const char* s, int cb_s, int latency);
 	int c_max_requests_pending() const;
 	void check_pieces();
 	Cbt_logger& logger();
@@ -35,7 +35,7 @@ public:
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	void write_piece(int, int, int, const void*);
-	void write_merkle_piece(__int64 offset, int size, const void* s, const string& hashes);
+	void write_merkle_piece(long long offset, int size, const void* s, const string& hashes);
 	void queue_have(int);
 	void write_have(int);
 	void write_haves();
@@ -44,11 +44,11 @@ public:
 	void read_info(const char* r, const char* r_end);
 	void write_keepalive();
 	int read_piece(int, int, int, const char*);
-	void read_merkle_piece(__int64 offset, int size, const char* s, const string& hashes);
+	void read_merkle_piece(long long offset, int size, const char* s, const string& hashes);
 	void write_handshake();
 	void write_request(int, int, int);
-	void write_merkle_cancel(__int64 offset);
-	void write_merkle_request(__int64 offset, int c_hashes);
+	void write_merkle_cancel(long long offset);
+	void write_merkle_request(long long offset, int c_hashes);
 	void write_cancel(int, int, int);
 	void write_get_info();
 	void write_info();
@@ -60,8 +60,8 @@ public:
 	void remote_requests(int, int, int);
 	void remote_has(int);
 	void remote_cancels(int, int, int);
-	void remote_merkle_cancels(__int64 offset);
-	void remote_merkle_requests(__int64 offset, int c_hashes);
+	void remote_merkle_cancels(long long offset);
+	void remote_merkle_requests(long long offset, int c_hashes);
 	int send(int& send_quota);
 	int recv();
 	void write(const Cvirtual_binary&);
@@ -79,7 +79,7 @@ public:
 
 	struct t_local_request
 	{
-		__int64 offset;
+		long long offset;
 		int size;
 		time_t stime;
 
@@ -87,7 +87,7 @@ public:
 		{
 		}
 
-		t_local_request(__int64 _offset, int _size, time_t _time)
+		t_local_request(long long _offset, int _size, time_t _time)
 		{
 			offset = _offset;
 			size = _size;
@@ -98,14 +98,14 @@ public:
 	struct t_remote_request
 	{
 		int c_hashes;
-		__int64 offset;
+		long long offset;
 		int size;
 
 		t_remote_request()
 		{
 		}
 
-		t_remote_request(__int64 _offset, int _size, int _c_hashes)
+		t_remote_request(long long _offset, int _size, int _c_hashes)
 		{
 			c_hashes = _c_hashes;
 			offset = _offset;
@@ -118,7 +118,7 @@ public:
 	typedef vector<bool> t_remote_pieces;
 	typedef list<t_remote_request> t_remote_requests;
 	typedef list<Cbt_pl_write_data> t_write_buffer;
-	
+
 	sockaddr_in m_a;
 	Cbt_file* m_f;
 	Csocket m_s;

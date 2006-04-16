@@ -58,7 +58,7 @@ private:
 	typedef map<string, t_file> t_files;
 
 	void clean_up();
-	__int64 connection_id(sockaddr_in&) const;
+	long long connection_id(sockaddr_in&) const;
 	void send(Csocket&, sockaddr_in&, const void* d, int cb_d);
 	void send_announce(Csocket&, sockaddr_in&, const char* r, const char* r_end);
 	void send_connect(Csocket&, sockaddr_in&, const char* r, const char* r_end);
@@ -68,7 +68,7 @@ private:
 	int m_announce_interval;
 	time_t m_clean_up_time;
 	t_files m_files;
-	__int64 m_secret;
+	long long m_secret;
 };
 
 #endif // !defined(AFX_UDP_TRACKER_H__12DAD37E_1E30_4E4C_832E_44105A312226__INCLUDED_)

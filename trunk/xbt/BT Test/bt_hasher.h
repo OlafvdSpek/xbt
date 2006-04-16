@@ -15,7 +15,7 @@ public:
 private:
 	int m_i;
 	int m_j;
-	__int64 m_offset;
+	long long m_offset;
 	Cbt_file::t_sub_files::iterator m_sub_file;
 	const bool m_validate;
 };

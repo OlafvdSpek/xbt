@@ -41,12 +41,12 @@
 using namespace boost;
 using namespace std;
 
-inline __int64 max(__int64 a, __int64 b)
+inline long long max(long long a, long long b)
 {
 	return a > b ? a : b;
 }
 
-inline __int64 min(__int64 a, __int64 b)
+inline long long min(long long a, long long b)
 {
 	return a < b ? a : b;
 }

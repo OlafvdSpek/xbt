@@ -42,8 +42,8 @@ public:
 	bool end_mode() const;
 	bool begin_mode() const;
 	Cbt_logger& logger();
-	string get_hashes(__int64 offset, int c) const;
-	bool test_and_set_hashes(__int64 offset, const string& v, const string& w);
+	string get_hashes(long long offset, int c) const;
+	bool test_and_set_hashes(long long offset, const string& v, const string& w);
 	bool hash();
 	void update_piece_priorities();
 	void sub_file_priority(const string& id, int priority);
@@ -55,14 +55,14 @@ public:
 	void load_state(Cstream_reader&);
 	int pre_save_state(bool intermediate) const;
 	void save_state(Cstream_writer&, bool intermediate) const;
-	__int64 size() const;
+	long long size() const;
 	int c_seeders() const;
 	int c_leechers() const;
 	int pre_dump(int flags) const;
 	void dump(Cstream_writer&, int flags) const;
 	int next_invalid_piece(const Cbt_peer_link&);
-	int read_data(__int64 o, byte* d, int cb_d);
-	int write_data(__int64 o, const char* s, int cb_s, Cbt_peer_link*);
+	int read_data(long long o, byte* d, int cb_d);
+	int write_data(long long o, const char* s, int cb_s, Cbt_peer_link*);
 	void close();
 	void erase();
 	void open();
@@ -114,9 +114,9 @@ public:
 		void erase(const string& parent_name);
 		bool open(const string& parent_name, int oflag);
 		int pre_dump() const;
-		int read(__int64 offset, void* s, int cb_s);
-		int write(__int64 offset, const void* s, int cb_s);
-		
+		int read(long long offset, void* s, int cb_s);
+		int write(long long offset, const void* s, int cb_s);
+
 		const string& merkle_hash() const
 		{
 			return m_merkle_hash;
@@ -132,12 +132,12 @@ public:
 			return m_merkle_tree;
 		}
 
-		__int64 left() const
+		long long left() const
 		{
 			return m_left;
 		}
 
-		__int64 left(__int64 v)
+		long long left(long long v)
 		{
 			return m_left = v;
 		}
@@ -147,7 +147,7 @@ public:
 			return m_name;
 		}
 
-		__int64 offset() const
+		long long offset() const
 		{
 			return m_offset;
 		}
@@ -162,7 +162,7 @@ public:
 			m_priority = max(-128, min(v, 127));
 		}
 
-		__int64 size() const
+		long long size() const
 		{
 			return m_size;
 		}
@@ -176,7 +176,7 @@ public:
 		{
 		}
 
-		t_sub_file(const string& merkle_hash, const string& name, __int64 offset, int priority, __int64 size)
+		t_sub_file(const string& merkle_hash, const string& name, long long offset, int priority, long long size)
 		{
 			m_f = -1;
 			m_merkle_hash = merkle_hash;

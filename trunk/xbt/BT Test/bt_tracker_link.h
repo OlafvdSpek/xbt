@@ -35,7 +35,7 @@ public:
 
 	time_t m_announce_time;
 private:
-	__int64 m_connection_id;
+	long long m_connection_id;
 	byte* m_w;
 	Cbt_tracker_url m_url;
 	Csocket m_s;

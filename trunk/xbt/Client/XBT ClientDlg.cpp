@@ -706,7 +706,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				buffer = time2a(m_file->m_seeding_ratio_reached_at) + " (" + duration2a(time(NULL) - m_file->m_seeding_ratio_reached_at) + " ago)";
 			else if (m_file->m_uploaded && !m_file->m_left && m_file->m_seeding_ratio && time(NULL) - m_file->m_session_started_at > 300 && m_file->m_state == Cbt_file::s_running)
 			{
-				__int64 left = m_file->m_seeding_ratio * m_file->m_size / 100 - m_file->m_total_uploaded;
+				long long left = m_file->m_seeding_ratio * m_file->m_size / 100 - m_file->m_total_uploaded;
 				if (left > 0)
 				{
 					int duration = left * (time(NULL) - m_file->m_session_started_at) / m_file->m_uploaded;
