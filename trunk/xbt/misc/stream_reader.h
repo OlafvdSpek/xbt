@@ -8,7 +8,7 @@
 #include "stream_int.h"
 #include "virtual_binary.h"
 
-class Cstream_reader  
+class Cstream_reader
 {
 public:
 	const byte* d() const
@@ -32,7 +32,7 @@ public:
 		return m_r - size;
 	}
 
-	__int64 read_int(int cb)
+	long long read_int(int cb)
 	{
 		m_r += cb;
 		return ::read_int(cb, m_r - cb);

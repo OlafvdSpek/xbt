@@ -8,7 +8,7 @@
 #include "stream_int.h"
 #include "virtual_binary.h"
 
-class Cstream_writer  
+class Cstream_writer
 {
 public:
 	byte* w() const
@@ -22,7 +22,7 @@ public:
 		return m_w - size;
 	}
 
-	void write_int(int cb, __int64 v)
+	void write_int(int cb, long long v)
 	{
 		m_w = ::write_int(cb, m_w, v);
 	}

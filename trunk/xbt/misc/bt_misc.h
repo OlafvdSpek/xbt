@@ -11,7 +11,7 @@
 
 using namespace std;
 
-string b2a(__int64 v, const char* postfix = NULL);
+string b2a(long long v, const char* postfix = NULL);
 string backward_slashes(string);
 string duration2a(float);
 string escape_string(const string&);
@@ -21,7 +21,7 @@ int hms2i(int h, int m, int s);
 bool is_private_ipa(int a);
 int merkle_tree_size(int v);
 int mkpath(const string&);
-string n(__int64);
+string n(long long);
 string native_slashes(const string&);
 string hex_decode(const string&);
 string hex_encode(int l, int v);
@@ -31,7 +31,7 @@ string peer_id2a(const string&);
 string time2a(time_t);
 string uri_decode(const string&);
 string uri_encode(const string&);
-__int64 xbt_atoll(const char*);
+long long xbt_atoll(const char*);
 string xbt_version2a(int);
 
 inline void compute_sha1(const Cvirtual_binary& s, void* d)
@@ -49,14 +49,14 @@ inline string compute_sha1(const Cvirtual_binary& s)
 	return compute_sha1(s, s.size());
 }
 
-inline __int64 htonll(__int64 v)
+inline long long htonll(long long v)
 {
 	const unsigned char* a = reinterpret_cast<const unsigned char*>(&v);
-	__int64 b = a[0] << 24 | a[1] << 16 | a[2] << 8 | a[3];
+	long long b = a[0] << 24 | a[1] << 16 | a[2] << 8 | a[3];
 	return b << 32 | a[4] << 24 | a[5] << 16 | a[6] << 8 | a[7];
 }
 
-inline __int64 ntohll(__int64 v)
+inline long long ntohll(long long v)
 {
 	return htonll(v);
 }
@@ -86,7 +86,7 @@ enum
 	uti_size = 16,
 
 	utic_size = 16,
-	
+
 	utia_info_hash = 16,
 	utia_peer_id = 36,
 	utia_downloaded = 56,

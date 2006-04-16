@@ -25,7 +25,7 @@ public:
 	const t_map& d() const;
 	const Cbvalue& d(const string&) const;
 	const t_list& l() const;
-	__int64 i() const;
+	long long i() const;
 	const string& s() const;
 	bool d_has(const string&) const;
 	Cbvalue& d(const string& v, const Cbvalue& w);
@@ -37,7 +37,7 @@ public:
 	int write(const char* s, int cb_s);
 	int write(const void* s, int cb_s);
 	int write(const Cvirtual_binary&);
-	Cbvalue(__int64 v = 0);
+	Cbvalue(long long v = 0);
 	Cbvalue(t_value_type t);
 	Cbvalue(const string& v);
 	Cbvalue(const Cbvalue&);
@@ -50,7 +50,7 @@ private:
 
 	union
 	{
-		__int64 m_int;
+		long long m_int;
 		string* m_string;
 		t_list* m_list;
 		t_map* m_map;
