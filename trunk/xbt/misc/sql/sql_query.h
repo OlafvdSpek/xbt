@@ -11,7 +11,7 @@
 class Cdatabase;
 class Csql_result;
 
-class Csql_query  
+class Csql_query
 {
 public:
 	Csql_result execute() const;
@@ -19,7 +19,7 @@ public:
 	void operator=(const string&);
 	void operator+=(const string&);
 	void p_raw(const string&);
-	void p(__int64);
+	void p(long long);
 	void p(const string&);
 	void p(const Cvirtual_binary&);
 	Csql_query(Cdatabase&, const string& = "");
