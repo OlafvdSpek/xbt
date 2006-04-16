@@ -2,14 +2,13 @@
 #include "xif_key_r.h"
 
 #include <zlib.h>
+#include "stream_int.h"
 #include "xif_key.h"
 
-template <class T>
-static T read(const byte*& r)
+static int read_int(const byte*& r)
 {
-	T v = *reinterpret_cast<const T*>(r);
-	r += sizeof(T);
-	return v;
+	r += 4;
+	return read_int_le(4, r - 4);
 }
 
 int Cxif_key_r::import(Cvirtual_binary s)
@@ -45,23 +44,23 @@ int Cxif_key_r::load(const byte* s)
 {
 	const byte* r = s;
 	{
-		int count = read<int>(r);
+		int count = read_int(r);
 		int id = 0;
 		m_keys.reserve(count);
 		while (count--)
 		{
-			id += read<int>(r);
+			id += read_int(r);
 			m_keys.push_back(make_pair(id, Cxif_key_r()));
 			r += m_keys.rbegin()->second.load(r);
 		}
 	}
 	{
-		int count = read<int>(r);
+		int count = read_int(r);
 		int id = 0;
 		m_values.reserve(count);
 		while (count--)
 		{
-			id += read<int>(r);
+			id += read_int(r);
 			m_values.push_back(make_pair(id, Cxif_value()));
 			m_values.rbegin()->second.load_new(r);
 		}
