@@ -5,14 +5,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cbt_peer_data  
+class Cbt_peer_data
 {
 public:
 	Cbt_peer_data();
 
-	__int64 m_downloaded;
-	__int64 m_left;
-	__int64 m_uploaded;
+	long long m_downloaded;
+	long long m_left;
+	long long m_uploaded;
 	bool m_local_link;
 	bool m_local_choked;
 	bool m_local_interested;

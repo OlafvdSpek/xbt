@@ -51,7 +51,7 @@ private:
 	struct t_map_entry
 	{
 		string name;
-		__int64 size;
+		long long size;
 	};
 
 	typedef map<int, t_map_entry> t_map;

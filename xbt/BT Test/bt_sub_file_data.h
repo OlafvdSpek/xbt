@@ -5,14 +5,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cbt_sub_file_data  
+class Cbt_sub_file_data
 {
 public:
 	Cbt_sub_file_data();
 
-	__int64 m_left;
-	__int64 m_offset;
-	__int64 m_size;
+	long long m_left;
+	long long m_offset;
+	long long m_size;
 	int m_priority;
 	string m_merkle_hash;
 	string m_name;

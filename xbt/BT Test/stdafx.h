@@ -57,18 +57,15 @@ using namespace std;
 #endif
 #define O_BINARY 0
 
-typedef char __int8;
-typedef short __int16;
 typedef int __int32;
-typedef long long __int64;
 #endif
 
-inline __int64 max(__int64 a, __int64 b)
+inline long long max(long long a, long long b)
 {
 	return a > b ? a : b;
 }
 
-inline __int64 min(__int64 a, __int64 b)
+inline long long min(long long a, long long b)
 {
 	return a < b ? a : b;
 }

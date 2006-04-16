@@ -234,7 +234,7 @@ void Cdlg_make_torrent::OnSave()
 	int cb_piece = 1 << 20;
 	if (!m_use_merkle)
 	{
-		__int64 cb_total = 0;
+		long long cb_total = 0;
 		for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
 			cb_total += i->second.size;
 		cb_piece = 256 << 10;
@@ -254,7 +254,7 @@ void Cdlg_make_torrent::OnSave()
 		int f = open(i->c_str(), _O_BINARY | _O_RDONLY);
 		if (!f)
 			continue;
-		__int64 cb_f = 0;
+		long long cb_f = 0;
 		string merkle_hash;
 		int cb_d;
 		if (m_use_merkle)

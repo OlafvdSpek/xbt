@@ -295,12 +295,12 @@ private:
 
 	struct t_global_details
 	{
-		__int64 m_downloaded;
-		__int64 m_downloaded_total;
-		__int64 m_left;
-		__int64 m_size;
-		__int64 m_uploaded;
-		__int64 m_uploaded_total;
+		long long m_downloaded;
+		long long m_downloaded_total;
+		long long m_left;
+		long long m_size;
+		long long m_uploaded;
+		long long m_uploaded_total;
 		int m_down_rate;
 		int m_start_time;
 		int m_up_rate;

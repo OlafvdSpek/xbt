@@ -5,7 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class Cbt_file_data  
+class Cbt_file_data
 {
 public:
 	enum t_state
@@ -20,15 +20,15 @@ public:
 
 	Cbt_file_data();
 
-	__int64 m_downloaded;
-	__int64 m_downloaded_l5;
-	__int64 m_left;
-	__int64 m_size;
-	__int64 m_total_downloaded;
-	__int64 m_total_uploaded;
-	__int64 m_uploaded;
-	__int64 m_uploaded_l5;
-	__int64 mcb_piece;
+	long long m_downloaded;
+	long long m_downloaded_l5;
+	long long m_left;
+	long long m_size;
+	long long m_total_downloaded;
+	long long m_total_uploaded;
+	long long m_uploaded;
+	long long m_uploaded_l5;
+	long long mcb_piece;
 	bool m_allow_end_mode;
 	bool m_end_mode;
 	bool m_seeding_ratio_override;
