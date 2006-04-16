@@ -131,7 +131,7 @@ int Cconnection::send()
 static string calculate_torrent_pass1(const string& info_hash, long long torrent_pass_secret)
 {
 	Csha1 sha1;
-	sha1.write(info_hash.c_str(), info_hash.size());
+	sha1.write(info_hash.data(), info_hash.size());
 	torrent_pass_secret = htonll(torrent_pass_secret);
 	sha1.write(&torrent_pass_secret, sizeof(torrent_pass_secret));
 	return sha1.read();
@@ -219,7 +219,7 @@ void Cconnection::read(const string& v)
 			gzip = m_server->gzip_debug();
 			string v = m_server->debug(ti);
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = Cvirtual_binary(v.c_str(), v.length());
+			s = Cvirtual_binary(v.data(), v.length());
 		}
 		break;
 	case 's':
@@ -228,7 +228,7 @@ void Cconnection::read(const string& v)
 			gzip = m_server->gzip_debug();
 			string v = m_server->statistics();
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = Cvirtual_binary(v.c_str(), v.length());
+			s = Cvirtual_binary(v.data(), v.length());
 		}
 		else
 		{
@@ -262,7 +262,7 @@ void Cconnection::read(const string& v)
 	}
 	h += "\r\n";
 	Cvirtual_binary d;
-	memcpy(d.write_start(h.size() + s.size()), h.c_str(), h.size());
+	memcpy(d.write_start(h.size() + s.size()), h.data(), h.size());
 	s.read(d.data_edit() + h.size());
 	int r = m_s.send(d, d.size());
 	if (r == SOCKET_ERROR)

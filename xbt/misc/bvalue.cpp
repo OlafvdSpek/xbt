@@ -339,7 +339,7 @@ int Cbvalue::read(char* d) const
 	case vt_string:
 		sprintf(w, "%d:", m_string->size());
 		w += n(m_string->size()).size() + 1;
-		memcpy(w, m_string->c_str(), m_string->size());
+		memcpy(w, m_string->data(), m_string->size());
 		w += m_string->size();
 		return w - d;
 	case vt_list:
@@ -357,7 +357,7 @@ int Cbvalue::read(char* d) const
 			{
 				sprintf(w, "%d:", i->first.size());
 				w += n(i->first.size()).size() + 1;
-				memcpy(w, i->first.c_str(), i->first.size());
+				memcpy(w, i->first.data(), i->first.size());
 				w += i->first.size();
 				w += i->second.read(w);
 			}
