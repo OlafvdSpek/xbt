@@ -48,7 +48,7 @@ Cserver::t_user* Ctransaction::authenticate(const void* s0, const char* s_end) c
 		return NULL;
 	Csha1 sha1;
 	sha1.write(s, s_end - s - 8);
-	sha1.write(user->pass.c_str(), user->pass.size());
+	sha1.write(user->pass.data(), user->pass.size());
 	unsigned char hash[20];
 	sha1.read(hash);
 	return memcmp(s_end - 8, hash, 8) ? NULL : user;
@@ -195,7 +195,7 @@ void Ctransaction::send_error(const char* r, const char* r_end, const string& ms
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_error);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
-	memcpy(d + utoe_size, msg.c_str(), msg.length());
+	memcpy(d + utoe_size, msg.data(), msg.length());
 	send(d, utoe_size + msg.length());
 }
 

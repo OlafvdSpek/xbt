@@ -38,7 +38,7 @@ Csql_result Cdatabase::query(const string& q)
 		static ofstream f(m_query_log.c_str());
 		f << q << endl;
 	}
-	if (mysql_real_query(&m_handle, q.c_str(), q.size()))
+	if (mysql_real_query(&m_handle, q.data(), q.size()))
 	{
 		if (m_echo_errors)
 		{

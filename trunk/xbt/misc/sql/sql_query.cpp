@@ -64,7 +64,7 @@ void Csql_query::p(const string& v)
 {
 	char* r = new char[2 * v.length() + 3];
 	r[0] = '\'';
-	mysql_real_escape_string(&m_database.handle(), r + 1, v.c_str(), v.length());
+	mysql_real_escape_string(&m_database.handle(), r + 1, v.data(), v.length());
 	strcat(r, "\'");
 	p_raw(r);
 	delete[] r;
