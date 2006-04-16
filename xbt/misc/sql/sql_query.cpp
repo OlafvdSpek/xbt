@@ -49,7 +49,7 @@ void Csql_query::p_raw(const string& v)
 	m_list.push_back(v);
 }
 
-void Csql_query::p(__int64 v)
+void Csql_query::p(long long v)
 {
 	char b[21];
 #ifdef WIN32
