@@ -49,9 +49,9 @@ public:
 		return get_value(id).get_int(v);
 	}
 
-	__int64 get_value_int64(int id) const
+	long long get_value_int64(int id) const
 	{
-		return *reinterpret_cast<const __int64*>(get_value(id).get_data());
+		return *reinterpret_cast<const long long*>(get_value(id).get_data());
 	}
 
 	string get_value_string(int id) const
@@ -68,7 +68,7 @@ public:
 	{
 		return m_keys;
 	}
-	
+
 	const t_value_map& values() const
 	{
 		return m_values;

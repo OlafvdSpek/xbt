@@ -18,7 +18,7 @@ public:
 			return m_name;
 		}
 
-		__int64 size() const
+		long long size() const
 		{
 			return m_size;
 		}
@@ -27,20 +27,20 @@ public:
 		{
 		}
 
-		Cfile(const string& name, __int64 size)
+		Cfile(const string& name, long long size)
 		{
 			m_name = name;
 			m_size = size;
 		}
 	private:
 		string m_name;
-		__int64 m_size;
+		long long m_size;
 	};
 
 	typedef vector<string> t_announces;
 	typedef vector<Cfile> t_files;
 
-	__int64 size() const;
+	long long size() const;
 	bool valid() const;
 	int write(const Cbvalue&);
 	int write_info(const Cbvalue&);

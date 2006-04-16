@@ -6,23 +6,23 @@
 #endif // _MSC_VER > 1000
 
 template <class T>
-__int64 read_int(int cb, const T r0)
+long long read_int(int cb, const T r0)
 {
 	const unsigned char* r = reinterpret_cast<const unsigned char*>(r0);
-	__int64 v = 0;
+	long long v = 0;
 	while (cb--)
 		v = v << 8 | *r++;
 	return v;
 }
 
 template <class T>
-__int64 read_int(int cb, const T r, const T s_end)
+long long read_int(int cb, const T r, const T s_end)
 {
 	return read_int(cb, r);
 }
 
 template <class T>
-T write_int(int cb, T w0, __int64 v)
+T write_int(int cb, T w0, long long v)
 {
 	unsigned char* w = reinterpret_cast<unsigned char*>(w0);
 	w += cb;
@@ -35,24 +35,24 @@ T write_int(int cb, T w0, __int64 v)
 }
 
 template <class T>
-__int64 read_int_le(int cb, const T r0)
+long long read_int_le(int cb, const T r0)
 {
 	const unsigned char* r = reinterpret_cast<const unsigned char*>(r0);
 	r += cb;
-	__int64 v = 0;
+	long long v = 0;
 	while (cb--)
 		v = v << 8 | *--r;
 	return v;
 }
 
 template <class T>
-__int64 read_int_le(int cb, const T r, const T s_end)
+long long read_int_le(int cb, const T r, const T s_end)
 {
 	return read_int_le(cb, r);
 }
 
 template <class T>
-T write_int_le(int cb, T w0, __int64 v)
+T write_int_le(int cb, T w0, long long v)
 {
 	unsigned char* w = reinterpret_cast<unsigned char*>(w0);
 	for (int i = 0; i < cb; i++)

@@ -70,7 +70,7 @@ string hex_encode(int l, int v)
 	return r;
 };
 
-string n(__int64 v)
+string n(long long v)
 {
 	char b[21];
 #ifdef WIN32
@@ -174,7 +174,7 @@ bool is_private_ipa(int a)
 		|| (ntohl(a) & 0xffff0000) == 0xc0a80000;
 }
 
-string b2a(__int64 v, const char* postfix)
+string b2a(long long v, const char* postfix)
 {
 	int l;
 	for (l = 0; v < -9999 || v > 999999; l++)
@@ -280,7 +280,7 @@ string time2a(time_t v)
 	if (!date)
 		return "";
 	char b[20];
-	sprintf(b, "%04d-%02d-%02d %02d:%02d:%02d", date->tm_year + 1900, date->tm_mon + 1, date->tm_mday, date->tm_hour, date->tm_min, date->tm_sec);		
+	sprintf(b, "%04d-%02d-%02d %02d:%02d:%02d", date->tm_year + 1900, date->tm_mon + 1, date->tm_mday, date->tm_hour, date->tm_min, date->tm_sec);
 	return b;
 }
 
@@ -348,7 +348,7 @@ string xbt_version2a(int v)
 }
 
 #ifdef BSD
-__int64 xbt_atoll(const char* v)
+long long xbt_atoll(const char* v)
 {
 	return strtoll(v, NULL, 10);
 }

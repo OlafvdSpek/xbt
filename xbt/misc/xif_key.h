@@ -113,13 +113,13 @@ public:
 		m_values[id] = Cxif_value();
 		return m_values[id];
 	}
-	
+
 	Cxif_value& set_value(int id)
 	{
 		m_values[id] = Cxif_value();
 		return m_values[id];
 	}
-	
+
 	void set_value_bin(int id, int v)
 	{
 		m_values[id] = Cxif_value(vt_bin32, v);
@@ -145,7 +145,7 @@ public:
 		m_values[id] = Cxif_value(v);
 	}
 
-	void set_value_int64(int id, __int64 v)
+	void set_value_int64(int id, long long v)
 	{
 		set_value_binary(id, Cvirtual_binary(&v, 8));
 	}
@@ -184,9 +184,9 @@ public:
 		return get_value(id).get_int(v);
 	}
 
-	__int64 get_value_int64(int id) const
+	long long get_value_int64(int id) const
 	{
-		return *reinterpret_cast<const __int64*>(get_value(id).get_data());
+		return *reinterpret_cast<const long long*>(get_value(id).get_data());
 	}
 
 	string get_value_string(int id) const

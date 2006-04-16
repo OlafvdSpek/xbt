@@ -26,7 +26,7 @@ int Cbt_torrent::write(const Cbvalue& v)
 	for (Cbvalue::t_list::const_iterator i = announces.begin(); i != announces.end(); i++)
 	{
 		for (Cbvalue::t_list::const_iterator j = i->l().begin(); j != i->l().end(); j++)
-			m_announces.push_back(j->s());		
+			m_announces.push_back(j->s());
 	}
 	return write_info(v.d(bts_info));
 }
@@ -38,7 +38,7 @@ int Cbt_torrent::write_info(const Cbvalue& v)
 	for (Cbvalue::t_list::const_iterator i = files.begin(); i != files.end(); i++)
 	{
 		string name;
-		__int64 size = i->d(bts_length).i();
+		long long size = i->d(bts_length).i();
 		{
 			const Cbvalue::t_list& path = i->d(bts_path).l();
 			for (Cbvalue::t_list::const_iterator i = path.begin(); i != path.end(); i++)
@@ -59,9 +59,9 @@ int Cbt_torrent::write_info(const Cbvalue& v)
 	return 0;
 }
 
-__int64 Cbt_torrent::size() const
+long long Cbt_torrent::size() const
 {
-	__int64 r = 0;
+	long long r = 0;
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		r += i->size();
 	return r;

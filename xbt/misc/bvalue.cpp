@@ -4,7 +4,7 @@
 #include "bt_misc.h"
 #include "xcc_z.h"
 
-Cbvalue::Cbvalue(__int64 v)
+Cbvalue::Cbvalue(long long v)
 {
 	m_value_type = vt_int;
 	m_int = v;
@@ -241,7 +241,7 @@ const Cbvalue& Cbvalue::d(const string& v) const
 	return z;
 }
 
-__int64 Cbvalue::i() const
+long long Cbvalue::i() const
 {
 	return m_value_type == vt_int ? m_int : 0;
 }
