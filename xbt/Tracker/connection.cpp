@@ -16,7 +16,7 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_s = s;
 	m_a = a;
 	m_ctime = server->time();
-	
+
 	m_state = 0;
 	m_w = 0;
 	m_log_access = log_access;
@@ -128,7 +128,7 @@ int Cconnection::send()
 	return 0;
 }
 
-static string calculate_torrent_pass1(const string& info_hash, __int64 torrent_pass_secret)
+static string calculate_torrent_pass1(const string& info_hash, long long torrent_pass_secret)
 {
 	Csha1 sha1;
 	sha1.write(info_hash.c_str(), info_hash.size());
@@ -190,7 +190,7 @@ void Cconnection::read(const string& v)
 	string h = "HTTP/1.0 200 OK\r\n";
 	Cvirtual_binary s;
 	bool gzip = true;
-	switch (a < v.size() ? v[a] : 0) 
+	switch (a < v.size() ? v[a] : 0)
 	{
 	case 'a':
 		gzip = m_server->gzip_announce() && !ti.m_compact;

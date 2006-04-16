@@ -389,8 +389,8 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 	}
 	if (m_use_sql && user && file.fid)
 	{
-		__int64 downloaded = 0;
-		__int64 uploaded = 0;
+		long long downloaded = 0;
+		long long uploaded = 0;
 		if (i != file.peers.end()
 			&& i->second.peer_id == v.m_peer_id
 			&& v.m_downloaded >= i->second.downloaded
@@ -697,7 +697,7 @@ void Cserver::read_db_files_sql()
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			m_fid_end = max(m_fid_end, static_cast<int>(row.f(2).i()) + 1);
+			m_fid_end = max(m_fid_end, row.f(2).i()) + 1;
 			if (row.f(0).size() != 20 || m_files.find(row.f(0).s()) != m_files.end())
 				continue;
 			t_file& file = m_files[row.f(0).s()];
@@ -976,16 +976,16 @@ string Cserver::statistics() const
 		+ "<tr><td>announced<td align=right>" + n(m_stats.announced());
 	if (m_stats.announced())
 	{
-		page += "<tr><td>announced http <td align=right>" + n(m_stats.announced_http) + "<td align=right>" + n(static_cast<__int64>(m_stats.announced_http) * 100 / m_stats.announced()) + " %"
-			+ "<tr><td>announced http compact<td align=right>" + n(m_stats.announced_http_compact) + "<td align=right>" + n(static_cast<__int64>(m_stats.announced_http_compact) * 100 / m_stats.announced()) + " %"
-			+ "<tr><td>announced http no peer id<td align=right>" + n(m_stats.announced_http_no_peer_id) + "<td align=right>" + n(static_cast<__int64>(m_stats.announced_http_no_peer_id) * 100 / m_stats.announced()) + " %"
-			+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp) + "<td align=right>" + n(static_cast<__int64>(m_stats.announced_udp) * 100 / m_stats.announced()) + " %";
+		page += "<tr><td>announced http <td align=right>" + n(m_stats.announced_http) + "<td align=right>" + n(m_stats.announced_http * 100 / m_stats.announced()) + " %"
+			+ "<tr><td>announced http compact<td align=right>" + n(m_stats.announced_http_compact) + "<td align=right>" + n(m_stats.announced_http_compact * 100 / m_stats.announced()) + " %"
+			+ "<tr><td>announced http no peer id<td align=right>" + n(m_stats.announced_http_no_peer_id) + "<td align=right>" + n(m_stats.announced_http_no_peer_id * 100 / m_stats.announced()) + " %"
+			+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp) + "<td align=right>" + n(m_stats.announced_udp * 100 / m_stats.announced()) + " %";
 	}
 	page += "<tr><td>scraped<td align=right>" + n(m_stats.scraped());
 	if (m_stats.scraped())
 	{
-		page += "<tr><td>scraped http<td align=right>" + n(m_stats.scraped_http) + "<td align=right>" + n(static_cast<__int64>(m_stats.scraped_http) * 100 / m_stats.scraped()) + " %"
-			+ "<tr><td>scraped udp<td align=right>" + n(m_stats.scraped_udp) + "<td align=right>" + n(static_cast<__int64>(m_stats.scraped_udp) * 100 / m_stats.scraped()) + " %";
+		page += "<tr><td>scraped http<td align=right>" + n(m_stats.scraped_http) + "<td align=right>" + n(m_stats.scraped_http * 100 / m_stats.scraped()) + " %"
+			+ "<tr><td>scraped udp<td align=right>" + n(m_stats.scraped_udp) + "<td align=right>" + n(m_stats.scraped_udp * 100 / m_stats.scraped()) + " %";
 	}
 	page += string("<tr><td>")
 		+ "<tr><td>up time<td align=right>" + duration2a(time() - m_stats.start_time)

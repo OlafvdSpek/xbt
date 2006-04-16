@@ -16,7 +16,7 @@ class Ctransaction
 {
 public:
 	Cserver::t_user* authenticate(const void* s, const char* s_end) const;
-	__int64 connection_id() const;
+	long long connection_id() const;
 	void recv();
 	void send(const void* d, int cb_d);
 	void send_announce(const char* r, const char* r_end);

@@ -25,10 +25,10 @@ public:
 	int m_ipa;
 	string m_key;
 	string m_peer_id;
-	__int64 m_downloaded;
-	__int64 m_left;
+	long long m_downloaded;
+	long long m_left;
 	int m_port;
-	__int64 m_uploaded;
+	long long m_uploaded;
 	int m_num_want;
 	bool m_compact;
 	bool m_no_peer_id;
