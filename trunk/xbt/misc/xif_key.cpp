@@ -2,25 +2,17 @@
 #include "xif_key.h"
 
 #include <zlib.h>
-
-template <class T>
-static T read(const byte*& r)
-{
-	T v = *reinterpret_cast<const T*>(r);
-	r += sizeof(T);
-	return v;
-}
-
-template <class T>
-static void write(byte*& w, T v)
-{
-	*reinterpret_cast<T*>(w) = v;
-	w += sizeof(T);
-}
+#include "stream_int.h"
 
 static int read_int(const byte*& r)
 {
-	return read<int>(r);
+	r += 4;
+	return read_int_le(4, r - 4);
+}
+
+static void write_int(byte*& w, int v)
+{
+	w = write_int_le(4, w, v);
 }
 
 void Cxif_key::load_old(const byte*& data)
@@ -132,7 +124,7 @@ void Cxif_key::save(byte*& data) const
 {
 	{
 		// keys
-		write<__int32>(data, m_keys.size());
+		write_int(data, m_keys.size());
 		int id = 0;
 		for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
 		{
@@ -145,7 +137,7 @@ void Cxif_key::save(byte*& data) const
 
 	{
 		// values
-		write<__int32>(data, m_values.size());
+		write_int(data, m_values.size());
 		int id = 0;
 		for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
 		{

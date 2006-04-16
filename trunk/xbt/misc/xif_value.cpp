@@ -2,25 +2,33 @@
 #include "xif_value.h"
 
 #include <zlib.h>
+#include "stream_int.h"
 
-template <class T>
-static T read(const byte*& r)
+static float read_float(const byte*& r)
 {
-	T v = *reinterpret_cast<const T*>(r);
-	r += sizeof(T);
+	assert(sizeof(float) == 4);
+	float v;
+	memcpy(&v, r, 4);
+	r += 4;
 	return v;
-}
-
-template <class T>
-static void write(byte*& w, T v)
-{
-	*reinterpret_cast<T*>(w) = v;
-	w += sizeof(T);
 }
 
 static int read_int(const byte*& r)
 {
-	return read<int>(r);
+	r += 4;
+	return read_int_le(4, r - 4);
+}
+
+static void write_float(byte*& w, float v)
+{
+	assert(sizeof(float) == 4);
+	memcpy(w, &v, 4);
+	w += 4;
+}
+
+static void write_int(byte*& w, int v)
+{
+	w = write_int_le(4, w, v);
 }
 
 t_vt Cxif_value::get_type() const
@@ -64,15 +72,15 @@ void Cxif_value::load_old(const byte*& data)
 void Cxif_value::load_new(const byte*& data)
 {
 	m_data.clear();
-	m_type = static_cast<t_vt>(read<__int8>(data));
+	m_type = static_cast<t_vt>(*data++);
 	switch (m_type)
 	{
 	case vt_bin32:
 	case vt_int32:
-		m_value_int = read<__int32>(data);
+		m_value_int = read_int(data);
 		break;
 	case vt_float:
-		m_value_float = read<float>(data);
+		m_value_float = read_float(data);
 		break;
 	case vt_external_binary:
 		m_data.write_start(read_int(data));
@@ -97,15 +105,15 @@ void Cxif_value::load_external(const byte*& data)
 int Cxif_value::skip(const byte* s)
 {
 	const byte* r = s;
-	t_vt type = static_cast<t_vt>(read<__int8>(r));
+	t_vt type = static_cast<t_vt>(*r++);
 	switch (type)
 	{
 	case vt_bin32:
 	case vt_int32:
-		read<__int32>(r);
+		read_int(r);
 		break;
 	case vt_float:
-		read<float>(r);
+		read_float(r);
 		break;
 	case vt_external_binary:
 		read_int(r);
@@ -126,15 +134,15 @@ void Cxif_value::save(byte*& data) const
 	{
 	case vt_bin32:
 	case vt_int32:
-		write(data, get_int());
+		write_int(data, get_int());
 		break;
 	case vt_float:
-		write(data, get_float());
+		write_float(data, get_float());
 		break;
 	default:
 		{
 			int size = get_size();
-			write(data, size);
+			write_int(data, size);
 			if (!external_data())
 			{
 				memcpy(data, get_data(), size);
