@@ -57,6 +57,7 @@ using namespace std;
 #endif
 #define O_BINARY 0
 
+typedef char __int8;
 typedef int __int32;
 #endif
 

@@ -47,9 +47,7 @@ using namespace std;
 #define _lseeki64 lseek
 
 typedef char __int8;
-typedef short __int16;
 typedef int __int32;
-typedef long long __int64;
 #endif
 #include "bt_misc.h"
 #include "bvalue.h"

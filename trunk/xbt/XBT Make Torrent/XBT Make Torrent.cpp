@@ -18,7 +18,7 @@
 struct t_map_entry
 {
 	string name;
-	__int64 size;
+	long long size;
 };
 
 typedef map<int, t_map_entry> t_map;
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
 	if (!use_merkle)
 	{
 		// find optimal piece size for a non-merkle torrent
-		__int64 cb_total = 0;
+		long long cb_total = 0;
 		for (t_map::const_iterator i = g_map.begin(); i != g_map.end(); i++)
 			cb_total += i->second.size;
 		cb_piece = 256 << 10;
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 		int f = open(i->second.name.c_str(), O_BINARY | O_RDONLY);
 		if (!f)
 			continue;
-		__int64 cb_f = 0;
+		long long cb_f = 0;
 		string merkle_hash;
 		int cb_d;
 		if (use_merkle)

@@ -24,9 +24,7 @@ using namespace std;
 #include <stdint.h>
 #include <fcntl.h>
 
-typedef char __int8;
 typedef short __int16;
-typedef int __int32;
 typedef long long __int64;
 #endif
 #include "bvalue.h"
