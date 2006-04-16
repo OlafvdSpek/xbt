@@ -26,12 +26,12 @@ public:
 			mtime = 0;
 		}
 
-		__int64 downloaded;
-		__int64 left;
+		long long downloaded;
+		long long left;
 		string peer_id;
 		int port;
 		int uid;
-		__int64 uploaded;
+		long long uploaded;
 
 		bool listening;
 		time_t mtime;
@@ -120,7 +120,7 @@ public:
 		int torrents_limit;
 		int wait_time;
 		string pass;
-		__int64 torrent_pass_secret;
+		long long torrent_pass_secret;
 	};
 
 	typedef map<string, t_file> t_files;
@@ -203,7 +203,7 @@ public:
 		return m_config.m_redirect_url;
 	}
 
-	__int64 secret() const
+	long long secret() const
 	{
 		return m_secret;
 	}
@@ -255,7 +255,7 @@ private:
 	time_t m_write_db_files_time;
 	time_t m_write_db_users_time;
 	int m_fid_end;
-	__int64 m_secret;
+	long long m_secret;
 	t_connections m_connections;
 	t_peer_links m_peer_links;
 	Cdatabase& m_database;
