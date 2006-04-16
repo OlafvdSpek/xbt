@@ -43,9 +43,6 @@ using namespace std;
 #ifdef BSD
 #define atoll xbt_atoll
 #endif
-
-typedef char __int8;
-typedef int __int32;
 #endif
 #include "bvalue.h"
 #include "socket.h"

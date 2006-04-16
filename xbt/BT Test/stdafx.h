@@ -56,9 +56,6 @@ using namespace std;
 #define _lseeki64 lseek64
 #endif
 #define O_BINARY 0
-
-typedef char __int8;
-typedef int __int32;
 #endif
 
 inline long long max(long long a, long long b)
