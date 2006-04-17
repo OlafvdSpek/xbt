@@ -393,7 +393,7 @@ int Cbt_file::write_data(long long offset, const char* s, int cb_s, Cbt_peer_lin
 {
 	if (offset < 0 || cb_s < 0)
 		return 1;
-	int a = offset / mcb_piece;
+	unsigned int a = offset / mcb_piece;
 	if (a >= m_pieces.size())
 		return 1;
 	Cbt_piece& piece = m_pieces[a];

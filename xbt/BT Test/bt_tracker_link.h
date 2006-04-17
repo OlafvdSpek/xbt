@@ -42,7 +42,7 @@ private:
 	Cvirtual_binary m_d;
 	time_t m_announce_send;
 	time_t m_connect_send;
-	int m_current_tracker;
+	unsigned int m_current_tracker;
 	int m_event;
 	int m_state;
 	int m_transaction_id;

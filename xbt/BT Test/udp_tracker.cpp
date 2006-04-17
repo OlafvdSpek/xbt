@@ -117,7 +117,7 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 		if (read_int(8, r + utia_left, r_end) || i->second.left)
 			candidates.push_back(i);
 	}
-	int c = read_int(4, r + utia_num_want, r_end) < 0 ? 100 : min(read_int(4, r + utia_num_want, r_end), 200);
+	unsigned int c = read_int(4, r + utia_num_want, r_end) < 0 ? 100 : min(read_int(4, r + utia_num_want, r_end), 200);
 	if (candidates.size() > c)
 	{
 		while (c--)

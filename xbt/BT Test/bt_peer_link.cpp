@@ -114,7 +114,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				{
 					while (m_read_b.cb_r() >= 4)
 					{
-						int cb_m = read_int(4, m_read_b.r());
+						unsigned int cb_m = read_int(4, m_read_b.r());
 						if (cb_m)
 						{
 							if (cb_m < 0 || cb_m > 64 << 10)
@@ -318,9 +318,9 @@ int Cbt_peer_link::send(int& send_quota)
 	return 0;
 }
 
-void Cbt_peer_link::remote_has(int v)
+void Cbt_peer_link::remote_has(unsigned int v)
 {
-	if (v >= 0 && v < m_f->m_pieces.size() && !m_remote_pieces[v])
+	if (v < m_f->m_pieces.size() && !m_remote_pieces[v])
 	{
 		m_f->m_pieces[v].mc_peers++;
 		m_left -= m_f->m_pieces[v].size();
@@ -340,7 +340,7 @@ void Cbt_peer_link::remote_requests(int piece, int offset, int size)
 
 void Cbt_peer_link::remote_merkle_requests(long long offset, int c_hashes)
 {
-	int piece = offset / m_f->mcb_piece;
+	unsigned int piece = offset / m_f->mcb_piece;
 	if (offset < 0 || m_remote_requests.size() >= 256 || piece >= m_f->m_pieces.size() || !m_f->m_pieces[piece].valid() || m_local_choked)
 		return;
 	m_remote_requests.push_back(t_remote_request(offset, min(m_f->m_pieces[piece].size() - offset % m_f->mcb_piece, 32 << 10), c_hashes));
@@ -669,8 +669,8 @@ void Cbt_peer_link::read_merkle_piece(long long offset, int size, const char* s,
 
 int Cbt_peer_link::write_data(long long o, const char* s, int cb_s, int latency)
 {
-	int a = o / m_f->mcb_piece;
-	if (a < 0 || a >= m_f->m_pieces.size())
+	unsigned int a = o / m_f->mcb_piece;
+	if (a >= m_f->m_pieces.size())
 		return 0;
 	Cbt_piece& piece = m_f->m_pieces[a];
 	if (!m_f->write_data(o, s, cb_s, this))

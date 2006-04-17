@@ -43,7 +43,7 @@ void Cbt_piece::erase_peer(Cbt_peer_link* peer, int offset)
 {
 	if (m_valid)
 		return;
-	int b = offset / cb_sub_piece();
+	unsigned int b = offset / cb_sub_piece();
 	if (b >= m_sub_pieces.size())
 		return;
 	t_sub_pieces::iterator i = m_sub_pieces.begin() + b;
@@ -56,7 +56,7 @@ void Cbt_piece::erase_peer(Cbt_peer_link* peer, int offset)
 
 int Cbt_piece::write(int offset, const char* s, int cb_s)
 {
-	int b = offset / cb_sub_piece();
+	unsigned int b = offset / cb_sub_piece();
 	if (m_valid || offset < 0 || offset >= size() || offset % cb_sub_piece() || cb_s != cb_sub_piece(b)
 		|| b >= m_sub_pieces.size() || m_sub_pieces[b].valid())
 		return 1;
