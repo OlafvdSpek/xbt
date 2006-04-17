@@ -17,87 +17,56 @@ static void write_int(byte*& w, int v)
 
 void Cxif_key::load_old(const byte*& data)
 {
+	for (int count = read_int(data); count--; )
 	{
-		// keys
-		int count = read_int(data);
-		while (count--)
-		{
-			Cxif_key& i = set_key(read_int(data));
-			i.load_old(data);
-		}
+		Cxif_key& i = set_key(read_int(data));
+		i.load_old(data);
 	}
-
+	for (int count = read_int(data); count--; )
 	{
-		// values
-		int count = read_int(data);
-		while (count--)
-		{
-			Cxif_value& i = set_value(read_int(data));
-			i.load_old(data);
-		}
+		Cxif_value& i = set_value(read_int(data));
+		i.load_old(data);
 	}
 }
 
 void Cxif_key::load_new(const byte*& data)
 {
+	for (int count = read_int(data), id = 0; count--; )
 	{
-		// keys
-		int count = read_int(data);
-		int id = 0;
-		while (count--)
-		{
-			id += read_int(data);
-			open_key_write(id).load_new(data);
-		}
+		id += read_int(data);
+		open_key_write(id).load_new(data);
 	}
-
+	for (int count = read_int(data), id = 0; count--; )
 	{
-		// values
-		int count = read_int(data);
-		int id = 0;
-		while (count--)
-		{
-			id += read_int(data);
-			open_value_write(id).load_new(data);
-		}
+		id += read_int(data);
+		open_value_write(id).load_new(data);
 	}
 }
 
 void Cxif_key::load_external(const byte*& data)
 {
-	{
-		for (t_xif_key_map::iterator i = m_keys.begin(); i != m_keys.end(); i++)
-			i->second.load_external(data);
-	}
-	{
-		for (t_xif_value_map::iterator i = m_values.begin(); i != m_values.end(); i++)
-			i->second.load_external(data);
-	}
+	for (t_xif_key_map::iterator i = m_keys.begin(); i != m_keys.end(); i++)
+		i->second.load_external(data);
+	for (t_xif_value_map::iterator i = m_values.begin(); i != m_values.end(); i++)
+		i->second.load_external(data);
 }
 
 int Cxif_key::get_size() const
 {
 	int size = 8;
+	for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
+		size += 4 + i->second.get_size();
+	for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
 	{
-		// keys
-		for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
-			size += 4 + i->second.get_size();
-	}
-
-	{
-		// values
-		for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
+		size += 9;
+		switch (i->second.get_type())
 		{
-			size += 9;
-			switch (i->second.get_type())
-			{
-			case vt_bin32:
-			case vt_int32:
-				break;
-			default:
-				if (!i->second.external_data())
-					size += i->second.get_size();
-			}
+		case vt_bin32:
+		case vt_int32:
+			break;
+		default:
+			if (!i->second.external_data())
+				size += i->second.get_size();
 		}
 	}
 	return size;
@@ -106,24 +75,17 @@ int Cxif_key::get_size() const
 int Cxif_key::get_external_size() const
 {
 	int size = 0;
-	{
-		for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
-			size += i->second.get_external_size();			
-	}
-	{
-		for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
-		{
-			if (i->second.external_data())
-				size += i->second.get_size();
-		}
-	}
+	for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
+		size += i->second.get_external_size();			
+	for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
+		if (i->second.external_data())
+			size += i->second.get_size();
 	return size;
 }
 
 void Cxif_key::save(byte*& data) const
 {
 	{
-		// keys
 		write_int(data, m_keys.size());
 		int id = 0;
 		for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
@@ -134,9 +96,7 @@ void Cxif_key::save(byte*& data) const
 			i->second.save(data);
 		}
 	}
-
 	{
-		// values
 		write_int(data, m_values.size());
 		int id = 0;
 		for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
@@ -151,14 +111,10 @@ void Cxif_key::save(byte*& data) const
 
 void Cxif_key::external_save(byte*& data) const
 {
-	{
-		for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
-			i->second.external_save(data);
-	}
-	{
-		for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
-			i->second.external_save(data);
-	}
+	for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
+		i->second.external_save(data);
+	for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
+		i->second.external_save(data);
 }
 
 int Cxif_key::load_key(const byte* data, size_t size)
