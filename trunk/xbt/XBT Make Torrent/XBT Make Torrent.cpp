@@ -12,8 +12,11 @@
 
 #include "stdafx.h"
 
+#include <boost/algorithm/string.hpp>
 #include <sys/stat.h>
 #include "bt_strings.h"
+
+using namespace boost;
 
 struct t_map_entry
 {
@@ -79,7 +82,7 @@ void insert(const string& name)
 
 int main(int argc, char* argv[])
 {
-	int t = time(NULL);
+	time_t t = time(NULL);
 	if (argc < 2)
 	{
 		cerr << "Usage: " << argv[0] << " <file> <tracker> [--v1]" << endl;
