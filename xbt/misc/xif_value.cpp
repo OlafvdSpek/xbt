@@ -119,10 +119,7 @@ int Cxif_value::skip(const byte* s)
 		read_int(r);
 		break;
 	default:
-		{
-			int size = read_int(r);
-			r += size;
-		}
+		r += read_int(r);
 	}
 	return r - s;
 }
