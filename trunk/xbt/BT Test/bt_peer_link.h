@@ -58,7 +58,7 @@ public:
 	void interested(bool);
 	void write_bitfield();
 	void remote_requests(int, int, int);
-	void remote_has(int);
+	void remote_has(unsigned int);
 	void remote_cancels(int, int, int);
 	void remote_merkle_cancels(long long offset);
 	void remote_merkle_requests(long long offset, int c_hashes);

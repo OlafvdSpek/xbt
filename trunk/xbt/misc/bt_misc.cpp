@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "bt_misc.h"
 
-#ifndef WIN32
 #include <sys/stat.h>
-#endif
 #include "socket.h"
 
 string escape_string(const string& v)

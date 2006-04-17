@@ -68,7 +68,7 @@ bool Cmerkle_tree::test(int i, const string& v, const string& w)
 	assert(i < m_size);
 	int a = 0;
 	int b = m_size;
-	int z = 0;
+	unsigned int z = 0;
 	string h = v;
 	while (1)
 	{
@@ -137,7 +137,7 @@ void Cmerkle_tree::set(int i, const string& v, const string& w)
 	assert(i < m_size);
 	int a = 0;
 	int b = m_size;
-	int z = 0;
+	unsigned int z = 0;
 	set0(a + i, v);
 	while (b - a >= 2 && z + 20 <= w.size())
 	{
