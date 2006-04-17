@@ -8,6 +8,7 @@
 #pragma warning(disable: 4786)
 
 #include <ctime>
+#include <fcntl.h>
 #include <fstream>
 #include <iostream>
 #include <list>
@@ -17,10 +18,13 @@
 using namespace std;
 
 #ifdef WIN32
+#include <io.h>
+
+#define atoll _atoi64
+
 #pragma comment(lib, "ws2_32.lib")
 #else
 #include <stdint.h>
-#include <fcntl.h>
 #endif
 #include "bvalue.h"
 #include "sha1.h"
