@@ -34,11 +34,6 @@ string uri_encode(const string&);
 long long xbt_atoll(const char*);
 string xbt_version2a(int);
 
-inline void compute_sha1(const Cvirtual_binary& s, void* d)
-{
-	Csha1(s, s.size()).read(d);
-}
-
 inline string compute_sha1(const void* s, int cb_s)
 {
 	return Csha1(s, cb_s).read();

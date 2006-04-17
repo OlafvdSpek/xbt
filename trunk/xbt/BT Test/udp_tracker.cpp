@@ -5,14 +5,6 @@
 #include "bt_strings.h"
 #include "stream_int.h"
 
-#define for if (0) {} else for
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 Cudp_tracker::Cudp_tracker()
 {
 	m_announce_interval = 1800;

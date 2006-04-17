@@ -183,8 +183,8 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					memset(w, 0, 8);
 					memcpy(w, account->user().c_str(), min(account->user().size(), 8));
 					w += 8;
-					Csha1(account->pass().c_str(), account->pass().size()).read(w);
-					Csha1(b, w + 20 - b).read(w);
+					Csha1(account->pass().data(), account->pass().size()).read(w);
+					Csha1(b, w + 20).read(w);
 					w += 8;
 				}
 				if (m_s.send(b, w - b) != w - b)

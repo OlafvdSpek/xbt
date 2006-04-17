@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "bt_piece.h"
 
-#define for if (0) {} else for
-
 Cbt_piece::Cbt_piece()
 {
 	mc_peers = 0;
@@ -100,7 +98,7 @@ int Cbt_piece::cb_sub_piece(int b)
 
 int Cbt_piece::rank() const
 {
-	return 1000000 * max(0, min(9 - m_priority, 19)) 
+	return 1000000 * max(0, min(9 - m_priority, 19))
 		+ 100000 * min(mc_peers, 9)
 		+ 1000 * (m_sub_pieces.empty() ? 99 : min(c_sub_pieces_left(), 99))
 		+ min(mc_peers, 999);

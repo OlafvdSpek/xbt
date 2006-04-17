@@ -2,12 +2,6 @@
 #include "XBT Client.h"
 #include "XBT ClientDlg.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 const extern UINT g_are_you_me_message_id;
 
 BEGIN_MESSAGE_MAP(CXBTClientApp, CWinApp)

@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "merkle_tree.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 string internal_hash(const string& a, const string& b)
 {
 	assert(a.size() == 20);
@@ -212,7 +206,7 @@ Cvirtual_binary Cmerkle_tree::save() const
 string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 {
 	typedef map<int, string> t_map;
-	
+
 	t_map map;
 	const byte* s = reinterpret_cast<const byte*>(s0);
 	const byte* s_end = reinterpret_cast<const byte*>(s_end0);

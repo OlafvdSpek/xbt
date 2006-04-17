@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "ListCtrlEx1.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 BEGIN_MESSAGE_MAP(CListCtrlEx1, CListCtrl)
 	//{{AFX_MSG_MAP(CListCtrlEx1)
 	ON_WM_CONTEXTMENU()
@@ -19,7 +13,7 @@ CListCtrlEx1::Ccolumn::Ccolumn()
 	order = -1;
 }
 
-BOOL CListCtrlEx1::OnCommand(WPARAM wParam, LPARAM lParam) 
+BOOL CListCtrlEx1::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	Ccolumns::iterator i = m_columns.find(wParam);
 	if (i != m_columns.end())

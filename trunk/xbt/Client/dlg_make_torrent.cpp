@@ -10,14 +10,6 @@
 #include <io.h>
 #include "bvalue.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-#define for if (0) {} else for
-
 Cdlg_make_torrent::Cdlg_make_torrent(CWnd* pParent):
 	ETSLayoutDialog(Cdlg_make_torrent::IDD, pParent, "Cdlg_make_torrent")
 {

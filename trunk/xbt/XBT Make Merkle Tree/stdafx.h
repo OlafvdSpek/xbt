@@ -17,8 +17,6 @@
 using namespace std;
 
 #ifdef WIN32
-#define for if (0) {} else for
-
 #pragma comment(lib, "ws2_32.lib")
 #else
 #include <stdint.h>

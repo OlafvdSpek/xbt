@@ -5,12 +5,6 @@
 
 using namespace boost;
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 Cbt_tracker_url::Cbt_tracker_url()
 {
 }

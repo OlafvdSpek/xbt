@@ -75,7 +75,7 @@ typedef struct SHA1Context
 int SHA1Reset(  SHA1Context *);
 int SHA1Input(  SHA1Context *,
                 const void *,
-                unsigned int);
+                size_t);
 int SHA1Result( SHA1Context *,
                 uint8_t Message_Digest[SHA1HashSize]);
 
@@ -84,9 +84,11 @@ class Csha1
 public:
 	void read(void*);
 	string read();
-	void write(const void*, int);
+	void write(const void*, size_t);
+	void write(const void*, const void*);
 	Csha1();
-	Csha1(const void*, int);
+	Csha1(const void*, size_t);
+	Csha1(const void*, const void*);
 private:
 	SHA1Context m_context;
 };

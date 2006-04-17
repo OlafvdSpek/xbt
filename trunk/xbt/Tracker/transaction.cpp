@@ -47,22 +47,20 @@ Cserver::t_user* Ctransaction::authenticate(const void* s0, const char* s_end) c
 	if (!user)
 		return NULL;
 	Csha1 sha1;
-	sha1.write(s, s_end - s - 8);
+	sha1.write(s, s_end - 8);
 	sha1.write(user->pass.data(), user->pass.size());
-	unsigned char hash[20];
-	sha1.read(hash);
-	return memcmp(s_end - 8, hash, 8) ? NULL : user;
+	return memcmp(s_end - 8, sha1.read().data(), 8) ? NULL : user;
 }
 
 long long Ctransaction::connection_id() const
 {
-	const int cb_s = 8 + sizeof(int);
+	const int cb_s = 12;
 	char s[cb_s];
-	*reinterpret_cast<long long*>(s) = m_server.secret();
-	*reinterpret_cast<int*>(s + 8) = m_a.sin_addr.s_addr;
+	write_int(8, s, m_server.secret());
+	write_int(4, s + 8, m_a.sin_addr.s_addr);
 	char d[20];
-	Csha1(&s, cb_s).read(d);
-	return *reinterpret_cast<long long*>(d);
+	Csha1(s, cb_s).read(d);
+	return read_int(8, d);
 }
 
 void Ctransaction::recv()

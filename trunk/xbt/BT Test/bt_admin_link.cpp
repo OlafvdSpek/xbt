@@ -40,7 +40,7 @@ int Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 		{
 			while (m_read_b.cb_r() >= 4)
 			{
-				int cb_m = read_int(4, m_read_b.r());
+				unsigned int cb_m = read_int(4, m_read_b.r());
 				if (cb_m)
 				{
 					if (m_read_b.cb_r() < 4 + cb_m)

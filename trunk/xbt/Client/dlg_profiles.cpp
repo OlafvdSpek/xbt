@@ -3,12 +3,6 @@
 
 #include "dlg_profile.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_profiles::Cdlg_profiles(CWnd* pParent /*=NULL*/):
 	ETSLayoutDialog(Cdlg_profiles::IDD, pParent, "Cdlg_profiles")
 {

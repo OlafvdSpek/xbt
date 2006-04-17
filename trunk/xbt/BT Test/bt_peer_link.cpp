@@ -6,8 +6,6 @@
 #include "bt_strings.h"
 #include "server.h"
 
-#define for if (0) {} else for
-
 Cbt_peer_link::Cbt_peer_link()
 {
 	m_can_recv = false;

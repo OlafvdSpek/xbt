@@ -3,12 +3,6 @@
 
 #include "dlg_scheduler_entry.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_scheduler::Cdlg_scheduler(CWnd* pParent):
 	ETSLayoutDialog(Cdlg_scheduler::IDD, pParent, "Cdlg_scheduler")
 {

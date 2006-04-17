@@ -2,12 +2,6 @@
 #include "xbt client.h"
 #include "dlg_profile.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_profile::Cdlg_profile(CWnd* pParent /*=NULL*/):
 	ETSLayoutDialog(Cdlg_profile::IDD, pParent, "Cdlg_profile")
 {
