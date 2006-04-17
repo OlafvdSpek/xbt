@@ -10,11 +10,6 @@ static int read_int(const byte*& r)
 	return read_int_le(4, r - 4);
 }
 
-static void write_int(byte*& w, int v)
-{
-	w = write_int_le(4, w, v);
-}
-
 void Cxif_key::load_old(const byte*& data)
 {
 	for (int count = read_int(data); count--; )
@@ -86,24 +81,22 @@ int Cxif_key::get_external_size() const
 void Cxif_key::save(byte*& data) const
 {
 	{
-		write_int(data, m_keys.size());
+		data = write_int_le(4, data, m_keys.size());
 		int id = 0;
 		for (t_xif_key_map::const_iterator i = m_keys.begin(); i != m_keys.end(); i++)
 		{
-			*reinterpret_cast<int*>(data) = i->first - id;
+			data = write_int_le(4, data, i->first - id);
 			id = i->first;
-			data += 4;
 			i->second.save(data);
 		}
 	}
 	{
-		write_int(data, m_values.size());
+		data = write_int_le(4, data, m_values.size());
 		int id = 0;
 		for (t_xif_value_map::const_iterator i = m_values.begin(); i != m_values.end(); i++)
 		{
-			*reinterpret_cast<int*>(data) = i->first - id;
+			data = write_int_le(4, data, i->first - id);
 			id = i->first;
-			data += 4;
 			i->second.save(data);
 		}
 	}
