@@ -8,7 +8,7 @@ const char* g_service_name = "XBT Tracker";
 
 int main1()
 {
-	srand(time(NULL));
+	srand(static_cast<int>(time(NULL)));
 	Cconfig config;
 	if (config.load(g_conf_file))
 #ifdef WIN32

@@ -193,7 +193,7 @@ static Cvirtual_binary gzip(const Cvirtual_binary& s)
 static Cbvalue parse_trackers(const string& v)
 {
 	Cbvalue announce_list;
-	for (int i = 0; i < v.length(); )
+	for (size_t i = 0; i < v.length(); )
 	{
 		int j = v.find_first_of("\t\n\r ", i);
 		if (i == j)
