@@ -41,12 +41,6 @@ BOOL CXBTClientApp::InitInstance()
 		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
 		return false;
 	}
-
-#ifdef _AFXDLL
-	Enable3dControls();
-#else
-	Enable3dControlsStatic();
-#endif
 	SetRegistryKey("XBT");
 
 	CXBTClientDlg dlg;

@@ -56,7 +56,7 @@ void CListCtrlEx1::InsertColumn(int id, const string& name, const string& descri
 	e.format = format;
 	e.name = name;
 	e.order = m_columns.size() - 1;
-	for (int i = 0; i + 3 <= m_conf.size(); i += 3)
+	for (size_t i = 0; i + 3 <= m_conf.size(); i += 3)
 	{
 		if (m_conf[i] != id)
 			continue;
