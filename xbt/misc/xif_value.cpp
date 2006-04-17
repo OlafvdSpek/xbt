@@ -19,18 +19,6 @@ static int read_int(const byte*& r)
 	return read_int_le(4, r - 4);
 }
 
-static void write_float(byte*& w, float v)
-{
-	assert(sizeof(float) == 4);
-	memcpy(w, &v, 4);
-	w += 4;
-}
-
-static void write_int(byte*& w, int v)
-{
-	w = write_int_le(4, w, v);
-}
-
 t_vt Cxif_value::get_type() const
 {
 	if (m_type != vt_unknown)
@@ -131,15 +119,15 @@ void Cxif_value::save(byte*& data) const
 	{
 	case vt_bin32:
 	case vt_int32:
-		write_int(data, get_int());
+		data = write_int_le(4, data, get_int());
 		break;
 	case vt_float:
-		write_float(data, get_float());
+		data = write_float(data, get_float());
 		break;
 	default:
 		{
 			int size = get_size();
-			write_int(data, size);
+			data = write_int_le(4, data, size);
 			if (!external_data())
 			{
 				memcpy(data, get_data(), size);

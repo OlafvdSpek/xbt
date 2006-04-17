@@ -6,6 +6,20 @@
 #endif // _MSC_VER > 1000
 
 template <class T>
+long long read_float(const T r)
+{
+	float v;
+	memcpy(&v, r, sizeof(float));
+	return v;
+}
+
+template <class T>
+long long read_float(const T r0, const T s_end)
+{
+	return read_float(r0);
+}
+
+template <class T>
 long long read_int(int cb, const T r0)
 {
 	const unsigned char* r = reinterpret_cast<const unsigned char*>(r0);
@@ -49,6 +63,14 @@ template <class T>
 long long read_int_le(int cb, const T r, const T s_end)
 {
 	return read_int_le(cb, r);
+}
+
+template <class T>
+static T write_float(T w0, float v)
+{
+	unsigned char* w = reinterpret_cast<unsigned char*>(w0);
+	memcpy(w, &v, sizeof(float));
+	return w + sizeof(float);
 }
 
 template <class T>
