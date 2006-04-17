@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "block_list.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 Cblock_list& Cblock_list::load(const Cxif_key& v)
 {
 	clear();

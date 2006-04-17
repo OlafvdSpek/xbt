@@ -3,12 +3,6 @@
 
 #include "windows/browse_for_directory.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_options::IDD, pParent, "Cdlg_options")
 {

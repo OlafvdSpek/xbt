@@ -3,14 +3,6 @@
 
 #include "stream_reader.h"
 
-#define for if (0) {} else for
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 Cbt_tracker_account::Cbt_tracker_account()
 {
 

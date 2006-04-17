@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "dlg_scheduler_entry.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_scheduler_entry::Cdlg_scheduler_entry(CWnd* pParent /*=NULL*/):
 	ETSLayoutDialog(Cdlg_scheduler_entry::IDD, pParent, "Cdlg_scheduler_entry")
 {
@@ -41,7 +35,7 @@ BEGIN_MESSAGE_MAP(Cdlg_scheduler_entry, ETSLayoutDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-BOOL Cdlg_scheduler_entry::OnInitDialog() 
+BOOL Cdlg_scheduler_entry::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)
@@ -78,7 +72,7 @@ BOOL Cdlg_scheduler_entry::OnInitDialog()
 	return true;
 }
 
-void Cdlg_scheduler_entry::OnOK() 
+void Cdlg_scheduler_entry::OnOK()
 {
 	ETSLayoutDialog::OnOK();
 	m_profile_id = m_profile.GetItemData(m_profile.GetCurSel());
@@ -89,8 +83,8 @@ void Cdlg_scheduler_entry::update_controls()
 	m_ok.EnableWindow(m_profile.GetCurSel() != -1);
 }
 
-void Cdlg_scheduler_entry::OnSelchangeProfile() 
+void Cdlg_scheduler_entry::OnSelchangeProfile()
 {
 	update_controls();
-	
+
 }

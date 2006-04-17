@@ -3,12 +3,6 @@
 
 #include <fcntl.h>
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 Cbt_hasher::Cbt_hasher(bool validate):
 	m_validate(validate)
 {
@@ -75,7 +69,7 @@ bool Cbt_hasher::run(Cbt_file& f)
 				m_sub_file->left(m_sub_file->size());
 				m_sub_file->merkle_tree().invalidate();
 				m_sub_file->merkle_tree().root(m_sub_file->merkle_hash());
-			}			
+			}
 			if (!m_sub_file->left())
 			{
 				m_sub_file->close();

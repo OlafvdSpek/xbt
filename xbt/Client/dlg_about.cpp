@@ -3,12 +3,6 @@
 
 #include "../bt test/server.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_about::Cdlg_about(CWnd* pParent /*=NULL*/)
 	: CDialog(Cdlg_about::IDD, pParent)
 {

@@ -3,12 +3,6 @@
 
 #include "socket.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_block_list::Cdlg_block_list(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_block_list::IDD, pParent, "Cdlg_block_list")
 {

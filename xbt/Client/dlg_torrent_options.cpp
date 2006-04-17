@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "dlg_torrent_options.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_torrent_options::Cdlg_torrent_options(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_torrent_options::IDD, pParent, "Cdlg_torrent_options")
 {

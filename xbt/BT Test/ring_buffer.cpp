@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "ring_buffer.h"
 
-void Cring_buffer::write(const void* d, int cb_d)
+void Cring_buffer::write(const void* d, size_t cb_d)
 {
-	int cb = min(cb_d, cb_w());
+	size_t cb = min(cb_d, cb_w());
 	memcpy(w(), d, cb);
 	cb_w(cb);
 	if (cb_d -= cb)
@@ -13,7 +13,7 @@ void Cring_buffer::write(const void* d, int cb_d)
 	}
 }
 
-void Cring_buffer::size(int cb_d)
+void Cring_buffer::size(size_t cb_d)
 {
 	if (cb_d)
 	{
@@ -30,10 +30,10 @@ void Cring_buffer::size(int cb_d)
 void Cring_buffer::combine()
 {
 	char* d = new char[cb_read()];
-	int c0 = cb_r();
+	size_t c0 = cb_r();
 	memcpy(d, r(), c0);
 	cb_r(c0);
-	int c1 = cb_r();
+	size_t c1 = cb_r();
 	memcpy(d + c0, r(), c1);
 	cb_r(c1);
 	memcpy(m_b, d, c0 + c1);

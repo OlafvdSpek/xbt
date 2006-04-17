@@ -16,14 +16,6 @@
 #include "dlg_trackers.h"
 #include "resource.h"
 
-#define for if (0) {} else for
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 const extern UINT g_are_you_me_message_id = RegisterWindowMessage("XBT Client Are You Me Message");
 const static UINT g_taskbar_created_message_id = RegisterWindowMessage("TaskbarCreated");
 const static UINT g_tray_message_id = RegisterWindowMessage("XBT Client Tray Message");

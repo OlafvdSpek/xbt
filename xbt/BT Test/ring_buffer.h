@@ -11,10 +11,10 @@ class Cring_buffer
 {
 public:
 	void combine();
-	void size(int cb_d);
-	void write(const void* d, int cb_d);
+	void size(size_t cb_d);
+	void write(const void* d, size_t cb_d);
 
-	int size() const
+	size_t size() const
 	{
 		return m_d.size();
 	}
@@ -34,17 +34,17 @@ public:
 		m_r = r;
 	}
 
-	int cb_r() const
+	size_t cb_r() const
 	{
 		return m_r <= m_w ? m_w - m_r : m_e - m_r;
 	}
 
-	int cb_read() const
+	size_t cb_read() const
 	{
 		return m_r <= m_w ? m_w - m_r : m_e - m_r + m_w - m_b;
 	}
 
-	void cb_r(int v)
+	void cb_r(size_t v)
 	{
 		m_r += v;
 		if (m_r == m_e)
@@ -61,17 +61,17 @@ public:
 		return m_w;
 	}
 
-	int cb_w() const
+	size_t cb_w() const
 	{
 		return m_r <= m_w ? (m_b == m_r ? m_e - m_w - 1 : m_e - m_w) : m_r - m_w - 1;
 	}
 
-	int cb_write() const
+	size_t cb_write() const
 	{
 		return m_r <= m_w ? m_e - m_w + m_r - m_b - 1 : m_r - m_w - 1;
 	}
 
-	void cb_w(int v)
+	void cb_w(size_t v)
 	{
 		m_w += v;
 		if (m_w == m_e)

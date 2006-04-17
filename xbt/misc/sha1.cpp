@@ -159,7 +159,7 @@ int SHA1Result( SHA1Context *context,
  */
 int SHA1Input(    SHA1Context    *context,
                   const void     *message_array0,
-                  unsigned       length)
+                  size_t         length)
 {
 	const uint8_t *message_array = reinterpret_cast<const uint8_t *>(message_array0);
     if (!length)
@@ -395,10 +395,16 @@ Csha1::Csha1()
 	SHA1Reset(&m_context);
 }
 
-Csha1::Csha1(const void* s, int cb_s)
+Csha1::Csha1(const void* s, size_t cb_s)
 {
 	SHA1Reset(&m_context);
 	write(s, cb_s);
+}
+
+Csha1::Csha1(const void* s, const void* s_end)
+{
+	SHA1Reset(&m_context);
+	write(s, s_end);
 }
 
 void Csha1::read(void* d)
@@ -413,8 +419,12 @@ string Csha1::read()
 	return string(d, SHA1HashSize);
 }
 
-void Csha1::write(const void* s, int cb_s)
+void Csha1::write(const void* s, size_t cb_s)
 {
 	SHA1Input(&m_context, s, cb_s);
 }
 
+void Csha1::write(const void* s, const void* s_end)
+{
+	SHA1Input(&m_context, s, reinterpret_cast<const char*>(s_end) - reinterpret_cast<const char*>(s));
+}

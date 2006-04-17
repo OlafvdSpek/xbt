@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "dlg_peer_connect.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_peer_connect::Cdlg_peer_connect(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_peer_connect::IDD, pParent, "Cdlg_peer_connect")
 {
@@ -33,7 +27,7 @@ BEGIN_MESSAGE_MAP(Cdlg_peer_connect, ETSLayoutDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-BOOL Cdlg_peer_connect::OnInitDialog() 
+BOOL Cdlg_peer_connect::OnInitDialog()
 {
 	ETSLayoutDialog::OnInitDialog();
 	CreateRoot(VERTICAL)

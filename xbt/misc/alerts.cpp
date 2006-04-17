@@ -3,12 +3,6 @@
 
 #include "bt_misc.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 int Calert::pre_dump() const
 {
 	return m_message.size() + m_source.size() + 16;

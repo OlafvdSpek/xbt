@@ -1,12 +1,6 @@
 #include "stdafx.h"
 #include "dlg_tracker.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 Cdlg_tracker::Cdlg_tracker(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_tracker::IDD, pParent, "Cdlg_tracker")
 {

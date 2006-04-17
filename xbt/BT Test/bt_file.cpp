@@ -7,8 +7,6 @@
 #include "bt_strings.h"
 #include "server.h"
 
-#define for if (0) {} else for
-
 Cbt_file::Cbt_file()
 {
 	m_downloaded = 0;
