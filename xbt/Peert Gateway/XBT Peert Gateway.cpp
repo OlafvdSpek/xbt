@@ -70,11 +70,8 @@ int main(int argc, char* argv[])
 		else
 			return 1;
 	}
-	WSADATA wsadata;
-	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
-		return cerr << "Unable to start WSA" << endl, 1;
 #ifdef NDEBUG
-	SERVICE_TABLE_ENTRY st[] = 
+	SERVICE_TABLE_ENTRY st[] =
 	{
 		{ "", nt_service_main },
 		{ NULL, NULL }
@@ -82,7 +79,7 @@ int main(int argc, char* argv[])
 	if (StartServiceCtrlDispatcher(st))
 		return 0;
 	if (GetLastError() != ERROR_CALL_NOT_IMPLEMENTED
-		&& GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)		
+		&& GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)
 		return 1;
 #endif
 #endif

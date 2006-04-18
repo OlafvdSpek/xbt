@@ -93,6 +93,7 @@ public:
 	static string error2a(int v);
 	static int get_host(const string& name);
 	static string inet_ntoa(int h);
+	static int start_up();
 	int accept(int& h, int& p);
 	int bind(int h, int p);
 	int blocking(bool v);

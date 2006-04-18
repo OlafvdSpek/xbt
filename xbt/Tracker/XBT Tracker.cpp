@@ -98,9 +98,6 @@ int main(int argc, char* argv[])
 		else
 			return 1;
 	}
-	WSADATA wsadata;
-	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
-		return cerr << "Unable to start WSA" << endl, 1;
 #ifdef NDEBUG
 	SERVICE_TABLE_ENTRY st[] =
 	{

@@ -16,7 +16,7 @@ using namespace std;
 
 struct t_peer
 {
-	int port; 
+	int port;
 	time_t mtime;
 };
 
@@ -24,10 +24,6 @@ typedef map<int, t_peer> t_peers;
 
 int main()
 {
-#ifdef WIN32
-	WSADATA wsadata;
-	WSAStartup(MAKEWORD(2, 0), &wsadata);
-#endif
 	SOCKET s = socket(PF_INET, SOCK_DGRAM, 0);
 	sockaddr_in a;
 	a.sin_family = AF_INET;
