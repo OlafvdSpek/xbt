@@ -4,6 +4,10 @@
 #include <sys/stat.h>
 #include "socket.h"
 
+#ifdef WIN32
+#pragma comment(lib, "ws2_32")
+#endif
+
 string escape_string(const string& v)
 {
 	string w;

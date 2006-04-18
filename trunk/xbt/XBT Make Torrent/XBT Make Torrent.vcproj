@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="XBT Make Torrent"
 	ProjectGUID="{E47F75F5-C11B-4EB3-B103-00948CEF9B30}"
+	RootNamespace="XBT Make Torrent"
 	>
 	<Platforms>
 		<Platform
@@ -71,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib zlib.lib"
+				AdditionalDependencies="zdll.lib"
 				OutputFile=".\Debug/XBT Make Torrent.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -165,7 +166,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib zlib.lib"
+				AdditionalDependencies="zlib_static.lib"
 				OutputFile=".\Release/XBT Make Torrent.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
