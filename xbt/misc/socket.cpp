@@ -184,12 +184,10 @@ string Csocket::error2a(int v)
 	case WSAEAFNOSUPPORT: return "EAFNOSUPPORT";
 	case WSAEALREADY: return "EALREADY";
 	case WSAEBADF: return "EBADF";
-	case WSAECANCELLED: return "ECANCELLED";
 	case WSAECONNABORTED: return "ECONNABORTED";
 	case WSAECONNREFUSED: return "ECONNREFUSED";
 	case WSAECONNRESET: return "ECONNRESET";
 	case WSAEDESTADDRREQ: return "EDESTADDRREQ";
-	case WSAEDISCON: return "EDISCON";
 	case WSAEDQUOT: return "EDQUOT";
 	case WSAEFAULT: return "EFAULT";
 	case WSAEHOSTDOWN: return "EHOSTDOWN";
@@ -197,8 +195,6 @@ string Csocket::error2a(int v)
 	case WSAEINPROGRESS: return "EINPROGRESS";
 	case WSAEINTR: return "EINTR";
 	case WSAEINVAL: return "EINVAL";
-	case WSAEINVALIDPROCTABLE: return "EINVALIDPROCTABLE";
-	case WSAEINVALIDPROVIDER: return "EINVALIDPROVIDER";
 	case WSAEISCONN: return "EISCONN";
 	case WSAELOOP: return "ELOOP";
 	case WSAEMFILE: return "EMFILE";
@@ -208,7 +204,6 @@ string Csocket::error2a(int v)
 	case WSAENETRESET: return "ENETRESET";
 	case WSAENETUNREACH: return "ENETUNREACH";
 	case WSAENOBUFS: return "ENOBUFS";
-	case WSAENOMORE: return "ENOMORE";
 	case WSAENOPROTOOPT: return "ENOPROTOOPT";
 	case WSAENOTCONN: return "ENOTCONN";
 	case WSAENOTEMPTY: return "ENOTEMPTY";
@@ -217,8 +212,6 @@ string Csocket::error2a(int v)
 	case WSAEPFNOSUPPORT: return "EPFNOSUPPORT";
 	case WSAEPROTONOSUPPORT: return "EPROTONOSUPPORT";
 	case WSAEPROTOTYPE: return "EPROTOTYPE";
-	case WSAEPROVIDERFAILEDINIT: return "EPROVIDERFAILEDINIT";
-	case WSAEREFUSED: return "EREFUSED";
 	case WSAEREMOTE: return "EREMOTE";
 	case WSAESHUTDOWN: return "ESHUTDOWN";
 	case WSAESOCKTNOSUPPORT: return "ESOCKTNOSUPPORT";
@@ -227,6 +220,14 @@ string Csocket::error2a(int v)
 	case WSAETOOMANYREFS: return "ETOOMANYREFS";
 	case WSAEUSERS: return "EUSERS";
 	case WSAEWOULDBLOCK: return "EWOULDBLOCK";
+#ifdef WIN32
+	case WSAECANCELLED: return "ECANCELLED";
+	case WSAEDISCON: return "EDISCON";
+	case WSAEINVALIDPROCTABLE: return "EINVALIDPROCTABLE";
+	case WSAEINVALIDPROVIDER: return "EINVALIDPROVIDER";
+	case WSAENOMORE: return "ENOMORE";
+	case WSAEPROVIDERFAILEDINIT: return "EPROVIDERFAILEDINIT";
+	case WSAEREFUSED: return "EREFUSED";
 	case WSANOTINITIALISED: return "NOTINITIALISED";
 	case WSASERVICE_NOT_FOUND: return "SERVICE_NOT_FOUND";
 	case WSASYSCALLFAILURE: return "SYSCALLFAILURE";
@@ -235,6 +236,7 @@ string Csocket::error2a(int v)
 	case WSAVERNOTSUPPORTED: return "VERNOTSUPPORTED";
 	case WSA_E_CANCELLED: return "E_CANCELLED";
 	case WSA_E_NO_MORE: return "E_NO_MORE";
+#endif
 	}
 	char b[12];
 	sprintf(b, "%d", v);
