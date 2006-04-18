@@ -39,7 +39,7 @@ bool Cbt_tracker_url::valid() const
 void Cbt_tracker_url::write(const string& v)
 {
 	clear();
-	int a;
+	size_t a;
 	int protocol;
 	int port;
 	if (istarts_with(v, "http://"))
@@ -56,7 +56,7 @@ void Cbt_tracker_url::write(const string& v)
 	}
 	else
 		return;
-	int b = v.find_first_of("/:", a);
+	size_t b = v.find_first_of("/:", a);
 	string host;
 	if (b == string::npos)
 		host = v.substr(a);

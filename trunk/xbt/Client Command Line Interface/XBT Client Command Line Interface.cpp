@@ -58,7 +58,7 @@ string strip_name(const string& v)
 
 ostream& show_options(ostream& os, const Cbvalue& v)
 {
-	cout 
+	cout
 		<< "admin port:      " << v.d(bts_admin_port).i() << endl
 		<< "peer port:       " << v.d(bts_peer_port).i() << endl
 		<< "tracker port:    " << v.d(bts_tracker_port).i() << endl
@@ -81,12 +81,12 @@ ostream& show_status(ostream& os, const Cbvalue& v)
 	{
 		cout << strip_name(i->second.d(bts_name).s())
 			<< endl
-			<< setw(8) << b2a(i->second.d(bts_left).i()) 
-			<< setw(10) << b2a(i->second.d(bts_size).i()) 
-			<< setw(10) << b2a(i->second.d(bts_total_downloaded).i()) 
-			<< setw(10) << b2a(i->second.d(bts_total_uploaded).i()) 
-			<< setw(10) << b2a(i->second.d(bts_down_rate).i()) 
-			<< setw(10) << b2a(i->second.d(bts_up_rate).i()) 
+			<< setw(8) << b2a(i->second.d(bts_left).i())
+			<< setw(10) << b2a(i->second.d(bts_size).i())
+			<< setw(10) << b2a(i->second.d(bts_total_downloaded).i())
+			<< setw(10) << b2a(i->second.d(bts_total_uploaded).i())
+			<< setw(10) << b2a(i->second.d(bts_down_rate).i())
+			<< setw(10) << b2a(i->second.d(bts_up_rate).i())
 			<< setw(7) << i->second.d(bts_incomplete).i();
 		if (i->second.d(bts_incomplete_total).i())
 			cout << " / " << setw(3) << i->second.d(bts_incomplete_total).i();
@@ -127,18 +127,13 @@ int main(int argc, char* argv[])
 			;
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
-		po::notify(vm);    
-#ifdef WIN32
-		WSADATA wsadata;
-		if (WSAStartup(MAKEWORD(2, 0), &wsadata))
-			throw runtime_error("Unable to start WSA");
-#endif
+		po::notify(vm);
 		Csocket s;
 		if (s.open(SOCK_STREAM, true) == INVALID_SOCKET)
 			throw runtime_error(("Csocket::open failed: " + Csocket::error2a(WSAGetLastError())));
 		if (s.connect(htonl(INADDR_LOOPBACK), htons(6879)))
 			throw runtime_error(("Csocket::connect failed: " + Csocket::error2a(WSAGetLastError())));
-		Cbvalue v;	
+		Cbvalue v;
 		if (vm.count("close"))
 		{
 			v.d(bts_action, bts_close_torrent);
@@ -228,9 +223,6 @@ int main(int argc, char* argv[])
 			cerr << desc;
 			return 1;
 		}
-#ifdef WIN32
-		WSACleanup();
-#endif
 		return 0;
 	}
 	catch (exception& e)

@@ -19,6 +19,8 @@ const int INADDR_NONE = -1;
 const int MSG_NOSIGNAL = 0;
 #endif
 
+static bool g_start_up_done = false;
+
 Csocket_source::Csocket_source(SOCKET s)
 {
 	m_s = s;
@@ -118,6 +120,7 @@ int Csocket::listen()
 
 const Csocket& Csocket::open(int t, bool _blocking)
 {
+	start_up();
 	*this = socket(AF_INET, t, 0);
 	if (*this != INVALID_SOCKET && !_blocking && blocking(false))
 		close();
@@ -181,10 +184,12 @@ string Csocket::error2a(int v)
 	case WSAEAFNOSUPPORT: return "EAFNOSUPPORT";
 	case WSAEALREADY: return "EALREADY";
 	case WSAEBADF: return "EBADF";
+	case WSAECANCELLED: return "ECANCELLED";
 	case WSAECONNABORTED: return "ECONNABORTED";
 	case WSAECONNREFUSED: return "ECONNREFUSED";
 	case WSAECONNRESET: return "ECONNRESET";
 	case WSAEDESTADDRREQ: return "EDESTADDRREQ";
+	case WSAEDISCON: return "EDISCON";
 	case WSAEDQUOT: return "EDQUOT";
 	case WSAEFAULT: return "EFAULT";
 	case WSAEHOSTDOWN: return "EHOSTDOWN";
@@ -192,6 +197,8 @@ string Csocket::error2a(int v)
 	case WSAEINPROGRESS: return "EINPROGRESS";
 	case WSAEINTR: return "EINTR";
 	case WSAEINVAL: return "EINVAL";
+	case WSAEINVALIDPROCTABLE: return "EINVALIDPROCTABLE";
+	case WSAEINVALIDPROVIDER: return "EINVALIDPROVIDER";
 	case WSAEISCONN: return "EISCONN";
 	case WSAELOOP: return "ELOOP";
 	case WSAEMFILE: return "EMFILE";
@@ -201,6 +208,7 @@ string Csocket::error2a(int v)
 	case WSAENETRESET: return "ENETRESET";
 	case WSAENETUNREACH: return "ENETUNREACH";
 	case WSAENOBUFS: return "ENOBUFS";
+	case WSAENOMORE: return "ENOMORE";
 	case WSAENOPROTOOPT: return "ENOPROTOOPT";
 	case WSAENOTCONN: return "ENOTCONN";
 	case WSAENOTEMPTY: return "ENOTEMPTY";
@@ -209,6 +217,8 @@ string Csocket::error2a(int v)
 	case WSAEPFNOSUPPORT: return "EPFNOSUPPORT";
 	case WSAEPROTONOSUPPORT: return "EPROTONOSUPPORT";
 	case WSAEPROTOTYPE: return "EPROTOTYPE";
+	case WSAEPROVIDERFAILEDINIT: return "EPROVIDERFAILEDINIT";
+	case WSAEREFUSED: return "EREFUSED";
 	case WSAEREMOTE: return "EREMOTE";
 	case WSAESHUTDOWN: return "ESHUTDOWN";
 	case WSAESOCKTNOSUPPORT: return "ESOCKTNOSUPPORT";
@@ -217,6 +227,14 @@ string Csocket::error2a(int v)
 	case WSAETOOMANYREFS: return "ETOOMANYREFS";
 	case WSAEUSERS: return "EUSERS";
 	case WSAEWOULDBLOCK: return "EWOULDBLOCK";
+	case WSANOTINITIALISED: return "NOTINITIALISED";
+	case WSASERVICE_NOT_FOUND: return "SERVICE_NOT_FOUND";
+	case WSASYSCALLFAILURE: return "SYSCALLFAILURE";
+	case WSASYSNOTREADY: return "SYSNOTREADY";
+	case WSATYPE_NOT_FOUND: return "TYPE_NOT_FOUND";
+	case WSAVERNOTSUPPORTED: return "VERNOTSUPPORTED";
+	case WSA_E_CANCELLED: return "E_CANCELLED";
+	case WSA_E_NO_MORE: return "E_NO_MORE";
 	}
 	char b[12];
 	sprintf(b, "%d", v);
@@ -228,4 +246,17 @@ string Csocket::inet_ntoa(int v)
 	in_addr a;
 	a.s_addr = v;
 	return ::inet_ntoa(a);
+}
+
+int Csocket::start_up()
+{
+	if (g_start_up_done)
+		return 0;
+	g_start_up_done = true;
+#ifdef WIN32
+	WSADATA wsadata;
+	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
+		return 1;
+#endif
+	return 0;
 }

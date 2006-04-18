@@ -182,7 +182,7 @@ string b2a(long long v, const char* postfix)
 	if (v > 999)
 	{
 		l++;
-		int b = (v & 0x3ff) * 100 >> 10;
+		int b = static_cast<int>((v & 0x3ff) * 100 >> 10);
 		v >>= 10;
 		w += sprintf(w, "%d", static_cast<int>(v));
 		if (v < 10 && b % 10)
