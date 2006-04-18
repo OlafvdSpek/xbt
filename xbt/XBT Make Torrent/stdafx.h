@@ -21,8 +21,6 @@ using namespace std;
 #include <io.h>
 
 #define atoll _atoi64
-
-#pragma comment(lib, "ws2_32.lib")
 #else
 #include <stdint.h>
 #endif

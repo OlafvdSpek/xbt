@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ws2_32.lib"
+				AdditionalDependencies=""
 				OutputFile=".\Debug/XBT Tiny Tracker.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -159,7 +159,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ws2_32.lib"
+				AdditionalDependencies=""
 				OutputFile=".\Release/XBT Tiny Tracker.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
