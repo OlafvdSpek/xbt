@@ -28,8 +28,6 @@ using namespace std;
 #include <windows.h>
 
 #define atoll _atoi64
-
-#pragma comment(lib, "ws2_32.lib")
 #else
 #include <netinet/in.h>
 #include <sys/ioctl.h>

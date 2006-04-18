@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="XBT Client Command Line Interface"
 	ProjectGUID="{29C8B22E-1698-4105-AA74-D884D94F4137}"
+	RootNamespace="XBT Client Command Line Interface"
 	>
 	<Platforms>
 		<Platform
@@ -71,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib zlib.lib"
+				AdditionalDependencies="zdll.lib"
 				OutputFile=".\Debug/XBT Client Command Line Interface.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -165,7 +166,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib zlib.lib"
+				AdditionalDependencies="zlib_static.lib"
 				OutputFile=".\Release/XBT Client Command Line Interface.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"

@@ -4,6 +4,10 @@
 #include <fstream>
 #include <iostream>
 
+#ifdef WIN32
+#pragma comment(lib, "libmysql")
+#endif
+
 Cdatabase::Cdatabase()
 {
 	mysql_init(&m_handle);

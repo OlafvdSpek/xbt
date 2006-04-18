@@ -16,9 +16,7 @@
 
 using namespace std;
 
-#ifdef WIN32
-#pragma comment(lib, "ws2_32.lib")
-#else
+#ifndef WIN32
 #include <stdint.h>
 #endif
 #include "socket.h"

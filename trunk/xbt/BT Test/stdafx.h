@@ -31,8 +31,6 @@ using namespace std;
 #include <windows.h>
 
 #define atoll _atoi64
-
-#pragma comment(lib, "ws2_32.lib")
 #else
 #include <sys/types.h>
 #include <netinet/in.h>
