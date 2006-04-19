@@ -62,9 +62,9 @@ public:
 		return m_size;
 	}
 
-	int i(int d = 0) const
+	long long i(long long d = 0) const
 	{
-		return raw() ? atoi(raw()) : d;
+		return raw() ? atoll(raw()) : d;
 	}
 
 	const string s(const string& d = "") const

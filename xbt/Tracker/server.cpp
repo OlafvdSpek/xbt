@@ -697,7 +697,7 @@ void Cserver::read_db_files_sql()
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			m_fid_end = max(m_fid_end, row.f(2).i()) + 1;
+			m_fid_end = max(m_fid_end, static_cast<int>(row.f(2).i())) + 1;
 			if (row.f(0).size() != 20 || m_files.find(row.f(0).s()) != m_files.end())
 				continue;
 			t_file& file = m_files[row.f(0).s()];
