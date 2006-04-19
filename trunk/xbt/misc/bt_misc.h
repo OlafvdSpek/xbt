@@ -48,7 +48,7 @@ inline long long htonll(long long v)
 {
 	const unsigned char* a = reinterpret_cast<const unsigned char*>(&v);
 	long long b = a[0] << 24 | a[1] << 16 | a[2] << 8 | a[3];
-	return b << 32 | a[4] << 24 | a[5] << 16 | a[6] << 8 | a[7];
+	return b << 32 | static_cast<long long>(a[4]) << 24 | a[5] << 16 | a[6] << 8 | a[7];
 }
 
 inline long long ntohll(long long v)
