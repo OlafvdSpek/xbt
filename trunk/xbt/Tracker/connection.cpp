@@ -196,7 +196,9 @@ void Cconnection::read(const string& v)
 		gzip = m_server->gzip_announce() && !ti.m_compact;
 		if (ti.valid())
 		{
-			if (!ti.m_compact && !ti.m_no_peer_id && ti.m_event != Ctracker_input::e_stopped && ti.m_num_want && !ti.m_info_hash.empty())
+			if (0)
+				s = Cbvalue().d(bts_failure_reason, bts_banned_client).read();
+			else if (!ti.m_compact && !ti.m_no_peer_id && ti.m_event != Ctracker_input::e_stopped && ti.m_num_want && !ti.m_info_hash.empty())
 				s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
 			else
 			{
