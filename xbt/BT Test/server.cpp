@@ -206,7 +206,7 @@ int Cserver::run()
 			alert(Calert(Calert::error, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError())));
 		else
 		{
-			while (admin_port() < 0x10000 && la.setsockopt(SOL_SOCKET, SO_REUSEADDR, true), la.bind(htonl(INADDR_LOOPBACK), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
+			while (admin_port() < 0x10000 && la.setsockopt(SOL_SOCKET, SO_REUSEADDR, true), la.bind(htonl(INADDR_ANY), htons(admin_port())) && WSAGetLastError() == WSAEADDRINUSE)
 				m_admin_port++;
 			if (la.listen())
 			{
@@ -325,7 +325,7 @@ int Cserver::run()
 				m_admin_port = m_config.m_admin_port;
 			}
 			else if (s.open(SOCK_STREAM) != INVALID_SOCKET
-				&& !s.bind(htonl(INADDR_LOOPBACK), htons(m_config.m_admin_port))
+				&& !s.bind(htonl(INADDR_ANY), htons(m_config.m_admin_port))
 				&& !s.listen())
 			{
 				la = s;
@@ -1197,14 +1197,27 @@ void Cserver::sig_handler(int v)
 	}
 }
 
+bool Cserver::admin_authenticate(const string& user, const string& pass) const
+{
+	return user == m_config.m_admin_user && pass == m_config.m_admin_pass && pass.size() >= 8;
+}
+
 Cbvalue Cserver::admin_request(const Cbvalue& s)
 {
 	Cbvalue d;
 	string action = s.d(bts_action).s();
-	if (action == bts_close_torrent)
-		close(s.d(bts_hash).s(), false);
+	if (!admin_authenticate(s.d(bts_admin_user).s(), s.d(bts_admin_pass).s()))
+		d.d(bts_failure_reason, string("access denied"));
+	else if (action == bts_close_torrent)
+	{
+		if (close(s.d(bts_hash).s(), false))
+			d.d(bts_failure_reason, string("unable to close torrent"));
+	}
 	else if (action == bts_erase_torrent)
-		close(s.d(bts_hash).s(), true);
+	{
+		if (close(s.d(bts_hash).s(), true))
+			d.d(bts_failure_reason, string("unable to erase torrent"));
+	}
 	else if (action == bts_get_options)
 	{
 		d.d(bts_admin_port, admin_port());
@@ -1251,7 +1264,10 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 		d.d(bts_version, xbt_version2a(version()));
 	}
 	else if (action == bts_open_torrent)
-		open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), "");
+	{
+		if (open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), ""))
+			d.d(bts_failure_reason, string("unable to open torrent"));
+	}
 	else if (action == bts_set_options)
 	{
 		if (s.d_has(bts_peer_port))
@@ -1278,9 +1294,15 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 			torrents_dir(s.d(bts_torrents_dir).s());
 	}
 	else if (action == bts_set_priority)
-		file_priority(s.d(bts_hash).s(), s.d(bts_priority).i());
+	{
+		if (file_priority(s.d(bts_hash).s(), s.d(bts_priority).i()))
+			d.d(bts_failure_reason, string("unable to set torrent priority"));
+	}
 	else if (action == bts_set_state)
-		file_state(s.d(bts_hash).s(), static_cast<Cbt_file::t_state>(s.d(bts_state).i()));
+	{
+		if (file_state(s.d(bts_hash).s(), static_cast<Cbt_file::t_state>(s.d(bts_state).i())))
+			d.d(bts_failure_reason, string("unable to set torrent state"));
+	}
 	return d;
 }
 

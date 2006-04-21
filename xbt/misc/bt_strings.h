@@ -35,6 +35,8 @@ enum
 
 const string bts_action = "action";
 const string bts_admin_port = "admin port";
+const string bts_admin_user = "admin user";
+const string bts_admin_pass = "admin pass";
 const string bts_announce = "announce";
 const string bts_announce_list = "announce-list";
 const string bts_banned_client = "access denied, banned client";

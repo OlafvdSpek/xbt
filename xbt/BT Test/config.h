@@ -33,6 +33,8 @@ public:
 	int m_tracker_port;
 	int m_upload_rate;
 	int m_upload_slots;
+	string m_admin_user;
+	string m_admin_pass;
 	string m_completes_dir;
 	string m_incompletes_dir;
 	string m_local_app_data_dir;
