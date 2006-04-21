@@ -47,6 +47,8 @@ Cbvalue send_recv(Csocket& s, const Cbvalue& v)
 	Cbvalue w;
 	if (int r = recv(s, &w))
 		throw runtime_error(("Csocket::recv failed: " + Csocket::error2a(WSAGetLastError())));
+	if (w.d_has(bts_failure_reason))
+		throw runtime_error(("admin request failed: " + w.d(bts_failure_reason).s()));
 	return w;
 }
 
@@ -111,8 +113,8 @@ int main(int argc, char* argv[])
 		desc.add_options()
 			("backend_host", po::value<string>()->default_value("localhost"))
 			("backend_port", po::value<int>()->default_value(6879))
-			("backend_user", po::value<string>())
-			("backend_pass", po::value<string>())
+			("backend_user", po::value<string>()->default_value(string()))
+			("backend_pass", po::value<string>()->default_value(string()))
 			("close", po::value<string>())
 			("erase", po::value<string>())
 			("help", "")
@@ -131,6 +133,8 @@ int main(int argc, char* argv[])
 			;
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
+		ifstream is("xbt_client_cli.conf");
+		po::store(po::parse_config_file(is, desc), vm);
 		po::notify(vm);
 		Csocket s;
 		if (s.open(SOCK_STREAM, true) == INVALID_SOCKET)
@@ -209,17 +213,25 @@ int main(int argc, char* argv[])
 			v.d(bts_user_agent, string(vm["user_agent"].as<string>() == "-" ? "" : vm["user_agent"].as<string>()));
 		}
 		if (!v.d().empty())
+		{
+			v.d(bts_admin_user, vm["backend_user"].as<string>());
+			v.d(bts_admin_pass, vm["backend_pass"].as<string>());
 			send_recv(s, v);
+		}
 		if (vm.count("options"))
 		{
 			Cbvalue v;
 			v.d(bts_action, bts_get_options);
+			v.d(bts_admin_user, vm["backend_user"].as<string>());
+			v.d(bts_admin_pass, vm["backend_pass"].as<string>());
 			show_options(cout, send_recv(s, v));
 		}
 		if (vm.count("status"))
 		{
 			Cbvalue v;
 			v.d(bts_action, bts_get_status);
+			v.d(bts_admin_user, vm["backend_user"].as<string>());
+			v.d(bts_admin_pass, vm["backend_pass"].as<string>());
 			show_status(cout, send_recv(s, v));
 		}
 		if (vm.count("help") || argc < 2)

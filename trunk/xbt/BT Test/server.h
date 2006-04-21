@@ -33,6 +33,7 @@ public:
 	};
 
 	Cbt_file* find_torrent(const string&);
+	bool admin_authenticate(const string& user, const string& pass) const;
 	Cbvalue admin_request(const Cbvalue& s);
 	void check_remote_links();
 	Chttp_link* http_request(int h, int p, const string& request, Chttp_response_handler*);

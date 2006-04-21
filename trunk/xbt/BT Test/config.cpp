@@ -47,6 +47,10 @@ const Cconfig& Cconfig::write(const Cbvalue& v)
 {
 	if (v.d_has("admin_port"))
 		m_admin_port = v.d("admin_port").i();
+	if (v.d_has("admin_user"))
+		m_admin_user = v.d("admin_user").s();
+	if (v.d_has("admin_pass"))
+		m_admin_pass = v.d("admin_pass").s();
 	if (v.d_has("bind_before_connect"))
 		m_bind_before_connect = v.d("bind_before_connect").i();
 	if (v.d_has("completes_dir"))
@@ -94,6 +98,8 @@ Cbvalue Cconfig::read() const
 {
 	Cbvalue v;
 	v.d("admin_port", m_admin_port);
+	v.d("admin_user", m_admin_user);
+	v.d("admin_pass", m_admin_pass);
 	v.d("bind_before_connect", m_bind_before_connect);
 	v.d("completes_dir", m_completes_dir);
 	v.d("incompletes_dir", m_incompletes_dir);
