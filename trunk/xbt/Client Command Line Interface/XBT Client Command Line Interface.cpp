@@ -116,6 +116,7 @@ int main(int argc, char* argv[])
 			("backend_user", po::value<string>()->default_value(string()))
 			("backend_pass", po::value<string>()->default_value(string()))
 			("close", po::value<string>())
+			("conf_file", po::value<string>()->default_value("xbt_client_cli.conf"))
 			("erase", po::value<string>())
 			("help", "")
 			("open", po::value<string>())
@@ -133,7 +134,7 @@ int main(int argc, char* argv[])
 			;
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
-		ifstream is("xbt_client_cli.conf");
+		ifstream is(vm["conf_file"].as<string>().c_str());
 		po::store(po::parse_config_file(is, desc), vm);
 		po::notify(vm);
 		Csocket s;
