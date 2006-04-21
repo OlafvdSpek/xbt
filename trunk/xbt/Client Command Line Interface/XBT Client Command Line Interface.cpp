@@ -109,6 +109,10 @@ int main(int argc, char* argv[])
 	{
 		po::options_description desc;
 		desc.add_options()
+			("backend_host", po::value<string>()->default_value("localhost"))
+			("backend_port", po::value<int>()->default_value(6879))
+			("backend_user", po::value<string>())
+			("backend_pass", po::value<string>())
 			("close", po::value<string>())
 			("erase", po::value<string>())
 			("help", "")
@@ -131,7 +135,7 @@ int main(int argc, char* argv[])
 		Csocket s;
 		if (s.open(SOCK_STREAM, true) == INVALID_SOCKET)
 			throw runtime_error(("Csocket::open failed: " + Csocket::error2a(WSAGetLastError())));
-		if (s.connect(htonl(INADDR_LOOPBACK), htons(6879)))
+		if (s.connect(Csocket::get_host(vm["backend_host"].as<string>()), htons(vm["backend_port"].as<int>())))
 			throw runtime_error(("Csocket::connect failed: " + Csocket::error2a(WSAGetLastError())));
 		Cbvalue v;
 		if (vm.count("close"))
