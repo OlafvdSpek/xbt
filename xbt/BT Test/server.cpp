@@ -470,7 +470,7 @@ int Cserver::run()
 		{
 			stopping = true;
 			config().read().read().save(options_fname());
-			ofstream((local_app_data_dir() + "/xbt_client.conf").c_str()) << m_config;
+			ofstream(conf_fname().c_str()) << m_config;
 			save_state(false).save(state_fname());
 			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 				i->close();
@@ -1004,6 +1004,11 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	assert(w.w() == d.data_end());
 	m_save_state_time = time();
 	return d;
+}
+
+string Cserver::conf_fname() const
+{
+	return local_app_data_dir() + "/xbt_client.conf";
 }
 
 string Cserver::options_fname() const

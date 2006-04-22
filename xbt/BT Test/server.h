@@ -58,6 +58,7 @@ public:
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	static int version();
 	string completes_dir() const;
+	string conf_fname() const;
 	string get_url(const string& id);
 	string incompletes_dir() const;
 	string local_app_data_dir() const;

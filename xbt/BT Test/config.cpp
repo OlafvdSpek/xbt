@@ -43,6 +43,68 @@ Cconfig::Cconfig()
 	}
 }
 
+int Cconfig::set(const string& name, const string& value)
+{
+	t_attribute<string> attributes[] =
+	{
+		"admin_user", &m_admin_user, 
+		"admin_pass", &m_admin_pass, 
+		"completes_dir", &m_completes_dir, 
+		"incompletes_dir", &m_incompletes_dir, 
+		"peer_id_prefix", &m_peer_id_prefix, 
+		"torrents_dir", &m_torrents_dir, 
+		"user_agent", &m_user_agent, 
+		NULL
+	};
+	if (t_attribute<string>* i = find(attributes, name))
+		*i->value = value;
+	else
+		return set(name, atoi(value.c_str()));
+	return 0;
+}
+
+int Cconfig::set(const string& name, int value)
+{
+	t_attribute<int> attributes[] =
+	{
+		"admin_port", &m_admin_port, 
+		"peer_limit", &m_peer_limit, 
+		"peer_port", &m_peer_port, 
+		"public_ipa", &m_public_ipa, 
+		"seeding_ratio", &m_seeding_ratio, 
+		"torrent_limit", &m_torrent_limit, 
+		"tracker_port", &m_tracker_port, 
+		"upload_rate", &m_upload_rate, 
+		"upload_slots", &m_upload_slots, 
+		NULL
+	};
+	if (t_attribute<int>* i = find(attributes, name))
+		*i->value = value;
+	else
+		return set(name, static_cast<bool>(value));
+	return 0;
+}
+
+int Cconfig::set(const string& name, bool value)
+{
+	t_attribute<bool> attributes[] =
+	{
+		"bind_before_connect", &m_bind_before_connect, 
+		"log_peer_connect_failures", &m_log_peer_connect_failures, 
+		"log_peer_connection_closures", &m_log_peer_connection_closures, 
+		"log_peer_recv_failures", &m_log_peer_recv_failures, 
+		"log_peer_send_failures", &m_log_peer_send_failures, 
+		"log_piece_valid", &m_log_piece_valid, 
+		"upnp", &m_upnp, 
+		NULL
+	};
+	if (t_attribute<bool>* i = find(attributes, name))
+		*i->value = value;
+	else
+		return 1;
+	return 0;
+}
+
 static void set_if_has(bool& a, const Cbvalue& b, const string& c)
 {
 	if (b.d_has(c))
