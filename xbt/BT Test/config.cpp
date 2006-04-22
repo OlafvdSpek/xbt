@@ -95,6 +95,7 @@ int Cconfig::set(const string& name, bool value)
 		"log_peer_recv_failures", &m_log_peer_recv_failures, 
 		"log_peer_send_failures", &m_log_peer_send_failures, 
 		"log_piece_valid", &m_log_piece_valid, 
+		"send_stop_event", &m_send_stop_event, 
 		"upnp", &m_upnp, 
 		NULL
 	};
@@ -103,81 +104,6 @@ int Cconfig::set(const string& name, bool value)
 	else
 		return 1;
 	return 0;
-}
-
-static void set_if_has(bool& a, const Cbvalue& b, const string& c)
-{
-	if (b.d_has(c))
-		a = b.d(c).i();
-}
-
-static void set_if_has(int& a, const Cbvalue& b, const string& c)
-{
-	if (b.d_has(c))
-		a = b.d(c).i();
-}
-
-static void set_if_has(string& a, const Cbvalue& b, const string& c)
-{
-	if (b.d_has(c))
-		a = b.d(c).s();
-}
-
-const Cconfig& Cconfig::write(const Cbvalue& v)
-{
-	set_if_has(m_admin_port, v, "admin_port");
-	set_if_has(m_admin_user, v, "admin_user");
-	set_if_has(m_admin_pass, v, "admin_pass");
-	set_if_has(m_bind_before_connect, v, "bind_before_connect");
-	set_if_has(m_completes_dir, v, "completes_dir");
-	set_if_has(m_incompletes_dir, v, "incompletes_dir");
-	set_if_has(m_log_peer_connect_failures, v, "log_peer_connect_failures");
-	set_if_has(m_log_peer_connection_closures, v, "log_peer_connection_closures");
-	set_if_has(m_log_peer_recv_failures, v, "log_peer_recv_failures");
-	set_if_has(m_log_peer_send_failures, v, "log_peer_send_failures");
-	set_if_has(m_log_piece_valid, v, "log_piece_valid");
-	set_if_has(m_peer_id_prefix, v, "peer_id_prefix");
-	set_if_has(m_peer_limit, v, "peer_limit");
-	set_if_has(m_peer_port, v, "peer_port");
-	set_if_has(m_public_ipa, v, "public_ipa");
-	set_if_has(m_seeding_ratio, v, "seeding_ratio");
-	set_if_has(m_torrent_limit, v, "torrent_limit");
-	set_if_has(m_torrents_dir, v, "torrents_dir");
-	set_if_has(m_tracker_port, v, "tracker_port");
-	set_if_has(m_upload_rate, v, "upload_rate");
-	set_if_has(m_upload_slots, v, "upload_slots");
-	set_if_has(m_upnp, v, "upnp");
-	set_if_has(m_user_agent, v, "user_agent");
-	return *this;
-}
-
-Cbvalue Cconfig::read() const
-{
-	return Cbvalue()
-		.d("admin_port", m_admin_port)
-		.d("admin_user", m_admin_user)
-		.d("admin_pass", m_admin_pass)
-		.d("bind_before_connect", m_bind_before_connect)
-		.d("completes_dir", m_completes_dir)
-		.d("incompletes_dir", m_incompletes_dir)
-		.d("log_peer_connect_failures", m_log_peer_connect_failures)
-		.d("log_peer_connection_closures", m_log_peer_connection_closures)
-		.d("log_peer_rec_failures", m_log_peer_recv_failures)
-		.d("log_peer_send_failures", m_log_peer_send_failures)
-		.d("log_piece_alid", m_log_piece_valid)
-		.d("peer_id_prefix", m_peer_id_prefix)
-		.d("peer_limit", m_peer_limit)
-		.d("peer_port", m_peer_port)
-		.d("public_ipa", m_public_ipa)
-		.d("seeding_ratio", m_seeding_ratio)
-		.d("torrent_limit", m_torrent_limit)
-		.d("torrents_dir", m_torrents_dir)
-		.d("tracker_port", m_tracker_port)
-		.d("upload_rate", m_upload_rate)
-		.d("upload_slots", m_upload_slots)
-		.d("upnp", m_upnp)
-		.d("user_agent", m_user_agent)
-		;
 }
 
 ostream& Cconfig::operator<<(ostream& os) const
@@ -199,6 +125,7 @@ ostream& Cconfig::operator<<(ostream& os) const
 		<< "peer_port = " << m_peer_port << endl
 		<< "public_ipa = " << m_public_ipa << endl
 		<< "seeding_ratio = " << m_seeding_ratio << endl
+		<< "send_stop_event = " << m_send_stop_event << endl
 		<< "torrent_limit = " << m_torrent_limit << endl
 		<< "torrents_dir = " << m_torrents_dir << endl
 		<< "tracker_port = " << m_tracker_port << endl

@@ -7,8 +7,6 @@
 
 #include "config_base.h"
 
-class Cbvalue;
-
 class Cconfig: public Cconfig_base
 {
 public:
@@ -16,8 +14,6 @@ public:
 	int set(const string& name, const string& value);
 	int set(const string& name, int value);
 	int set(const string& name, bool value);
-	Cbvalue read() const;
-	const Cconfig& write(const Cbvalue&);
 	ostream& operator<<(ostream& os) const;
 
 	bool m_bind_before_connect;
