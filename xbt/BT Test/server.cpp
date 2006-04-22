@@ -469,6 +469,8 @@ int Cserver::run()
 		if (g_sig_term || !m_run)
 		{
 			stopping = true;
+			config().read().read().save(options_fname());
+			ofstream((local_app_data_dir() + "/xbt_client.conf").c_str()) << m_config;
 			save_state(false).save(state_fname());
 			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 				i->close();
@@ -485,7 +487,6 @@ int Cserver::run()
 			check_remote_links();
 		unlock();
 	}
-	config().read().read().save(options_fname());
 	unlink(g_pid_fname);
 	return 0;
 }
