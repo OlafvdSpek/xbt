@@ -331,33 +331,18 @@ BOOL CXBTClientDlg::OnInitDialog()
 	UpdateLayout();
 	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
 
-	Cconfig config;
+	set_dir();
+	Cconfig config = m_server.config();
 	if (!config.load(m_server.conf_fname()))
 		m_server.config(config);
 	m_bottom_view = GetProfileInt("bottom_view", v_peers);
 	m_ask_for_location = GetProfileInt("ask_for_location", false);
-	m_server.bind_before_connect(GetProfileInt("bind_before_connect", m_server.bind_before_connect()));
-	set_dir(GetProfileString("completes_dir"),
-		GetProfileString("incompletes_dir"),
-		GetProfileString("local_app_data_dir"),
-		GetProfileString("torrents_dir"));
 	m_hide_on_deactivate = get_profile_hide_on_deactivate();
 	lower_process_priority(get_profile_lower_process_priority());
-	m_server.peer_id_prefix(get_profile_peer_id_prefix());
-	m_server.peer_limit(GetProfileInt("peer_limit", m_server.peer_limit()));
-	m_server.peer_port(GetProfileInt("peer_port", m_server.peer_port()));
 	string public_ipa = GetProfileString("public_ipa");
 	if (!public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(public_ipa));
-	m_server.seeding_ratio(GetProfileInt("seeding_ratio", m_server.seeding_ratio()));
-	m_server.send_stop_event(GetProfileInt("send_stop_event", m_server.send_stop_event()));
 	m_show_tray_icon = get_profile_show_tray_icon();
-	m_server.torrent_limit(GetProfileInt("torrent_limit", m_server.torrent_limit()));
-	m_server.tracker_port(GetProfileInt("tracker_port", m_server.tracker_port()));
-	m_server.upload_rate(get_profile_upload_rate());
-	m_server.upload_slots(GetProfileInt("upload_slots", m_server.upload_slots()));
-	m_server.upnp(get_profile_upnp());
-	m_server.user_agent(get_profile_user_agent());
 	m_tab.SetCurSel(m_bottom_view);
 	start_server();
 	insert_columns(true);
@@ -2328,10 +2313,9 @@ void CXBTClientDlg::insert_columns(bool auto_size)
 	}
 }
 
-void CXBTClientDlg::set_dir(const string& completes, const string& incompletes, const string local_app_data, const string& torrents)
+void CXBTClientDlg::set_dir()
 {
 	string local_app_data_default;
-	string personal_default;
 	{
 		char path[MAX_PATH];
 		if (!SHGetSpecialFolderPath(NULL, path, CSIDL_LOCAL_APPDATA, true)
@@ -2339,16 +2323,7 @@ void CXBTClientDlg::set_dir(const string& completes, const string& incompletes, 
 			strcpy(path, "C:");
 		local_app_data_default = path;
 	}
-	{
-		char path[MAX_PATH];
-		if (!SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true))
-			strcpy(path, "C:");
-		personal_default = path;
-	}
-	m_server.completes_dir(completes.empty() ? personal_default + "/XBT/Completes" : completes);
-	m_server.incompletes_dir(incompletes.empty() ? personal_default + "/XBT/Incompletes" : incompletes);
-	m_server.local_app_data_dir(local_app_data.empty() ? local_app_data_default + "/XBT" : local_app_data);
-	m_server.torrents_dir(torrents.empty() ? personal_default + "/XBT/Torrents" : torrents);
+	m_server.local_app_data_dir(local_app_data_default + "/XBT");
 }
 
 void CXBTClientDlg::lower_process_priority(bool v)
@@ -2644,13 +2619,13 @@ void CXBTClientDlg::OnUpdatePopupViewGlobalEvents(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnPopupUploadRateLimit()
 {
-	m_server.upload_rate(m_server.upload_rate() ? 0 : get_profile_upload_rate());
+	m_server.m_upload_rate_enabled = !m_server.m_upload_rate_enabled;
 }
 
 void CXBTClientDlg::OnUpdatePopupUploadRateLimit(CCmdUI* pCmdUI)
 {
-	pCmdUI->Enable(get_profile_upload_rate());
-	pCmdUI->SetCheck(m_server.upload_rate());
+	pCmdUI->Enable(m_server.upload_rate());
+	pCmdUI->SetCheck(m_server.upload_rate() && m_server.m_upload_rate_enabled);
 }
 
 int CXBTClientDlg::get_torrent_priority()
@@ -2947,9 +2922,9 @@ void CXBTClientDlg::OnToolsOptions()
 	data.torrent_limit = m_server.torrent_limit();
 	data.torrents_dir = m_server.torrents_dir();
 	data.tracker_port = GetProfileInt("tracker_port", m_server.tracker_port());
-	data.upload_rate = get_profile_upload_rate();
+	data.upload_rate = m_server.upload_rate();
 	data.upload_slots = m_server.upload_slots();
-	data.upnp = get_profile_upnp();
+	data.upnp = m_server.config().m_upnp;
 	data.user_agent = m_server.user_agent();
 	dlg.set(data);
 	unregister_hot_key();
@@ -2964,7 +2939,9 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.bind_before_connect(data.bind_before_connect);
 	m_hide_on_deactivate = data.hide_on_deactivate;
 	lower_process_priority(data.lower_process_priority);
-	set_dir(data.completes_dir, data.incompletes_dir, "", data.torrents_dir);
+	m_server.completes_dir(data.completes_dir);
+	m_server.incompletes_dir(data.incompletes_dir);
+	m_server.torrents_dir(data.torrents_dir);
 	m_server.peer_id_prefix(data.peer_id);
 	m_server.peer_limit(data.peer_limit);
 	m_server.peer_port(data.peer_port);
@@ -2980,28 +2957,13 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.upnp(data.upnp);
 	m_server.user_agent(data.user_agent);
 	WriteProfileInt("ask_for_location", data.ask_for_location);
-	WriteProfileInt("bind_before_connect", data.bind_before_connect);
-	WriteProfileString("completes_dir", data.completes_dir);
 	write_profile_hide_on_deactivate(data.hide_on_deactivate);
 	WriteProfileInt("hot_key", data.hot_key);
-	WriteProfileString("incompletes_dir", data.incompletes_dir);
 	write_profile_lower_process_priority(data.lower_process_priority);
-	write_profile_peer_id_prefix(data.peer_id);
-	WriteProfileInt("peer_limit", data.peer_limit);
-	WriteProfileInt("peer_port", data.peer_port);
 	WriteProfileString("public_ipa", data.public_ipa);
-	WriteProfileInt("seeding_ratio", data.seeding_ratio);
-	WriteProfileInt("send_stop_event", data.send_stop_event);
 	write_profile_show_confirm_exit_dialog(data.show_confirm_exit_dialog);
 	write_profile_show_tray_icon(data.show_tray_icon);
 	write_profile_start_minimized(data.start_minimized);
-	WriteProfileInt("torrent_limit", data.torrent_limit);
-	WriteProfileString("torrents_dir", data.torrents_dir);
-	WriteProfileInt("tracker_port", data.tracker_port);
-	WriteProfileInt("upload_rate", data.upload_rate);
-	WriteProfileInt("upload_slots", data.upload_slots);
-	write_profile_upnp(data.upnp);
-	write_profile_user_agent(data.user_agent);
 	register_hot_key(data.hot_key);
 	if (m_show_tray_icon)
 		register_tray();
@@ -3233,16 +3195,6 @@ void CXBTClientDlg::write_profile_lower_process_priority(bool v)
 	WriteProfileInt("lower_process_priority", v);
 }
 
-string CXBTClientDlg::get_profile_peer_id_prefix()
-{
-	return GetProfileString("peer_id_prefix");
-}
-
-void CXBTClientDlg::write_profile_peer_id_prefix(const string& v)
-{
-	WriteProfileString("peer_id_prefix", v);
-}
-
 string CXBTClientDlg::get_profile_peers_view()
 {
 	return GetProfileBinary("peers_view");
@@ -3291,36 +3243,6 @@ string CXBTClientDlg::get_profile_torrents_view()
 void CXBTClientDlg::write_profile_torrents_view(const string& v)
 {
 	WriteProfileBinary("torrents_view", v);
-}
-
-bool CXBTClientDlg::get_profile_upnp()
-{
-	return GetProfileInt("upnp", true);
-}
-
-void CXBTClientDlg::write_profile_upnp(bool v)
-{
-	WriteProfileInt("upnp", v);
-}
-
-int CXBTClientDlg::get_profile_upload_rate()
-{
-	return GetProfileInt("upload_rate", 0);
-}
-
-void CXBTClientDlg::write_profile_upload_rate(int v)
-{
-	WriteProfileInt("upload_rate", v);
-}
-
-string CXBTClientDlg::get_profile_user_agent()
-{
-	return GetProfileString("user_agent");
-}
-
-void CXBTClientDlg::write_profile_user_agent(const string& v)
-{
-	WriteProfileString("user_agent", v);
 }
 
 void CXBTClientDlg::OnPopupConnect()

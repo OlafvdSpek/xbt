@@ -123,6 +123,8 @@ public:
 	Cserver();
 	~Cserver();
 
+	bool m_upload_rate_enabled;
+
 	int admin_port() const
 	{
 		return m_admin_port;

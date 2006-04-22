@@ -20,26 +20,18 @@ class CXBTClientDlg: public ETSLayoutDialog
 public:
 	bool get_profile_hide_on_deactivate();
 	bool get_profile_lower_process_priority();
-	string get_profile_peer_id_prefix();
 	string get_profile_peers_view();
 	bool get_profile_show_confirm_exit_dialog();
 	bool get_profile_show_tray_icon();
 	bool get_profile_start_minimized();
 	string get_profile_torrents_view();
-	bool get_profile_upnp();
-	int get_profile_upload_rate();
-	string get_profile_user_agent();
 	void write_profile_hide_on_deactivate(bool);
 	void write_profile_lower_process_priority(bool);
-	void write_profile_peer_id_prefix(const string& v);
 	void write_profile_peers_view(const string&);
 	void write_profile_show_confirm_exit_dialog(bool);
 	void write_profile_show_tray_icon(bool v);
 	void write_profile_start_minimized(bool);
 	void write_profile_torrents_view(const string&);
-	void write_profile_upnp(bool);
-	void write_profile_upload_rate(int);
-	void write_profile_user_agent(const string&);
 	string GetProfileBinary(LPCTSTR Entry);
 	int GetProfileInt(LPCTSTR Entry, int Default = 0);
 	string GetProfileString(LPCTSTR Entry, LPCTSTR Default = "");
@@ -58,7 +50,7 @@ public:
 	void set_torrent_priority(int v);
 	void set_clipboard(const string&);
 	void lower_process_priority(bool);
-	void set_dir(const string& completes, const string& incompletes, const string local_app_data, const string& torrents);
+	void set_dir();
 	void insert_columns(bool auto_size);
 	void insert_top_columns();
 	void insert_bottom_columns();

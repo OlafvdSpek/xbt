@@ -84,6 +84,7 @@ Cserver::Cserver():
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time();
 	m_update_states_time = 0;
+	m_upload_rate_enabled = true;
 
 #ifdef WIN32
 	InitializeCriticalSection(&m_cs);
@@ -469,7 +470,6 @@ int Cserver::run()
 		if (g_sig_term || !m_run)
 		{
 			stopping = true;
-			config().read().read().save(options_fname());
 			ofstream(conf_fname().c_str()) << m_config;
 			save_state(false).save(state_fname());
 			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -554,7 +554,7 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 	if (m_update_send_quotas_time != time())
 		m_send_quota = m_config.m_upload_rate;
 	m_update_send_quotas_time = time();
-	if (m_config.m_upload_rate && !m_send_quota)
+	if (m_config.m_upload_rate && m_upload_rate_enabled && !m_send_quota)
 		return;
 	typedef multimap<int, Cbt_peer_link*> t_links;
 	t_links links;
@@ -565,7 +565,7 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); )
 		{
 			int q = INT_MAX;
-			if (m_config.m_upload_rate)
+			if (m_config.m_upload_rate && m_upload_rate_enabled)
 			{
 				if (j->m_can_send && j->cb_write_buffer())
 					links.insert(t_links::value_type(j->cb_write_buffer(), &*j));
@@ -580,7 +580,7 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 				j++;
 		}
 	}
-	if (!m_config.m_upload_rate)
+	if (!m_config.m_upload_rate || !m_upload_rate_enabled)
 		return;
 	while (m_send_quota && !links.empty())
 	{
