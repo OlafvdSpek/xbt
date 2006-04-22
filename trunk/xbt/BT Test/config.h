@@ -13,6 +13,7 @@ public:
 	Cconfig();
 	Cbvalue read() const;
 	const Cconfig& write(const Cbvalue&);
+	ostream& operator<<(ostream& os) const;
 
 	bool m_bind_before_connect;
 	bool m_log_peer_connect_failures;
@@ -42,5 +43,7 @@ public:
 	string m_torrents_dir;
 	string m_user_agent;
 };
+
+ostream& operator<<(ostream& os, const Cconfig&);
 
 #endif // !defined(AFX_CONFIG_H__CE8DA4C3_CDFC_46F3_A22E_ECCC9EAFD1DC__INCLUDED_)

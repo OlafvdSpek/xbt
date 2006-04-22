@@ -122,3 +122,37 @@ Cbvalue Cconfig::read() const
 	v.d("user_agent", m_user_agent);
 	return v;
 }
+
+ostream& Cconfig::operator<<(ostream& os) const
+{
+	return os
+		<< "admin_port = " << m_admin_port << endl
+		<< "admin_user = " << m_admin_user << endl
+		<< "admin_pass = " << m_admin_pass << endl
+		<< "bind_before_connect = " << m_bind_before_connect << endl
+		<< "completes_dir = " << m_completes_dir << endl
+		<< "incompletes_dir = " << m_incompletes_dir << endl
+		<< "log_peer_connect_failures = " << m_log_peer_connect_failures << endl
+		<< "log_peer_connection_closures = " << m_log_peer_connection_closures << endl
+		<< "log_peer_recv_failures = " << m_log_peer_recv_failures << endl
+		<< "log_peer_send_failures = " << m_log_peer_send_failures << endl
+		<< "log_piece_valid = " << m_log_piece_valid << endl
+		<< "peer_id_prefix = " << m_peer_id_prefix << endl
+		<< "peer_limit = " << m_peer_limit << endl
+		<< "peer_port = " << m_peer_port << endl
+		<< "public_ipa = " << m_public_ipa << endl
+		<< "seeding_ratio = " << m_seeding_ratio << endl
+		<< "torrent_limit = " << m_torrent_limit << endl
+		<< "torrents_dir = " << m_torrents_dir << endl
+		<< "tracker_port = " << m_tracker_port << endl
+		<< "upload_rate = " << m_upload_rate << endl
+		<< "upload_slots = " << m_upload_slots << endl
+		<< "upnp = " << m_upnp << endl
+		<< "user_agent = " << m_user_agent << endl
+		;
+}
+
+ostream& operator<<(ostream& os, const Cconfig& v)
+{
+	return v.operator<<(os);
+}
