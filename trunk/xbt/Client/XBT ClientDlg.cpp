@@ -331,8 +331,10 @@ BOOL CXBTClientDlg::OnInitDialog()
 	UpdateLayout();
 	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
 
+	Cconfig config;
+	if (!config.load(m_server.conf_fname()))
+		m_server.config(config);
 	m_bottom_view = GetProfileInt("bottom_view", v_peers);
-	m_server.admin_port(GetProfileInt("admin_port", m_server.admin_port()));
 	m_ask_for_location = GetProfileInt("ask_for_location", false);
 	m_server.bind_before_connect(GetProfileInt("bind_before_connect", m_server.bind_before_connect()));
 	set_dir(GetProfileString("completes_dir"),
@@ -2925,7 +2927,7 @@ void CXBTClientDlg::OnToolsOptions()
 {
 	Cdlg_options dlg(this);
 	Cdlg_options::t_data data;
-	data.admin_port = GetProfileInt("admin_port", m_server.admin_port());
+	data.admin_port = m_server.admin_port();
 	data.ask_for_location = GetProfileInt("ask_for_location", false);
 	data.bind_before_connect = m_server.bind_before_connect();
 	data.completes_dir = m_server.completes_dir();
@@ -2977,7 +2979,6 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.upload_slots(data.upload_slots);
 	m_server.upnp(data.upnp);
 	m_server.user_agent(data.user_agent);
-	WriteProfileInt("admin_port", data.admin_port);
 	WriteProfileInt("ask_for_location", data.ask_for_location);
 	WriteProfileInt("bind_before_connect", data.bind_before_connect);
 	WriteProfileString("completes_dir", data.completes_dir);
