@@ -9,7 +9,7 @@ string internal_hash(const string& a, const string& b)
 	*d = 1;
 	memcpy(d + 1, a.c_str(), 20);
 	memcpy(d + 21, b.c_str(), 20);
-	return Csha1(d, 41).read();
+	return Csha1(const_memory_range(d, 41)).read();
 }
 
 Cmerkle_tree::Cmerkle_tree()
@@ -215,14 +215,14 @@ string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 	{
 		*d = 0;
 		memcpy(d + 1, r, min(s_end - r, 1024));
-		string h = Csha1(d, min(s_end - r, 1024) + 1).read();
+		string h = Csha1(const_memory_range(d, min(s_end - r, 1024) + 1)).read();
 		*d = 1;
 		int i;
 		for (i = 0; map.find(i) != map.end(); i++)
 		{
 			memcpy(d + 1, map.find(i)->second.c_str(), 20);
 			memcpy(d + 21, h.c_str(), 20);
-			h = Csha1(d, 41).read();
+			h = Csha1(const_memory_range(d, 41)).read();
 			map.erase(i);
 		}
 		map[i] = h;
@@ -234,7 +234,7 @@ string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 		map.erase(map.begin());
 		memcpy(d + 1, map.begin()->second.c_str(), 20);
 		map.erase(map.begin());
-		map[0] = Csha1(d, 41).read();
+		map[0] = Csha1(const_memory_range(d, 41)).read();
 	}
 	return map.empty() ? "" : map.begin()->second;
 }

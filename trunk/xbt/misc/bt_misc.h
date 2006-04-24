@@ -36,7 +36,7 @@ string xbt_version2a(int);
 
 inline string compute_sha1(const void* s, size_t cb_s)
 {
-	return Csha1(s, cb_s).read();
+	return Csha1(const_memory_range(s, cb_s)).read();
 }
 
 inline string compute_sha1(const Cvirtual_binary& s)
