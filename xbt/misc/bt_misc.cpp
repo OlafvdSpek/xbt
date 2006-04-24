@@ -2,6 +2,7 @@
 #include "bt_misc.h"
 
 #include <sys/stat.h>
+#include <ctime>
 #include "socket.h"
 
 #ifdef WIN32
