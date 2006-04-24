@@ -470,7 +470,8 @@ int Cserver::run()
 		if (g_sig_term || !m_run)
 		{
 			stopping = true;
-			ofstream(conf_fname().c_str()) << m_config;
+			ofstream os(conf_fname().c_str());
+			os << m_config;
 			save_state(false).save(state_fname());
 			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 				i->close();

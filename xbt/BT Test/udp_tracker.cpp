@@ -53,7 +53,7 @@ long long Cudp_tracker::connection_id(sockaddr_in& a) const
 	memcpy(s, &m_secret, 8);
 	memcpy(s + 8, &a.sin_addr.s_addr, 4);
 	char d[20];
-	Csha1(&s, cb_s).read(d);
+	Csha1(const_memory_range(&s, cb_s)).read(d);
 	return *reinterpret_cast<long long*>(d);
 }
 

@@ -395,16 +395,10 @@ Csha1::Csha1()
 	SHA1Reset(&m_context);
 }
 
-Csha1::Csha1(const void* s, size_t cb_s)
+Csha1::Csha1(const_memory_range s)
 {
 	SHA1Reset(&m_context);
-	write(s, cb_s);
-}
-
-Csha1::Csha1(const void* s, const void* s_end)
-{
-	SHA1Reset(&m_context);
-	write(s, s_end);
+	write(s);
 }
 
 void Csha1::read(void* d)
@@ -419,12 +413,7 @@ string Csha1::read()
 	return string(d, SHA1HashSize);
 }
 
-void Csha1::write(const void* s, size_t cb_s)
+void Csha1::write(const_memory_range s)
 {
-	SHA1Input(&m_context, s, cb_s);
-}
-
-void Csha1::write(const void* s, const void* s_end)
-{
-	SHA1Input(&m_context, s, reinterpret_cast<const char*>(s_end) - reinterpret_cast<const char*>(s));
+	SHA1Input(&m_context, s.begin(), s.size());
 }

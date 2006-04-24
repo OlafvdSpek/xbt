@@ -104,4 +104,68 @@ private:
 	Cvirtual_binary_source* m_source;
 };
 
+class const_memory_range
+{
+public:
+	const_memory_range()
+	{
+		begin_ = NULL;
+		end_ = NULL;
+	}
+
+	const_memory_range(const void* begin, const void* end)
+	{
+		begin_ = reinterpret_cast<const byte*>(begin);
+		end_ = reinterpret_cast<const byte*>(end);
+	}
+
+	const_memory_range(const void* begin, size_t size)
+	{
+		begin_ = reinterpret_cast<const byte*>(begin);
+		end_ = begin_ + size;
+	}
+
+	const_memory_range(const string& v)
+	{
+		begin_ = reinterpret_cast<const byte*>(v.data());
+		end_ = reinterpret_cast<const byte*>(v.data() + v.size());
+	}
+
+	const_memory_range(string& v)
+	{
+		begin_ = reinterpret_cast<const byte*>(v.data());
+		end_ = reinterpret_cast<const byte*>(v.data() + v.size());
+	}
+
+	const_memory_range(const Cvirtual_binary& v)
+	{
+		begin_ = v.data();
+		end_ = v.data_end();
+	}
+
+	const_memory_range(Cvirtual_binary& v)
+	{
+		begin_ = v.data();
+		end_ = v.data_end();
+	}
+
+	const byte* begin() const
+	{
+		return begin_;
+	}
+
+	const byte* end() const
+	{
+		return end_;
+	}
+
+	size_t size() const
+	{
+		return end() - begin();
+	}
+private:
+	const byte* begin_;
+	const byte* end_;
+};
+
 #endif // !defined(AFX_VIRTUAL_BINARY_H__B59C9DC0_DB25_11D4_A95D_0050042229FC__INCLUDED_)

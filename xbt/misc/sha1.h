@@ -18,6 +18,7 @@
 #define _SHA1_H_
 
 #include <string>
+#include "virtual_binary.h"
 
 using namespace std;
 
@@ -84,11 +85,9 @@ class Csha1
 public:
 	void read(void*);
 	string read();
-	void write(const void*, size_t);
-	void write(const void*, const void*);
+	void write(const_memory_range);
 	Csha1();
-	Csha1(const void*, size_t);
-	Csha1(const void*, const void*);
+	Csha1(const_memory_range);
 private:
 	SHA1Context m_context;
 };
