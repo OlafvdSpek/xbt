@@ -131,9 +131,9 @@ int Cconnection::send()
 static string calculate_torrent_pass1(const string& info_hash, long long torrent_pass_secret)
 {
 	Csha1 sha1;
-	sha1.write(info_hash.data(), info_hash.size());
+	sha1.write(info_hash);
 	torrent_pass_secret = htonll(torrent_pass_secret);
-	sha1.write(&torrent_pass_secret, sizeof(torrent_pass_secret));
+	sha1.write(const_memory_range(&torrent_pass_secret, sizeof(torrent_pass_secret)));
 	return sha1.read();
 }
 

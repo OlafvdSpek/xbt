@@ -260,14 +260,14 @@ void Cdlg_make_torrent::OnSave()
 				if (cb_d < 0)
 					break;
 				*d = 0;
-				string h = Csha1(d, cb_d + 1).read();
+				string h = Csha1(const_memory_range(d, cb_d + 1)).read();
 				*d = 1;
 				int i;
 				for (i = 0; map.find(i) != map.end(); i++)
 				{
 					memcpy(d + 1, map.find(i)->second.c_str(), 20);
 					memcpy(d + 21, h.c_str(), 20);
-					h = Csha1(d, 41).read();
+					h = Csha1(const_memory_range(d, 41)).read();
 					map.erase(i);
 				}
 				map[i] = h;
@@ -280,7 +280,7 @@ void Cdlg_make_torrent::OnSave()
 				map.erase(map.begin());
 				memcpy(d + 1, map.begin()->second.c_str(), 20);
 				map.erase(map.begin());
-				map[0] = Csha1(d, 41).read();
+				map[0] = Csha1(const_memory_range(d, 41)).read();
 			}
 			if (!map.empty())
 				merkle_hash = map.begin()->second;
@@ -294,7 +294,7 @@ void Cdlg_make_torrent::OnSave()
 				w += cb_d;
 				if (w == d.data_end())
 				{
-					pieces += Csha1(d, w - d).read();
+					pieces += Csha1(const_memory_range(d, w - d)).read();
 					w = d.data_edit();
 				}
 				cb_f += cb_d;
@@ -306,7 +306,7 @@ void Cdlg_make_torrent::OnSave()
 			: Cbvalue().d(bts_merkle_hash, merkle_hash).d(bts_length, cb_f).d(bts_path, Cbvalue().l(base_name(*i))));
 	}
 	if (w != d)
-		pieces += Csha1(d, w - d).read();
+		pieces += Csha1(const_memory_range(d, w - d)).read();
 	Cbvalue info;
 	info.d(bts_piece_length, cb_piece);
 	if (!pieces.empty())
