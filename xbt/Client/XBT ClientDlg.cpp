@@ -332,9 +332,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	VERIFY(m_hAccel = LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME)));
 
 	set_dir();
-	Cconfig config = m_server.config();
-	if (!config.load(m_server.conf_fname()))
-		m_server.config(config);
+	m_server.load_config(m_server.conf_fname());
 	m_bottom_view = GetProfileInt("bottom_view", v_peers);
 	m_ask_for_location = GetProfileInt("ask_for_location", false);
 	m_hide_on_deactivate = get_profile_hide_on_deactivate();

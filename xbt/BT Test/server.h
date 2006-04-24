@@ -62,7 +62,6 @@ public:
 	string get_url(const string& id);
 	string incompletes_dir() const;
 	string local_app_data_dir() const;
-	string options_fname() const;
 	string peer_id_prefix() const;
 	string profiles_fname() const;
 	string scheduler_fname() const;
@@ -75,6 +74,7 @@ public:
 	void clean_scheduler();
 	void completes_dir(const string&);
 	void incompletes_dir(const string&);
+	void load_config(const string&);
 	void load_profile(const Cprofile&);
 	void load_profile(const Cxif_key&);
 	void load_state(const Cvirtual_binary&);
@@ -148,11 +148,6 @@ public:
 	const Cconfig& config() const
 	{
 		return m_config;
-	}
-
-	void config(const Cconfig& v)
-	{
-		m_config = v;
 	}
 
 	bool log_peer_connect_failures() const
