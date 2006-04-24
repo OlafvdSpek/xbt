@@ -14,7 +14,7 @@ public:
 	int set(const string& name, const string& value);
 	int set(const string& name, int value);
 	int set(const string& name, bool value);
-	ostream& operator<<(ostream& os) const;
+	ostream& operator<<(ostream&) const;
 
 	bool m_bind_before_connect;
 	bool m_log_peer_connect_failures;
@@ -45,6 +45,6 @@ public:
 	string m_user_agent;
 };
 
-ostream& operator<<(ostream& os, const Cconfig&);
+ostream& operator<<(ostream&, const Cconfig&);
 
 #endif // !defined(AFX_CONFIG_H__CE8DA4C3_CDFC_46F3_A22E_ECCC9EAFD1DC__INCLUDED_)
