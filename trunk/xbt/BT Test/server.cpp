@@ -1011,11 +1011,6 @@ string Cserver::conf_fname() const
 	return local_app_data_dir() + "/xbt_client.conf";
 }
 
-string Cserver::options_fname() const
-{
-	return local_app_data_dir() + "/options.bin";
-}
-
 string Cserver::profiles_fname() const
 {
 	return local_app_data_dir() + "/profiles.xif";
@@ -1405,4 +1400,11 @@ Cbt_file* Cserver::find_torrent(const string& id)
 			return &*i;
 	}
 	return NULL;
+}
+
+void Cserver::load_config(const string& v)
+{
+	Cconfig config = m_config;
+	if (!config.load(v))
+		m_config = config;
 }
