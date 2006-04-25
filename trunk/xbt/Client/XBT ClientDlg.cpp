@@ -1029,7 +1029,7 @@ void CXBTClientDlg::OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	if (!m_file)
+	if (!m_file || m_file->m_sub_files.empty())
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	string& buffer = m_peers.get_buffer();
