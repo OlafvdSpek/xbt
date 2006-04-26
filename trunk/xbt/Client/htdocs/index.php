@@ -1,5 +1,5 @@
 <?php
-	error_reporting(error_reporting() & ~E_NOTICE);
+	error_reporting(E_ALL & ~E_NOTICE);
 
 	require_once('common.php');
 	require_once('templates.php');
@@ -118,6 +118,8 @@
 	send_string($s, 'd6:action10:get statuse');
 	$v = recv_string($s);
 	$v = bdec($v);
+	if ($v['value']['failure reason']['value'])
+		die($v['value']['failure reason']['value']);
 	$aggregate = array();
 	$rows = '';
 	foreach ($v['value']['files']['value'] as $info_hash => $file)
