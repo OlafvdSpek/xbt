@@ -13,7 +13,7 @@ Cconfig::Cconfig()
 	m_log_peer_connect_failures = false;
 	m_log_peer_connection_closures = false;
 	m_log_peer_recv_failures = false;
-	m_log_peer_send_failures = true;
+	m_log_peer_send_failures = false;
 	m_log_piece_valid = false;
 	m_peer_limit = 0;
 	m_peer_port = 6881;
