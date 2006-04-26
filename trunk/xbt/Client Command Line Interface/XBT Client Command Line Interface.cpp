@@ -137,6 +137,11 @@ int main(int argc, char* argv[])
 		ifstream is(vm["conf_file"].as<string>().c_str());
 		po::store(po::parse_config_file(is, desc), vm);
 		po::notify(vm);
+		if (vm.count("help"))
+		{
+			cerr << desc;
+			return 1;
+		}
 		Csocket s;
 		if (s.open(SOCK_STREAM, true) == INVALID_SOCKET)
 			throw runtime_error(("Csocket::open failed: " + Csocket::error2a(WSAGetLastError())));
@@ -234,11 +239,6 @@ int main(int argc, char* argv[])
 			v.d(bts_admin_user, vm["backend_user"].as<string>());
 			v.d(bts_admin_pass, vm["backend_pass"].as<string>());
 			show_status(cout, send_recv(s, v));
-		}
-		if (vm.count("help") || argc < 2)
-		{
-			cerr << desc;
-			return 1;
 		}
 		return 0;
 	}

@@ -69,8 +69,6 @@ int main(int argc, char* argv[])
 			;
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
-		ifstream is(vm["conf_file"].as<string>().c_str());
-		po::store(po::parse_config_file(is, desc), vm);
 		po::notify(vm);
 		if (vm.count("help"))
 		{
