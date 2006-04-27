@@ -614,9 +614,9 @@ void Cserver::read_db_deny_from_hosts()
 			i->second.marked = true;
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			t_deny_from_host& deny_from_host = m_deny_from_hosts[row.f(0).i()];
+			t_deny_from_host& deny_from_host = m_deny_from_hosts[row[0].i()];
 			deny_from_host.marked = false;
-			deny_from_host.end = row.f(1).i();
+			deny_from_host.end = row[1].i();
 		}
 		for (t_deny_from_hosts::iterator i = m_deny_from_hosts.begin(); i != m_deny_from_hosts.end(); )
 		{
@@ -673,13 +673,13 @@ void Cserver::read_db_files_sql()
 			Csql_result result = q.execute();
 			for (Csql_row row; row = result.fetch_row(); )
 			{
-				if (row.f(0).size() != 20)
+				if (row[0].size() != 20)
 					continue;
-				m_files.erase(row.f(0).s());
+				m_files.erase(row[0].s());
 				q = "delete from ? where ? = ?";
 				q.p_raw(table_name(table_files));
 				q.p_raw(column_name(column_files_fid));
-				q.p(row.f(1).i());
+				q.p(row[1].i());
 				q.execute();
 			}
 		}
@@ -697,16 +697,16 @@ void Cserver::read_db_files_sql()
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			m_fid_end = max(m_fid_end, static_cast<int>(row.f(2).i()) + 1);
-			if (row.f(0).size() != 20 || m_files.find(row.f(0).s()) != m_files.end())
+			m_fid_end = max(m_fid_end, static_cast<int>(row[2].i()) + 1);
+			if (row[0].size() != 20 || m_files.find(row[0].s()) != m_files.end())
 				continue;
-			t_file& file = m_files[row.f(0).s()];
+			t_file& file = m_files[row[0].s()];
 			if (file.fid)
 				continue;
-			file.completed = row.f(1).i();
+			file.completed = row[1].i();
 			file.dirty = false;
-			file.fid = row.f(2).i();
-			file.ctime = row.f(3).i();
+			file.fid = row[2].i();
+			file.ctime = row[3].i();
 		}
 	}
 	catch (Cxcc_error)
@@ -730,19 +730,19 @@ void Cserver::read_db_users()
 		m_users_torrent_passes.clear();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			t_user& user = m_users[row.f(0).i()];
+			t_user& user = m_users[row[0].i()];
 			user.marked = false;
-			user.uid = row.f(0).i();
-			user.wait_time = row.f(4).i();
-			user.pass.assign(row.f(2).s());
-			user.torrents_limit = row.f(5).i();
-			user.peers_limit = row.f(6).i();
-			user.torrent_pass_secret = row.f(7).i();
-			user.can_leech = row.f(8).i();
-			if (row.f(1).size())
-				m_users_names[row.f(1).s()] = &user;
-			if (row.f(3).size())
-				m_users_torrent_passes[row.f(3).s()] = &user;
+			user.uid = row[0].i();
+			user.wait_time = row[4].i();
+			user.pass.assign(row[2].s());
+			user.torrents_limit = row[5].i();
+			user.peers_limit = row[6].i();
+			user.torrent_pass_secret = row[7].i();
+			user.can_leech = row[8].i();
+			if (row[1].size())
+				m_users_names[row[1].s()] = &user;
+			if (row[3].size())
+				m_users_torrent_passes[row[3].s()] = &user;
 		}
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); )
 		{
@@ -882,7 +882,7 @@ void Cserver::read_config()
 			Csql_result result = m_database.query("select name, value from " + table_name(table_config) + " where value is not null");
 			Cconfig config;
 			for (Csql_row row; row = result.fetch_row(); )
-				config.set(row.f(0).s(), row.f(1).s());
+				config.set(row[0].s(), row[1].s());
 			config.load("xbt_tracker.conf");
 			m_config = config;
 		}
