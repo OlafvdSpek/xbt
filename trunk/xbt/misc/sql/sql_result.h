@@ -99,7 +99,7 @@ public:
 		return m_data;
 	}
 
-	Csql_field operator[](size_t) const
+	Csql_field operator[](size_t i) const
 	{
 		return Csql_field(m_data[i], m_sizes[i]);
 	}
