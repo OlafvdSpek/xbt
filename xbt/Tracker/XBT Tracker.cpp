@@ -26,11 +26,14 @@ int main1()
 		cerr << "Unable to read " << g_conf_file << endl;
 #endif
 	Cdatabase database;
-	Cxcc_error error;
-	if (config.m_mysql_host != "-"
-		&& (error = database.open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true)))
+	try
 	{
-		cerr << error.message() << endl;
+		if (config.m_mysql_host != "-")
+			database.open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true);
+	}
+	catch (Cdatabase::exception& e)
+	{
+		cerr << e.what() << endl;
 		return 1;
 	}
 	database.set_query_log(config.m_query_log);

@@ -626,7 +626,7 @@ void Cserver::read_db_deny_from_hosts()
 				i++;
 		}
 	}
-	catch (Cxcc_error)
+	catch (Cdatabase::exception&)
 	{
 	}
 	m_read_db_deny_from_hosts_time = time();
@@ -709,7 +709,7 @@ void Cserver::read_db_files_sql()
 			file.ctime = row[3].i();
 		}
 	}
-	catch (Cxcc_error)
+	catch (Cdatabase::exception&)
 	{
 	}
 }
@@ -752,7 +752,7 @@ void Cserver::read_db_users()
 				i++;
 		}
 	}
-	catch (Cxcc_error)
+	catch (Cdatabase::exception&)
 	{
 	}
 	m_read_db_users_time = time();
@@ -799,7 +799,7 @@ void Cserver::write_db_files()
 				+ "  mtime = unix_timestamp()");
 		}
 	}
-	catch (Cxcc_error)
+	catch (Cdatabase::exception&)
 	{
 	}
 	if (!m_announce_log_buffer.empty())
@@ -809,7 +809,7 @@ void Cserver::write_db_files()
 			m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
 			m_database.query("insert delayed into " + table_name(table_announce_log) + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
 		}
-		catch (Cxcc_error)
+		catch (Cdatabase::exception&)
 		{
 		}
 		m_announce_log_buffer.erase();
@@ -821,7 +821,7 @@ void Cserver::write_db_files()
 			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
 			m_database.query("insert delayed into " + table_name(table_scrape_log) + " (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
 		}
-		catch (Cxcc_error)
+		catch (Cdatabase::exception&)
 		{
 		}
 		m_scrape_log_buffer.erase();
@@ -849,7 +849,7 @@ void Cserver::write_db_users()
 				+ "  uploaded = uploaded + values(uploaded),"
 				+ "  mtime = values(mtime)");
 		}
-		catch (Cxcc_error)
+		catch (Cdatabase::exception&)
 		{
 		}
 		m_files_users_updates_buffer.erase();
@@ -865,7 +865,7 @@ void Cserver::write_db_users()
 				+ "  downloaded = downloaded + values(downloaded),"
 				+ "  uploaded = uploaded + values(uploaded)");
 		}
-		catch (Cxcc_error)
+		catch (Cdatabase::exception&)
 		{
 		}
 		m_users_updates_buffer.erase();
@@ -886,7 +886,7 @@ void Cserver::read_config()
 			config.load("xbt_tracker.conf");
 			m_config = config;
 		}
-		catch (Cxcc_error)
+		catch (Cdatabase::exception&)
 		{
 		}
 	}
@@ -1103,7 +1103,7 @@ int Cserver::test_sql()
 		m_database.query("select " + column_name(column_users_uid) + ", name, pass, can_leech, wait_time, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");
 		return 0;
 	}
-	catch (Cxcc_error)
+	catch (Cdatabase::exception&)
 	{
 	}
 	return 1;
