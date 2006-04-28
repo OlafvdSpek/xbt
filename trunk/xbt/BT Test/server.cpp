@@ -152,7 +152,7 @@ string get_host_name()
 {
 	vector<char> t(256);
 	if (gethostname(&t.front(), t.size()))
-		throw std::exception("gethostname failed");
+		throw runtime_error("gethostname failed");
 	return &t.front();
 }
 
@@ -160,7 +160,7 @@ wstring mbyte_to_wchar(const string& s)
 {
 	vector<wchar_t> t(MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, NULL, 0));
 	if (!MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, &t.front(), t.size()))
-		throw std::exception("MultiByteToWideChar failed");
+		throw runtime_error("MultiByteToWideChar failed");
 	return &t.front();
 }
 
@@ -168,7 +168,7 @@ string wchar_to_mbyte(const wstring& s)
 {
 	vector<char> t(WideCharToMultiByte(CP_ACP, 0, s.c_str(), -1, NULL, 0, NULL, NULL));
 	if (!WideCharToMultiByte(CP_ACP, 0, s.c_str(), -1, &t.front(), t.size(), NULL, NULL))
-		throw std::exception("WideCharToMultiByte failed");
+		throw runtime_error("WideCharToMultiByte failed");
 	return &t.front();
 }
 #endif
@@ -256,7 +256,7 @@ int Cserver::run()
 					alert(Calert(Calert::info, "UPnP NAT", "External IPA: " + wchar_to_mbyte(bstrExternalIPA)));
 					SysFreeString(bstrExternalIPA);
 				}
-				catch (std::exception& e)
+				catch (runtime_error& e)
 				{
 					alert(Calert(Calert::warn, "UPnP NAT", e.what()));
 				}
