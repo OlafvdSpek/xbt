@@ -14,19 +14,19 @@
 #include "bt_misc.h"
 #include "sha1.h"
 
-typedef map<int, string> t_map;
+typedef std::map<int, std::string> t_map;
 
 int main(int argc, char* argv[])
 {
 	if (argc < 2)
 	{
-		cerr << "Usage: " << argv[0] << " <file>" << endl;
+		std::cerr << "Usage: " << argv[0] << " <file>" << std::endl;
 		return 1;
 	}
 	FILE* f = fopen(argv[1], "rb");
 	if (!f)
 	{
-		cerr << "Unable to open " << argv[1] << endl;
+		std::cerr << "Unable to open " << argv[1] << std::endl;
 		return 1;
 	}
 	t_map map;
@@ -36,8 +36,8 @@ int main(int argc, char* argv[])
 	{
 		// calculate hash of next leaf node (one 0 byte and up to 1024 data bytes)
 		*d = 0;
-		string h = Csha1(d, cb_d + 1).read();
-		cout << "0: " << hex_encode(h) << endl;
+		std::string h = Csha1(const_memory_range(d, cb_d + 1)).read();
+		std::cout << "0: " << hex_encode(h) << std::endl;
 		// combine two hashes on the same tree level for one hash on the next level
 		*d = 1;
 		int i;
@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
 			// calculate hash of the next intermediate node (one 1 byte and two hashes)
 			memcpy(d + 1, map.find(i)->second.c_str(), 20);
 			memcpy(d + 21, h.c_str(), 20);
-			h = Csha1(d, 41).read();
-			cout << i + 1 << ": " << hex_encode(h) << endl;
+			h = Csha1(const_memory_range(d, 41)).read();
+			std::cout << i + 1 << ": " << hex_encode(h) << std::endl;
 			map.erase(i);
 		}
 		// store hash
@@ -63,11 +63,11 @@ int main(int argc, char* argv[])
 		map.erase(map.begin());
 		// promote hash to the next level if there's only one hash on the current level
 		for (; map.begin()->first != i; i++)
-			cout << i + 1 << ": " << hex_encode(string(d + 21, 20)) << endl;
+			std::cout << i + 1 << ": " << hex_encode(std::string(d + 21, 20)) << std::endl;
 		memcpy(d + 1, map.begin()->second.c_str(), 20);
 		map.erase(map.begin());
-		map[0] = Csha1(d, 41).read();
-		cout << i + 1 << ": " << hex_encode(map[0]) << endl;
+		map[0] = Csha1(const_memory_range(d, 41)).read();
+		std::cout << i + 1 << ": " << hex_encode(map[0]) << std::endl;
 	}
 	return 0;
 }
