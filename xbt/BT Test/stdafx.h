@@ -18,9 +18,6 @@
 #include <string>
 #include <vector>
 
-using namespace boost;
-using namespace std;
-
 #ifdef WIN32
 #define FD_SETSIZE 1024
 #define NOMINMAX
