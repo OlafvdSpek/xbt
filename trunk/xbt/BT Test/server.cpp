@@ -297,16 +297,16 @@ int Cserver::run()
 #ifndef WIN32
 	if (daemon(true, false))
 		alert(Calert(Calert::error, "Server", "daemon failed: " + n(errno)));
-	ofstream(g_pid_fname) << getpid() << endl;
+	std::ofstream(g_pid_fname) << getpid() << std::endl;
 	struct sigaction act;
 	act.sa_handler = sig_handler;
 	sigemptyset(&act.sa_mask);
 	act.sa_flags = 0;
 	if (sigaction(SIGTERM, &act, NULL))
-		cerr << "sigaction failed" << endl;
+		std::cerr << "sigaction failed" << std::endl;
 	act.sa_handler = SIG_IGN;
 	if (sigaction(SIGPIPE, &act, NULL))
-		cerr << "sigaction failed" << endl;
+		std::cerr << "sigaction failed" << std::endl;
 #endif
 	http_request(Csocket::get_host("xbtt.sourceforge.net"), htons(80), "GET /version_check.php?xbtc HTTP/1.0\r\nhost: xbtt.sourceforge.net\r\n\r\n", &m_version_check_handler);
 	m_save_state_time = time();
