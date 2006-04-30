@@ -16,7 +16,7 @@ public:
 		int priority;
 		int seeding_ratio;
 		bool seeding_ratio_override;
-		string trackers;
+		std::string trackers;
 		int upload_slots_min;
 		bool upload_slots_min_override;
 		int upload_slots_max;

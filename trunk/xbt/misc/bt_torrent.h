@@ -13,7 +13,7 @@ public:
 	class Cfile
 	{
 	public:
-		const string& name() const
+		const std::string& name() const
 		{
 			return m_name;
 		}
@@ -27,18 +27,18 @@ public:
 		{
 		}
 
-		Cfile(const string& name, long long size)
+		Cfile(const std::string& name, long long size)
 		{
 			m_name = name;
 			m_size = size;
 		}
 	private:
-		string m_name;
+		std::string m_name;
 		long long m_size;
 	};
 
-	typedef vector<string> t_announces;
-	typedef vector<Cfile> t_files;
+	typedef std::vector<std::string> t_announces;
+	typedef std::vector<Cfile> t_files;
 
 	long long size() const;
 	bool valid() const;
@@ -47,7 +47,7 @@ public:
 	Cbt_torrent();
 	Cbt_torrent(const Cbvalue&);
 
-	const string& announce() const
+	const std::string& announce() const
 	{
 		return m_announce;
 	}
@@ -62,7 +62,7 @@ public:
 		return m_files;
 	}
 
-	const string& name() const
+	const std::string& name() const
 	{
 		return m_name;
 	}
@@ -72,10 +72,10 @@ public:
 		return m_piece_size;
 	}
 private:
-	string m_announce;
+	std::string m_announce;
 	t_announces m_announces;
 	t_files m_files;
-	string m_name;
+	std::string m_name;
 	int m_piece_size;
 };
 

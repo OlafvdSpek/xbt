@@ -30,9 +30,9 @@ Cconfig::Cconfig()
 	m_upnp = true;
 #ifdef WIN32
 	char path[MAX_PATH];
-	string home = SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true) ? path : "C:";
+	std::string home = SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, true) ? path : "C:";
 #else
-	string home = get_env("HOME");
+	std::string home = get_env("HOME");
 #endif
 	if (!home.empty())
 	{
@@ -43,9 +43,9 @@ Cconfig::Cconfig()
 	}
 }
 
-int Cconfig::set(const string& name, const string& value)
+int Cconfig::set(const std::string& name, const std::string& value)
 {
-	t_attribute<string> attributes[] =
+	t_attribute<std::string> attributes[] =
 	{
 		"admin_user", &m_admin_user, 
 		"admin_pass", &m_admin_pass, 
@@ -56,14 +56,14 @@ int Cconfig::set(const string& name, const string& value)
 		"user_agent", &m_user_agent, 
 		NULL
 	};
-	if (t_attribute<string>* i = find(attributes, name))
+	if (t_attribute<std::string>* i = find(attributes, name))
 		*i->value = value;
 	else
 		return set(name, atoi(value.c_str()));
 	return 0;
 }
 
-int Cconfig::set(const string& name, int value)
+int Cconfig::set(const std::string& name, int value)
 {
 	t_attribute<int> attributes[] =
 	{
@@ -85,7 +85,7 @@ int Cconfig::set(const string& name, int value)
 	return 0;
 }
 
-int Cconfig::set(const string& name, bool value)
+int Cconfig::set(const std::string& name, bool value)
 {
 	t_attribute<bool> attributes[] =
 	{
@@ -106,37 +106,37 @@ int Cconfig::set(const string& name, bool value)
 	return 0;
 }
 
-ostream& Cconfig::operator<<(ostream& os) const
+std::ostream& Cconfig::operator<<(std::ostream& os) const
 {
 	return os
-		<< "admin_port = " << m_admin_port << endl
-		<< "admin_user = " << m_admin_user << endl
-		<< "admin_pass = " << m_admin_pass << endl
-		<< "bind_before_connect = " << m_bind_before_connect << endl
-		<< "completes_dir = " << m_completes_dir << endl
-		<< "incompletes_dir = " << m_incompletes_dir << endl
-		<< "log_peer_connect_failures = " << m_log_peer_connect_failures << endl
-		<< "log_peer_connection_closures = " << m_log_peer_connection_closures << endl
-		<< "log_peer_recv_failures = " << m_log_peer_recv_failures << endl
-		<< "log_peer_send_failures = " << m_log_peer_send_failures << endl
-		<< "log_piece_valid = " << m_log_piece_valid << endl
-		<< "peer_id_prefix = " << m_peer_id_prefix << endl
-		<< "peer_limit = " << m_peer_limit << endl
-		<< "peer_port = " << m_peer_port << endl
-		<< "public_ipa = " << m_public_ipa << endl
-		<< "seeding_ratio = " << m_seeding_ratio << endl
-		<< "send_stop_event = " << m_send_stop_event << endl
-		<< "torrent_limit = " << m_torrent_limit << endl
-		<< "torrents_dir = " << m_torrents_dir << endl
-		<< "tracker_port = " << m_tracker_port << endl
-		<< "upload_rate = " << m_upload_rate << endl
-		<< "upload_slots = " << m_upload_slots << endl
-		<< "upnp = " << m_upnp << endl
-		<< "user_agent = " << m_user_agent << endl
+		<< "admin_port = " << m_admin_port << std::endl
+		<< "admin_user = " << m_admin_user << std::endl
+		<< "admin_pass = " << m_admin_pass << std::endl
+		<< "bind_before_connect = " << m_bind_before_connect << std::endl
+		<< "completes_dir = " << m_completes_dir << std::endl
+		<< "incompletes_dir = " << m_incompletes_dir << std::endl
+		<< "log_peer_connect_failures = " << m_log_peer_connect_failures << std::endl
+		<< "log_peer_connection_closures = " << m_log_peer_connection_closures << std::endl
+		<< "log_peer_recv_failures = " << m_log_peer_recv_failures << std::endl
+		<< "log_peer_send_failures = " << m_log_peer_send_failures << std::endl
+		<< "log_piece_valid = " << m_log_piece_valid << std::endl
+		<< "peer_id_prefix = " << m_peer_id_prefix << std::endl
+		<< "peer_limit = " << m_peer_limit << std::endl
+		<< "peer_port = " << m_peer_port << std::endl
+		<< "public_ipa = " << m_public_ipa << std::endl
+		<< "seeding_ratio = " << m_seeding_ratio << std::endl
+		<< "send_stop_event = " << m_send_stop_event << std::endl
+		<< "torrent_limit = " << m_torrent_limit << std::endl
+		<< "torrents_dir = " << m_torrents_dir << std::endl
+		<< "tracker_port = " << m_tracker_port << std::endl
+		<< "upload_rate = " << m_upload_rate << std::endl
+		<< "upload_slots = " << m_upload_slots << std::endl
+		<< "upnp = " << m_upnp << std::endl
+		<< "user_agent = " << m_user_agent << std::endl
 		;
 }
 
-ostream& operator<<(ostream& os, const Cconfig& v)
+std::ostream& operator<<(std::ostream& os, const Cconfig& v)
 {
 	return v.operator<<(os);
 }

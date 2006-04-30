@@ -8,9 +8,7 @@
 #include <set>
 #include "xif_key.h"
 
-using namespace std;
-
-class Cblock_list: public set<int>
+class Cblock_list: public std::set<int>
 {
 public:
 	Cblock_list& load(const Cxif_key&);

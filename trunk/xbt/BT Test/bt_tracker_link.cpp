@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "bt_tracker_link.h"
 
+#include <sstream>
 #include "bt_file.h"
 #include "bt_misc.h"
 #include "bt_strings.h"
@@ -113,7 +114,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 	case 1:
 		if (FD_ISSET(m_s, fd_write_set))
 		{
-			string v = http_request(f);
+			std::string v = http_request(f);
 			if (m_s.send(v.c_str(), v.size()) != v.size())
 				close(f);
 			else
@@ -225,7 +226,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				else if (r >= utoe_size
 					&& read_int(4, d + uto_action, d + r) == uta_error)
 				{
-					f.alert(Calert(Calert::error, "Tracker: failure reason: " + string(d + utoe_size, r - utoe_size)));
+					f.alert(Calert(Calert::error, "Tracker: failure reason: " + std::string(d + utoe_size, r - utoe_size)));
 					close(f);
 				}
 			}
@@ -242,7 +243,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 	{
 		if (*r == ' ')
 		{
-			int http_result = atoi(string(reinterpret_cast<const char*>(r), d.data_end() - r).c_str());
+			int http_result = atoi(std::string(reinterpret_cast<const char*>(r), d.data_end() - r).c_str());
 			if (http_result != 200)
 			{
 				f.alert(Calert(Calert::error, "Tracker: HTTP error: " + n(http_result)));
@@ -274,7 +275,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 						}
 						else
 						{
-							string peers = v.d(bts_peers).s();
+							std::string peers = v.d(bts_peers).s();
 							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
 							for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
 								f.insert_peer(read_int(4, r), read_int(2, r + 4));
@@ -323,9 +324,9 @@ void Cbt_tracker_link::event(int v)
 	m_announce_time = 0;
 }
 
-string Cbt_tracker_link::http_request(const Cbt_file& f)
+std::string Cbt_tracker_link::http_request(const Cbt_file& f)
 {
-	stringstream os;
+	std::stringstream os;
 	os << "GET " << m_url.m_path
 		<< "?info_hash=" << uri_encode(f.m_info_hash)
 		<< "&key=" << uri_encode(f.peer_key())
@@ -354,14 +355,14 @@ string Cbt_tracker_link::http_request(const Cbt_file& f)
 		break;
 	}
 	m_event = e_none;
-	os << " HTTP/1.0\r" << endl
-		<< "accept-encoding: gzip\r" << endl
+	os << " HTTP/1.0\r" << std::endl
+		<< "accept-encoding: gzip\r" << std::endl
 		<< "host: " << m_url.m_host;
 	if (m_url.m_port != 80)
 		os << ':' << m_url.m_port;
-	os << '\r' << endl;
+	os << '\r' << std::endl;
 	if (!f.m_server->user_agent().empty())
-		os << "user-agent: " << f.m_server->user_agent() << '\r' << endl;
-	os << '\r' << endl;
+		os << "user-agent: " << f.m_server->user_agent() << '\r' << std::endl;
+	os << '\r' << std::endl;
 	return os.str();
 }

@@ -10,10 +10,10 @@
 class Chttp_response_handler
 {
 public:
-	static string get_message_body(const string&);
-	static int get_status_code(const string&);
+	static std::string get_message_body(const std::string&);
+	static int get_status_code(const std::string&);
 	virtual void alert(const Calert&);
-	virtual void handle(const string& response);
+	virtual void handle(const std::string& response);
 };
 
 #endif // !defined(AFX_HTTP_RESPONSE_HANDLER_H__765E9C6F_C59E_4A87_9B8A_8AA52F815B18__INCLUDED_)

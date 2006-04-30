@@ -12,7 +12,7 @@
 class Cbt_sub_piece
 {
 public:
-	typedef map<Cbt_peer_link*, time_t> t_peers;
+	typedef std::map<Cbt_peer_link*, time_t> t_peers;
 
 	t_peers m_peers;
 
@@ -39,7 +39,7 @@ private:
 class Cbt_piece: public Cbt_piece_data
 {
 public:
-	typedef vector<Cbt_sub_piece> t_sub_pieces;
+	typedef std::vector<Cbt_sub_piece> t_sub_pieces;
 	
 	int cb_sub_piece(int);
 	int c_sub_pieces() const;

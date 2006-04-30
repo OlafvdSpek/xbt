@@ -14,8 +14,6 @@
 #include <map>
 #include <vector>
 
-using namespace std;
-
 #ifndef WIN32
 #include <stdint.h>
 #endif

@@ -47,7 +47,7 @@ void CListCtrlEx1::PreSubclassWindow()
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_HEADERDRAGDROP);
 }
 
-void CListCtrlEx1::InsertColumn(int id, const string& name, const string& description, int format, bool show)
+void CListCtrlEx1::InsertColumn(int id, const std::string& name, const std::string& description, int format, bool show)
 {
 	if (m_columns.count(id))
 		return;
@@ -117,9 +117,9 @@ int CListCtrlEx1::GetColumnID(int index) const
 	return -1;
 }
 
-string CListCtrlEx1::Conf() const
+std::string CListCtrlEx1::Conf() const
 {
-	string d;
+	std::string d;
 	for (Ccolumns::const_iterator i = m_columns.begin(); i != m_columns.end(); i++)
 	{
 		d += i->first;
@@ -129,7 +129,7 @@ string CListCtrlEx1::Conf() const
 	return d;
 }
 
-void CListCtrlEx1::Conf(const string& v)
+void CListCtrlEx1::Conf(const std::string& v)
 {
 	m_conf = v;
 }

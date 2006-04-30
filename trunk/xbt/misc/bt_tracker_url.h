@@ -17,14 +17,14 @@ public:
 	
 	void clear();
 	bool valid() const;
-	void write(const string&);
-	Cbt_tracker_url(const string&);
+	void write(const std::string&);
+	Cbt_tracker_url(const std::string&);
 	Cbt_tracker_url();
 
 	int m_protocol;
-	string m_host;
+	std::string m_host;
 	int m_port;
-	string m_path;
+	std::string m_path;
 };
 
 #endif // !defined(AFX_BT_TRACKER_URL_H__0DBE3C91_1952_433F_A351_2EF87ABC1C7C__INCLUDED_)

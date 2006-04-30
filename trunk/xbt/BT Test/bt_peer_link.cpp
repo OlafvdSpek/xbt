@@ -370,7 +370,7 @@ void Cbt_peer_link::remote_merkle_cancels(long long offset)
 
 int Cbt_peer_link::read_handshake(const char* h)
 {
-	if (string(h + hs_info_hash, 20) != m_f->m_info_hash)
+	if (std::string(h + hs_info_hash, 20) != m_f->m_info_hash)
 	{
 		alert(Calert::warn, "Peer: handshake failed");
 		return 1;
@@ -471,7 +471,7 @@ void Cbt_peer_link::write_piece(int piece, int offset, int size, const void* s)
 	write(d);
 }
 
-void Cbt_peer_link::write_merkle_piece(long long offset, int size, const void* s, const string& hashes)
+void Cbt_peer_link::write_merkle_piece(long long offset, int size, const void* s, const std::string& hashes)
 {
 	Cvirtual_binary d;
 	byte* w = d.write_start(10 + size + hashes.size());
@@ -653,7 +653,7 @@ int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	return 0;
 }
 
-void Cbt_peer_link::read_merkle_piece(long long offset, int size, const char* s, const string& hashes)
+void Cbt_peer_link::read_merkle_piece(long long offset, int size, const char* s, const std::string& hashes)
 {
 	mc_local_requests_pending--;
 	if (!m_f->test_and_set_hashes(offset, Cmerkle_tree::compute_root(s, s + size), hashes))
@@ -744,7 +744,7 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 			if (r_end - r >= 5 && r[4] >= 0 && r_end - r >= 20 * r[4] + 5)
 			{
 				r += 5;
-				read_merkle_piece(static_cast<long long>(read_int(4, r - 4)) << 15, r_end - r - 20 * r[-1], r, string(r_end - 20 * r[-1], 20 * r[-1]));
+				read_merkle_piece(static_cast<long long>(read_int(4, r - 4)) << 15, r_end - r - 20 * r[-1], r, std::string(r_end - 20 * r[-1], 20 * r[-1]));
 			}
 		}
 		else if (r_end - r >= 8)
@@ -811,9 +811,9 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_string(debug_string());
 }
 
-void Cbt_peer_link::alert(Calert::t_level level, const string& message)
+void Cbt_peer_link::alert(Calert::t_level level, const std::string& message)
 {
-	m_f->alert(Calert(level, string(inet_ntoa(m_a.sin_addr)) + ':' + n(ntohs(m_a.sin_port)), message));
+	m_f->alert(Calert(level, std::string(inet_ntoa(m_a.sin_addr)) + ':' + n(ntohs(m_a.sin_port)), message));
 }
 
 void Cbt_peer_link::clear_local_requests()
@@ -841,9 +841,9 @@ int Cbt_peer_link::c_max_requests_pending() const
 	return min(mc_max_requests_pending, m_f->c_max_requests_pending());
 }
 
-string Cbt_peer_link::debug_string() const
+std::string Cbt_peer_link::debug_string() const
 {
-	string d;
+	std::string d;
 	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
 		d += "lr: " + n(i->offset / m_f->mcb_piece) + "; ";
 	if (m_read_b.cb_read())

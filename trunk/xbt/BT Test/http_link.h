@@ -17,8 +17,8 @@ class Chttp_link
 public:
 	void close();
 	void cancel();
-	int set_request(int h, int p, const string&, Chttp_response_handler*);
-	void alert(Calert::t_level, const string&);
+	int set_request(int h, int p, const std::string&, Chttp_response_handler*);
+	void alert(Calert::t_level, const std::string&);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	int recv();

@@ -16,8 +16,6 @@
 #include <sys/stat.h>
 #include "bt_strings.h"
 
-using namespace boost;
-
 struct t_map_entry
 {
 	string name;

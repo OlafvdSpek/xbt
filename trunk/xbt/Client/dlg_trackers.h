@@ -13,12 +13,12 @@ class Cdlg_trackers: public ETSLayoutDialog
 public:
 	struct t_tracker
 	{
-		string m_tracker;
-		string m_user;
-		string m_pass;
+		std::string m_tracker;
+		std::string m_user;
+		std::string m_pass;
 	};
 
-	typedef map<int, t_tracker> t_trackers;
+	typedef std::map<int, t_tracker> t_trackers;
 
 	void insert(const t_tracker&);
 	Cdlg_trackers(CWnd* pParent);

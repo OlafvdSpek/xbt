@@ -44,10 +44,10 @@ public:
 		return Cvirtual_binary(read(l), l);
 	}
 
-	string read_string()
+	std::string read_string()
 	{
 		int l = read_int(4);
-		return string(reinterpret_cast<const char*>(read(l)), l);
+		return std::string(reinterpret_cast<const char*>(read(l)), l);
 	}
 
 	Cstream_reader()

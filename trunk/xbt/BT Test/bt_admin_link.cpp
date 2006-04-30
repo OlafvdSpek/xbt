@@ -128,7 +128,7 @@ void Cbt_admin_link::read_message(const char* r, const char* r_end)
 	}
 }
 
-void Cbt_admin_link::alert(Calert::t_level level, const string& message)
+void Cbt_admin_link::alert(Calert::t_level level, const std::string& message)
 {
 	m_server->alert(Calert(level, message));
 }

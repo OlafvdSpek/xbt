@@ -9,8 +9,6 @@
 #include <string>
 #include "xif_key.h"
 
-using namespace std;
-
 class Cprofile
 {
 public:
@@ -18,7 +16,7 @@ public:
 	Cxif_key save() const;
 	Cprofile();
 
-	string name;
+	std::string name;
 	int seeding_ratio;
 	bool seeding_ratio_enable;
 	int upload_rate;
@@ -31,7 +29,7 @@ public:
 	bool torrent_limit_enable;
 };
 
-class Cprofiles: public map<int, Cprofile>
+class Cprofiles: public std::map<int, Cprofile>
 {
 public:
 	Cprofiles& load(const Cxif_key&);

@@ -3,8 +3,6 @@
 
 #include <boost/bind.hpp>
 
-using namespace boost;
-
 Cdns_worker::Cdns_worker()
 {
 	m_run = true;
@@ -18,13 +16,13 @@ Cdns_worker::~Cdns_worker()
 	m_threads.join_all();
 }
 
-string Cdns_worker::get_host_by_addr(int v)
+std::string Cdns_worker::get_host_by_addr(int v)
 {
-	mutex::scoped_lock l(m_mutex);
+	boost::mutex::scoped_lock l(m_mutex);
 	t_reverse_map::const_iterator i = m_reverse_map.find(v);
 	if (i != m_reverse_map.end())
 	{
-		string d = i->second.c_str();
+		std::string d = i->second.c_str();
 		return d;
 	}
 	m_reverse_map_queue.push_back(v);
@@ -34,7 +32,7 @@ string Cdns_worker::get_host_by_addr(int v)
 
 void Cdns_worker::run()
 {
-	mutex::scoped_lock l(m_mutex);
+	boost::mutex::scoped_lock l(m_mutex);
 	while (m_run)
 	{
 		int v;

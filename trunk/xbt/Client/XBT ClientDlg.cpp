@@ -337,7 +337,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_ask_for_location = GetProfileInt("ask_for_location", false);
 	m_hide_on_deactivate = get_profile_hide_on_deactivate();
 	lower_process_priority(get_profile_lower_process_priority());
-	string public_ipa = GetProfileString("public_ipa");
+	std::string public_ipa = GetProfileString("public_ipa");
 	if (!public_ipa.empty())
 		m_server.public_ipa(Csocket::get_host(public_ipa));
 	m_show_tray_icon = get_profile_show_tray_icon();
@@ -364,7 +364,7 @@ BOOL CXBTClientDlg::OnInitDialog()
 	CCommandLineInfo cmdInfo;
 	AfxGetApp()->ParseCommandLine(cmdInfo);
 	if (cmdInfo.m_nShellCommand == CCommandLineInfo::FileOpen)
-		open(static_cast<string>(cmdInfo.m_strFileName), m_ask_for_location);
+		open(static_cast<std::string>(cmdInfo.m_strFileName), m_ask_for_location);
 	return true;
 }
 
@@ -395,13 +395,13 @@ HCURSOR CXBTClientDlg::OnQueryDragIcon()
 	return (HCURSOR) m_hIcon;
 }
 
-void CXBTClientDlg::open(const string& name, bool ask_for_location)
+void CXBTClientDlg::open(const std::string& name, bool ask_for_location)
 {
 	Cvirtual_binary d(name);
 	Cbt_torrent torrent(d);
 	if (!torrent.valid())
 		return;
-	string path;
+	std::string path;
 	if (!m_server.incompletes_dir().empty() && !ask_for_location && ~GetAsyncKeyState(VK_SHIFT) < 0)
 		;
 	else if (torrent.files().size() == 1)
@@ -417,7 +417,7 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 	else
 	{
 		SetForegroundWindow();
-		string path1 = m_server.incompletes_dir();
+		std::string path1 = m_server.incompletes_dir();
 		if (browse_for_directory(GetSafeHwnd(), torrent.name(), path1))
 			return;
 		if (!path1.empty() && path1[path1.size() - 1] == '\\')
@@ -429,18 +429,18 @@ void CXBTClientDlg::open(const string& name, bool ask_for_location)
 		update_tray("Opened", torrent.name().c_str());
 }
 
-void CXBTClientDlg::open_url(const string& v)
+void CXBTClientDlg::open_url(const std::string& v)
 {
 	m_server.open_url(v);
 }
 
-static string get_extension(const string& v)
+static std::string get_extension(const std::string& v)
 {
 	int i = v.rfind('.');
-	return i == string::npos ? "" : v.substr(i + 1);
+	return i == std::string::npos ? "" : v.substr(i + 1);
 }
 
-static string priority2a(int v)
+static std::string priority2a(int v)
 {
 	switch (v)
 	{
@@ -459,7 +459,7 @@ static string priority2a(int v)
 void CXBTClientDlg::OnGetdispinfoFiles(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_files.get_buffer();
+	std::string& buffer = m_files.get_buffer();
 	const t_file& e = m_files_map.find(pDispInfo->item.lParam)->second;
 	switch (m_files.GetColumnID(pDispInfo->item.iSubItem))
 	{
@@ -570,7 +570,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_peers.get_buffer();
+	std::string& buffer = m_peers.get_buffer();
 	const char* row_names[] =
 	{
 		"Chunks",
@@ -730,7 +730,7 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_peers.get_buffer();
+	std::string& buffer = m_peers.get_buffer();
 	const char* row_names[] =
 	{
 		"Downloaded",
@@ -818,7 +818,7 @@ void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_peers.get_buffer();
+	std::string& buffer = m_peers.get_buffer();
 	const t_event& e = m_file->events[pDispInfo->item.lParam];
 	switch (m_peers.GetColumnID(pDispInfo->item.iSubItem))
 	{
@@ -849,7 +849,7 @@ void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 void CXBTClientDlg::OnGetdispinfoGlobalEvents(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_peers.get_buffer();
+	std::string& buffer = m_peers.get_buffer();
 	const t_event& e = m_events[pDispInfo->item.lParam];
 	switch (m_peers.GetColumnID(pDispInfo->item.iSubItem))
 	{
@@ -906,7 +906,7 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_peers.get_buffer();
+	std::string& buffer = m_peers.get_buffer();
 	const t_peer& e = m_file->peers.find(pDispInfo->item.lParam)->second;
 	switch (m_peers.GetColumnID(pDispInfo->item.iSubItem))
 	{
@@ -995,7 +995,7 @@ void CXBTClientDlg::OnGetdispinfoPieces(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_peers.get_buffer();
+	std::string& buffer = m_peers.get_buffer();
 	const t_piece& e = m_file->pieces[pDispInfo->item.lParam];
 	switch (m_peers.GetColumnID(pDispInfo->item.iSubItem))
 	{
@@ -1032,7 +1032,7 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file || m_file->m_sub_files.empty())
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_peers.get_buffer();
+	std::string& buffer = m_peers.get_buffer();
 	const t_sub_file& e = m_file->m_sub_files[pDispInfo->item.lParam];
 	switch (m_peers.GetColumnID(pDispInfo->item.iSubItem))
 	{
@@ -1040,7 +1040,7 @@ void CXBTClientDlg::OnGetdispinfoSubFiles(NMHDR* pNMHDR, LRESULT* pResult)
 		if (e.m_name.empty())
 		{
 			int i = m_file->m_name.rfind('\\');
-			buffer = i == string::npos ? m_file->m_name : m_file->m_name.substr(i + 1);
+			buffer = i == std::string::npos ? m_file->m_name : m_file->m_name.substr(i + 1);
 		}
 		else
 			buffer = e.m_name;
@@ -1076,7 +1076,7 @@ void CXBTClientDlg::OnGetdispinfoTrackers(NMHDR* pNMHDR, LRESULT* pResult)
 	if (!m_file)
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_peers.get_buffer();
+	std::string& buffer = m_peers.get_buffer();
 	const t_tracker& e = m_file->m_trackers[pDispInfo->item.lParam];
 	switch (m_peers.GetColumnID(pDispInfo->item.iSubItem))
 	{
@@ -1204,7 +1204,7 @@ void CXBTClientDlg::read_server_dump(Cstream_reader& sr)
 void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 {
 	bool inserted = false;
-	string info_hash = sr.read_string();
+	std::string info_hash = sr.read_string();
 	t_files::iterator i;
 	for (i = m_files_map.begin(); i != m_files_map.end(); i++)
 	{
@@ -1270,7 +1270,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.m_removed = false;
 	{
 		int i = f.m_display_name.rfind('\\');
-		if (i != string::npos)
+		if (i != std::string::npos)
 			f.m_display_name.erase(0, i + 1);
 	}
 	{
@@ -1517,12 +1517,12 @@ void CXBTClientDlg::OnPopupExplore()
 		ShellExecute(m_hWnd, "open", backward_slashes(m_server.completes_dir()).c_str(), NULL, NULL, SW_SHOW);
 		return;
 	}
-	string name = m_files_map.find(id)->second.m_name;
+	std::string name = m_files_map.find(id)->second.m_name;
 	struct _stati64 b;
 	if (_stati64(name.c_str(), &b) || ~b.st_mode & S_IFDIR)
 	{
 		int i = name.rfind('\\');
-		if (i != string::npos)
+		if (i != std::string::npos)
 			name.erase(i);
 	}
 	ShellExecute(m_hWnd, "open", name.c_str(), NULL, NULL, SW_SHOW);
@@ -1607,7 +1607,7 @@ void CXBTClientDlg::OnDblclkFiles(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::OnDropFiles(HDROP hDropInfo)
 {
-	typedef set<string> t_names;
+	typedef std::set<std::string> t_names;
 
 	int c_files = DragQueryFile(hDropInfo, 0xFFFFFFFF, NULL, 0);
 	t_names names;
@@ -1777,20 +1777,20 @@ static int compare(const T& a, const T& b, int c = 0)
 template <class T>
 static int icompare(const T& a, const T& b, int c = 0)
 {
-	return compare(to_lower_copy(a), to_lower_copy(b), c);
+	return compare(boost::to_lower_copy(a), boost::to_lower_copy(b), c);
 }
 
-int compare_host_names(const string& a, const string& b)
+int compare_host_names(const std::string& a, const std::string& b)
 {
 	int a1 = a.size() - 1;
 	int b1 = b.size() - 1;
-	string a3;
-	string b3;
+	std::string a3;
+	std::string b3;
 	while (a1 != -1 && b1 != -1)
 	{
 		int a2 = a.rfind('.', a1);
 		int b2 = b.rfind('.', b1);
-		if (a2 == string::npos)
+		if (a2 == std::string::npos)
 		{
 			a3 = a.substr(0, a1 + 1);
 			a1 = -1;
@@ -1800,7 +1800,7 @@ int compare_host_names(const string& a, const string& b)
 			a3 = a.substr(a2 + 1, a1 - a2);
 			a1 = a2 - 1;
 		}
-		if (b2 == string::npos)
+		if (b2 == std::string::npos)
 		{
 			b3 = b.substr(0, b1 + 1);
 			b1 = -1;
@@ -1819,7 +1819,7 @@ int compare_host_names(const string& a, const string& b)
 int CXBTClientDlg::files_compare(int id_a, int id_b) const
 {
 	if (m_torrents_sort_reverse)
-		swap(id_a, id_b);
+		std::swap(id_a, id_b);
 	const t_file& a = m_files_map.find(id_a)->second;
 	const t_file& b = m_files_map.find(id_b)->second;
 	switch (m_torrents_sort_column)
@@ -1885,7 +1885,7 @@ int CXBTClientDlg::events_compare(int id_a, int id_b) const
 	if (!m_file)
 		return 0;
 	if (m_events_sort_reverse)
-		swap(id_a, id_b);
+		std::swap(id_a, id_b);
 	const t_event& a = m_file->events[id_a];
 	const t_event& b = m_file->events[id_b];
 	switch (m_events_sort_column)
@@ -1905,7 +1905,7 @@ int CXBTClientDlg::events_compare(int id_a, int id_b) const
 int CXBTClientDlg::global_events_compare(int id_a, int id_b) const
 {
 	if (m_global_events_sort_reverse)
-		swap(id_a, id_b);
+		std::swap(id_a, id_b);
 	const t_event& a = m_events[id_a];
 	const t_event& b = m_events[id_b];
 	switch (m_global_events_sort_column)
@@ -1927,7 +1927,7 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 	if (!m_file)
 		return 0;
 	if (m_peers_sort_reverse)
-		swap(id_a, id_b);
+		std::swap(id_a, id_b);
 	const t_peer& a = m_file->peers.find(id_a)->second;
 	const t_peer& b = m_file->peers.find(id_b)->second;
 	switch (m_peers_sort_column)
@@ -1981,7 +1981,7 @@ int CXBTClientDlg::pieces_compare(int id_a, int id_b) const
 	if (!m_file)
 		return 0;
 	if (m_pieces_sort_reverse)
-		swap(id_a, id_b);
+		std::swap(id_a, id_b);
 	const t_piece& a = m_file->pieces[id_a];
 	const t_piece& b = m_file->pieces[id_b];
 	switch (m_pieces_sort_column)
@@ -2007,7 +2007,7 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 	if (!m_file)
 		return 0;
 	if (m_files_sort_reverse)
-		swap(id_a, id_b);
+		std::swap(id_a, id_b);
 	const t_sub_file& a = m_file->m_sub_files[id_a];
 	const t_sub_file& b = m_file->m_sub_files[id_b];
 	switch (m_files_sort_column)
@@ -2313,7 +2313,7 @@ void CXBTClientDlg::insert_columns(bool auto_size)
 
 void CXBTClientDlg::set_dir()
 {
-	string local_app_data_default;
+	std::string local_app_data_default;
 	{
 		char path[MAX_PATH];
 		if (!SHGetSpecialFolderPath(NULL, path, CSIDL_LOCAL_APPDATA, true)
@@ -2337,7 +2337,7 @@ long CXBTClientDlg::OnHotKey(WPARAM, LPARAM)
 	return 0;
 }
 
-void CXBTClientDlg::set_clipboard(const string& v)
+void CXBTClientDlg::set_clipboard(const std::string& v)
 {
 	if (v.empty())
 		return;
@@ -2779,7 +2779,7 @@ void CXBTClientDlg::OnFileOpen()
 {
 	CFileDialog dlg(true, "torrent", NULL, OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, "Torrents|*.torrent|", this);
 	if (IDOK == dlg.DoModal())
-		open(static_cast<string>(dlg.GetPathName()), m_ask_for_location);
+		open(static_cast<std::string>(dlg.GetPathName()), m_ask_for_location);
 }
 
 void CXBTClientDlg::OnFileClose()
@@ -2795,7 +2795,7 @@ void CXBTClientDlg::OnUpdateFileClose(CCmdUI* pCmdUI)
 
 void CXBTClientDlg::OnFileDelete()
 {
-	typedef list<string> t_list;
+	typedef std::list<std::string> t_list;
 	t_list list;
 	for (int index = -1; (index = m_files.GetNextItem(index, LVNI_SELECTED)) != -1; )
 		list.push_back(m_files_map.find(m_files.GetItemData(index))->second.m_info_hash);
@@ -3082,7 +3082,7 @@ BOOL CXBTClientDlg::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
 	switch (pCopyDataStruct->dwData)
 	{
 	case 0:
-		open(string(reinterpret_cast<const char*>(pCopyDataStruct->lpData), pCopyDataStruct->cbData), m_ask_for_location);
+		open(std::string(reinterpret_cast<const char*>(pCopyDataStruct->lpData), pCopyDataStruct->cbData), m_ask_for_location);
 		return true;
 	}
 	return ETSLayoutDialog::OnCopyData(pWnd, pCopyDataStruct);
@@ -3137,13 +3137,13 @@ void CXBTClientDlg::unregister_hot_key()
 	UnregisterHotKey(GetSafeHwnd(), 0);
 }
 
-string CXBTClientDlg::GetProfileBinary(LPCTSTR Entry)
+std::string CXBTClientDlg::GetProfileBinary(LPCTSTR Entry)
 {
 	BYTE* d;
 	UINT cb_d;
 	if (!AfxGetApp()->GetProfileBinary(m_reg_key, Entry, &d, &cb_d) || !d || !cb_d)
 		return "";
-	string d1(reinterpret_cast<char*>(d), cb_d);
+	std::string d1(reinterpret_cast<char*>(d), cb_d);
 	delete[] d;
 	return d1;
 }
@@ -3153,12 +3153,12 @@ int CXBTClientDlg::GetProfileInt(LPCTSTR Entry, int Default)
 	return AfxGetApp()->GetProfileInt(m_reg_key, Entry, Default);
 }
 
-string CXBTClientDlg::GetProfileString(LPCTSTR Entry, LPCTSTR Default)
+std::string CXBTClientDlg::GetProfileString(LPCTSTR Entry, LPCTSTR Default)
 {
-	return string(AfxGetApp()->GetProfileString(m_reg_key, Entry, Default));
+	return std::string(AfxGetApp()->GetProfileString(m_reg_key, Entry, Default));
 }
 
-BOOL CXBTClientDlg::WriteProfileBinary(LPCTSTR Entry, const string& Value)
+BOOL CXBTClientDlg::WriteProfileBinary(LPCTSTR Entry, const std::string& Value)
 {
 	return AfxGetApp()->WriteProfileBinary(m_reg_key, Entry, const_cast<byte*>(reinterpret_cast<const byte*>(Value.c_str())), Value.size());
 }
@@ -3168,7 +3168,7 @@ BOOL CXBTClientDlg::WriteProfileInt(LPCTSTR Entry, int Value)
 	return AfxGetApp()->WriteProfileInt(m_reg_key, Entry, Value);
 }
 
-BOOL CXBTClientDlg::WriteProfileString(LPCTSTR Entry, const string& Value)
+BOOL CXBTClientDlg::WriteProfileString(LPCTSTR Entry, const std::string& Value)
 {
 	return AfxGetApp()->WriteProfileString(m_reg_key, Entry, Value.c_str());
 }
@@ -3193,12 +3193,12 @@ void CXBTClientDlg::write_profile_lower_process_priority(bool v)
 	WriteProfileInt("lower_process_priority", v);
 }
 
-string CXBTClientDlg::get_profile_peers_view()
+std::string CXBTClientDlg::get_profile_peers_view()
 {
 	return GetProfileBinary("peers_view");
 }
 
-void CXBTClientDlg::write_profile_peers_view(const string& v)
+void CXBTClientDlg::write_profile_peers_view(const std::string& v)
 {
 	WriteProfileBinary("peers_view", v);
 }
@@ -3233,12 +3233,12 @@ void CXBTClientDlg::write_profile_start_minimized(bool v)
 	WriteProfileInt("start_minimized", v);
 }
 
-string CXBTClientDlg::get_profile_torrents_view()
+std::string CXBTClientDlg::get_profile_torrents_view()
 {
 	return GetProfileBinary("torrents_view");
 }
 
-void CXBTClientDlg::write_profile_torrents_view(const string& v)
+void CXBTClientDlg::write_profile_torrents_view(const std::string& v)
 {
 	WriteProfileBinary("torrents_view", v);
 }
@@ -3248,7 +3248,7 @@ void CXBTClientDlg::OnPopupConnect()
 	Cdlg_peer_connect dlg;
 	if (IDOK != dlg.DoModal())
 		return;
-	m_server.peer_connect(m_file->m_info_hash, Csocket::get_host(static_cast<string>(dlg.m_host)), htons(dlg.m_port));
+	m_server.peer_connect(m_file->m_info_hash, Csocket::get_host(static_cast<std::string>(dlg.m_host)), htons(dlg.m_port));
 }
 
 void CXBTClientDlg::OnUpdatePopupConnect(CCmdUI* pCmdUI)

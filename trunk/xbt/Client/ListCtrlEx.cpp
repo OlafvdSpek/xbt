@@ -102,7 +102,7 @@ std::string& CListCtrlEx::get_buffer()
 
 std::string CListCtrlEx::get_selected_rows_tsv()
 {
-	string d;
+	std::string d;
 	for (int j = 0; j < GetHeaderCtrl()->GetItemCount(); j++)
 	{
 		const int cb_b = 256;

@@ -10,12 +10,12 @@
 class Cdns_worker  
 {
 public:
-	string get_host_by_addr(int v);
+	std::string get_host_by_addr(int v);
 	Cdns_worker();
 	~Cdns_worker();
 private:
-	typedef map<int, string> t_reverse_map;
-	typedef list<int> t_reverse_map_queue;
+	typedef std::map<int, std::string> t_reverse_map;
+	typedef std::list<int> t_reverse_map_queue;
 
 	void run();
 

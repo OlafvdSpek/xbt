@@ -12,8 +12,6 @@ typedef int socklen_t;
 typedef int SOCKET;
 #endif
 
-using namespace std;
-
 struct t_peer
 {
 	int port;

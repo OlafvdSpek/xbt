@@ -20,24 +20,24 @@ class CXBTClientDlg: public ETSLayoutDialog
 public:
 	bool get_profile_hide_on_deactivate();
 	bool get_profile_lower_process_priority();
-	string get_profile_peers_view();
+	std::string get_profile_peers_view();
 	bool get_profile_show_confirm_exit_dialog();
 	bool get_profile_show_tray_icon();
 	bool get_profile_start_minimized();
-	string get_profile_torrents_view();
+	std::string get_profile_torrents_view();
 	void write_profile_hide_on_deactivate(bool);
 	void write_profile_lower_process_priority(bool);
-	void write_profile_peers_view(const string&);
+	void write_profile_peers_view(const std::string&);
 	void write_profile_show_confirm_exit_dialog(bool);
 	void write_profile_show_tray_icon(bool v);
 	void write_profile_start_minimized(bool);
-	void write_profile_torrents_view(const string&);
-	string GetProfileBinary(LPCTSTR Entry);
+	void write_profile_torrents_view(const std::string&);
+	std::string GetProfileBinary(LPCTSTR Entry);
 	int GetProfileInt(LPCTSTR Entry, int Default = 0);
-	string GetProfileString(LPCTSTR Entry, LPCTSTR Default = "");
-	BOOL WriteProfileBinary(LPCTSTR Entry, const string& Value);
+	std::string GetProfileString(LPCTSTR Entry, LPCTSTR Default = "");
+	BOOL WriteProfileBinary(LPCTSTR Entry, const std::string& Value);
 	BOOL WriteProfileInt(LPCTSTR Entry, int Value);
-	BOOL WriteProfileString(LPCTSTR Entry, const string& Value);
+	BOOL WriteProfileString(LPCTSTR Entry, const std::string& Value);
 	void register_hot_key(DWORD v);
 	void unregister_hot_key();
 	void update_global_details();
@@ -48,7 +48,7 @@ public:
 	void set_priority(int v);
 	int get_torrent_priority();
 	void set_torrent_priority(int v);
-	void set_clipboard(const string&);
+	void set_clipboard(const std::string&);
 	void lower_process_priority(bool);
 	void set_dir();
 	void insert_columns(bool auto_size);
@@ -70,8 +70,8 @@ public:
 	void update_tray();
 	void update_tray(const char* info_title, const char* info);
 	void fill_peers();
-	void open(const string& name, bool ask_for_location);
-	void open_url(const string&);
+	void open(const std::string& name, bool ask_for_location);
+	void open_url(const std::string&);
 	CXBTClientDlg(CWnd* pParent = NULL);
 
 	//{{AFX_DATA(CXBTClientDlg)
@@ -219,8 +219,8 @@ private:
 	{
 		time_t time;
 		int level;
-		string message;
-		string source;
+		std::string message;
+		std::string source;
 	};
 
 	struct t_peer: public Cbt_peer_data
@@ -234,8 +234,8 @@ private:
 		int mc_pieces;
 		int m_rtime;
 		int m_stime;
-		string m_debug;
-		string m_host_name;
+		std::string m_debug;
+		std::string m_host_name;
 		bool m_removed;
 	};
 
@@ -254,18 +254,18 @@ private:
 
 	struct t_tracker
 	{
-		string url;
+		std::string url;
 	};
 
-	typedef vector<t_event> t_events;
-	typedef map<int, t_peer> t_peers;
-	typedef vector<t_piece> t_pieces;
-	typedef vector<t_sub_file> t_sub_files;
-	typedef vector<t_tracker> t_trackers;
+	typedef std::vector<t_event> t_events;
+	typedef std::map<int, t_peer> t_peers;
+	typedef std::vector<t_piece> t_pieces;
+	typedef std::vector<t_sub_file> t_sub_files;
+	typedef std::vector<t_tracker> t_trackers;
 
 	struct t_file: public Cbt_file_data
 	{
-		string m_display_name;
+		std::string m_display_name;
 		t_events events;
 		t_trackers m_trackers;
 		t_peers peers;
@@ -303,8 +303,8 @@ private:
 		int mc_torrents_incomplete;
 	};
 
-	typedef vector<int> t_columns;
-	typedef map<int, t_file> t_files;
+	typedef std::vector<int> t_columns;
+	typedef std::map<int, t_file> t_files;
 
 	void read_peer_dump(t_file& f, Cstream_reader& sr);
 	void read_file_dump(Cstream_reader& sr);

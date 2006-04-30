@@ -36,7 +36,7 @@ public:
 		m_data = v;
 	}
 
-	Cxif_value(const string& v)
+	Cxif_value(const std::string& v)
 	{
 		m_type = vt_string;
 		memcpy(m_data.write_start(v.length() + 1), v.c_str(), v.length() + 1);
@@ -80,13 +80,13 @@ public:
 		return get_size() ? get_int() : v;
 	}
 
-	string get_string() const
+	std::string get_string() const
 	{
 		assert(get_size());
 		return reinterpret_cast<const char*>(get_data());
 	}
 
-	string get_string(const string& v) const
+	std::string get_string(const std::string& v) const
 	{
 		return get_size() ? get_string() : v;
 	}
@@ -97,7 +97,7 @@ public:
 		return get_type() == vt_bin32 || get_type() == vt_float || get_type() == vt_int32;
 	}
 
-	void dump(ostream& os, int depth = 0) const;
+	void dump(std::ostream& os, int depth = 0) const;
 	t_vt get_type() const;
 	void load_old(const byte*& data);
 	void load_new(const byte*& data);

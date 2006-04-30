@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include <boost/program_options.hpp>
+#include <iostream>
 #include "windows/nt_service.h"
 #include "server.h"
 
-string g_conf_file;
+std::string g_conf_file;
 const char* g_service_name = "XBT Client";
 
 int main1()
@@ -60,7 +61,7 @@ int main(int argc, char* argv[])
 
 		po::options_description desc;
 		desc.add_options()
-			("conf_file", po::value<string>()->default_value(Cserver().conf_fname()))
+			("conf_file", po::value<std::string>()->default_value(Cserver().conf_fname()))
 			("help", "")
 #ifdef WIN32
 			("install", "")
@@ -72,23 +73,29 @@ int main(int argc, char* argv[])
 		po::notify(vm);
 		if (vm.count("help"))
 		{
-			cerr << desc;
+			std::cerr << desc;
 			return 1;
 		}
-		g_conf_file = vm["conf_file"].as<string>();
+		g_conf_file = vm["conf_file"].as<std::string>();
 #ifdef WIN32
 		if (vm.count("install"))
 		{
 			if (nt_service_install(g_service_name))
-				return cerr << "Failed to install service " << g_service_name << "." << endl, 1;
-			cout << "Service " << g_service_name << " has been installed." << endl;
+			{
+				std::cerr << "Failed to install service " << g_service_name << "." << std::endl;
+				return 1;
+			}
+			std::cout << "Service " << g_service_name << " has been installed." << std::endl;
 			return 0;
 		}
 		if (vm.count("uninstall"))
 		{
 			if (nt_service_uninstall(g_service_name))
-				return cerr << "Failed to uninstall service " << g_service_name << "." << endl, 1;
-			cout << "Service " << g_service_name << " has been uninstalled." << endl;
+			{
+				std::cerr << "Failed to uninstall service " << g_service_name << "." << std::endl;
+				return 1;
+			}
+			std::cout << "Service " << g_service_name << " has been uninstalled." << std::endl;
 			return 0;
 		}
 		SERVICE_TABLE_ENTRY st[] =
@@ -104,9 +111,9 @@ int main(int argc, char* argv[])
 #endif
 		return main1();
 	}
-	catch (exception& e)
+	catch (std::exception& e)
 	{
-		cerr << e.what() << endl;
+		std::cerr << e.what() << std::endl;
 		return 1;
 	}
 }

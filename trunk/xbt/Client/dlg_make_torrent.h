@@ -13,11 +13,11 @@ class Cdlg_make_torrent: public ETSLayoutDialog
 public:
 	void post_insert();
 	int compare(int id_a, int id_b) const;
-	void insert(const string& name);
+	void insert(const std::string& name);
 	void sort();
 	Cdlg_make_torrent(CWnd* pParent = NULL);
 
-	const string& torrent_fname() const
+	const std::string& torrent_fname() const
 	{
 		return m_torrent_fname;
 	}
@@ -50,16 +50,16 @@ protected:
 private:
 	struct t_map_entry
 	{
-		string name;
+		std::string name;
 		long long size;
 	};
 
-	typedef map<int, t_map_entry> t_map;
+	typedef std::map<int, t_map_entry> t_map;
 
 	t_map m_map;
 	int m_sort_column;
 	bool m_sort_reverse;
-	string m_torrent_fname;
+	std::string m_torrent_fname;
 };
 
 //{{AFX_INSERT_LOCATION}}

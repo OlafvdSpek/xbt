@@ -32,12 +32,12 @@ public:
 		df_trackers = 8,
 	};
 
-	Cbt_file* find_torrent(const string&);
-	bool admin_authenticate(const string& user, const string& pass) const;
+	Cbt_file* find_torrent(const std::string&);
+	bool admin_authenticate(const std::string& user, const std::string& pass) const;
 	Cbvalue admin_request(const Cbvalue& s);
 	void check_remote_links();
-	Chttp_link* http_request(int h, int p, const string& request, Chttp_response_handler*);
-	Cvirtual_binary get_file_status(const string& id, int flags);
+	Chttp_link* http_request(int h, int p, const std::string& request, Chttp_response_handler*);
+	Cvirtual_binary get_file_status(const std::string& id, int flags);
 	Cvirtual_binary get_status(int flags);
 	Cvirtual_binary get_trackers();
 	Cvirtual_binary save_state(bool intermediate);
@@ -46,41 +46,41 @@ public:
 	Cxif_key get_scheduler();
 	bool below_peer_limit() const;
 	bool below_torrent_limit() const;
-	int announce(const string& id);
-	int close(const string& id, bool erase = false);
-	int file_priority(const string&, int priority);
-	int file_state(const string&, Cbt_file::t_state);
-	int open(const Cvirtual_binary& info, const string& name);
-	int open_url(const string&);
-	int peer_connect(const string& id, int ipa, int port);
-	int peer_disconnect(const string& id, int ipa);
+	int announce(const std::string& id);
+	int close(const std::string& id, bool erase = false);
+	int file_priority(const std::string&, int priority);
+	int file_state(const std::string&, Cbt_file::t_state);
+	int open(const Cvirtual_binary& info, const std::string& name);
+	int open_url(const std::string&);
+	int peer_connect(const std::string& id, int ipa, int port);
+	int peer_disconnect(const std::string& id, int ipa);
 	int peer_block(int ipa);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	static int version();
-	string completes_dir() const;
-	string conf_fname() const;
-	string get_url(const string& id);
-	string incompletes_dir() const;
-	string local_app_data_dir() const;
-	string peer_id_prefix() const;
-	string profiles_fname() const;
-	string scheduler_fname() const;
-	string state_fname() const;
-	string torrents_dir() const;
-	string trackers_fname() const;
-	string user_agent() const;
+	std::string completes_dir() const;
+	std::string conf_fname() const;
+	std::string get_url(const std::string& id);
+	std::string incompletes_dir() const;
+	std::string local_app_data_dir() const;
+	std::string peer_id_prefix() const;
+	std::string profiles_fname() const;
+	std::string scheduler_fname() const;
+	std::string state_fname() const;
+	std::string torrents_dir() const;
+	std::string trackers_fname() const;
+	std::string user_agent() const;
 	void admin_port(int);
 	void alert(const Calert&);
 	void clean_scheduler();
-	void completes_dir(const string&);
-	void incompletes_dir(const string&);
-	void load_config(const string&);
+	void completes_dir(const std::string&);
+	void incompletes_dir(const std::string&);
+	void load_config(const std::string&);
 	void load_profile(const Cprofile&);
 	void load_profile(const Cxif_key&);
 	void load_state(const Cvirtual_binary&);
-	void local_app_data_dir(const string&);
+	void local_app_data_dir(const std::string&);
 	void lock();
-	void peer_id_prefix(const string&);
+	void peer_id_prefix(const std::string&);
 	void peer_port(int);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void public_ipa(int);
@@ -91,13 +91,13 @@ public:
 	void set_profiles(const Cxif_key&);
 	void set_scheduler(const Cxif_key&);
 	void set_trackers(const Cvirtual_binary& d);
-	void sub_file_priority(const string& file_id, const string& sub_file_id, int priority);
-	void torrent_end_mode(const string& file_id, bool v);
-	void torrent_seeding_ratio(const string& file_id, bool override, int v);
-	void torrent_trackers(const string& file_id, const string& v);
-	void torrent_upload_slots_max(const string& file_id, bool override, int v);
-	void torrent_upload_slots_min(const string& file_id, bool override, int v);
-	void torrents_dir(const string&);
+	void sub_file_priority(const std::string& file_id, const std::string& sub_file_id, int priority);
+	void torrent_end_mode(const std::string& file_id, bool v);
+	void torrent_seeding_ratio(const std::string& file_id, bool override, int v);
+	void torrent_trackers(const std::string& file_id, const std::string& v);
+	void torrent_upload_slots_max(const std::string& file_id, bool override, int v);
+	void torrent_upload_slots_min(const std::string& file_id, bool override, int v);
+	void torrents_dir(const std::string&);
 	void tracker_port(int);
 	void unlock();
 	void update_chokes();
@@ -105,15 +105,15 @@ public:
 	void upload_rate(int);
 	void upload_slots(int);
 	void upnp(bool);
-	void user_agent(const string&);
+	void user_agent(const std::string&);
 
-	typedef list<Cbt_admin_link> t_admins;
-	typedef list<Cbt_file> t_files;
-	typedef list<Chttp_link> t_http_links;
-	typedef list<Cbt_link> t_links;
+	typedef std::list<Cbt_admin_link> t_admins;
+	typedef std::list<Cbt_file> t_files;
+	typedef std::list<Chttp_link> t_http_links;
+	typedef std::list<Cbt_link> t_links;
 
-	int pre_file_dump(const string& id, int flags) const;
-	void file_dump(Cstream_writer&, const string& id, int flags) const;
+	int pre_file_dump(const std::string& id, int flags) const;
+	void file_dump(Cstream_writer&, const std::string& id, int flags) const;
 	int pre_dump(int flags) const;
 	void dump(Cstream_writer&, int flags) const;
 	void insert_peer(const char* r, const sockaddr_in& a, const Csocket& s);
@@ -180,12 +180,12 @@ public:
 		return m_logger;
 	}
 
-	const string& peer_id() const
+	const std::string& peer_id() const
 	{
 		return m_peer_id;
 	}
 
-	const string& peer_key() const
+	const std::string& peer_key() const
 	{
 		return m_peer_key;
 	}
@@ -293,8 +293,8 @@ private:
 	time_t m_update_chokes_time;
 	time_t m_update_send_quotas_time;
 	time_t m_update_states_time;
-	string m_peer_id;
-	string m_peer_key;
+	std::string m_peer_id;
+	std::string m_peer_key;
 	Cversion_check_handler m_version_check_handler;
 
 #ifdef WIN32

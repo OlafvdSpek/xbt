@@ -7,7 +7,7 @@ Cbt_tracker_url::Cbt_tracker_url()
 {
 }
 
-Cbt_tracker_url::Cbt_tracker_url(const string& v)
+Cbt_tracker_url::Cbt_tracker_url(const std::string& v)
 {
 	write(v);
 }
@@ -34,19 +34,19 @@ bool Cbt_tracker_url::valid() const
 	return false;
 }
 
-void Cbt_tracker_url::write(const string& v)
+void Cbt_tracker_url::write(const std::string& v)
 {
 	clear();
 	size_t a;
 	int protocol;
 	int port;
-	if (istarts_with(v, "http://"))
+	if (boost::istarts_with(v, "http://"))
 	{
 		a = 7;
 		protocol = tp_http;
 		port = 80;
 	}
-	else if (istarts_with(v, "udp://"))
+	else if (boost::istarts_with(v, "udp://"))
 	{
 		a = 6;
 		protocol = tp_udp;
@@ -55,8 +55,8 @@ void Cbt_tracker_url::write(const string& v)
 	else
 		return;
 	size_t b = v.find_first_of("/:", a);
-	string host;
-	if (b == string::npos)
+	std::string host;
+	if (b == std::string::npos)
 		host = v.substr(a);
 	else
 	{
@@ -67,7 +67,7 @@ void Cbt_tracker_url::write(const string& v)
 		{
 			b++;
 			a = v.find('/', b);
-			if (a == string::npos)
+			if (a == std::string::npos)
 				port = atoi(v.substr(b).c_str());
 			else
 			{

@@ -1,20 +1,20 @@
 #include "stdafx.h"
 #include "http_response_handler.h"
 
-int Chttp_response_handler::get_status_code(const string& v)
+int Chttp_response_handler::get_status_code(const std::string& v)
 {
-	int a = v.find_first_of("\n\r ");
-	if (a == string::npos)
+	size_t a = v.find_first_of("\n\r ");
+	if (a == std::string::npos)
 		return 1;
 	if (v[a] != ' ')
 		return 2;
 	return atoi(v.substr(a).c_str());
 }
 
-string Chttp_response_handler::get_message_body(const string& v)
+std::string Chttp_response_handler::get_message_body(const std::string& v)
 {
-	int a = v.find("\r\n\r\n");
-	if (a == string::npos)
+	size_t a = v.find("\r\n\r\n");
+	if (a == std::string::npos)
 		return "";
 	return v.substr(a + 4);
 }
@@ -23,6 +23,6 @@ void Chttp_response_handler::alert(const Calert&)
 {
 }
 
-void Chttp_response_handler::handle(const string& response)
+void Chttp_response_handler::handle(const std::string& response)
 {
 }
