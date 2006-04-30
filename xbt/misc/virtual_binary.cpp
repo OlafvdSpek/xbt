@@ -52,7 +52,7 @@ Cvirtual_binary::Cvirtual_binary(const void* d, size_t cb_d)
 	m_source = new Cvirtual_binary_source(d, cb_d);
 }
 
-Cvirtual_binary::Cvirtual_binary(const string& fname)
+Cvirtual_binary::Cvirtual_binary(const std::string& fname)
 {
 	m_source = NULL;
 	load(fname);
@@ -73,7 +73,7 @@ const Cvirtual_binary& Cvirtual_binary::operator=(const Cvirtual_binary& v)
 	return *this;
 }
 
-int Cvirtual_binary::save(const string& fname) const
+int Cvirtual_binary::save(const std::string& fname) const
 {
 	FILE* f = fopen(fname.c_str(), "wb");
 	if (!f)
@@ -83,7 +83,7 @@ int Cvirtual_binary::save(const string& fname) const
 	return error;
 }
 
-int Cvirtual_binary::load(const string& fname)
+int Cvirtual_binary::load(const std::string& fname)
 {
 	FILE* f = fopen(fname.c_str(), "rb");
 	if (!f)

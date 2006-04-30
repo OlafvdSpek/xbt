@@ -7,8 +7,6 @@
 
 #include <string>
 
-using namespace std;
-
 #ifdef WIN32
 #include <windows.h>
 
@@ -90,9 +88,9 @@ private:
 class Csocket
 {
 public:
-	static string error2a(int v);
-	static int get_host(const string& name);
-	static string inet_ntoa(int h);
+	static std::string error2a(int v);
+	static int get_host(const std::string& name);
+	static std::string inet_ntoa(int h);
 	static int start_up();
 	int accept(int& h, int& p);
 	int bind(int h, int p);

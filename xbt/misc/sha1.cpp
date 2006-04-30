@@ -406,11 +406,11 @@ void Csha1::read(void* d)
 	SHA1Result(&m_context, reinterpret_cast<unsigned char*>(d));
 }
 
-string Csha1::read()
+std::string Csha1::read()
 {
 	char d[SHA1HashSize];
 	read(d);
-	return string(d, SHA1HashSize);
+	return std::string(d, SHA1HashSize);
 }
 
 void Csha1::write(const_memory_range s)

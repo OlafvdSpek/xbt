@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "nt_service.h"
 
+#include <windows.h>
+
 int nt_service_install(const char* name)
 {
 	SC_HANDLE scm = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);

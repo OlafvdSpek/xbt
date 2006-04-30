@@ -7,12 +7,13 @@
 
 #include <boost/algorithm/string.hpp>
 #include <fstream>
+#include <set>
 #include <string>
 
 class Cconfig_base
 {
 public:
-	virtual int set(const string& name, const string& value) = 0;
+	virtual int set(const std::string& name, const std::string& value) = 0;
 
 	template <class T>
 	struct t_attribute
@@ -30,20 +31,20 @@ public:
 		return i->key ? i : NULL;
 	}
 
-	istream& load(istream& is)
+	std::istream& load(std::istream& is)
 	{
-		for (string s; getline(is, s); )
+		for (std::string s; getline(is, s); )
 		{
 			size_t i = s.find('=');
-			if (i != string::npos)
+			if (i != std::string::npos)
 				set(boost::trim_copy(s.substr(0, i)), boost::trim_copy(s.substr(i + 1)));
 		}
 		return is;
 	}
 
-	int load(const string& file)
+	int load(const std::string& file)
 	{
-		ifstream is(file.c_str());
+		std::ifstream is(file.c_str());
 		if (!is)
 			return 1;
 		load(is);

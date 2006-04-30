@@ -4,7 +4,7 @@
 #include <cstdio>
 #include "database.h"
 
-Csql_query::Csql_query(Cdatabase& database, const string& v):
+Csql_query::Csql_query(Cdatabase& database, const std::string& v):
 	m_database(database)
 {
 	m_data = v;
@@ -15,9 +15,9 @@ Csql_result Csql_query::execute() const
 	return m_database.query(read());
 }
 
-string Csql_query::read() const
+std::string Csql_query::read() const
 {
-	string r;
+	std::string r;
 	t_list::const_iterator l = m_list.begin();
 	for (size_t i = 0; i < m_data.length(); i++)
 	{
@@ -33,18 +33,18 @@ string Csql_query::read() const
 	return r;
 }
 
-void Csql_query::operator=(const string& v)
+void Csql_query::operator=(const std::string& v)
 {
 	m_data = v;
 	m_list.clear();
 }
 
-void Csql_query::operator+=(const string& v)
+void Csql_query::operator+=(const std::string& v)
 {
 	m_data += v;
 }
 
-void Csql_query::p_raw(const string& v)
+void Csql_query::p_raw(const std::string& v)
 {
 	m_list.push_back(v);
 }
@@ -60,7 +60,7 @@ void Csql_query::p(long long v)
 	p_raw(b);
 }
 
-void Csql_query::p(const string& v)
+void Csql_query::p(const std::string& v)
 {
 	char* r = new char[2 * v.length() + 3];
 	r[0] = '\'';

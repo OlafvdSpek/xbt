@@ -10,21 +10,21 @@
 class Cdatabase
 {
 public:
-	class exception: public runtime_error
+	class exception: public std::runtime_error
 	{
 	public:
-		exception(const string& s): runtime_error(s)
+		exception(const std::string& s): runtime_error(s)
 		{
 		}
 	};
 
-	void open(const string& host, const string& user, const string& password, const string& database, bool echo_errors = false);
-	Csql_result query(const string& q);
-	void set_query_log(const string&);
+	void open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors = false);
+	Csql_result query(const std::string&);
+	void set_query_log(const std::string&);
 	int insert_id();
 	void close();
 	Cdatabase();
-	Cdatabase(const string& host, const string& user, const string& password, const string& database, bool echo_errors = false);
+	Cdatabase(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors = false);
 	~Cdatabase();
 
 	MYSQL& handle()
@@ -36,7 +36,7 @@ private:
 
 	bool m_echo_errors;
 	MYSQL m_handle;
-	string m_query_log;
+	std::string m_query_log;
 };
 
 #endif // !defined(AFX_DATABASE_H__EA1254C6_2222_11D5_B606_0000B4936994__INCLUDED_)

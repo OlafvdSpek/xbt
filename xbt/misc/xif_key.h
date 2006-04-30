@@ -10,8 +10,6 @@
 #include "virtual_binary.h"
 #include "xif_value.h"
 
-using namespace std;
-
 const static int file_id = 0x1a464958; // *reinterpret_cast<const int*>("XIF\x1a");
 const static int file_version_old = 0;
 const static int file_version_new = 1;

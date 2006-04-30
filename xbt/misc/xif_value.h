@@ -8,11 +8,9 @@
 #include "vartypes.h"
 #include "virtual_binary.h"
 
-using namespace std;
-
 enum t_vt {vt_bin32, vt_binary, vt_int32, vt_string, vt_external_binary, vt_float, vt_unknown};
 
-class Cxif_value  
+class Cxif_value
 {
 public:
 	Cxif_value()
@@ -36,13 +34,13 @@ public:
 	{
 		m_type = fast ? vt_external_binary : vt_binary;
 		m_data = v;
-	}	
+	}
 
 	Cxif_value(const string& v)
 	{
 		m_type = vt_string;
 		memcpy(m_data.write_start(v.length() + 1), v.c_str(), v.length() + 1);
-	}	
+	}
 
 	Cvirtual_binary get_vdata() const
 	{
@@ -55,7 +53,7 @@ public:
 		return idata() ? m_value : m_data.data();
 	}
 
-	int get_size() const 
+	int get_size() const
 	{
 		return idata() ? 4 : m_data.size();
 	}

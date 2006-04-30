@@ -9,37 +9,35 @@
 #include "sha1.h"
 #include "virtual_binary.h"
 
-using namespace std;
-
-string b2a(long long v, const char* postfix = NULL);
-string backward_slashes(string);
-string duration2a(float);
-string escape_string(const string&);
-string forward_slashes(string);
-string get_env(const string&);
+std::string b2a(long long v, const char* postfix = NULL);
+std::string backward_slashes(std::string);
+std::string duration2a(float);
+std::string escape_string(const std::string&);
+std::string forward_slashes(std::string);
+std::string get_env(const std::string&);
 int hms2i(int h, int m, int s);
 bool is_private_ipa(int a);
 int merkle_tree_size(int v);
-int mkpath(const string&);
-string n(long long);
-string native_slashes(const string&);
-string hex_decode(const string&);
-string hex_encode(int l, int v);
-string hex_encode(const string&);
-string js_encode(const string&);
-string peer_id2a(const string&);
-string time2a(time_t);
-string uri_decode(const string&);
-string uri_encode(const string&);
+int mkpath(const std::string&);
+std::string n(long long);
+std::string native_slashes(const std::string&);
+std::string hex_decode(const std::string&);
+std::string hex_encode(int l, int v);
+std::string hex_encode(const std::string&);
+std::string js_encode(const std::string&);
+std::string peer_id2a(const std::string&);
+std::string time2a(time_t);
+std::string uri_decode(const std::string&);
+std::string uri_encode(const std::string&);
 long long xbt_atoll(const char*);
-string xbt_version2a(int);
+std::string xbt_version2a(int);
 
-inline string compute_sha1(const void* s, size_t cb_s)
+inline std::string compute_sha1(const void* s, size_t cb_s)
 {
 	return Csha1(const_memory_range(s, cb_s)).read();
 }
 
-inline string compute_sha1(const Cvirtual_binary& s)
+inline std::string compute_sha1(const Cvirtual_binary& s)
 {
 	return compute_sha1(s, s.size());
 }

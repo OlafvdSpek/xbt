@@ -168,13 +168,13 @@ int Csocket::setsockopt(int level, int name, int v)
 	return setsockopt(level, name, &v, sizeof(int));
 }
 
-int Csocket::get_host(const string& name)
+int Csocket::get_host(const std::string& name)
 {
 	hostent* e = gethostbyname(name.c_str());
 	return e && e->h_addrtype == AF_INET && e->h_length == sizeof(in_addr) && e->h_addr_list ? *reinterpret_cast<int*>(*e->h_addr_list) : INADDR_NONE;
 }
 
-string Csocket::error2a(int v)
+std::string Csocket::error2a(int v)
 {
 	switch (v)
 	{
@@ -243,7 +243,7 @@ string Csocket::error2a(int v)
 	return b;
 }
 
-string Csocket::inet_ntoa(int v)
+std::string Csocket::inet_ntoa(int v)
 {
 	in_addr a;
 	a.s_addr = v;
