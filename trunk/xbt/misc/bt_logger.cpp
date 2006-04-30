@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "bt_logger.h"
 
+#include <ctime>
 #include "bt_misc.h"
 
 Cbt_logger::Cbt_logger()

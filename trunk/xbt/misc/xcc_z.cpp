@@ -27,7 +27,7 @@ Cvirtual_binary xcc_z::gunzip(const void* s0, int cb_s)
 		: Cvirtual_binary();
 }
 
-Cvirtual_binary xcc_z::gunzip(const string& v)
+Cvirtual_binary xcc_z::gunzip(const std::string& v)
 {
 	return gunzip(reinterpret_cast<const byte*>(v.data()), v.length());
 }
@@ -73,7 +73,7 @@ Cvirtual_binary xcc_z::gzip(const void* s0, int cb_s)
 	return d;
 }
 
-Cvirtual_binary xcc_z::gzip(const string& v)
+Cvirtual_binary xcc_z::gzip(const std::string& v)
 {
 	return gzip(reinterpret_cast<const byte*>(v.data()), v.length());
 }
@@ -90,7 +90,7 @@ void xcc_z::gzip_out(const void* s, int cb_s)
 	gzflush(f, Z_FINISH);
 }
 
-void xcc_z::gzip_out(const string& v)
+void xcc_z::gzip_out(const std::string& v)
 {
 	gzip_out(v.data(), v.length());
 }

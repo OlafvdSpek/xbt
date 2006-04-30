@@ -9,9 +9,9 @@
 #pragma comment(lib, "ws2_32")
 #endif
 
-string escape_string(const string& v)
+std::string escape_string(const std::string& v)
 {
-	string w;
+	std::string w;
 	w.reserve(v.length());
 	for (size_t i = 0; i < v.length(); i++)
 	{
@@ -32,7 +32,7 @@ string escape_string(const string& v)
 	return w;
 }
 
-string get_env(const string& v)
+std::string get_env(const std::string& v)
 {
 	const char* p = getenv(v.c_str());
 	return p ? p : "";
@@ -49,9 +49,9 @@ static int hex_decode(char v)
 	return -1;
 };
 
-string hex_decode(const string& v)
+std::string hex_decode(const std::string& v)
 {
-	string r;
+	std::string r;
 	r.resize(v.length() >> 1);
 	for (size_t i = 0; i + 2 <= v.length(); i += 2)
 	{
@@ -61,9 +61,9 @@ string hex_decode(const string& v)
 	return r;
 }
 
-string hex_encode(int l, int v)
+std::string hex_encode(int l, int v)
 {
-	string r;
+	std::string r;
 	r.resize(l);
 	while (l--)
 	{
@@ -73,7 +73,7 @@ string hex_encode(int l, int v)
 	return r;
 };
 
-string n(long long v)
+std::string n(long long v)
 {
 	char b[21];
 #ifdef WIN32
@@ -84,18 +84,18 @@ string n(long long v)
 	return b;
 }
 
-string hex_encode(const string& v)
+std::string hex_encode(const std::string& v)
 {
-	string r;
+	std::string r;
 	r.reserve(v.length() << 1);
 	for (size_t i = 0; i < v.length(); i++)
 		r += hex_encode(2, v[i]);
 	return r;
 }
 
-string js_encode(const string& v)
+std::string js_encode(const std::string& v)
 {
-	string r;
+	std::string r;
 	for (size_t i = 0; i < v.length(); i++)
 	{
 		switch (v[i])
@@ -111,9 +111,9 @@ string js_encode(const string& v)
 	return r;
 }
 
-string uri_decode(const string& v)
+std::string uri_decode(const std::string& v)
 {
-	string r;
+	std::string r;
 	r.reserve(v.length());
 	for (size_t i = 0; i < v.length(); i++)
 	{
@@ -138,9 +138,9 @@ string uri_decode(const string& v)
 	return r;
 };
 
-string uri_encode(const string& v)
+std::string uri_encode(const std::string& v)
 {
-	string r;
+	std::string r;
 	r.reserve(v.length());
 	for (size_t i = 0; i < v.length(); i++)
 	{
@@ -177,7 +177,7 @@ bool is_private_ipa(int a)
 		|| (ntohl(a) & 0xffff0000) == 0xc0a80000;
 }
 
-string b2a(long long v, const char* postfix)
+std::string b2a(long long v, const char* postfix)
 {
 	int l;
 	for (l = 0; v < -9999 || v > 999999; l++)
@@ -204,7 +204,7 @@ string b2a(long long v, const char* postfix)
 	return d;
 }
 
-static string peer_id2a(const string& name, const string& peer_id, int i)
+static std::string peer_id2a(const std::string& name, const std::string& peer_id, int i)
 {
 	for (size_t j = i; j < peer_id.size(); j++)
 	{
@@ -214,7 +214,7 @@ static string peer_id2a(const string& name, const string& peer_id, int i)
 	return name + peer_id.substr(i);
 }
 
-string peer_id2a(const string& v)
+std::string peer_id2a(const std::string& v)
 {
 	if (v.length() != 20)
 		return "";
@@ -242,7 +242,7 @@ string peer_id2a(const string& v)
 			return peer_id2a("BitTornado ", v, 1);
 		case 'X':
 			if (v[1] == 'B' && v[2] == 'T')
-				return peer_id2a("XBT Client ", v, 3) + (v.find_first_not_of("0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz", 8) == string::npos ? "" : " (fake)");
+				return peer_id2a("XBT Client ", v, 3) + (v.find_first_not_of("0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz", 8) == std::string::npos ? "" : " (fake)");
 			break;
 		}
 	}
@@ -263,7 +263,7 @@ string peer_id2a(const string& v)
 	return "Unknown";
 }
 
-string duration2a(float v)
+std::string duration2a(float v)
 {
 	char d[32];
 	if (v > 86400)
@@ -277,7 +277,7 @@ string duration2a(float v)
 	return d;
 }
 
-string time2a(time_t v)
+std::string time2a(time_t v)
 {
 	const tm* date = localtime(&v);
 	if (!date)
@@ -300,21 +300,21 @@ int merkle_tree_size(int v)
 	return r;
 }
 
-string backward_slashes(string v)
+std::string backward_slashes(std::string v)
 {
-	for (size_t i = 0; (i = v.find('/', i)) != string::npos; i++)
+	for (size_t i = 0; (i = v.find('/', i)) != std::string::npos; i++)
 		v[i] = '\\';
 	return v;
 }
 
-string forward_slashes(string v)
+std::string forward_slashes(std::string v)
 {
-	for (size_t i = 0; (i = v.find('\\', i)) != string::npos; i++)
+	for (size_t i = 0; (i = v.find('\\', i)) != std::string::npos; i++)
 		v[i] = '/';
 	return v;
 }
 
-string native_slashes(const string& v)
+std::string native_slashes(const std::string& v)
 {
 #ifdef WIN32
 	return backward_slashes(v);
@@ -323,12 +323,12 @@ string native_slashes(const string& v)
 #endif
 }
 
-int mkpath(const string& v)
+int mkpath(const std::string& v)
 {
 	for (size_t i = 0; i < v.size(); )
 	{
 		size_t a = v.find_first_of("/\\", i);
-		if (a == string::npos)
+		if (a == std::string::npos)
 			a = v.size();
 #ifdef WIN32
 		CreateDirectory(v.substr(0, a).c_str(), NULL);
@@ -345,7 +345,7 @@ int hms2i(int h, int m, int s)
 	return 60 * (h + 60 * m) + s;
 }
 
-string xbt_version2a(int v)
+std::string xbt_version2a(int v)
 {
 	return n(v / 100) + "." + n(v / 10 % 10) + "." + n(v % 10);
 }

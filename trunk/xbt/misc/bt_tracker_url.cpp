@@ -3,8 +3,6 @@
 
 #include <boost/algorithm/string.hpp>
 
-using namespace boost;
-
 Cbt_tracker_url::Cbt_tracker_url()
 {
 }

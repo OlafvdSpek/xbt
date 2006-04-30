@@ -14,7 +14,7 @@ Cdatabase::Cdatabase()
 	mysql_init(&m_handle);
 }
 
-Cdatabase::Cdatabase(const string& host, const string& user, const string& password, const string& database, bool echo_errors)
+Cdatabase::Cdatabase(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors)
 {
 	open(host, user, password, database, echo_errors);
 }
@@ -24,7 +24,7 @@ Cdatabase::~Cdatabase()
 	close();
 }
 
-void Cdatabase::open(const string& host, const string& user, const string& password, const string& database, bool echo_errors)
+void Cdatabase::open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors)
 {
 	m_echo_errors = echo_errors;
 	bool a0 = true;
@@ -37,19 +37,19 @@ void Cdatabase::open(const string& host, const string& user, const string& passw
 		throw exception(mysql_error(&m_handle));
 }
 
-Csql_result Cdatabase::query(const string& q)
+Csql_result Cdatabase::query(const std::string& q)
 {
 	if (!m_query_log.empty())
 	{
-		static ofstream f(m_query_log.c_str());
-		f << q << endl;
+		static std::ofstream f(m_query_log.c_str());
+		f << q << std::endl;
 	}
 	if (mysql_real_query(&m_handle, q.data(), q.size()))
 	{
 		if (m_echo_errors)
 		{
-			cerr << mysql_error(&m_handle) << endl
-				<< q.substr(0, 79) << endl;
+			std::cerr << mysql_error(&m_handle) << std::endl
+				<< q.substr(0, 79) << std::endl;
 		}
 		throw exception(mysql_error(&m_handle));
 	}
@@ -66,7 +66,7 @@ int Cdatabase::insert_id()
 	return mysql_insert_id(&m_handle);
 }
 
-void Cdatabase::set_query_log(const string& v)
+void Cdatabase::set_query_log(const std::string& v)
 {
 	m_query_log = v;
 }

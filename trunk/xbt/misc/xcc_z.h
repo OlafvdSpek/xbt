@@ -10,13 +10,13 @@
 namespace xcc_z
 {
 	Cvirtual_binary gunzip(const void* s, int cb_s);
-	Cvirtual_binary gunzip(const string& v);
+	Cvirtual_binary gunzip(const std::string& v);
 	Cvirtual_binary gunzip(const Cvirtual_binary&);
 	Cvirtual_binary gzip(const void* s, int cb_s);
-	Cvirtual_binary gzip(const string& v);
+	Cvirtual_binary gzip(const std::string& v);
 	Cvirtual_binary gzip(const Cvirtual_binary&);
 	void gzip_out(const void* s, int cb_s);
-	void gzip_out(const string& v);
+	void gzip_out(const std::string& v);
 	void gzip_out(const Cvirtual_binary&);
 }
 

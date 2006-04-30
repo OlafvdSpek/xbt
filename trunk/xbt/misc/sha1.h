@@ -20,8 +20,6 @@
 #include <string>
 #include "virtual_binary.h"
 
-using namespace std;
-
 #if defined(BSD) || defined(WIN32)
 typedef unsigned int uint32_t;
 typedef int int_least16_t;
@@ -84,7 +82,7 @@ class Csha1
 {
 public:
 	void read(void*);
-	string read();
+	std::string read();
 	void write(const_memory_range);
 	Csha1();
 	Csha1(const_memory_range);

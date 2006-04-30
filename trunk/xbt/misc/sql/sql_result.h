@@ -71,9 +71,9 @@ public:
 #endif
 	}
 
-	const string s(const string& d = "") const
+	const std::string s(const std::string& d = "") const
 	{
-		return raw() ? string(raw(), size()) : d;
+		return raw() ? std::string(raw(), size()) : d;
 	}
 
 	Cvirtual_binary vdata() const

@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <list>
 #include "stream_writer.h"
 
 class Cbt_tracker_account

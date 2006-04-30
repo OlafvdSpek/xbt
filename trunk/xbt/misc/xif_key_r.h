@@ -9,8 +9,6 @@
 #include "virtual_binary.h"
 #include "xif_value.h"
 
-using namespace std;
-
 class Cxif_key_r
 {
 public:

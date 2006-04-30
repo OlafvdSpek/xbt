@@ -17,7 +17,7 @@ Cbvalue::Cbvalue(t_value_type t)
 	case vt_int:
 		break;
 	case vt_string:
-		m_string = new string;
+		m_string = new std::string;
 		break;
 	case vt_list:
 		m_list = new t_list;
@@ -30,10 +30,10 @@ Cbvalue::Cbvalue(t_value_type t)
 	}
 }
 
-Cbvalue::Cbvalue(const string& v)
+Cbvalue::Cbvalue(const std::string& v)
 {
 	m_value_type = vt_string;
-	m_string = new string(v);
+	m_string = new std::string(v);
 }
 
 Cbvalue::Cbvalue(const Cbvalue& v)
@@ -44,7 +44,7 @@ Cbvalue::Cbvalue(const Cbvalue& v)
 		m_int = v.m_int;
 		break;
 	case vt_string:
-		m_string = new string(*v.m_string);
+		m_string = new std::string(*v.m_string);
 		break;
 	case vt_list:
 		m_list = new t_list(*v.m_list);
@@ -86,7 +86,7 @@ const Cbvalue& Cbvalue::operator=(const Cbvalue& v)
 		m_int = v.m_int;
 		break;
 	case vt_string:
-		m_string = new string(*v.m_string);
+		m_string = new std::string(*v.m_string);
 		break;
 	case vt_list:
 		m_list = new t_list(*v.m_list);
@@ -144,7 +144,7 @@ int Cbvalue::write(const char*& s, const char* s_end)
 			if (s + l > s_end)
 				return 1;
 			m_value_type = vt_string;
-			m_string = new string(s, l);
+			m_string = new std::string(s, l);
 			s += l;
 			return 0;
 		}
@@ -224,12 +224,12 @@ const Cbvalue::t_map& Cbvalue::d() const
 	return m_value_type == vt_dictionary ? *m_map : z;
 }
 
-bool Cbvalue::d_has(const string& v) const
+bool Cbvalue::d_has(const std::string& v) const
 {
 	return m_value_type == vt_dictionary && m_map->find(v) != m_map->end();
 }
 
-const Cbvalue& Cbvalue::d(const string& v) const
+const Cbvalue& Cbvalue::d(const std::string& v) const
 {
 	if (m_value_type == vt_dictionary)
 	{
@@ -252,13 +252,13 @@ const Cbvalue::t_list& Cbvalue::l() const
 	return m_value_type == vt_list ? *m_list : z;
 }
 
-const string& Cbvalue::s() const
+const std::string& Cbvalue::s() const
 {
-	static string z;
+	static std::string z;
 	return m_value_type == vt_string ? *m_string : z;
 }
 
-Cbvalue& Cbvalue::d(const string& v, const Cbvalue& w)
+Cbvalue& Cbvalue::d(const std::string& v, const Cbvalue& w)
 {
 	if (m_value_type != vt_dictionary)
 	{
