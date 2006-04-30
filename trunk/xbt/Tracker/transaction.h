@@ -22,7 +22,7 @@ public:
 	void send_announce(const char* r, const char* r_end);
 	void send_connect(const char* r, const char* r_end);
 	void send_scrape(const char* r, const char* r_end);
-	void send_error(const char* r, const char* r_end, const string& msg);
+	void send_error(const char* r, const char* r_end, const std::string& msg);
 	Ctransaction(Cserver& server, const Csocket& s);
 private:
 	Cserver& m_server;

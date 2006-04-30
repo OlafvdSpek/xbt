@@ -2,6 +2,7 @@
 #include "tracker_input.h"
 
 #include "bt_misc.h"
+#include "socket.h"
 
 Ctracker_input::Ctracker_input()
 {
@@ -16,7 +17,7 @@ Ctracker_input::Ctracker_input()
 	m_no_peer_id = false;
 }
 
-void Ctracker_input::set(const string& name, const string& value)
+void Ctracker_input::set(const std::string& name, const std::string& value)
 {
 	if (name.empty())
 		return;

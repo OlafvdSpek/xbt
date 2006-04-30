@@ -5,10 +5,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <string>
+
 class Ctracker_input
 {
 public:
-	void set(const string& name, const string& value);
+	void set(const std::string& name, const std::string& value);
 	bool valid() const;
 	Ctracker_input();
 
@@ -21,10 +23,10 @@ public:
 	};
 
 	t_event m_event;
-	string m_info_hash;
+	std::string m_info_hash;
 	int m_ipa;
-	string m_key;
-	string m_peer_id;
+	std::string m_key;
+	std::string m_peer_id;
 	long long m_downloaded;
 	long long m_left;
 	int m_port;

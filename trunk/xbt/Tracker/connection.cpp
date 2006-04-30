@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "connection.h"
 
+#include <iostream>
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "server.h"
@@ -55,7 +56,7 @@ int Cconnection::recv()
 			case WSAEWOULDBLOCK:
 				return 0;
 			}
-			cerr << "recv failed: " << Csocket::error2a(e) << endl;
+			std::cerr << "recv failed: " << Csocket::error2a(e) << std::endl;
 			return 1;
 		}
 		if (m_state == 5)
@@ -78,7 +79,7 @@ int Cconnection::recv()
 				switch (m_state)
 				{
 				case 0:
-					read(string(&m_read_b.front(), a));
+					read(std::string(&m_read_b.front(), a));
 					m_state = 1;
 				case 1:
 				case 3:
@@ -115,7 +116,7 @@ int Cconnection::send()
 			case WSAEWOULDBLOCK:
 				return 0;
 			}
-			cerr << "send failed: " << Csocket::error2a(e) << endl;
+			std::cerr << "send failed: " << Csocket::error2a(e) << std::endl;
 			return 0;
 		}
 		m_r += r;
@@ -128,7 +129,7 @@ int Cconnection::send()
 	return 0;
 }
 
-static string calculate_torrent_pass1(const string& info_hash, long long torrent_pass_secret)
+static std::string calculate_torrent_pass1(const std::string& info_hash, long long torrent_pass_secret)
 {
 	Csha1 sha1;
 	sha1.write(info_hash);
@@ -137,30 +138,30 @@ static string calculate_torrent_pass1(const string& info_hash, long long torrent
 	return sha1.read();
 }
 
-void Cconnection::read(const string& v)
+void Cconnection::read(const std::string& v)
 {
 #ifndef NDEBUG
-	cout << v << endl;
+	std::cout << v << std::endl;
 #endif
 	if (m_log_access)
 	{
-		static ofstream f("xbt_tracker_raw.log");
-		f << m_server->time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << endl;
+		static std::ofstream f("xbt_tracker_raw.log");
+		f << m_server->time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << std::endl;
 	}
 	Ctracker_input ti;
 	size_t a = v.find('?');
-	if (a++ != string::npos)
+	if (a++ != std::string::npos)
 	{
 		size_t b = v.find(' ', a);
-		if (b == string::npos)
+		if (b == std::string::npos)
 			return;
 		while (a < b)
 		{
 			size_t c = v.find('=', a);
-			if (c++ == string::npos)
+			if (c++ == std::string::npos)
 				break;
 			size_t d = v.find_first_of(" &", c);
-			if (d == string::npos)
+			if (d == std::string::npos)
 				break;
 			ti.set(v.substr(a, c - a - 1), uri_decode(v.substr(c, d - c)));
 			a = d + 1;
@@ -168,8 +169,8 @@ void Cconnection::read(const string& v)
 	}
 	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
 		ti.m_ipa = m_a.sin_addr.s_addr;
-	string torrent_pass0;
-	string torrent_pass1;
+	std::string torrent_pass0;
+	std::string torrent_pass1;
 	a = 4;
 	if (a < v.size() && v[a] == '/')
 	{
@@ -187,7 +188,7 @@ void Cconnection::read(const string& v)
 			}
 		}
 	}
-	string h = "HTTP/1.0 200 OK\r\n";
+	std::string h = "HTTP/1.0 200 OK\r\n";
 	Cvirtual_binary s;
 	bool gzip = true;
 	switch (a < v.size() ? v[a] : 0)
@@ -209,7 +210,7 @@ void Cconnection::read(const string& v)
 					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 				else
 				{
-					string error = m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
+					std::string error = m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
 					s = (error.empty() ? m_server->select_peers(ti, user) : Cbvalue().d(bts_failure_reason, error)).read();
 				}
 			}
@@ -219,7 +220,7 @@ void Cconnection::read(const string& v)
 		if (m_server->debug())
 		{
 			gzip = m_server->gzip_debug();
-			string v = m_server->debug(ti);
+			std::string v = m_server->debug(ti);
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(v.data(), v.length());
 		}
@@ -228,7 +229,7 @@ void Cconnection::read(const string& v)
 		if (v.length() >= 7 && v[6] == 't')
 		{
 			gzip = m_server->gzip_debug();
-			string v = m_server->statistics();
+			std::string v = m_server->statistics();
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(v.data(), v.length());
 		}
@@ -253,8 +254,8 @@ void Cconnection::read(const string& v)
 	{
 		Cvirtual_binary s2 = xcc_z::gzip(s);
 #ifndef NDEBUG
-		static ofstream f("xbt_tracker_gzip.log");
-		f << m_server->time() << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << endl;
+		static std::ofstream f("xbt_tracker_gzip.log");
+		f << m_server->time() << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << std::endl;
 #endif
 		if (s2.size() + 24 < s.size())
 		{
@@ -268,7 +269,7 @@ void Cconnection::read(const string& v)
 	s.read(d.data_edit() + h.size());
 	int r = m_s.send(d, d.size());
 	if (r == SOCKET_ERROR)
-		cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 	else if (r != d.size())
 	{
 		m_write_b.resize(d.size() - r);

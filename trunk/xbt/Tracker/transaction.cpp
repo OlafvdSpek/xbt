@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "transaction.h"
 
+#include <iostream>
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "sha1.h"
@@ -41,9 +42,9 @@ Cserver::t_user* Ctransaction::authenticate(const void* s0, const char* s_end) c
 	const char* s = reinterpret_cast<const char*>(s0);
 	if (s_end - s < 16)
 		return NULL;
-	string name(s_end - 16, 8);
+	std::string name(s_end - 16, 8);
 	size_t i = name.find('\0');
-	Cserver::t_user* user = m_server.find_user_by_name(i == string::npos ? name : name.substr(0, i));
+	Cserver::t_user* user = m_server.find_user_by_name(i == std::string::npos ? name : name.substr(0, i));
 	if (!user)
 		return NULL;
 	Csha1 sha1;
@@ -74,7 +75,7 @@ void Ctransaction::recv()
 		if (r == SOCKET_ERROR)
 		{
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
-				cerr << "recv failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "recv failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			return;
 		}
 		if (r < uti_size)
@@ -131,7 +132,7 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 	ti.m_peer_id.assign(r + utia_peer_id, 20);
 	ti.m_port = htons(read_int(2, r + utia_port, r_end));
 	ti.m_uploaded = read_int(8, r + utia_uploaded, r_end);
-	string error = m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user);
+	std::string error = m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user);
 	if (!error.empty())
 	{
 		send_error(r, r_end, error);
@@ -169,7 +170,7 @@ void Ctransaction::send_scrape(const char* r, const char* r_end)
 	char* w = d + utos_size;
 	for (r += utis_size; r + 20 <= r_end && w + 12 <= d + cb_d; r += 20)
 	{
-		const Cserver::t_file* file = m_server.file(string(r, 20));
+		const Cserver::t_file* file = m_server.file(std::string(r, 20));
 		if (file)
 		{
 			w = write_int(4, w, file->seeders);
@@ -187,7 +188,7 @@ void Ctransaction::send_scrape(const char* r, const char* r_end)
 	send(d, w - d);
 }
 
-void Ctransaction::send_error(const char* r, const char* r_end, const string& msg)
+void Ctransaction::send_error(const char* r, const char* r_end, const std::string& msg)
 {
 	const int cb_d = 2 << 10;
 	char d[cb_d];
@@ -200,5 +201,5 @@ void Ctransaction::send_error(const char* r, const char* r_end, const string& ms
 void Ctransaction::send(const void* b, int cb_b)
 {
 	if (m_s.sendto(b, cb_b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != cb_b)
-		cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 }

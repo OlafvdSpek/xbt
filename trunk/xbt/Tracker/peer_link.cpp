@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "peer_link.h"
 
+#include <iostream>
 #include "bt_misc.h"
 #include "server.h"
 
@@ -8,12 +9,12 @@ Cpeer_link::Cpeer_link()
 {
 }
 
-Cpeer_link::Cpeer_link(int h, int p, Cserver* server, const string& file_id, int peer_id)
+Cpeer_link::Cpeer_link(int h, int p, Cserver* server, const std::string& file_id, int peer_id)
 {
 	if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
-		cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+		std::cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 	else if (m_s.connect(h, p) && WSAGetLastError() != WSAEINPROGRESS && WSAGetLastError() != WSAEWOULDBLOCK)
-		cerr << "connect failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+		std::cerr << "connect failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 	m_ctime = server->time();
 	m_server = server;
 	m_file_id = file_id;

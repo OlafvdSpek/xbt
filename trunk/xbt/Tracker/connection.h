@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <vector>
 #include "client.h"
 
 class Cserver;
@@ -14,7 +15,7 @@ class Cconnection: public Cclient
 public:
 	Cclient::s;
 	int run();
-	void read(const string&);
+	void read(const std::string&);
 	int recv();
 	int send();
 	virtual void process_events(int);
@@ -23,8 +24,8 @@ public:
 	Cconnection();
 	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a, bool log_access);
 private:
-	typedef vector<char> t_read_b;
-	typedef vector<char> t_write_b;
+	typedef std::vector<char> t_read_b;
+	typedef std::vector<char> t_write_b;
 
 	sockaddr_in m_a;
 	time_t m_ctime;

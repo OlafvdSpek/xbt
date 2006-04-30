@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "stats.h"
 
+#include <ctime>
+
 Cstats::Cstats()
 {
 	announced_http = 0;
