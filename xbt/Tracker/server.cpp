@@ -144,12 +144,12 @@ int Cserver::run()
 	{
 #if 1
 		if (daemon(true, false))
-			cerr << "daemon failed" << endl;
+			std::cerr << "daemon failed" << std::endl;
 #else
 		switch (fork())
 		{
 		case -1:
-			cerr << "fork failed" << endl;
+			std::cerr << "fork failed" << std::endl;
 			break;
 		case 0:
 			break;
@@ -157,7 +157,7 @@ int Cserver::run()
 			exit(0);
 		}
 		if (setsid() == -1)
-			cerr << "setsid failed" << endl;
+			std::cerr << "setsid failed" << std::endl;
 #endif
 		ofstream(m_config.m_pid_file.c_str()) << getpid() << endl;
 		struct sigaction act;
@@ -166,10 +166,10 @@ int Cserver::run()
 		act.sa_flags = 0;
 		if (sigaction(SIGHUP, &act, NULL)
 			|| sigaction(SIGTERM, &act, NULL))
-			cerr << "sigaction failed" << endl;
+			std::cerr << "sigaction failed" << std::endl;
 		act.sa_handler = SIG_IGN;
 		if (sigaction(SIGPIPE, &act, NULL))
-			cerr << "sigaction failed" << endl;
+			std::cerr << "sigaction failed" << std::endl;
 	}
 #endif
 	clean_up();
@@ -334,7 +334,7 @@ void Cserver::accept(const Csocket& l)
 				std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #ifdef TCP_CORK
 			if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
-				std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
 			m_connections.push_back(Cconnection(this, s, a, m_config.m_log_access));
 			m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
