@@ -38,9 +38,6 @@
 #include "sha1.h"
 #include "virtual_binary.h"
 
-using namespace boost;
-using namespace std;
-
 inline long long max(long long a, long long b)
 {
 	return a > b ? a : b;

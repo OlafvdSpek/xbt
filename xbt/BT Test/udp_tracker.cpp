@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "udp_tracker.h"
 
+#include <ctime>
 #include "bt_misc.h"
 #include "bt_strings.h"
 #include "stream_int.h"
@@ -71,7 +72,7 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 {
 	if (read_int(8, r + uti_connection_id, r_end) != connection_id(a))
 		return;
-	t_file& file = m_files[string(r + utia_info_hash, 20)];
+	t_file& file = m_files[std::string(r + utia_info_hash, 20)];
 	int ipa = read_int(4, r + utia_ipa, r_end) && is_private_ipa(a.sin_addr.s_addr)
 		? htonl(read_int(4, r + utia_ipa, r_end))
 		: a.sin_addr.s_addr;
@@ -109,7 +110,7 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 	write_int(4, d + utoa_seeders, file.seeders);
 	char* w = d + utoa_size;
 
-	typedef vector<t_peers::const_iterator> t_candidates;
+	typedef std::vector<t_peers::const_iterator> t_candidates;
 
 	t_candidates candidates;
 	for (t_peers::const_iterator i = file.peers.begin(); i != file.peers.end(); i++)
@@ -151,7 +152,7 @@ void Cudp_tracker::send_scrape(Csocket& s, sockaddr_in& a, const char* r, const 
 	char* w = d + utos_size;
 	for (; r + 20 <= r_end && w + 12 <= d + cb_d; r += 20)
 	{
-		const t_files::const_iterator file = m_files.find(string(r, 20));
+		const t_files::const_iterator file = m_files.find(std::string(r, 20));
 		if (file == m_files.end())
 		{
 			w = write_int(4, w, file->second.seeders);
@@ -168,7 +169,7 @@ void Cudp_tracker::send_scrape(Csocket& s, sockaddr_in& a, const char* r, const 
 	send(s, a, d, w - d);
 }
 
-void Cudp_tracker::send_error(Csocket& s, sockaddr_in& a, const char* r, const char* r_end, const string& msg)
+void Cudp_tracker::send_error(Csocket& s, sockaddr_in& a, const char* r, const char* r_end, const std::string& msg)
 {
 	const int cb_d = 2 << 10;
 	char d[cb_d];

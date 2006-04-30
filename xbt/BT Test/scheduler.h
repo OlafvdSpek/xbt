@@ -8,8 +8,6 @@
 #include <map>
 #include "xif_key.h"
 
-using namespace std;
-
 class Cscheduler_entry
 {
 public:
@@ -21,7 +19,7 @@ public:
 	int profile;
 };
 
-class Cscheduler: public map<int, Cscheduler_entry>  
+class Cscheduler: public std::map<int, Cscheduler_entry>  
 {
 public:
 	int find_active_profile(int time) const;

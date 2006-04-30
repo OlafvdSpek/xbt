@@ -25,8 +25,6 @@
 #include "socket.h"
 #include "virtual_binary.h"
 
-using namespace std;
-
 //{{AFX_INSERT_LOCATION}}
 
 #endif // !defined(AFX_STDAFX_H__61095DD5_D518_43FD_B5C8_C84BA5A521D1__INCLUDED_)

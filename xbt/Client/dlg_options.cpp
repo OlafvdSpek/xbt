@@ -141,7 +141,7 @@ void Cdlg_options::set(const t_data& v)
 
 void Cdlg_options::OnCompletesDirectoryBrowse()
 {
-	string dir = string(m_completes_dir);
+	std::string dir = std::string(m_completes_dir);
 	if (!UpdateData(true) || browse_for_directory(GetSafeHwnd(), "Completes Directory", dir))
 		return;
 	m_completes_dir = dir.c_str();
@@ -150,7 +150,7 @@ void Cdlg_options::OnCompletesDirectoryBrowse()
 
 void Cdlg_options::OnIncompletesDirectoryBrowse()
 {
-	string dir = string(m_incompletes_dir);
+	std::string dir = std::string(m_incompletes_dir);
 	if (!UpdateData(true) || browse_for_directory(GetSafeHwnd(), "Incompletes Directory", dir))
 		return;
 	m_incompletes_dir = dir.c_str();
@@ -159,7 +159,7 @@ void Cdlg_options::OnIncompletesDirectoryBrowse()
 
 void Cdlg_options::OnTorrentsDirectoryBrowse()
 {
-	string dir = string(m_torrents_dir);
+	std::string dir = std::string(m_torrents_dir);
 	if (!UpdateData(true) || browse_for_directory(GetSafeHwnd(), "Torrents Directory", dir))
 		return;
 	m_torrents_dir = dir.c_str();

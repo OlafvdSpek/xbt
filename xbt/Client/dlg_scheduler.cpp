@@ -112,7 +112,7 @@ void Cdlg_scheduler::insert(const t_entry& e)
 void Cdlg_scheduler::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_list.get_buffer();
+	std::string& buffer = m_list.get_buffer();
 	const t_entry& e = m_entries.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{

@@ -23,14 +23,14 @@ class Cserver;
 class Cbt_file: public Cbt_file_data
 {
 public:
-	string peer_id() const;
-	string peer_key() const;
+	std::string peer_id() const;
+	std::string peer_key() const;
 	Cserver* server();
 	const Cserver* server() const;
 	time_t time() const;
 	void peer_connect(int ipa, int port);
 	void peer_disconnect(int ipa);
-	void trackers(const string&);
+	void trackers(const std::string&);
 	int c_local_links() const;
 	int c_remote_links() const;
 	int seeding_ratio() const;
@@ -42,15 +42,15 @@ public:
 	bool end_mode() const;
 	bool begin_mode() const;
 	Cbt_logger& logger();
-	string get_hashes(long long offset, int c) const;
-	bool test_and_set_hashes(long long offset, const string& v, const string& w);
+	std::string get_hashes(long long offset, int c) const;
+	bool test_and_set_hashes(long long offset, const std::string& v, const std::string& w);
 	bool hash();
 	void update_piece_priorities();
-	void sub_file_priority(const string& id, int priority);
+	void sub_file_priority(const std::string& id, int priority);
 	int local_ipa() const;
 	int local_port() const;
 	Cbt_peer_link* find_peer(int h);
-	string get_url() const;
+	std::string get_url() const;
 	void alert(const Calert&);
 	void load_state(Cstream_reader&);
 	int pre_save_state(bool intermediate) const;
@@ -111,13 +111,13 @@ public:
 		int c_pieces(int cb_piece) const;
 		void close();
 		void dump(Cstream_writer&) const;
-		void erase(const string& parent_name);
-		bool open(const string& parent_name, int oflag);
+		void erase(const std::string& parent_name);
+		bool open(const std::string& parent_name, int oflag);
 		int pre_dump() const;
 		int read(long long offset, void* s, int cb_s);
 		int write(long long offset, const void* s, int cb_s);
 
-		const string& merkle_hash() const
+		const std::string& merkle_hash() const
 		{
 			return m_merkle_hash;
 		}
@@ -142,7 +142,7 @@ public:
 			return m_left = v;
 		}
 
-		const string& name() const
+		const std::string& name() const
 		{
 			return m_name;
 		}
@@ -159,7 +159,7 @@ public:
 
 		void priority(int v)
 		{
-			m_priority = max(-128, min(v, 127));
+			m_priority = std::max(-128, std::min(v, 127));
 		}
 
 		long long size() const
@@ -176,7 +176,7 @@ public:
 		{
 		}
 
-		t_sub_file(const string& merkle_hash, const string& name, long long offset, int priority, long long size)
+		t_sub_file(const std::string& merkle_hash, const std::string& name, long long offset, int priority, long long size)
 		{
 			m_f = -1;
 			m_merkle_hash = merkle_hash;
@@ -191,12 +191,12 @@ public:
 		Cmerkle_tree m_merkle_tree;
 	};
 
-	typedef map<int, int> t_old_peers;
-	typedef map<int, int> t_new_peers;
-	typedef vector<t_sub_file> t_sub_files;
-	typedef list<Cbt_peer_link> t_peers;
-	typedef vector<Cbt_piece> t_pieces;
-	typedef vector<string> t_trackers;
+	typedef std::map<int, int> t_old_peers;
+	typedef std::map<int, int> t_new_peers;
+	typedef std::vector<t_sub_file> t_sub_files;
+	typedef std::list<Cbt_peer_link> t_peers;
+	typedef std::vector<Cbt_piece> t_pieces;
+	typedef std::vector<std::string> t_trackers;
 
 	t_sub_files m_sub_files;
 	t_old_peers m_old_peers;

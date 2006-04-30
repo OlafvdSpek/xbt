@@ -15,11 +15,11 @@ public:
 	virtual void PreSubclassWindow();
 	//}}AFX_VIRTUAL
 public:
-	string Conf() const;
-	void Conf(const string&);
+	std::string Conf() const;
+	void Conf(const std::string&);
 	void DeleteAllColumns();
 	int GetColumnID(int index) const;
-	void InsertColumn(int id, const string& name, const string& description = "", int format = LVCFMT_LEFT, bool show = true);
+	void InsertColumn(int id, const std::string& name, const std::string& description = "", int format = LVCFMT_LEFT, bool show = true);
 	void ShowColumn(int id, bool show);
 protected:
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
@@ -35,10 +35,10 @@ private:
 	public:
 		Ccolumn();
 
-		string description;
+		std::string description;
 		int format;
 		int index;
-		string name;
+		std::string name;
 		int order;
 
 		bool show() const
@@ -50,7 +50,7 @@ private:
 	typedef std::map<int, Ccolumn> Ccolumns;
 
 	Ccolumns m_columns;
-	string m_conf;
+	std::string m_conf;
 };
 
 //{{AFX_INSERT_LOCATION}}

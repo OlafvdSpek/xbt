@@ -50,7 +50,7 @@ int Cxif_key_r::load(const byte* s)
 		while (count--)
 		{
 			id += read_int(r);
-			m_keys.push_back(make_pair(id, Cxif_key_r()));
+			m_keys.push_back(std::make_pair(id, Cxif_key_r()));
 			r += m_keys.rbegin()->second.load(r);
 		}
 	}
@@ -61,7 +61,7 @@ int Cxif_key_r::load(const byte* s)
 		while (count--)
 		{
 			id += read_int(r);
-			m_values.push_back(make_pair(id, Cxif_value()));
+			m_values.push_back(std::make_pair(id, Cxif_value()));
 			m_values.rbegin()->second.load_new(r);
 		}
 	}

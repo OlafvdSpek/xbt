@@ -46,8 +46,8 @@ public:
 	int mc_rejected_chunks;
 	int mc_rejected_pieces;
 	int mc_seeders_total;
-	string m_info_hash;
-	string m_name;
+	std::string m_info_hash;
+	std::string m_name;
 	t_state m_state;
 };
 

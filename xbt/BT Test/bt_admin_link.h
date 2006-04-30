@@ -14,7 +14,7 @@ class Cserver;
 class Cbt_admin_link  
 {
 public:
-	void alert(Calert::t_level, const string&);
+	void alert(Calert::t_level, const std::string&);
 	void close();
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);

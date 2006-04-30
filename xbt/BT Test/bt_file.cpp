@@ -63,7 +63,7 @@ int Cbt_file::info(const Cbvalue& info)
 		const Cbvalue::t_list& files = info.d(bts_files).l();
 		for (Cbvalue::t_list::const_iterator i = files.begin(); i != files.end(); i++)
 		{
-			string name;
+			std::string name;
 			{
 				const Cbvalue::t_list& path = i->d(bts_path).l();
 				for (Cbvalue::t_list::const_iterator i = path.begin(); i != path.end(); i++)
@@ -106,7 +106,7 @@ int Cbt_file::info(const Cbvalue& info)
 		return 0;
 	}
 	m_pieces.resize((m_size + mcb_piece - 1) / mcb_piece);
-	string piece_hashes = info.d(bts_pieces).s();
+	std::string piece_hashes = info.d(bts_pieces).s();
 	if (piece_hashes.length() != 20 * m_pieces.size())
 		return 1;
 	for (size_t i = 0; i < m_pieces.size(); i++)
@@ -129,7 +129,7 @@ void Cbt_file::t_sub_file::close()
 	m_f = -1;
 }
 
-void Cbt_file::t_sub_file::erase(const string& parent_name)
+void Cbt_file::t_sub_file::erase(const std::string& parent_name)
 {
 	::unlink((parent_name + m_name).c_str());
 }
@@ -143,7 +143,7 @@ void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 	w.write_string(merkle_hash());
 }
 
-bool Cbt_file::t_sub_file::open(const string& parent_name, int oflag)
+bool Cbt_file::t_sub_file::open(const std::string& parent_name, int oflag)
 {
 #ifdef WIN32
 	m_f = ::open((parent_name + m_name).c_str(), oflag | O_BINARY, S_IREAD | S_IWRITE);
@@ -176,7 +176,7 @@ void Cbt_file::open()
 {
 	if (is_open())
 		return;
-	if (m_name.find_first_of("/\\") == string::npos)
+	if (m_name.find_first_of("/\\") == std::string::npos)
 	{
 		struct stat b;
 		m_name = (stat((server()->completes_dir() + '/' + m_name).c_str(), &b) ? server()->incompletes_dir() : server()->completes_dir()) + '/' + m_name;
@@ -410,9 +410,9 @@ int Cbt_file::write_data(long long offset, const char* s, int cb_s, Cbt_peer_lin
 			continue;
 		if (!*i && i->size())
 		{
-			string path = m_name + i->name();
+			std::string path = m_name + i->name();
 			int a = path.find_last_of("/\\");
-			if (a != string::npos)
+			if (a != std::string::npos)
 				mkpath(path.substr(0, a));
 			if (i->open(m_name, O_CREAT | O_RDWR))
 			{
@@ -477,7 +477,7 @@ int Cbt_file::write_data(long long offset, const char* s, int cb_s, Cbt_peer_lin
 	{
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->close();
-		string new_name = server()->completes_dir() + m_name.substr(server()->incompletes_dir().size());
+		std::string new_name = server()->completes_dir() + m_name.substr(server()->incompletes_dir().size());
 		mkpath(server()->completes_dir());
 		if (!rename(m_name.c_str(), new_name.c_str()))
 			m_name = new_name;
@@ -516,7 +516,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 	if (!m_left || peer.m_remote_pieces.size() != m_pieces.size())
 		return -1;
 
-	vector<int> invalid_pieces;
+	std::vector<int> invalid_pieces;
 
 	invalid_pieces.reserve(c_invalid_pieces());
 	bool begin_mode = Cbt_file::begin_mode();
@@ -825,9 +825,9 @@ void Cbt_file::alert(const Calert& v)
 	m_alerts.push_back(v);
 }
 
-string Cbt_file::get_url() const
+std::string Cbt_file::get_url() const
 {
-	string v = "xbtp://";
+	std::string v = "xbtp://";
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		v += uri_encode(*i) + ',';
 	v += '/' + hex_encode(m_info_hash) + '/';
@@ -866,7 +866,7 @@ int Cbt_file::local_port() const
 	return server()->peer_port();
 }
 
-void Cbt_file::sub_file_priority(const string& id, int priority)
+void Cbt_file::sub_file_priority(const std::string& id, int priority)
 {
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
@@ -892,7 +892,7 @@ void Cbt_file::update_piece_priorities()
 	}
 }
 
-string Cbt_file::get_hashes(long long offset, int c) const
+std::string Cbt_file::get_hashes(long long offset, int c) const
 {
 	for (t_sub_files::const_iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
@@ -903,7 +903,7 @@ string Cbt_file::get_hashes(long long offset, int c) const
 	return "";
 }
 
-bool Cbt_file::test_and_set_hashes(long long offset, const string& v, const string& w)
+bool Cbt_file::test_and_set_hashes(long long offset, const std::string& v, const std::string& w)
 {
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
@@ -974,7 +974,7 @@ int Cbt_file::upload_slots_min() const
 	return m_upload_slots_min_override ? m_upload_slots_min : server()->torrent_upload_slots_min();
 }
 
-void Cbt_file::trackers(const string& v)
+void Cbt_file::trackers(const std::string& v)
 {
 	m_trackers.clear();
 	for (size_t i = 0; i < v.length(); )
@@ -985,7 +985,7 @@ void Cbt_file::trackers(const string& v)
 			i++;
 			continue;
 		}
-		if (j == string::npos)
+		if (j == std::string::npos)
 			j = v.length();
 		m_trackers.push_back(v.substr(i, j - i));
 		i = j + 1;
@@ -1013,12 +1013,12 @@ const Cserver* Cbt_file::server() const
 	return m_server;
 }
 
-string Cbt_file::peer_id() const
+std::string Cbt_file::peer_id() const
 {
 	return server()->peer_id();
 }
 
-string Cbt_file::peer_key() const
+std::string Cbt_file::peer_key() const
 {
 	return server()->peer_key();
 }

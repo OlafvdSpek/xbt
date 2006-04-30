@@ -25,12 +25,12 @@ private:
 		int port;
 	};
 
-	typedef map<int, t_peer> t_peers;
+	typedef std::map<int, t_peer> t_peers;
 
 	struct t_file
 	{
 		void clean_up(time_t t);
-		string debug() const;
+		std::string debug() const;
 		// void select_peers(const Ctracker_input&, Cannounce_output&) const;
 		// Cbvalue scrape() const;
 
@@ -55,7 +55,7 @@ private:
 		int stopped;
 	};
 
-	typedef map<string, t_file> t_files;
+	typedef std::map<std::string, t_file> t_files;
 
 	void clean_up();
 	long long connection_id(sockaddr_in&) const;
@@ -63,7 +63,7 @@ private:
 	void send_announce(Csocket&, sockaddr_in&, const char* r, const char* r_end);
 	void send_connect(Csocket&, sockaddr_in&, const char* r, const char* r_end);
 	void send_scrape(Csocket&, sockaddr_in&, const char* r, const char* r_end);
-	void send_error(Csocket&, sockaddr_in&, const char* r, const char* r_end, const string& msg);
+	void send_error(Csocket&, sockaddr_in&, const char* r, const char* r_end, const std::string& msg);
 
 	int m_announce_interval;
 	time_t m_clean_up_time;

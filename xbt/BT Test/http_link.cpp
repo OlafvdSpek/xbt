@@ -57,7 +57,7 @@ int Chttp_link::recv()
 		m_read_b.cb_w(r);
 	}
 	if (m_response_handler)
-		m_response_handler->handle(string(m_read_b.r(), m_read_b.cb_r()));
+		m_response_handler->handle(std::string(m_read_b.r(), m_read_b.cb_r()));
 	return 1;
 }
 
@@ -79,14 +79,14 @@ int Chttp_link::send()
 	return 0;
 }
 
-void Chttp_link::alert(Calert::t_level level, const string& message)
+void Chttp_link::alert(Calert::t_level level, const std::string& message)
 {
 	if (m_response_handler)
 		m_response_handler->alert(Calert(level, message));
 
 }
 
-int Chttp_link::set_request(int h, int p, const string& v, Chttp_response_handler* response_handler)
+int Chttp_link::set_request(int h, int p, const std::string& v, Chttp_response_handler* response_handler)
 {
 	assert(m_state == 0);
 	if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)

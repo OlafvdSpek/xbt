@@ -34,24 +34,24 @@ public:
 		return m_level;
 	}
 
-	const string& message() const
+	const std::string& message() const
 	{
 		return m_message;
 	}
 
-	void message(const string& v)
+	void message(const std::string& v)
 	{
 		m_message = v;
 	}
 
-	Calert(t_level level, const string& message)
+	Calert(t_level level, const std::string& message)
 	{
 		m_time = ::time(NULL);
 		m_level = level;
 		m_message = message;
 	}
 
-	Calert(t_level level, const string& source, const string& message)
+	Calert(t_level level, const std::string& source, const std::string& message)
 	{
 		m_time = ::time(NULL);
 		m_level = level;
@@ -64,16 +64,16 @@ public:
 private:
 	time_t m_time;
 	t_level m_level;
-	string m_message;
-	string m_source;
+	std::string m_message;
+	std::string m_source;
 };
 
-class Calerts: public list<Calert>
+class Calerts: public std::list<Calert>
 {
 public:
 	void push_back(const value_type& v)
 	{
-		list<value_type>::push_back(v);
+		std::list<value_type>::push_back(v);
 		while (size() > 250)
 			erase(begin());
 	}

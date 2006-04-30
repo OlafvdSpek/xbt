@@ -55,6 +55,6 @@ int Cbt_link::recv()
 	return 1;
 }
 
-void Cbt_link::alert(Calert::t_level, const string&)
+void Cbt_link::alert(Calert::t_level, const std::string&)
 {
 }

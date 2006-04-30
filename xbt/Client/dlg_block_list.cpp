@@ -64,7 +64,7 @@ void Cdlg_block_list::OnDelete()
 void Cdlg_block_list::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_list.get_buffer();
+	std::string& buffer = m_list.get_buffer();
 	switch (pDispInfo->item.iSubItem)
 	{
 	case 0:

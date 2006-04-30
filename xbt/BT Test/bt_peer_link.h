@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <set>
 #include "alerts.h"
 #include "bt_logger.h"
 #include "bt_peer_data.h"
@@ -24,18 +25,18 @@ public:
 	Cserver* server();
 	const Cserver* server() const;
 	time_t time() const;
-	string debug_string() const;
+	std::string debug_string() const;
 	int write_data(long long o, const char* s, int cb_s, int latency);
 	int c_max_requests_pending() const;
 	void check_pieces();
 	Cbt_logger& logger();
 	void clear_local_requests();
 	int cb_write_buffer() const;
-	void alert(Calert::t_level, const string&);
+	void alert(Calert::t_level, const std::string&);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	void write_piece(int, int, int, const void*);
-	void write_merkle_piece(long long offset, int size, const void* s, const string& hashes);
+	void write_merkle_piece(long long offset, int size, const void* s, const std::string& hashes);
 	void queue_have(int);
 	void write_have(int);
 	void write_haves();
@@ -44,7 +45,7 @@ public:
 	void read_info(const char* r, const char* r_end);
 	void write_keepalive();
 	int read_piece(int, int, int, const char*);
-	void read_merkle_piece(long long offset, int size, const char* s, const string& hashes);
+	void read_merkle_piece(long long offset, int size, const char* s, const std::string& hashes);
 	void write_handshake();
 	void write_request(int, int, int);
 	void write_merkle_cancel(long long offset);
@@ -113,11 +114,11 @@ public:
 		}
 	};
 
-	typedef list<t_local_request> t_local_requests;
-	typedef set<int> t_have_queue;
-	typedef vector<bool> t_remote_pieces;
-	typedef list<t_remote_request> t_remote_requests;
-	typedef list<Cbt_pl_write_data> t_write_buffer;
+	typedef std::list<t_local_request> t_local_requests;
+	typedef std::set<int> t_have_queue;
+	typedef std::vector<bool> t_remote_pieces;
+	typedef std::list<t_remote_request> t_remote_requests;
+	typedef std::list<Cbt_pl_write_data> t_write_buffer;
 
 	sockaddr_in m_a;
 	Cbt_file* m_f;

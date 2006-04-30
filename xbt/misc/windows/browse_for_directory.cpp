@@ -8,7 +8,7 @@ int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpDa
 	return 0;
 }
 
-int browse_for_directory(HWND hWnd, const string& title, string& directory)
+int browse_for_directory(HWND hWnd, const std::string& title, std::string& directory)
 {
 	BROWSEINFO bi;
 	ZeroMemory(&bi, sizeof(BROWSEINFO));

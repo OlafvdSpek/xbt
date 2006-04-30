@@ -17,14 +17,14 @@ public:
 		bool bind_before_connect;
 		bool hide_on_deactivate;
 		DWORD hot_key;
-		string completes_dir;
-		string incompletes_dir;
-		string torrents_dir;
+		std::string completes_dir;
+		std::string incompletes_dir;
+		std::string torrents_dir;
 		bool lower_process_priority;
-		string peer_id;
+		std::string peer_id;
 		int peer_limit;
 		int peer_port;
-		string public_ipa;
+		std::string public_ipa;
 		int seeding_ratio;
 		bool send_stop_event;
 		bool show_confirm_exit_dialog;
@@ -35,7 +35,7 @@ public:
 		int upload_rate;
 		int upload_slots;
 		bool upnp;
-		string user_agent;
+		std::string user_agent;
 	};
 
 	t_data get() const;

@@ -112,7 +112,7 @@ void Cdlg_trackers::insert(const t_tracker& e)
 void Cdlg_trackers::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_list.get_buffer();
+	std::string& buffer = m_list.get_buffer();
 	const t_tracker& e = m_trackers.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{

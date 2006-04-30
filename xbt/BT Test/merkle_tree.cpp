@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "merkle_tree.h"
 
-string internal_hash(const string& a, const string& b)
+std::string internal_hash(const std::string& a, const std::string& b)
 {
 	assert(a.size() == 20);
 	assert(b.size() == 20);
@@ -29,24 +29,24 @@ void Cmerkle_tree::invalidate()
 	memset(m_d.data_edit(), 0, m_d.size());
 }
 
-string Cmerkle_tree::get0(int i) const
+std::string Cmerkle_tree::get0(int i) const
 {
 	assert(d(i));
-	return string(d(i) + 1, 20);
+	return std::string(d(i) + 1, 20);
 }
 
-string Cmerkle_tree::get(int i) const
+std::string Cmerkle_tree::get(int i) const
 {
 	assert(i >= 0);
 	assert(i < m_size);
 	return get0(i);
 }
 
-string Cmerkle_tree::get(int i, int c) const
+std::string Cmerkle_tree::get(int i, int c) const
 {
 	assert(i >= 0);
 	assert(i < m_size);
-	string v;
+	std::string v;
 	int a = 0;
 	int b = m_size;
 	while (b - a >= 2 && c--)
@@ -62,14 +62,14 @@ string Cmerkle_tree::get(int i, int c) const
 	return v;
 }
 
-bool Cmerkle_tree::test(int i, const string& v, const string& w)
+bool Cmerkle_tree::test(int i, const std::string& v, const std::string& w)
 {
 	assert(i >= 0);
 	assert(i < m_size);
 	int a = 0;
 	int b = m_size;
 	unsigned int z = 0;
-	string h = v;
+	std::string h = v;
 	while (1)
 	{
 		if (*d(a + i))
@@ -96,14 +96,14 @@ bool Cmerkle_tree::has(int i) const
 	return m_d[21 * i];
 }
 
-void Cmerkle_tree::set0(int i, const string& v)
+void Cmerkle_tree::set0(int i, const std::string& v)
 {
 	assert(v.size() == 20);
 	*d(i) = true;
 	memcpy(d(i) + 1, v.c_str(), 20);
 }
 
-void Cmerkle_tree::set(int i, const string& v)
+void Cmerkle_tree::set(int i, const std::string& v)
 {
 	assert(i >= 0);
 	assert(i < m_size);
@@ -116,7 +116,7 @@ void Cmerkle_tree::set(int i, const string& v)
 		if (a + j < b && !*d(a + j))
 			break;
 		if (i > j)
-			swap(i, j);
+			std::swap(i, j);
 		int c = a;
 		a = b;
 		i >>= 1;
@@ -131,7 +131,7 @@ void Cmerkle_tree::set(int i, const string& v)
 	}
 }
 
-void Cmerkle_tree::set(int i, const string& v, const string& w)
+void Cmerkle_tree::set(int i, const std::string& v, const std::string& w)
 {
 	assert(i >= 0);
 	assert(i < m_size);
@@ -156,7 +156,7 @@ void Cmerkle_tree::set(int i, const string& v, const string& w)
 	}
 }
 
-bool Cmerkle_tree::test_and_set(int i, const string& v, const string& w)
+bool Cmerkle_tree::test_and_set(int i, const std::string& v, const std::string& w)
 {
 	if (!test(i, v, w))
 		return false;
@@ -164,12 +164,12 @@ bool Cmerkle_tree::test_and_set(int i, const string& v, const string& w)
 	return true;
 }
 
-string Cmerkle_tree::root() const
+std::string Cmerkle_tree::root() const
 {
 	return get0(m_d.size() / 21 - 1);
 }
 
-void Cmerkle_tree::root(const string& v)
+void Cmerkle_tree::root(const std::string& v)
 {
 	set0(m_d.size() / 21 - 1, v);
 }
@@ -203,9 +203,9 @@ Cvirtual_binary Cmerkle_tree::save() const
 	return m_d;
 }
 
-string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
+std::string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 {
-	typedef map<int, string> t_map;
+	typedef std::map<int, std::string> t_map;
 
 	t_map map;
 	const byte* s = reinterpret_cast<const byte*>(s0);
@@ -215,7 +215,7 @@ string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 	{
 		*d = 0;
 		memcpy(d + 1, r, min(s_end - r, 1024));
-		string h = Csha1(const_memory_range(d, min(s_end - r, 1024) + 1)).read();
+		std::string h = Csha1(const_memory_range(d, min(s_end - r, 1024) + 1)).read();
 		*d = 1;
 		int i;
 		for (i = 0; map.find(i) != map.end(); i++)
@@ -239,20 +239,20 @@ string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 	return map.empty() ? "" : map.begin()->second;
 }
 
-string Cmerkle_tree::compute_root(const Cvirtual_binary& s)
+std::string Cmerkle_tree::compute_root(const Cvirtual_binary& s)
 {
 	return compute_root(s, s.data_end());
 }
 
-ostream& Cmerkle_tree::operator<<(ostream& os) const
+std::ostream& Cmerkle_tree::operator<<(std::ostream& os) const
 {
 	const char* r_end = reinterpret_cast<const char*>(m_d.data_end());
 	for (const char* r = d(0); r < r_end; r += 21)
-		os << (*r ? 1 : 0) << ' ' << hex_encode(string(r + 1, 20)) << endl;
+		os << (*r ? 1 : 0) << ' ' << hex_encode(std::string(r + 1, 20)) << std::endl;
 	return os;
 }
 
-ostream& operator<<(ostream& os, const Cmerkle_tree& v)
+std::ostream& operator<<(std::ostream& os, const Cmerkle_tree& v)
 {
 	return v.operator<<(os);
 }

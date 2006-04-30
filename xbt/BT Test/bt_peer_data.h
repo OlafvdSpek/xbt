@@ -18,7 +18,7 @@ public:
 	bool m_local_interested;
 	bool m_remote_choked;
 	bool m_remote_interested;
-	string m_remote_peer_id;
+	std::string m_remote_peer_id;
 };
 
 #endif // !defined(AFX_BT_PEER_DATA_H__BB3CD676_063C_4194_B0F6_BE7BCD05EB36__INCLUDED_)

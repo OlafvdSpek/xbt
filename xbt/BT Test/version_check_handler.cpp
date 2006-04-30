@@ -17,7 +17,7 @@ void Cversion_check_handler::alert(const Calert& v0)
 	m_server.alert(v);
 }
 
-void Cversion_check_handler::handle(const string& response)
+void Cversion_check_handler::handle(const std::string& response)
 {
 	int status_code = get_status_code(response);
 	if (status_code != 200)

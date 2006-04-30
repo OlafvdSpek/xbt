@@ -8,7 +8,7 @@ Cbt_tracker_account::Cbt_tracker_account()
 
 }
 
-Cbt_tracker_account::Cbt_tracker_account(const string& tracker, const string& user, const string& pass)
+Cbt_tracker_account::Cbt_tracker_account(const std::string& tracker, const std::string& user, const std::string& pass)
 {
 	m_tracker = tracker;
 	m_user = user;
@@ -42,7 +42,7 @@ Cvirtual_binary Cbt_tracker_accounts::dump() const
 
 }
 
-const Cbt_tracker_account* Cbt_tracker_accounts::find(const string& v) const
+const Cbt_tracker_account* Cbt_tracker_accounts::find(const std::string& v) const
 {
 	for (const_iterator i = begin(); i != end(); i++)
 	{
@@ -60,9 +60,9 @@ void Cbt_tracker_accounts::load(const Cvirtual_binary& s)
 	Cstream_reader r(s);
 	for (int count = r.read_int(4); count--; )
 	{
-		string tracker = r.read_string();
-		string name = r.read_string();
-		string pass = r.read_string();
+		std::string tracker = r.read_string();
+		std::string name = r.read_string();
+		std::string pass = r.read_string();
 		push_back(Cbt_tracker_account(tracker, name, pass));
 	}
 }

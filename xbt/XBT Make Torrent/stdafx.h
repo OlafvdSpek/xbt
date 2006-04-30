@@ -15,8 +15,6 @@
 #include <map>
 #include <vector>
 
-using namespace std;
-
 #ifdef WIN32
 #include <io.h>
 

@@ -92,10 +92,10 @@ BOOL Cdlg_make_torrent::OnInitDialog()
 	return true;
 }
 
-static string base_name(const string& v)
+static std::string base_name(const std::string& v)
 {
 	int i = v.rfind('\\');
-	return i == string::npos ? v : v.substr(i + 1);
+	return i == std::string::npos ? v : v.substr(i + 1);
 }
 
 void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo)
@@ -112,11 +112,11 @@ void Cdlg_make_torrent::OnDropFiles(HDROP hDropInfo)
 	post_insert();
 }
 
-void Cdlg_make_torrent::insert(const string& name)
+void Cdlg_make_torrent::insert(const std::string& name)
 {
 	struct _stati64 b;
-	if (iequals(base_name(name), "desktop.ini")
-		|| iequals(base_name(name), "thumbs.db")
+	if (boost::iequals(base_name(name), "desktop.ini")
+		|| boost::iequals(base_name(name), "thumbs.db")
 		|| _stati64(name.c_str(), &b))
 		return;
 	if (b.st_mode & S_IFDIR)
@@ -169,7 +169,7 @@ void Cdlg_make_torrent::post_insert()
 void Cdlg_make_torrent::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
-	string& buffer = m_list.get_buffer();
+	std::string& buffer = m_list.get_buffer();
 	const t_map_entry& e = m_map.find(pDispInfo->item.lParam)->second;
 	switch (pDispInfo->item.iSubItem)
 	{
@@ -190,7 +190,7 @@ static Cvirtual_binary gzip(const Cvirtual_binary& s)
 	return d.size() < s.size() ? d : s;
 }
 
-static Cbvalue parse_trackers(const string& v)
+static Cbvalue parse_trackers(const std::string& v)
 {
 	Cbvalue announce_list;
 	for (size_t i = 0; i < v.length(); )
@@ -201,9 +201,9 @@ static Cbvalue parse_trackers(const string& v)
 			i++;
 			continue;
 		}
-		if (j == string::npos)
+		if (j == std::string::npos)
 			j = v.length();
-		string url = v.substr(i, j - i);
+		std::string url = v.substr(i, j - i);
 		announce_list.l(Cbvalue().l(url));
 		i = j + 1;
 	}
@@ -233,12 +233,12 @@ void Cdlg_make_torrent::OnSave()
 		while (cb_total / cb_piece > 4 << 10)
 			cb_piece <<= 1;
 	}
-	typedef set<string> t_set;
+	typedef std::set<std::string> t_set;
 	t_set set;
 	for (t_map::const_iterator i = m_map.begin(); i != m_map.end(); i++)
 		set.insert(i->second.name);
 	Cbvalue files;
-	string pieces;
+	std::string pieces;
 	Cvirtual_binary d;
 	byte* w = d.write_start(cb_piece);
 	for (t_set::const_iterator i = set.begin(); i != set.end(); i++)
@@ -247,11 +247,11 @@ void Cdlg_make_torrent::OnSave()
 		if (!f)
 			continue;
 		long long cb_f = 0;
-		string merkle_hash;
+		std::string merkle_hash;
 		int cb_d;
 		if (m_use_merkle)
 		{
-			typedef map<int, string> t_map;
+			typedef std::map<int, std::string> t_map;
 
 			t_map map;
 			char d[1025];
@@ -260,7 +260,7 @@ void Cdlg_make_torrent::OnSave()
 				if (cb_d < 0)
 					break;
 				*d = 0;
-				string h = Csha1(const_memory_range(d, cb_d + 1)).read();
+				std::string h = Csha1(const_memory_range(d, cb_d + 1)).read();
 				*d = 1;
 				int i;
 				for (i = 0; map.find(i) != map.end(); i++)
@@ -321,17 +321,17 @@ void Cdlg_make_torrent::OnSave()
 	else
 	{
 		info.d(bts_files, files);
-		info.d(bts_name, static_cast<string>(m_name));
+		info.d(bts_name, static_cast<std::string>(m_name));
 	}
 	Cbvalue torrent;
-	torrent.d(bts_announce, static_cast<string>(m_tracker));
+	torrent.d(bts_announce, static_cast<std::string>(m_tracker));
 	if (!m_trackers.IsEmpty())
-		torrent.d(bts_announce_list, parse_trackers(static_cast<string>(m_trackers)));
+		torrent.d(bts_announce_list, parse_trackers(static_cast<std::string>(m_trackers)));
 	torrent.d(bts_info, info);
 	Cvirtual_binary s = torrent.read();
 	if (m_use_merkle)
 		s = gzip(s);
-	s.save(static_cast<string>(dlg.GetPathName()));
+	s.save(static_cast<std::string>(dlg.GetPathName()));
 	m_torrent_fname = dlg.GetPathName();
 	EndDialog(IDOK);
 }
@@ -354,7 +354,7 @@ static int compare(const T& a, const T& b)
 int Cdlg_make_torrent::compare(int id_a, int id_b) const
 {
 	if (m_sort_reverse)
-		swap(id_a, id_b);
+		std::swap(id_a, id_b);
 	const t_map_entry& a = m_map.find(id_a)->second;
 	const t_map_entry& b = m_map.find(id_b)->second;
 	switch (m_sort_column)
@@ -383,7 +383,7 @@ void Cdlg_make_torrent::OnLoadTrackers()
 	CFileDialog dlg(true, "torrent", NULL, OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
-	Cvirtual_binary d(static_cast<string>(dlg.GetPathName()));
+	Cvirtual_binary d(static_cast<std::string>(dlg.GetPathName()));
 	Cbt_torrent torrent(d);
 	if (!torrent.valid())
 		return;

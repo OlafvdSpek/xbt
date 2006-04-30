@@ -33,7 +33,7 @@ public:
 		v.read(write(v.size()));
 	}
 
-	void write_string(const string& v)
+	void write_string(const std::string& v)
 	{
 		write_int(4, v.length());
 		memcpy(write(v.length()), v.c_str(), v.length());

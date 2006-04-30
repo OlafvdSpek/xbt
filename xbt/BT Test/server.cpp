@@ -37,9 +37,9 @@ public:
 #endif
 };
 
-static string new_peer_id(const string& prefix)
+static std::string new_peer_id(const std::string& prefix)
 {
-	string v;
+	std::string v;
 	if (prefix.empty())
 	{
 		v = "XBT-----";
@@ -59,9 +59,9 @@ static string new_peer_id(const string& prefix)
 	return v;
 }
 
-static string new_peer_key()
+static std::string new_peer_key()
 {
-	string v;
+	std::string v;
 	v.resize(8);
 	for (size_t i = 0; i < v.size(); i++)
 		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
@@ -148,27 +148,27 @@ void Cserver::upnp(bool v)
 }
 
 #ifdef WIN32
-string get_host_name()
+std::string get_host_name()
 {
-	vector<char> t(256);
+	std::vector<char> t(256);
 	if (gethostname(&t.front(), t.size()))
-		throw runtime_error("gethostname failed");
+		throw std::runtime_error("gethostname failed");
 	return &t.front();
 }
 
-wstring mbyte_to_wchar(const string& s)
+std::wstring mbyte_to_wchar(const std::string& s)
 {
-	vector<wchar_t> t(MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, NULL, 0));
+	std::vector<wchar_t> t(MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, NULL, 0));
 	if (!MultiByteToWideChar(CP_ACP, 0, s.c_str(), -1, &t.front(), t.size()))
-		throw runtime_error("MultiByteToWideChar failed");
+		throw std::runtime_error("MultiByteToWideChar failed");
 	return &t.front();
 }
 
-string wchar_to_mbyte(const wstring& s)
+std::string wchar_to_mbyte(const std::wstring& s)
 {
-	vector<char> t(WideCharToMultiByte(CP_ACP, 0, s.c_str(), -1, NULL, 0, NULL, NULL));
+	std::vector<char> t(WideCharToMultiByte(CP_ACP, 0, s.c_str(), -1, NULL, 0, NULL, NULL));
 	if (!WideCharToMultiByte(CP_ACP, 0, s.c_str(), -1, &t.front(), t.size(), NULL, NULL))
-		throw runtime_error("WideCharToMultiByte failed");
+		throw std::runtime_error("WideCharToMultiByte failed");
 	return &t.front();
 }
 #endif
@@ -256,7 +256,7 @@ int Cserver::run()
 					alert(Calert(Calert::info, "UPnP NAT", "External IPA: " + wchar_to_mbyte(bstrExternalIPA)));
 					SysFreeString(bstrExternalIPA);
 				}
-				catch (runtime_error& e)
+				catch (std::runtime_error& e)
 				{
 					alert(Calert(Calert::warn, "UPnP NAT", e.what()));
 				}
@@ -402,7 +402,7 @@ int Cserver::run()
 		if (0)
 		{
 #ifdef WIN32
-			static ofstream f("/temp/select log.txt");
+			static std::ofstream f("/temp/select log.txt");
 			f << time();
 			f << "\tR:";
 			for (size_t i = 0; i < fd_read_set.fd_count; i++)
@@ -413,7 +413,7 @@ int Cserver::run()
 			f << "\tE:";
 			for (size_t i = 0; i < fd_except_set.fd_count; i++)
 				f << ' ' << fd_except_set.fd_array[i];
-			f << endl;
+			f << std::endl;
 #endif
 		}
 		lock();
@@ -470,7 +470,7 @@ int Cserver::run()
 		if (g_sig_term || !m_run)
 		{
 			stopping = true;
-			ofstream os(conf_fname().c_str());
+			std::ofstream os(conf_fname().c_str());
 			os << m_config;
 			save_state(false).save(state_fname());
 			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -557,7 +557,7 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 	m_update_send_quotas_time = time();
 	if (m_config.m_upload_rate && m_upload_rate_enabled && !m_send_quota)
 		return;
-	typedef multimap<int, Cbt_peer_link*> t_links;
+	typedef std::multimap<int, Cbt_peer_link*> t_links;
 	t_links links;
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
@@ -618,7 +618,7 @@ void Cserver::stop()
 	m_run = false;
 }
 
-int Cserver::pre_file_dump(const string& id, int flags) const
+int Cserver::pre_file_dump(const std::string& id, int flags) const
 {
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
@@ -628,7 +628,7 @@ int Cserver::pre_file_dump(const string& id, int flags) const
 	return 0;
 }
 
-void Cserver::file_dump(Cstream_writer& w, const string& id, int flags) const
+void Cserver::file_dump(Cstream_writer& w, const std::string& id, int flags) const
 {
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
@@ -665,7 +665,7 @@ void Cserver::insert_peer(const char* r, const sockaddr_in& a, const Csocket& s)
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
-		if (i->m_info_hash == string(r + hs_info_hash, 20))
+		if (i->m_info_hash == std::string(r + hs_info_hash, 20))
 			i->insert_peer(r, a, s);
 	}
 }
@@ -684,7 +684,7 @@ void Cserver::unlock()
 #endif
 }
 
-Cvirtual_binary Cserver::get_file_status(const string& id, int flags)
+Cvirtual_binary Cserver::get_file_status(const std::string& id, int flags)
 {
 	Clock l(m_cs);
 	Cvirtual_binary d;
@@ -790,7 +790,7 @@ void Cserver::set_trackers(const Cvirtual_binary& d)
 	d.save(trackers_fname());
 }
 
-int Cserver::announce(const string& id)
+int Cserver::announce(const std::string& id)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(id);
@@ -800,7 +800,7 @@ int Cserver::announce(const string& id)
 	return 0;
 }
 
-int Cserver::file_priority(const string& id, int priority)
+int Cserver::file_priority(const std::string& id, int priority)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(id);
@@ -810,7 +810,7 @@ int Cserver::file_priority(const string& id, int priority)
 	return 0;
 }
 
-int Cserver::file_state(const string& id, Cbt_file::t_state state)
+int Cserver::file_state(const std::string& id, Cbt_file::t_state state)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(id);
@@ -821,7 +821,7 @@ int Cserver::file_state(const string& id, Cbt_file::t_state state)
 	return 0;
 }
 
-void Cserver::sub_file_priority(const string& file_id, const string& sub_file_id, int priority)
+void Cserver::sub_file_priority(const std::string& file_id, const std::string& sub_file_id, int priority)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(file_id);
@@ -829,7 +829,7 @@ void Cserver::sub_file_priority(const string& file_id, const string& sub_file_id
 		f->sub_file_priority(sub_file_id, priority);
 }
 
-void Cserver::torrent_seeding_ratio(const string& file_id, bool override, int v)
+void Cserver::torrent_seeding_ratio(const std::string& file_id, bool override, int v)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(file_id);
@@ -839,7 +839,7 @@ void Cserver::torrent_seeding_ratio(const string& file_id, bool override, int v)
 	f->m_seeding_ratio_override = override;
 }
 
-void Cserver::torrent_trackers(const string& file_id, const string& v)
+void Cserver::torrent_trackers(const std::string& file_id, const std::string& v)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(file_id);
@@ -847,7 +847,7 @@ void Cserver::torrent_trackers(const string& file_id, const string& v)
 		f->trackers(v);
 }
 
-void Cserver::torrent_upload_slots_max(const string& file_id, bool override, int v)
+void Cserver::torrent_upload_slots_max(const std::string& file_id, bool override, int v)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(file_id);
@@ -857,7 +857,7 @@ void Cserver::torrent_upload_slots_max(const string& file_id, bool override, int
 	f->m_upload_slots_max_override = override;
 }
 
-void Cserver::torrent_upload_slots_min(const string& file_id, bool override, int v)
+void Cserver::torrent_upload_slots_min(const std::string& file_id, bool override, int v)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(file_id);
@@ -867,7 +867,7 @@ void Cserver::torrent_upload_slots_min(const string& file_id, bool override, int
 	f->m_upload_slots_min_override = override;
 }
 
-void Cserver::torrent_end_mode(const string& file_id, bool v)
+void Cserver::torrent_end_mode(const std::string& file_id, bool v)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(file_id);
@@ -875,14 +875,14 @@ void Cserver::torrent_end_mode(const string& file_id, bool v)
 		f->m_allow_end_mode = v;
 }
 
-string Cserver::get_url(const string& id)
+std::string Cserver::get_url(const std::string& id)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(id);
 	return f ? f->get_url() : "";
 }
 
-int Cserver::open(const Cvirtual_binary& info, const string& name)
+int Cserver::open(const Cvirtual_binary& info, const std::string& name)
 {
 #ifdef WIN32
 	while (!m_run)
@@ -909,23 +909,23 @@ int Cserver::open(const Cvirtual_binary& info, const string& name)
 	return 0;
 }
 
-int Cserver::open_url(const string& v)
+int Cserver::open_url(const std::string& v)
 {
-	int a = v.find("://");
-	if (a == string::npos || v.substr(0, a) != "xbtp")
+	size_t a = v.find("://");
+	if (a == std::string::npos || v.substr(0, a) != "xbtp")
 		return 1;
 	a += 3;
-	int b = v.find('/', a);
-	if (b == string::npos)
+	size_t b = v.find('/', a);
+	if (b == std::string::npos)
 		return 2;
-	string trackers = v.substr(a, b++ - a);
+	std::string trackers = v.substr(a, b++ - a);
 	a = v.find('/', b);
-	if (a == string::npos)
+	if (a == std::string::npos)
 		return 3;
-	string info_hash = hex_decode(v.substr(b, a++ - b));
+	std::string info_hash = hex_decode(v.substr(b, a++ - b));
 	if (info_hash.empty())
 		return 5;
-	string peers = hex_decode(v.substr(a));
+	std::string peers = hex_decode(v.substr(a));
 #ifdef WIN32
 	while (!m_run)
 		Sleep(100);
@@ -941,7 +941,7 @@ int Cserver::open_url(const string& v)
 	}
 	Cbt_file f;
 	f.m_server = this;
-	for (a = 0; (b = trackers.find(',', a)) != string::npos; a = b + 1)
+	for (a = 0; (b = trackers.find(',', a)) != std::string::npos; a = b + 1)
 	{
 		f.m_trackers.push_back(uri_decode(trackers.substr(a, b - a)));
 	}
@@ -955,7 +955,7 @@ int Cserver::open_url(const string& v)
 	return 0;
 }
 
-int Cserver::close(const string& id, bool erase)
+int Cserver::close(const std::string& id, bool erase)
 {
 	Clock l(m_cs);
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -1007,27 +1007,27 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	return d;
 }
 
-string Cserver::conf_fname() const
+std::string Cserver::conf_fname() const
 {
 	return local_app_data_dir() + "/xbt_client.conf";
 }
 
-string Cserver::profiles_fname() const
+std::string Cserver::profiles_fname() const
 {
 	return local_app_data_dir() + "/profiles.xif";
 }
 
-string Cserver::scheduler_fname() const
+std::string Cserver::scheduler_fname() const
 {
 	return local_app_data_dir() + "/scheduler.xif";
 }
 
-string Cserver::state_fname() const
+std::string Cserver::state_fname() const
 {
 	return local_app_data_dir() + "/state.bin";
 }
 
-string Cserver::trackers_fname() const
+std::string Cserver::trackers_fname() const
 {
 	return local_app_data_dir() + "/trackers.bin";
 }
@@ -1039,9 +1039,9 @@ void Cserver::alert(const Calert& v)
 
 void Cserver::update_chokes()
 {
-	typedef map<Cbt_file*, pair<int, int> > t_files_limits;
-	typedef multimap<int, Cbt_peer_link*, less<int> > t_links0;
-	typedef vector<Cbt_peer_link*> t_links1;
+	typedef std::map<Cbt_file*, std::pair<int, int> > t_files_limits;
+	typedef std::multimap<int, Cbt_peer_link*, std::less<int> > t_links0;
+	typedef std::vector<Cbt_peer_link*> t_links1;
 	t_files_limits files_limits;
 	t_links0 links0;
 	t_links1 links1;
@@ -1062,7 +1062,7 @@ void Cserver::update_chokes()
 			else if (j->m_remote_interested)
 				(j->m_local_interested ? links1 : links2).push_back(&*j);
 		}
-		files_limits[&*i] = make_pair(i->upload_slots_min(), i->upload_slots_max() ? i->upload_slots_max() : INT_MAX);
+		files_limits[&*i] = std::make_pair(i->upload_slots_min(), i->upload_slots_max() ? i->upload_slots_max() : INT_MAX);
 	}
 	random_shuffle(links1.begin(), links1.end());
 	random_shuffle(links2.begin(), links2.end());
@@ -1071,7 +1071,7 @@ void Cserver::update_chokes()
 	{
 		for (t_links0::iterator i = links0.begin(); slots_left && i != links0.end(); i++)
 		{
-			pair<int, int>& file_limits = files_limits.find(i->second->m_f)->second;
+			std::pair<int, int>& file_limits = files_limits.find(i->second->m_f)->second;
 			if (!i->second->m_local_choked_goal
 				|| !a && file_limits.first < 1
 				|| a == 1 && file_limits.second < 1)
@@ -1086,7 +1086,7 @@ void Cserver::update_chokes()
 		}
 		for (t_links1::const_iterator i = links1.begin(); slots_left && i != links1.end(); i++)
 		{
-			pair<int, int>& file_limits = files_limits.find((*i)->m_f)->second;
+			std::pair<int, int>& file_limits = files_limits.find((*i)->m_f)->second;
 			if (!(*i)->m_local_choked_goal
 				|| !a && file_limits.first < 1
 				|| a == 1 && file_limits.second < 1)
@@ -1098,7 +1098,7 @@ void Cserver::update_chokes()
 		}
 		for (t_links1::const_iterator i = links2.begin(); slots_left && i != links2.end(); i++)
 		{
-			pair<int, int>& file_limits = files_limits.find((*i)->m_f)->second;
+			std::pair<int, int>& file_limits = files_limits.find((*i)->m_f)->second;
 			if (!(*i)->m_local_choked_goal
 				|| !a && file_limits.first < 1
 				|| a == 1 && file_limits.second < 1)
@@ -1129,42 +1129,42 @@ void Cserver::update_states()
 	m_update_states_time = time();
 }
 
-string Cserver::completes_dir() const
+std::string Cserver::completes_dir() const
 {
 	return m_config.m_completes_dir;
 }
 
-void Cserver::completes_dir(const string& v)
+void Cserver::completes_dir(const std::string& v)
 {
 	m_config.m_completes_dir = v;
 }
 
-string Cserver::incompletes_dir() const
+std::string Cserver::incompletes_dir() const
 {
 	return m_config.m_incompletes_dir;
 }
 
-void Cserver::incompletes_dir(const string& v)
+void Cserver::incompletes_dir(const std::string& v)
 {
 	m_config.m_incompletes_dir = v;
 }
 
-string Cserver::local_app_data_dir() const
+std::string Cserver::local_app_data_dir() const
 {
 	return m_config.m_local_app_data_dir;
 }
 
-void Cserver::local_app_data_dir(const string& v)
+void Cserver::local_app_data_dir(const std::string& v)
 {
 	m_config.m_local_app_data_dir = v;
 }
 
-string Cserver::torrents_dir() const
+std::string Cserver::torrents_dir() const
 {
 	return m_config.m_torrents_dir;
 }
 
-void Cserver::torrents_dir(const string& v)
+void Cserver::torrents_dir(const std::string& v)
 {
 	m_config.m_torrents_dir = v;
 }
@@ -1199,7 +1199,7 @@ void Cserver::sig_handler(int v)
 	}
 }
 
-bool Cserver::admin_authenticate(const string& user, const string& pass) const
+bool Cserver::admin_authenticate(const std::string& user, const std::string& pass) const
 {
 	return user == m_config.m_admin_user && pass == m_config.m_admin_pass && pass.size() >= 8;
 }
@@ -1207,18 +1207,18 @@ bool Cserver::admin_authenticate(const string& user, const string& pass) const
 Cbvalue Cserver::admin_request(const Cbvalue& s)
 {
 	Cbvalue d;
-	string action = s.d(bts_action).s();
+	std::string action = s.d(bts_action).s();
 	if (!admin_authenticate(s.d(bts_admin_user).s(), s.d(bts_admin_pass).s()))
-		d.d(bts_failure_reason, string("access denied"));
+		d.d(bts_failure_reason, std::string("access denied"));
 	else if (action == bts_close_torrent)
 	{
 		if (close(s.d(bts_hash).s(), false))
-			d.d(bts_failure_reason, string("unable to close torrent"));
+			d.d(bts_failure_reason, std::string("unable to close torrent"));
 	}
 	else if (action == bts_erase_torrent)
 	{
 		if (close(s.d(bts_hash).s(), true))
-			d.d(bts_failure_reason, string("unable to erase torrent"));
+			d.d(bts_failure_reason, std::string("unable to erase torrent"));
 	}
 	else if (action == bts_get_options)
 	{
@@ -1268,7 +1268,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	else if (action == bts_open_torrent)
 	{
 		if (open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), ""))
-			d.d(bts_failure_reason, string("unable to open torrent"));
+			d.d(bts_failure_reason, std::string("unable to open torrent"));
 	}
 	else if (action == bts_set_options)
 	{
@@ -1298,12 +1298,12 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	else if (action == bts_set_priority)
 	{
 		if (file_priority(s.d(bts_hash).s(), s.d(bts_priority).i()))
-			d.d(bts_failure_reason, string("unable to set torrent priority"));
+			d.d(bts_failure_reason, std::string("unable to set torrent priority"));
 	}
 	else if (action == bts_set_state)
 	{
 		if (file_state(s.d(bts_hash).s(), static_cast<Cbt_file::t_state>(s.d(bts_state).i())))
-			d.d(bts_failure_reason, string("unable to set torrent state"));
+			d.d(bts_failure_reason, std::string("unable to set torrent state"));
 	}
 	return d;
 }
@@ -1318,7 +1318,7 @@ int Cserver::version()
 	return 71;
 }
 
-Chttp_link* Cserver::http_request(int h, int p, const string& request, Chttp_response_handler* response_handler)
+Chttp_link* Cserver::http_request(int h, int p, const std::string& request, Chttp_response_handler* response_handler)
 {
 	m_http_links.push_back(Chttp_link(this));
 	Chttp_link* l = &m_http_links.back();
@@ -1344,27 +1344,27 @@ void Cserver::check_remote_links()
 	alert(Calert(Calert::warn, n(c_local_links) + " local links, but no remote links have been established."));
 }
 
-string Cserver::peer_id_prefix() const
+std::string Cserver::peer_id_prefix() const
 {
 	return m_config.m_peer_id_prefix;
 }
 
-void Cserver::peer_id_prefix(const string& v)
+void Cserver::peer_id_prefix(const std::string& v)
 {
 	m_config.m_peer_id_prefix = v;
 }
 
-string Cserver::user_agent() const
+std::string Cserver::user_agent() const
 {
 	return m_config.m_user_agent;
 }
 
-void Cserver::user_agent(const string& v)
+void Cserver::user_agent(const std::string& v)
 {
 	m_config.m_user_agent = v;
 }
 
-int Cserver::peer_connect(const string& id, int ipa, int port)
+int Cserver::peer_connect(const std::string& id, int ipa, int port)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(id);
@@ -1374,7 +1374,7 @@ int Cserver::peer_connect(const string& id, int ipa, int port)
 	return 0;
 }
 
-int Cserver::peer_disconnect(const string& id, int ipa)
+int Cserver::peer_disconnect(const std::string& id, int ipa)
 {
 	Clock l(m_cs);
 	Cbt_file* f = find_torrent(id);
@@ -1393,7 +1393,7 @@ int Cserver::peer_block(int ipa)
 	return 0;
 }
 
-Cbt_file* Cserver::find_torrent(const string& id)
+Cbt_file* Cserver::find_torrent(const std::string& id)
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
@@ -1403,7 +1403,7 @@ Cbt_file* Cserver::find_torrent(const string& id)
 	return NULL;
 }
 
-void Cserver::load_config(const string& v)
+void Cserver::load_config(const std::string& v)
 {
 	Cconfig config = m_config;
 	if (!config.load(v))

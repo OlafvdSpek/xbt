@@ -33,8 +33,8 @@ struct t_xif_header_fast
 
 class Cxif_key;
 
-typedef map<int, Cxif_key> t_xif_key_map;
-typedef map<int, Cxif_value> t_xif_value_map;
+typedef std::map<int, Cxif_key> t_xif_key_map;
+typedef std::map<int, Cxif_value> t_xif_value_map;
 
 class Cxif_key
 {
@@ -138,7 +138,7 @@ public:
 		m_values[id] = Cxif_value(vt_int32, v);
 	}
 
-	void set_value_string(int id, const string& v)
+	void set_value_string(int id, const std::string& v)
 	{
 		m_values[id] = Cxif_value(v);
 	}
@@ -187,12 +187,12 @@ public:
 		return *reinterpret_cast<const long long*>(get_value(id).get_data());
 	}
 
-	string get_value_string(int id) const
+	std::string get_value_string(int id) const
 	{
 		return get_value(id).get_string();
 	}
 
-	string get_value_string(int id, const string& v) const
+	std::string get_value_string(int id, const std::string& v) const
 	{
 		return get_value(id).get_string(v);
 	}
@@ -238,8 +238,8 @@ public:
 		m_values.clear();
 	}
 
-	void dump(ostream& os, bool show_ratio, int depth = 0, Cvirtual_binary* t = NULL) const;
-	void dump_ratio(ostream& os, Cvirtual_binary* t) const;
+	void dump(std::ostream& os, bool show_ratio, int depth = 0, Cvirtual_binary* t = NULL) const;
+	void dump_ratio(std::ostream& os, Cvirtual_binary* t) const;
 	Cvirtual_binary export_bz() const;
 	int load_key(const byte* data, size_t size);
 	Cvirtual_binary vdata(bool fast = false) const;

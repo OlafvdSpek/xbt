@@ -12,8 +12,8 @@
 class Cxif_key_r
 {
 public:
-	typedef vector<pair<int, Cxif_key_r> > t_key_map;
-	typedef vector<pair<int, Cxif_value> > t_value_map;
+	typedef std::vector<std::pair<int, Cxif_key_r> > t_key_map;
+	typedef std::vector<std::pair<int, Cxif_value> > t_value_map;
 
 	const Cxif_key_r& get_key(int id) const
 	{
@@ -52,12 +52,12 @@ public:
 		return *reinterpret_cast<const long long*>(get_value(id).get_data());
 	}
 
-	string get_value_string(int id) const
+	std::string get_value_string(int id) const
 	{
 		return get_value(id).get_string();
 	}
 
-	string get_value_string(int id, const string& v) const
+	std::string get_value_string(int id, const std::string& v) const
 	{
 		return get_value(id).get_string(v);
 	}
