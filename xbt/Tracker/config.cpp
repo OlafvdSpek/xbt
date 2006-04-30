@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "config.h"
 
+#include "socket.h"
+
 Cconfig::Cconfig()
 {
 	m_announce_interval = 1800;
@@ -30,9 +32,9 @@ Cconfig::Cconfig()
 	m_write_db_interval = 60;
 }
 
-int Cconfig::set(const string& name, const string& value)
+int Cconfig::set(const std::string& name, const std::string& value)
 {
-	t_attribute<string> attributes[] =
+	t_attribute<std::string> attributes[] =
 	{
 		"column_files_completed", &m_column_files_completed,
 		"column_files_fid", &m_column_files_fid, 
@@ -56,7 +58,7 @@ int Cconfig::set(const string& name, const string& value)
 		"table_users", &m_table_users,
 		NULL
 	};
-	if (t_attribute<string>* i = find(attributes, name))
+	if (t_attribute<std::string>* i = find(attributes, name))
 		*i->value = value;
 	else if (name == "listen_ipa" && value != "*")
 		m_listen_ipas.insert(inet_addr(value.c_str()));
@@ -65,7 +67,7 @@ int Cconfig::set(const string& name, const string& value)
 	return 0;
 }
 
-int Cconfig::set(const string& name, int value)
+int Cconfig::set(const std::string& name, int value)
 {
 	t_attribute<int> attributes[] =
 	{
@@ -86,7 +88,7 @@ int Cconfig::set(const string& name, int value)
 	return 0;
 }
 
-int Cconfig::set(const string& name, bool value)
+int Cconfig::set(const std::string& name, bool value)
 {
 	t_attribute<bool> attributes[] =
 	{

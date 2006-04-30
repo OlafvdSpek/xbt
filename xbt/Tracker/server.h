@@ -5,7 +5,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <map>
 #include "sql/database.h"
+#include "bvalue.h"
 #include "config.h"
 #include "connection.h"
 #include "epoll.h"
@@ -28,7 +30,7 @@ public:
 
 		long long downloaded;
 		long long left;
-		string peer_id;
+		std::string peer_id;
 		int port;
 		int uid;
 		long long uploaded;
@@ -37,7 +39,7 @@ public:
 		time_t mtime;
 	};
 
-	typedef map<int, t_peer> t_peers;
+	typedef std::map<int, t_peer> t_peers;
 
 	class Cannounce_output
 	{
@@ -80,7 +82,7 @@ public:
 	struct t_file
 	{
 		void clean_up(time_t t, Cserver&);
-		string debug() const;
+		std::string debug() const;
 		void select_peers(const Ctracker_input&, Cannounce_output&) const;
 		Cbvalue scrape() const;
 
@@ -119,20 +121,20 @@ public:
 		int peers_limit;
 		int torrents_limit;
 		int wait_time;
-		string pass;
+		std::string pass;
 		long long torrent_pass_secret;
 	};
 
-	typedef map<string, t_file> t_files;
-	typedef map<unsigned int, t_deny_from_host> t_deny_from_hosts;
-	typedef map<int, t_user> t_users;
-	typedef map<string, t_user*> t_users_names;
-	typedef map<string, t_user*> t_users_torrent_passes;
+	typedef std::map<std::string, t_file> t_files;
+	typedef std::map<unsigned int, t_deny_from_host> t_deny_from_hosts;
+	typedef std::map<int, t_user> t_users;
+	typedef std::map<std::string, t_user*> t_users_names;
+	typedef std::map<std::string, t_user*> t_users_torrent_passes;
 
 	int test_sql();
 	void accept(const Csocket& l);
-	t_user* find_user_by_name(const string&);
-	t_user* find_user_by_torrent_pass(const string&);
+	t_user* find_user_by_name(const std::string&);
+	t_user* find_user_by_torrent_pass(const std::string&);
 	t_user* find_user_by_uid(int);
 	void read_config();
 	void write_db_files();
@@ -142,22 +144,22 @@ public:
 	void read_db_files_sql();
 	void read_db_users();
 	void clean_up();
-	string insert_peer(const Ctracker_input&, bool listen_check, bool udp, t_user*);
-	void update_peer(const string& file_id, int peer_id, bool listening);
-	string debug(const Ctracker_input&) const;
-	string statistics() const;
+	std::string insert_peer(const Ctracker_input&, bool listen_check, bool udp, t_user*);
+	void update_peer(const std::string& file_id, int peer_id, bool listening);
+	std::string debug(const Ctracker_input&) const;
+	std::string statistics() const;
 	Cbvalue select_peers(const Ctracker_input&, const t_user*);
 	Cbvalue scrape(const Ctracker_input&);
 	int run();
 	static void term();
-	Cserver(Cdatabase&, const string& table_prefix, bool use_sql);
+	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql);
 
 	int announce_interval() const
 	{
 		return m_config.m_announce_interval;
 	}
 
-	const t_file* file(const string& id) const
+	const t_file* file(const std::string& id) const
 	{
 		t_files::const_iterator i = m_files.find(id);
 		return i == m_files.end() ? NULL : &i->second;
@@ -198,7 +200,7 @@ public:
 		return m_config.m_gzip_scrape;
 	}
 
-	const string& redirect_url() const
+	const std::string& redirect_url() const
 	{
 		return m_config.m_redirect_url;
 	}
@@ -234,14 +236,14 @@ private:
 		table_users,
 	};
 
-	typedef list<Cconnection> t_connections;
-	typedef list<Cpeer_link> t_peer_links;
-	typedef list<Ctcp_listen_socket> t_tcp_sockets;
-	typedef list<Cudp_listen_socket> t_udp_sockets;
+	typedef std::list<Cconnection> t_connections;
+	typedef std::list<Cpeer_link> t_peer_links;
+	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
+	typedef std::list<Cudp_listen_socket> t_udp_sockets;
 
 	static void sig_handler(int v);
-	string column_name(int v) const;
-	string table_name(int) const;
+	std::string column_name(int v) const;
+	std::string table_name(int) const;
 
 	Cconfig m_config;
 	Cstats m_stats;
@@ -265,11 +267,11 @@ private:
 	t_users m_users;
 	t_users_names m_users_names;
 	t_users_torrent_passes m_users_torrent_passes;
-	string m_announce_log_buffer;
-	string m_files_users_updates_buffer;
-	string m_scrape_log_buffer;
-	string m_table_prefix;
-	string m_users_updates_buffer;
+	std::string m_announce_log_buffer;
+	std::string m_files_users_updates_buffer;
+	std::string m_scrape_log_buffer;
+	std::string m_table_prefix;
+	std::string m_users_updates_buffer;
 };
 
 #endif // !defined(AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_)

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <iostream>
 #include <signal.h>
 #include "sql/sql_query.h"
 #include "bt_misc.h"
@@ -32,7 +33,7 @@ public:
 		return v;
 	}
 private:
-	string m_peers;
+	std::string m_peers;
 };
 
 class Cannounce_output_http: public Cserver::Cannounce_output
@@ -75,7 +76,7 @@ private:
 	Cbvalue m_peers;
 };
 
-Cserver::Cserver(Cdatabase& database, const string& table_prefix, bool use_sql):
+Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql):
 	m_database(database)
 {
 	m_fid_end = 0;
@@ -94,7 +95,7 @@ int Cserver::run()
 		return 1;
 	if (m_epoll.create(1 << 10) == -1)
 	{
-		cerr << "epoll_create failed" << endl;
+		std::cerr << "epoll_create failed" << std::endl;
 		return 1;
 	}
 	t_tcp_sockets lt;
@@ -105,12 +106,12 @@ int Cserver::run()
 		{
 			Csocket l;
 			if (l.open(SOCK_STREAM) == INVALID_SOCKET)
-				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
 				l.bind(*j, htons(*i)))
-				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else if (l.listen())
-				cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else
 			{
 				lt.push_back(Ctcp_listen_socket(this, l));
@@ -124,10 +125,10 @@ int Cserver::run()
 		{
 			Csocket l;
 			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
-				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
 				l.bind(*j, htons(*i)))
-				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else
 			{
 				lu.push_back(Cudp_listen_socket(this, l));
@@ -226,31 +227,31 @@ int Cserver::run()
 			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); i++)
 			{
 				int z = i->pre_select(&fd_read_set, &fd_write_set);
-				n = max(n, z);
+				n = std::max(n, z);
 			}
 		}
 		{
 			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); i++)
 			{
 				int z = i->pre_select(&fd_write_set, &fd_except_set);
-				n = max(n, z);
+				n = std::max(n, z);
 			}
 		}
 		for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 		{
 			FD_SET(i->s(), &fd_read_set);
-			n = max<int>(n, i->s());
+			n = std::max<int>(n, i->s());
 		}
 		for (t_udp_sockets::iterator i = lu.begin(); i != lu.end(); i++)
 		{
 			FD_SET(i->s(), &fd_read_set);
-			n = max<int>(n, i->s());
+			n = std::max<int>(n, i->s());
 		}
 		timeval tv;
 		tv.tv_sec = 1;
 		tv.tv_usec = 0;
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
-			cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+			std::cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 		else
 		{
 			m_time = ::time(NULL);
@@ -317,7 +318,7 @@ void Cserver::accept(const Csocket& l)
 			if (WSAGetLastError() == WSAECONNABORTED)
 				continue;
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
-				cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			break;
 		}
 		else
@@ -330,10 +331,10 @@ void Cserver::accept(const Csocket& l)
 					continue;
 			}
 			if (s.blocking(false))
-				cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #ifdef TCP_CORK
 			if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
-				cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
 			m_connections.push_back(Cconnection(this, s, a, m_config.m_log_access));
 			m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
@@ -341,7 +342,7 @@ void Cserver::accept(const Csocket& l)
 	}
 }
 
-string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, t_user* user)
+std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, t_user* user)
 {
 	if (m_use_sql && m_config.m_log_announce)
 	{
@@ -468,7 +469,7 @@ string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp
 	return "";
 }
 
-void Cserver::update_peer(const string& file_id, int peer_id, bool listening)
+void Cserver::update_peer(const std::string& file_id, int peer_id, bool listening)
 {
 	t_files::iterator i = m_files.find(file_id);
 	if (i == m_files.end())
@@ -481,7 +482,7 @@ void Cserver::update_peer(const string& file_id, int peer_id, bool listening)
 
 void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o) const
 {
-	typedef vector<t_peers::const_iterator> t_candidates;
+	typedef std::vector<t_peers::const_iterator> t_candidates;
 
 	o.complete(seeders);
 	o.incomplete(leechers);
@@ -491,7 +492,7 @@ void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o
 		if ((ti.m_left || i->second.left) && i->second.listening)
 			candidates.push_back(i);
 	}
-	size_t c = ti.m_num_want < 0 ? 50 : min(ti.m_num_want, 50);
+	size_t c = ti.m_num_want < 0 ? 50 : std::min(ti.m_num_want, 50);
 	if (candidates.size() > c)
 	{
 		while (c--)
@@ -639,9 +640,9 @@ void Cserver::read_db_files()
 		read_db_files_sql();
 	else if (!m_config.m_auto_register)
 	{
-		set<string> new_files;
-		ifstream is("xbt_files.txt");
-		string s;
+		std::set<std::string> new_files;
+		std::ifstream is("xbt_files.txt");
+		std::string s;
 		while (getline(is, s))
 		{
 			s = hex_decode(s);
@@ -697,7 +698,7 @@ void Cserver::read_db_files_sql()
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			m_fid_end = max(m_fid_end, static_cast<int>(row[2].i()) + 1);
+			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
 			if (row[0].size() != 20 || m_files.find(row[0].s()) != m_files.end())
 				continue;
 			t_file& file = m_files[row[0].s()];
@@ -764,7 +765,7 @@ void Cserver::write_db_files()
 		return;
 	try
 	{
-		string buffer;
+		std::string buffer;
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			t_file& file = i->second;
@@ -903,9 +904,9 @@ void Cserver::read_config()
 	m_read_config_time = time();
 }
 
-string Cserver::t_file::debug() const
+std::string Cserver::t_file::debug() const
 {
-	string page;
+	std::string page;
 	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
 	{
 		page += "<tr><td>" + Csocket::inet_ntoa(i->first)
@@ -918,9 +919,9 @@ string Cserver::t_file::debug() const
 	return page;
 }
 
-string Cserver::debug(const Ctracker_input& ti) const
+std::string Cserver::debug(const Ctracker_input& ti) const
 {
-	string page;
+	std::string page;
 	page += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	int leechers = 0;
 	int seeders = 0;
@@ -952,9 +953,9 @@ string Cserver::debug(const Ctracker_input& ti) const
 	return page;
 }
 
-string Cserver::statistics() const
+std::string Cserver::statistics() const
 {
-	string page;
+	std::string page;
 	page += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	int leechers = 0;
 	int seeders = 0;
@@ -987,7 +988,7 @@ string Cserver::statistics() const
 		page += "<tr><td>scraped http<td align=right>" + n(m_stats.scraped_http) + "<td align=right>" + n(m_stats.scraped_http * 100 / m_stats.scraped()) + " %"
 			+ "<tr><td>scraped udp<td align=right>" + n(m_stats.scraped_udp) + "<td align=right>" + n(m_stats.scraped_udp * 100 / m_stats.scraped()) + " %";
 	}
-	page += string("<tr><td>")
+	page += std::string("<tr><td>")
 		+ "<tr><td>up time<td align=right>" + duration2a(time() - m_stats.start_time)
 		+ "<tr><td>"
 		+ "<tr><td>anonymous connect<td align=right>" + n(m_config.m_anonymous_connect)
@@ -1008,13 +1009,13 @@ string Cserver::statistics() const
 	return page;
 }
 
-Cserver::t_user* Cserver::find_user_by_name(const string& v)
+Cserver::t_user* Cserver::find_user_by_name(const std::string& v)
 {
 	t_users_names::const_iterator i = m_users_names.find(v);
 	return i == m_users_names.end() ? NULL : i->second;
 }
 
-Cserver::t_user* Cserver::find_user_by_torrent_pass(const string& v)
+Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v)
 {
 	t_users_torrent_passes::const_iterator i = m_users_torrent_passes.find(v);
 	return i == m_users_torrent_passes.end() ? NULL : i->second;
@@ -1046,7 +1047,7 @@ void Cserver::term()
 	g_sig_term = true;
 }
 
-string Cserver::column_name(int v) const
+std::string Cserver::column_name(int v) const
 {
 	switch (v)
 	{
@@ -1065,7 +1066,7 @@ string Cserver::column_name(int v) const
 	return "";
 }
 
-string Cserver::table_name(int v) const
+std::string Cserver::table_name(int v) const
 {
 	switch (v)
 	{

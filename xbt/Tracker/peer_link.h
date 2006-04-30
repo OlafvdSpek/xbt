@@ -18,10 +18,10 @@ public:
 	int pre_select(fd_set* fd_write_set, fd_set* fd_except_set);
 	int post_select(fd_set* fd_write_set, fd_set* fd_except_set);
 	Cpeer_link();
-	Cpeer_link(int h, int p, Cserver* server, const string& file_id, int peer_id);
+	Cpeer_link(int h, int p, Cserver* server, const std::string& file_id, int peer_id);
 private:
 	time_t m_ctime;
-	string m_file_id;
+	std::string m_file_id;
 	int m_peer_id;
 };
 

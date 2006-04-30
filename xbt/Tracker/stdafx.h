@@ -16,8 +16,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 #ifdef WIN32
 #define FD_SETSIZE 1024
 #define NOMINMAX
@@ -40,9 +38,6 @@ using namespace std;
 #define atoll xbt_atoll
 #endif
 #endif
-#include "bvalue.h"
-#include "socket.h"
-#include "virtual_binary.h"
 
 //{{AFX_INSERT_LOCATION}}
 

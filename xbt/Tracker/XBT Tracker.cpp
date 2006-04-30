@@ -1,9 +1,10 @@
 #include "stdafx.h"
+#include <iostream>
 #include "windows/nt_service.h"
 #include "config.h"
 #include "server.h"
 
-string g_conf_file = "xbt_tracker.conf";
+std::string g_conf_file = "xbt_tracker.conf";
 const char* g_service_name = "XBT Tracker";
 
 int main1()
@@ -20,10 +21,10 @@ int main1()
 			strrchr(b, '\\')[1] = 0;
 		strcat(b, "xbt_tracker.conf");
 		if (config.load(b))
-			cerr << "Unable to read " << g_conf_file << endl;
+			std::cerr << "Unable to read " << g_conf_file << std::endl;
 	}
 #else
-		cerr << "Unable to read " << g_conf_file << endl;
+		std::cerr << "Unable to read " << g_conf_file << std::endl;
 #endif
 	Cdatabase database;
 	try
@@ -33,7 +34,7 @@ int main1()
 	}
 	catch (Cdatabase::exception& e)
 	{
-		cerr << e.what() << endl;
+		std::cerr << e.what() << std::endl;
 		return 1;
 	}
 	database.set_query_log(config.m_query_log);
@@ -85,15 +86,21 @@ int main(int argc, char* argv[])
 		if (!strcmp(argv[1], "--install"))
 		{
 			if (nt_service_install(g_service_name))
-				return cerr << "Failed to install service " << g_service_name << "." << endl, 1;
-			cout << "Service " << g_service_name << " has been installed." << endl;
+			{
+				std::cerr << "Failed to install service " << g_service_name << "." << std::endl;
+				return 1;
+			}
+			std::cout << "Service " << g_service_name << " has been installed." << std::endl;
 			return 0;
 		}
 		else if (!strcmp(argv[1], "--uninstall"))
 		{
 			if (nt_service_uninstall(g_service_name))
-				return cerr << "Failed to uninstall service " << g_service_name << "." << endl, 1;
-			cout << "Service " << g_service_name << " has been uninstalled." << endl;
+			{
+				std::cerr << "Failed to uninstall service " << g_service_name << "." << std::endl;
+				return 1;
+			}
+			std::cout << "Service " << g_service_name << " has been uninstalled." << std::endl;
 			return 0;
 		}
 		else if (!strcmp(argv[1], "--conf_file") && argc >= 3)
