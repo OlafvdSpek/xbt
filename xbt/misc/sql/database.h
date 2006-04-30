@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <stdexcept>
 #include "sql_result.h"
 
 class Cdatabase

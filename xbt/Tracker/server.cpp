@@ -159,7 +159,7 @@ int Cserver::run()
 		if (setsid() == -1)
 			std::cerr << "setsid failed" << std::endl;
 #endif
-		ofstream(m_config.m_pid_file.c_str()) << getpid() << endl;
+		std::ofstream(m_config.m_pid_file.c_str()) << getpid() << std::endl;
 		struct sigaction act;
 		act.sa_handler = sig_handler;
 		sigemptyset(&act.sa_mask);
