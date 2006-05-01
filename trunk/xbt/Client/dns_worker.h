@@ -6,6 +6,7 @@
 #endif
 
 #include <boost/thread.hpp>
+#include <queue>
 
 class Cdns_worker  
 {
@@ -15,7 +16,7 @@ public:
 	~Cdns_worker();
 private:
 	typedef std::map<int, std::string> t_reverse_map;
-	typedef std::list<int> t_reverse_map_queue;
+	typedef std::queue<int> t_reverse_map_queue;
 
 	void run();
 
