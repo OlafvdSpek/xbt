@@ -25,7 +25,7 @@ std::string Cdns_worker::get_host_by_addr(int v)
 		std::string d = i->second.c_str();
 		return d;
 	}
-	m_reverse_map_queue.push_back(v);
+	m_reverse_map_queue.push(v);
 	m_condition.notify_one();
 	return "";
 }
@@ -43,7 +43,7 @@ void Cdns_worker::run()
 			if (!m_run)
 				return;
 			v = m_reverse_map_queue.front();
-			m_reverse_map_queue.pop_front();
+			m_reverse_map_queue.pop();
 		}
 		while (m_reverse_map.find(v) != m_reverse_map.end());
 		l.unlock();
