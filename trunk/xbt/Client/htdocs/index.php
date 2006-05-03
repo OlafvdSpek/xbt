@@ -96,8 +96,10 @@
 		default:
 			foreach ($_REQUEST as $name => $value)
 			{
+				if (strlen($name) != 40 || $value != 'on')
+					continue;
 				$name = pack('H*', $name);
-				if (strlen($name) != 20 || $value != 'on')
+				if (strlen($name) != 20)
 					continue;
 				switch ($action)
 				{
