@@ -17,8 +17,8 @@
 	if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name']))
 	{
 		$d = file_get_contents($_FILES['file']['tmp_name']);
-		send_string($s, sprintf('d6:action12:open torrent7:torrent%d:%se', strlen($d), $d));
-		recv_string($s);
+		send_string($s, sprintf('d6:action12:open torrent10:admin pass%d:%s10:admin user%d:%s7:torrent%d:%se', strlen($config['client_pass']), $config['client_pass'], strlen($config['client_user']), $config['client_user'], strlen($d), $d));
+		recv_bvalue($s);
 	}
 	$actions = array
 	(
@@ -68,9 +68,13 @@
 				$s,
 				sprintf
 				(
-					'd6:action%d:%s13:completes dir%d:%s15:incompletes dir%d:%s10:peer limiti%de9:peer porti%de13:seeding ratioi%de13:torrent limiti%de12:torrents dir%d:%s12:tracker porti%de11:upload ratei%de12:upload slotsi%de10:user agent%d:%se',
+					'd6:action%d:%s10:admin pass%d:%s10:admin user%d:%s13:completes dir%d:%s15:incompletes dir%d:%s10:peer limiti%de9:peer porti%de13:seeding ratioi%de13:torrent limiti%de12:torrents dir%d:%s12:tracker porti%de11:upload ratei%de12:upload slotsi%de10:user agent%d:%se',
 					strlen($action),
 					$action,
+					strlen($config['client_pass']),
+					$config['client_pass'],
+					strlen($config['client_user']),
+					$config['client_user'],
 					strlen($completes_dir),
 					$completes_dir,
 					strlen($incompletes_dir),
@@ -98,15 +102,18 @@
 				switch ($action)
 				{
 				case 'set priority':
-					send_string($s, sprintf('d6:action%d:%s4:hash20:%s8:priorityi%dee', strlen($action), $action, $name, $arguments[$_REQUEST['a']]));
+					send_string($s, sprintf('d6:action%d:%s10:admin pass%d:%s10:admin user%d:%s4:hash20:%s8:priorityi%dee',
+						strlen($action), $action, strlen($config['client_pass']), $config['client_pass'], strlen($config['client_user']), $config['client_user'], $name, $arguments[$_REQUEST['a']]));
 					break;
 				case 'set state':
-					send_string($s, sprintf('d6:action%d:%s4:hash20:%s5:statei%dee', strlen($action), $action, $name, $arguments[$_REQUEST['a']]));
+					send_string($s, sprintf('d6:action%d:%s10:admin pass%d:%s10:admin user%d:%s4:hash20:%s5:statei%dee',
+						strlen($action), $action, strlen($config['client_pass']), $config['client_pass'], strlen($config['client_user']), $config['client_user'], $name, $arguments[$_REQUEST['a']]));
 					break;
 				default:
-					send_string($s, sprintf('d6:action%d:%s4:hash20:%se', strlen($action), $action, $name));
+					send_string($s, sprintf('d6:action%d:%s10:admin pass%d:%s10:admin user%d:%s4:hash20:%se',
+						strlen($action), $action, strlen($config['client_pass']), $config['client_pass'], strlen($config['client_user']), $config['client_user'], $name));
 				}
-				recv_string($s);
+				$v = recv_bvalue($s);
 			}
 		}
 	}
@@ -115,11 +122,9 @@
 		header('location: ' . $_SERVER['SCRIPT_NAME']);
 		exit();
 	}
-	send_string($s, 'd6:action10:get statuse');
-	$v = recv_string($s);
-	$v = bdec($v);
-	if ($v['value']['failure reason']['value'])
-		die($v['value']['failure reason']['value']);
+	send_string($s, sprintf('d6:action10:get status10:admin pass%d:%s10:admin user%d:%se',
+		strlen($config['client_pass']), $config['client_pass'], strlen($config['client_user']), $config['client_user']));
+	$v = recv_bvalue($s);
 	$aggregate = array();
 	$rows = '';
 	foreach ($v['value']['files']['value'] as $info_hash => $file)
@@ -140,9 +145,9 @@
 	}
 	$torrents = template_torrents(array('aggregate' => $aggregate, 'rows' => $rows));
 	$version = $v['value']['version']['value'];
-	send_string($s, 'd6:action11:get optionse');
-	$v = recv_string($s);
-	$v = bdec($v);
+	send_string($s, sprintf('d6:action11:get options10:admin pass%d:%s10:admin user%d:%se',
+		strlen($config['client_pass']), $config['client_pass'], strlen($config['client_user']), $config['client_user']));
+	$v = recv_bvalue($s);
 	$options = template_options($v['value']);
 	echo(template_page(array('options' => $options, 'torrent_events' => $torrent_events, 'torrents' => $torrents, 'version' => $version)));
 ?>
