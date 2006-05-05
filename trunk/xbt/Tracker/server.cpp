@@ -1095,6 +1095,7 @@ int Cserver::test_sql()
 		return 0;
 	try
 	{
+		mysql_get_server_version(&m_database.handle());
 		m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from " + table_name(table_announce_log) + " where 0 = 1");
 		m_database.query("select name, value from " + table_name(table_config) + " where 0 = 1");
 		m_database.query("select begin, end from " + table_name(table_deny_from_hosts) + " where 0 = 1");
