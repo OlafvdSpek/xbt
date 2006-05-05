@@ -31,7 +31,7 @@ void Cdatabase::open(const std::string& host, const std::string& user, const std
 	if (!mysql_init(&m_handle)
 		|| !mysql_real_connect(&m_handle, host.c_str(), user.c_str(), password.c_str(), database.c_str(), MYSQL_PORT, NULL, 0)
 #if MYSQL_VERSION_ID >= 50000
-		|| !mysql_options(&m_handle, MYSQL_OPT_RECONNECT, reinterpret_cast<const char*>(&a0))
+		|| mysql_options(&m_handle, MYSQL_OPT_RECONNECT, reinterpret_cast<const char*>(&a0))
 #endif
 		)
 		throw exception(mysql_error(&m_handle));
