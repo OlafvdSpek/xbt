@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 			("peer_port", po::value<int>())
 			("queue", po::value<std::string>())
 			("start", po::value<std::string>())
-			("status,s", "")
+			("status", "")
 			("stop", po::value<std::string>())
 			("tracker_port", po::value<int>())
 			("upload_rate", po::value<int>())
@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
 		std::ifstream is(vm["conf_file"].as<std::string>().c_str());
 		po::store(po::parse_config_file(is, desc), vm);
 		po::notify(vm);
-		if (vm.count("help"))
+		if (vm.count("help") || argc < 2)
 		{
 			std::cerr << desc;
 			return 1;
