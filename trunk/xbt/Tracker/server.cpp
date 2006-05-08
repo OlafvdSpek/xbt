@@ -609,7 +609,7 @@ void Cserver::read_db_deny_from_hosts()
 	try
 	{
 		Csql_query q(m_database, "select begin, end from ?");
-		q.p_raw(table_name(table_deny_from_hosts));
+		q.p_name(table_name(table_deny_from_hosts));
 		Csql_result result = q.execute();
 		for (t_deny_from_hosts::iterator i = m_deny_from_hosts.begin(); i != m_deny_from_hosts.end(); i++)
 			i->second.marked = true;
@@ -669,8 +669,8 @@ void Cserver::read_db_files_sql()
 		if (!m_config.m_auto_register)
 		{
 			q = "select info_hash, ? from ? where flags & 1";
-			q.p_raw(column_name(column_files_fid));
-			q.p_raw(table_name(table_files));
+			q.p_name(column_name(column_files_fid));
+			q.p_name(table_name(table_files));
 			Csql_result result = q.execute();
 			for (Csql_row row; row = result.fetch_row(); )
 			{
@@ -678,8 +678,8 @@ void Cserver::read_db_files_sql()
 					continue;
 				m_files.erase(row[0].s());
 				q = "delete from ? where ? = ?";
-				q.p_raw(table_name(table_files));
-				q.p_raw(column_name(column_files_fid));
+				q.p_name(table_name(table_files));
+				q.p_name(column_name(column_files_fid));
 				q.p(row[1].i());
 				q.execute();
 			}
@@ -690,10 +690,10 @@ void Cserver::read_db_files_sql()
 			return;
 		q = "select info_hash, ?, ?, ctime"
 			" from ? where ? >= ?";
-		q.p_raw(column_name(column_files_completed));
-		q.p_raw(column_name(column_files_fid));
-		q.p_raw(table_name(table_files));
-		q.p_raw(column_name(column_files_fid));
+		q.p_name(column_name(column_files_completed));
+		q.p_name(column_name(column_files_fid));
+		q.p_name(table_name(table_files));
+		q.p_name(column_name(column_files_fid));
 		q.p(m_fid_end);
 		Csql_result result = q.execute();
 		for (Csql_row row; row = result.fetch_row(); )
@@ -722,8 +722,8 @@ void Cserver::read_db_users()
 	try
 	{
 		Csql_query q(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret, can_leech from ?");
-		q.p_raw(column_name(column_users_uid));
-		q.p_raw(table_name(table_users));
+		q.p_name(column_name(column_users_uid));
+		q.p_name(table_name(table_users));
 		Csql_result result = q.execute();
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
 			i->second.marked = true;
@@ -775,7 +775,7 @@ void Cserver::write_db_files()
 			if (!file.fid)
 			{
 				q = "insert into ? (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())";
-				q.p_raw(table_name(table_files));
+				q.p_name(table_name(table_files));
 				q.p(i->first);
 				q.execute();
 				file.fid = m_database.insert_id();
