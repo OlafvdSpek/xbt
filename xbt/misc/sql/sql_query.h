@@ -18,6 +18,7 @@ public:
 	std::string read() const;
 	void operator=(const std::string&);
 	void operator+=(const std::string&);
+	void p_name(const std::string&);
 	void p_raw(const std::string&);
 	void p(long long);
 	void p(const std::string&);

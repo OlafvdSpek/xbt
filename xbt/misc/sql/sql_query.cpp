@@ -44,6 +44,15 @@ void Csql_query::operator+=(const std::string& v)
 	m_data += v;
 }
 
+void Csql_query::p_name(const std::string& v)
+{
+	std::vector<char> r(2 * v.size() + 2);
+	r.resize(mysql_real_escape_string(&m_database.handle(), &r.front() + 1, v.data(), v.size()) + 2);
+	r.front() = '`';
+	r.back() = '`';
+	p_raw(std::string(&r.front(), r.size()));
+}
+
 void Csql_query::p_raw(const std::string& v)
 {
 	m_list.push_back(v);
@@ -62,20 +71,18 @@ void Csql_query::p(long long v)
 
 void Csql_query::p(const std::string& v)
 {
-	char* r = new char[2 * v.length() + 3];
-	r[0] = '\'';
-	mysql_real_escape_string(&m_database.handle(), r + 1, v.data(), v.length());
-	strcat(r, "\'");
-	p_raw(r);
-	delete[] r;
+	std::vector<char> r(2 * v.size() + 2);
+	r.resize(mysql_real_escape_string(&m_database.handle(), &r.front() + 1, v.data(), v.size()) + 2);
+	r.front() = '\'';
+	r.back() = '\'';
+	p_raw(std::string(&r.front(), r.size()));
 }
 
 void Csql_query::p(const Cvirtual_binary& v)
 {
-	char* r = new char[2 * v.size() + 3];
-	r[0] = '\'';
-	mysql_real_escape_string(&m_database.handle(), r + 1, reinterpret_cast<const char*>(v.data()), v.size());
-	strcat(r, "\'");
-	p_raw(r);
-	delete[] r;
+	std::vector<char> r(2 * v.size() + 2);
+	r.resize(mysql_real_escape_string(&m_database.handle(), &r.front() + 1, reinterpret_cast<const char*>(v.data()), v.size()) + 2);
+	r.front() = '\'';
+	r.back() = '\'';
+	p_raw(std::string(&r.front(), r.size()));
 }
