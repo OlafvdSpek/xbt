@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="XBT Tracker"
 	ProjectGUID="{73C570AC-E7C3-451D-A5C6-7A2532F0121B}"
+	RootNamespace="XBT Tracker"
 	>
 	<Platforms>
 		<Platform
@@ -697,6 +698,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\XBT Tracker.rc"
+				>
+			</File>
+			<File
 				RelativePath="..\misc\xcc_z.cpp"
 				>
 				<FileConfiguration
@@ -752,6 +757,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="server.h"
 				>
 			</File>
@@ -796,6 +805,10 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
+			<File
+				RelativePath=".\res\XBT Tracker.ico"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

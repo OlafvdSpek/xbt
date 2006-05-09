@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="XBT Client"
 	ProjectGUID="{273481B8-9E47-480A-943E-AD252C44488B}"
+	RootNamespace="XBT Client"
 	Keyword="MFCProj"
 	>
 	<Platforms>
@@ -91,6 +92,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="res\XBT Client Manifest.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -189,6 +191,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="res\XBT Client Manifest.xml"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
