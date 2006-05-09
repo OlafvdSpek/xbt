@@ -18,7 +18,7 @@
 #define _SHA1_H_
 
 #include <string>
-#include "virtual_binary.h"
+#include "const_memory_range.h"
 
 #if defined(BSD) || defined(WIN32)
 typedef unsigned int uint32_t;

@@ -11,7 +11,7 @@
 #else
 #include <mysql/mysql.h>
 #endif
-#include "virtual_binary.h"
+#include "const_memory_range.h"
 
 class Csql_result_source
 {
@@ -76,16 +76,16 @@ public:
 		return raw() ? std::string(raw(), size()) : d;
 	}
 
-	Cvirtual_binary vdata() const
+	const_memory_range vdata() const
 	{
-		return Cvirtual_binary(raw(), size());
+		return const_memory_range(raw(), size());
 	}
 private:
 	const char* m_begin;
 	int m_size;
 };
 
-class Csql_row  
+class Csql_row
 {
 public:
 	const Csql_row& operator=(const Csql_row& v);
@@ -109,7 +109,7 @@ private:
 	Csql_result_source* m_source;
 };
 
-class Csql_result  
+class Csql_result
 {
 public:
 	int c_fields() const;
