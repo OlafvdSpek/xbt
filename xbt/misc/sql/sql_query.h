@@ -6,7 +6,7 @@
 #endif // _MSC_VER > 1000
 
 #include <list>
-#include "virtual_binary.h"
+#include "const_memory_range.h"
 
 class Cdatabase;
 class Csql_result;
@@ -21,8 +21,7 @@ public:
 	void p_name(const std::string&);
 	void p_raw(const std::string&);
 	void p(long long);
-	void p(const std::string&);
-	void p(const Cvirtual_binary&);
+	void p(const_memory_range);
 	Csql_query(Cdatabase&, const std::string& = "");
 private:
 	typedef std::list<std::string> t_list;
