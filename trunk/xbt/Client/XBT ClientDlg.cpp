@@ -2911,7 +2911,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.lower_process_priority = get_profile_lower_process_priority();
 	data.peer_id = m_server.peer_id_prefix();
 	data.peer_limit = m_server.peer_limit();
-	data.peer_port = GetProfileInt("peer_port", m_server.peer_port());
+	data.peer_port = m_server.peer_port();
 	data.public_ipa = GetProfileString("public_ipa");
 	data.seeding_ratio = m_server.seeding_ratio();
 	data.send_stop_event = m_server.send_stop_event();
@@ -2920,7 +2920,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.start_minimized = get_profile_start_minimized();
 	data.torrent_limit = m_server.torrent_limit();
 	data.torrents_dir = m_server.torrents_dir();
-	data.tracker_port = GetProfileInt("tracker_port", m_server.tracker_port());
+	data.tracker_port = m_server.tracker_port();
 	data.upload_rate = m_server.upload_rate();
 	data.upload_slots = m_server.upload_slots();
 	data.upnp = m_server.config().m_upnp;

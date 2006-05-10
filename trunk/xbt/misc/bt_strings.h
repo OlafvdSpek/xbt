@@ -22,10 +22,15 @@ enum
 	bti_get_peers,
 	bti_peers,
 
-	bti_extension_list = 20,
-	bti_extended,
+	bti_extended = 20,
 
 	bti_bvalue = 0x40,
+};
+
+enum
+{
+	bti_extended_handshake,
+	bti_extended_ut_pex,
 };
 
 enum
