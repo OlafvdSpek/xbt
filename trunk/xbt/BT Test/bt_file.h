@@ -23,8 +23,8 @@ class Cserver;
 class Cbt_file: public Cbt_file_data
 {
 public:
-	std::string peer_id() const;
-	std::string peer_key() const;
+	const std::string& peer_id() const;
+	const std::string& peer_key() const;
 	Cserver* server();
 	const Cserver* server() const;
 	time_t time() const;

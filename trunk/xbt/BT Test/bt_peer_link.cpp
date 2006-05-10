@@ -206,11 +206,6 @@ void Cbt_peer_link::write(const Cvirtual_binary& s)
 	m_write_b.push_back(Cbt_pl_write_data(s));
 }
 
-void Cbt_peer_link::write(const void* s, int cb_s)
-{
-	m_write_b.push_back(Cbt_pl_write_data(s, cb_s));
-}
-
 int Cbt_peer_link::cb_write_buffer() const
 {
 	int cb = 0;
@@ -377,17 +372,18 @@ int Cbt_peer_link::read_handshake(const char* h)
 	}
 	m_get_info_extension = h[hs_reserved + 7] & 1;
 	m_get_peers_extension = h[hs_reserved + 7] & 2;
+	m_extension_list_extension = h[hs_reserved + 5] & 0x10;
 	return 0;
 }
 
 void Cbt_peer_link::write_handshake()
 {
 	if (1)
-		write("\x13""BitTorrent protocol\0\0\0\0\0\0\0\2", 28);
+		write(const_memory_range("\x13""BitTorrent protocol\0\0\0\0\0\x10\0\2", 28));
 	else
-		write("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3", 28);
-	write(m_f->m_info_hash.c_str(), 20);
-	write(m_f->peer_id().c_str(), 20);
+		write(const_memory_range("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\16\0\2", 28));
+	write(Cvirtual_binary(m_f->m_info_hash));
+	write(Cvirtual_binary(m_f->peer_id()));
 	m_local_choked = true;
 	m_local_choked_goal = true;
 	m_local_interested = false;
@@ -483,7 +479,7 @@ void Cbt_peer_link::write_merkle_piece(long long offset, int size, const void* s
 	w += size;
 	memcpy(w, hashes.c_str(), hashes.size());
 	w += hashes.size();
-	assert(w == d.data_end());
+	assert(w == d.end());
 	write(d);
 }
 
@@ -581,11 +577,11 @@ void Cbt_peer_link::write_get_info()
 	write(d);
 }
 
-void Cbt_peer_link::read_info(const char* r, const char* r_end)
+void Cbt_peer_link::read_info(const_memory_range r)
 {
-	if (m_f->m_info.size() || compute_sha1(r, r_end - r) != m_f->m_info_hash)
+	if (m_f->m_info.size() || Csha1(r).read() != m_f->m_info_hash)
 		return;
-	m_f->info(Cbvalue(r, r_end - r));
+	m_f->info(Cbvalue(r));
 	m_f->open();
 }
 
@@ -714,14 +710,12 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 	case bti_bitfield:
 		if (!m_f->m_info.size())
 			m_remote_pieces.resize(r_end - r << 3);
+		for (int i = 0; r < r_end; r++)
 		{
-			for (int i = 0; r < r_end; r++)
+			for (int j = 0; j < 8; i++, j++)
 			{
-				for (int j = 0; j < 8; i++, j++)
-				{
-					if (*r & 0x80 >> j)
-						remote_has(i);
-				}
+				if (*r & 0x80 >> j)
+					remote_has(i);
 			}
 		}
 		break;
@@ -763,7 +757,7 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		write_info();
 		break;
 	case bti_info:
-		read_info(r, r_end);
+		read_info(const_memory_range(r, r_end));
 		break;
 	case bti_get_peers:
 		alert(Calert::debug, "Peer: get_peers");
@@ -777,6 +771,15 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 			for (r += 2; r + 6 <= r_end; r += 6)
 				m_f->insert_peer(read_int(4, r), read_int(2, r + 4));
 		}
+		break;
+	case bti_extension_list:
+		alert(Calert::debug, "Peer: extension_list");
+		{
+			Cbvalue v();
+		}
+		break;
+	case bti_extended:
+		alert(Calert::debug, "Peer: extended");
 		break;
 	}
 	return 0;

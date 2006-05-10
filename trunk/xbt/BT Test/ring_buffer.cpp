@@ -18,7 +18,7 @@ void Cring_buffer::size(size_t cb_d)
 	if (cb_d)
 	{
 		m_r = m_b = m_w = reinterpret_cast<char*>(m_d.write_start(cb_d));
-		m_e = reinterpret_cast<const char*>(m_d.data_end());
+		m_e = reinterpret_cast<const char*>(m_d.end());
 	}
 	else
 	{

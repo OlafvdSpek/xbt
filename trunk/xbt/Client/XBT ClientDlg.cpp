@@ -397,8 +397,9 @@ HCURSOR CXBTClientDlg::OnQueryDragIcon()
 
 void CXBTClientDlg::open(const std::string& name, bool ask_for_location)
 {
-	Cvirtual_binary d(name);
-	Cbt_torrent torrent(d);
+	Cvirtual_binary d;
+	d.load(name);
+	Cbt_torrent torrent(d.range());
 	if (!torrent.valid())
 		return;
 	std::string path;

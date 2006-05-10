@@ -60,7 +60,7 @@ long long Ctransaction::connection_id() const
 	write_int(8, s, m_server.secret());
 	write_int(4, s + 8, m_a.sin_addr.s_addr);
 	char d[20];
-	Csha1(const_memory_range(s, cb_s)).read(d);
+	(Csha1(const_memory_range(s, cb_s))).read(d);
 	return read_int(8, d);
 }
 

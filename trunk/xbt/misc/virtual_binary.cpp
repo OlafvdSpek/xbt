@@ -4,12 +4,12 @@
 #include <cstdio>
 #include <sys/stat.h>
 
-Cvirtual_binary_source::Cvirtual_binary_source(const void* d, size_t cb_d)
+Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
 {
-	m_data = new byte[cb_d];
-	m_size = cb_d;
-	if (d)
-		memcpy(m_data, d, cb_d);
+	m_data = new byte[d.size()];
+	m_size = d.size();
+	if (d.begin())
+		memcpy(m_data, d.begin(), d.size());
 	mc_references = 1;
 }
 
@@ -34,7 +34,7 @@ Cvirtual_binary_source* Cvirtual_binary_source::pre_edit()
 		return this;
 	Cvirtual_binary_source t = *this;
 	detach();
-	return new Cvirtual_binary_source(t.data(), t.size());
+	return new Cvirtual_binary_source(t.range());
 }	
 
 Cvirtual_binary::Cvirtual_binary()
@@ -47,15 +47,9 @@ Cvirtual_binary::Cvirtual_binary(const Cvirtual_binary& v)
 	m_source = v.m_source->attach();
 }
 
-Cvirtual_binary::Cvirtual_binary(const void* d, size_t cb_d)
+Cvirtual_binary::Cvirtual_binary(const_memory_range d)
 {
-	m_source = new Cvirtual_binary_source(d, cb_d);
-}
-
-Cvirtual_binary::Cvirtual_binary(const std::string& fname)
-{
-	m_source = NULL;
-	load(fname);
+	m_source = new Cvirtual_binary_source(d);
 }
 
 Cvirtual_binary::~Cvirtual_binary()
@@ -94,6 +88,13 @@ int Cvirtual_binary::load(const std::string& fname)
 	return error;
 }
 
+Cvirtual_binary& Cvirtual_binary::load1(const std::string& fname)
+{
+	load(fname);
+	return *this;
+}
+
+
 void Cvirtual_binary::clear()
 {
 	m_source->detach();
@@ -112,11 +113,11 @@ byte* Cvirtual_binary::write_start(size_t cb_d)
 		return data_edit();
 	if (m_source)
 		m_source->detach();
-	m_source = new Cvirtual_binary_source(NULL, cb_d);
+	m_source = new Cvirtual_binary_source(const_memory_range(NULL, cb_d));
 	return data_edit();
 }
 
-void Cvirtual_binary::write(const void* d, size_t cb_d)
+void Cvirtual_binary::write(const_memory_range d)
 {
-	memcpy(write_start(cb_d), d, cb_d);
+	memcpy(write_start(d.size()), d.begin(), d.size());
 }

@@ -38,14 +38,12 @@ public:
 	int read(void* d) const;
 	Cvirtual_binary read() const;
 	int write(const char* s, int cb_s);
-	int write(const void* s, int cb_s);
-	int write(const Cvirtual_binary&);
+	int write(const_memory_range);
 	Cbvalue(long long v = 0);
 	Cbvalue(t_value_type t);
 	Cbvalue(const std::string& v);
 	Cbvalue(const Cbvalue&);
-	Cbvalue(const void* s, int cb_s);
-	Cbvalue(const Cvirtual_binary&);
+	Cbvalue(const_memory_range);
 	const Cbvalue& operator=(const Cbvalue&);
 	~Cbvalue();
 private:

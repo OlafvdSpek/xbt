@@ -222,7 +222,7 @@ void Cconnection::read(const std::string& v)
 			gzip = m_server->gzip_debug();
 			std::string v = m_server->debug(ti);
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = Cvirtual_binary(v.data(), v.length());
+			s = Cvirtual_binary(v);
 		}
 		break;
 	case 's':
@@ -231,7 +231,7 @@ void Cconnection::read(const std::string& v)
 			gzip = m_server->gzip_debug();
 			std::string v = m_server->statistics();
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = Cvirtual_binary(v.data(), v.length());
+			s = Cvirtual_binary(v);
 		}
 		else
 		{

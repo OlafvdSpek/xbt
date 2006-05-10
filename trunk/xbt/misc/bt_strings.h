@@ -22,6 +22,9 @@ enum
 	bti_get_peers,
 	bti_peers,
 
+	bti_extension_list = 20,
+	bti_extended,
+
 	bti_bvalue = 0x40,
 };
 
