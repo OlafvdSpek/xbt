@@ -72,7 +72,7 @@ void Csql_query::p(long long v)
 void Csql_query::p(const_memory_range v)
 {
 	std::vector<char> r(2 * v.size() + 2);
-	r.resize(mysql_real_escape_string(&m_database.handle(), &r.front() + 1, reinterpret_cast<const char*>(v.begin()), v.size()) + 2);
+	r.resize(mysql_real_escape_string(&m_database.handle(), &r.front() + 1, reinterpret_cast<const char*>(v.begin), v.size()) + 2);
 	r.front() = '\'';
 	r.back() = '\'';
 	p_raw(std::string(&r.front(), r.size()));
