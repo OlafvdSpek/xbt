@@ -104,6 +104,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 					return 1;
 				m_read_b.cb_r(20);
 				m_remote_pieces.resize(m_f->m_pieces.size());
+				write_extended_handshake();
 				write_get_peers();
 				if (!m_f->m_info.size())
 					write_get_info();
@@ -184,7 +185,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 	if (!m_left && !m_f->m_left)
 	{
 		if (server()->log_peer_connection_closures())
-			alert(Calert::debug, "Peer: seeder to seeder link closed");
+			alert(Calert::debug, "Peer: seeder to seeder link closed (" + peer_id2a(m_remote_peer_id) + ")");
 		return 1;
 	}
 	return 0;
@@ -372,7 +373,8 @@ int Cbt_peer_link::read_handshake(const char* h)
 	}
 	m_get_info_extension = h[hs_reserved + 7] & 1;
 	m_get_peers_extension = h[hs_reserved + 7] & 2;
-	m_extension_list_extension = h[hs_reserved + 5] & 0x10;
+	m_extended_extension = h[hs_reserved + 5] & 0x10;
+	m_ut_pex_extension = 0;
 	return 0;
 }
 
@@ -397,6 +399,21 @@ void Cbt_peer_link::write_handshake()
 	mc_max_requests_pending = 1;
 	m_peers_stime = 0;
 	m_check_pieces_time = m_rtime = m_stime = time();
+}
+
+void Cbt_peer_link::write_extended_handshake()
+{
+	if (!m_extended_extension)
+		return;
+	Cbvalue d0;
+	d0.d("m", Cbvalue().d("ut_pex", bti_extended_ut_pex));
+	Cvirtual_binary d;
+	byte* w = d.write_start(6 + d0.pre_read());
+	w = write_int(4, w, d.size() - 4);
+	*w++ = bti_extended;
+	*w++ = bti_extended_handshake;
+	d0.read(w);
+	write(d);
 }
 
 void Cbt_peer_link::write_keepalive()
@@ -772,14 +789,29 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 				m_f->insert_peer(read_int(4, r), read_int(2, r + 4));
 		}
 		break;
-	case bti_extension_list:
-		alert(Calert::debug, "Peer: extension_list");
-		{
-			Cbvalue v();
-		}
-		break;
 	case bti_extended:
-		alert(Calert::debug, "Peer: extended");
+		if (r_end - r >= 1)
+		{
+			switch (*r++)
+			{
+			case bti_extended_handshake:
+				{
+					Cbvalue v(const_memory_range(r, r_end));
+					const Cbvalue& m = v.d("m");
+					m_ut_pex_extension = m.d("ut_pex").i();
+				}
+				break;
+			case bti_extended_ut_pex:
+				{
+					Cbvalue v(const_memory_range(r, r_end));
+					std::string added = v.d("added").s();
+					alert(Calert::debug, "Peer: " + n(added.size() / 6) + " peers");
+					for (size_t r = 0; r + 6 <= added.size(); r += 6)
+						m_f->insert_peer(read_int(4, added.data() + r), read_int(2, added.data() + r + 4));
+				}
+				break;
+			}
+		}
 		break;
 	}
 	return 0;

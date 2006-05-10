@@ -65,6 +65,7 @@ inline long long min(long long a, long long b)
 #include "bt_misc.h"
 #include "bvalue.h"
 #include "socket.h"
+#include "vartypes.h"
 #include "virtual_binary.h"
 
 //{{AFX_INSERT_LOCATION}}

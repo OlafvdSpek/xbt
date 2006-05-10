@@ -46,6 +46,7 @@ public:
 	void write_keepalive();
 	int read_piece(int, int, int, const char*);
 	void read_merkle_piece(long long offset, int size, const char* s, const std::string& hashes);
+	void write_extended_handshake();
 	void write_handshake();
 	void write_request(int, int, int);
 	void write_merkle_cancel(long long offset);
@@ -122,6 +123,7 @@ public:
 	sockaddr_in m_a;
 	Cbt_file* m_f;
 	Csocket m_s;
+	int m_ut_pex_extension;
 	int m_state;
 	Cring_buffer m_read_b;
 	t_write_buffer m_write_b;
@@ -130,7 +132,6 @@ public:
 	time_t m_stime;
 	time_t m_check_pieces_time;
 	int mc_max_requests_pending;
-
 	t_local_requests m_local_requests;
 	int mc_local_requests_pending;
 	t_remote_pieces m_remote_pieces;
@@ -139,7 +140,7 @@ public:
 	Cdata_counter m_up_counter;
 	time_t m_get_peers_stime;
 	time_t m_peers_stime;
-	bool m_extension_list_extension;
+	bool m_extended_extension;
 	bool m_get_info_extension;
 	bool m_get_peers_extension;
 	bool m_local_choked_goal;
