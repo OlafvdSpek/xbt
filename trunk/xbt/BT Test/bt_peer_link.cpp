@@ -124,7 +124,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 								break;
 							const char* s = m_read_b.r() + 4;
 							m_read_b.cb_r(4 + cb_m);
-							if (read_message(s, s + cb_m))
+							if (read_message(const_memory_range(s, cb_m)))
 								return 1;
 						}
 						else
@@ -268,9 +268,9 @@ int Cbt_peer_link::send(int& send_quota)
 				if (!m_f->read_data(request.offset, d.write_start(request.size), request.size))
 				{
 					if (m_f->m_merkle)
-						write_merkle_piece(request.offset, request.size, d, m_f->get_hashes(request.offset, request.c_hashes));
+						write_merkle_piece(request.offset, d, m_f->get_hashes(request.offset, request.c_hashes));
 					else
-						write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size, d);
+						write_piece(request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, d);
 				}
 				m_remote_requests.pop_front();
 			}
@@ -472,29 +472,29 @@ void Cbt_peer_link::write_bitfield()
 	write(d);
 }
 
-void Cbt_peer_link::write_piece(int piece, int offset, int size, const void* s)
+void Cbt_peer_link::write_piece(int piece, int offset, const_memory_range s)
 {
 	Cvirtual_binary d;
-	byte* w = d.write_start(13 + size);
+	byte* w = d.write_start(13 + s.size());
 	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_piece;
 	w = write_int(4, w, piece);
 	w = write_int(4, w, offset);
-	memcpy(w, s, size);
+	memcpy(w, s, s.size());
 	write(d);
 }
 
-void Cbt_peer_link::write_merkle_piece(long long offset, int size, const void* s, const std::string& hashes)
+void Cbt_peer_link::write_merkle_piece(long long offset, const_memory_range s, const std::string& hashes)
 {
 	Cvirtual_binary d;
-	byte* w = d.write_start(10 + size + hashes.size());
+	byte* w = d.write_start(10 + s.size() + hashes.size());
 	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_piece;
 	w = write_int(4, w, offset >> 15);
 	*w++ = hashes.size() / 20;
-	memcpy(w, s, size);
-	w += size;
-	memcpy(w, hashes.c_str(), hashes.size());
+	memcpy(w, s, s.size());
+	w += s.size();
+	memcpy(w, hashes.data(), hashes.size());
 	w += hashes.size();
 	assert(w == d.end());
 	write(d);
@@ -641,7 +641,7 @@ void Cbt_peer_link::write_peers()
 	m_peers_stime = time();
 }
 
-int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
+int Cbt_peer_link::read_piece(int piece, int offset, const_memory_range s)
 {
 	while (!m_local_requests.empty() && m_local_requests.front().offset != m_f->mcb_piece * piece + offset)
 	{
@@ -650,34 +650,34 @@ int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	}
 	if (m_local_requests.empty())
 	{
-		alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(size, "b") + " (" + peer_id2a(m_remote_peer_id) + ")");
+		alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(s.size(), "b") + " (" + peer_id2a(m_remote_peer_id) + ")");
 		return 1;
 	}
 	mc_local_requests_pending--;
 	t_local_requests::iterator i = m_local_requests.begin();
 	int t = time() - i->stime;
 	mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
-	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, size);
-	m_f->m_downloaded += size;
-	m_f->m_down_counter.add(size, time());
-	m_f->m_total_downloaded += size;
+	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, s.size());
+	m_f->m_downloaded += s.size();
+	m_f->m_down_counter.add(s.size(), time());
+	m_f->m_total_downloaded += s.size();
 	m_local_requests.erase(i);
-	write_data(m_f->mcb_piece * piece + offset, const_memory_range(s, size), t);
+	write_data(m_f->mcb_piece * piece + offset, s, t);
 	return 0;
 }
 
-void Cbt_peer_link::read_merkle_piece(long long offset, int size, const char* s, const std::string& hashes)
+void Cbt_peer_link::read_merkle_piece(long long offset, const_memory_range s, const std::string& hashes)
 {
 	mc_local_requests_pending--;
-	if (!m_f->test_and_set_hashes(offset, Cmerkle_tree::compute_root(s, s + size), hashes))
+	if (!m_f->test_and_set_hashes(offset, Cmerkle_tree::compute_root(s), hashes))
 	{
 		alert(Calert::warn, "Chunk " + n(offset >> 15) + ": invalid");
 		return;
 	}
-	write_data(offset, const_memory_range(s, size), 0);
-	m_f->m_downloaded += size;
-	m_f->m_down_counter.add(size, time());
-	m_f->m_total_downloaded += size;
+	write_data(offset, s, 0);
+	m_f->m_downloaded += s.size();
+	m_f->m_down_counter.add(s.size(), time());
+	m_f->m_total_downloaded += s.size();
 }
 
 int Cbt_peer_link::write_data(long long o, const_memory_range s, int latency)
@@ -698,8 +698,9 @@ int Cbt_peer_link::write_data(long long o, const_memory_range s, int latency)
 	return 1;
 }
 
-int Cbt_peer_link::read_message(const char* r, const char* r_end)
+int Cbt_peer_link::read_message(const_memory_range s)
 {
+	const byte* r = s;
 	switch (*r++)
 	{
 	case bti_choke:
@@ -721,13 +722,13 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		m_remote_interested = false;
 		break;
 	case bti_have:
-		if (r_end - r >= 4)
+		if (s.end - r >= 4)
 			remote_has(read_int(4, r));
 		break;
 	case bti_bitfield:
 		if (!m_f->m_info.size())
-			m_remote_pieces.resize(r_end - r << 3);
-		for (int i = 0; r < r_end; r++)
+			m_remote_pieces.resize(s.end - r << 3);
+		for (int i = 0; r < s.end; r++)
 		{
 			for (int j = 0; j < 8; i++, j++)
 			{
@@ -739,12 +740,12 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 	case bti_request:
 		if (m_f->m_merkle)
 		{
-			if (r_end - r >= 5)
+			if (s.end - r >= 5)
 			{
 				remote_merkle_requests(static_cast<long long>(read_int(4, r)) << 15, r[4]);
 			}
 		}
-		else if (r_end - r >= 12)
+		else if (s.end - r >= 12)
 		{
 			remote_requests(read_int(4, r), read_int(4, r + 4), read_int(4, r + 8));
 		}
@@ -752,20 +753,20 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 	case bti_piece:
 		if (m_f->m_merkle)
 		{
-			if (r_end - r >= 5 && r[4] >= 0 && r_end - r >= 20 * r[4] + 5)
+			if (s.end - r >= 5 && r[4] >= 0 && s.end - r >= 20 * r[4] + 5)
 			{
 				r += 5;
-				read_merkle_piece(static_cast<long long>(read_int(4, r - 4)) << 15, r_end - r - 20 * r[-1], r, std::string(r_end - 20 * r[-1], 20 * r[-1]));
+				read_merkle_piece(static_cast<long long>(read_int(4, r - 4)) << 15, const_memory_range(r, s.end - r - 20 * r[-1]), std::string(reinterpret_cast<const char*>(s.end - 20 * r[-1]), 20 * r[-1]));
 			}
 		}
-		else if (r_end - r >= 8)
+		else if (s.end - r >= 8)
 		{
 			r += 8;
-			return read_piece(read_int(4, r - 8), read_int(4, r - 4), r_end - r, r);
+			return read_piece(read_int(4, r - 8), read_int(4, r - 4), const_memory_range(r, s.end));
 		}
 		break;
 	case bti_cancel:
-		if (r_end - r >= 12)
+		if (s.end - r >= 12)
 		{
 			remote_cancels(read_int(4, r), read_int(4, r + 4), read_int(4, r + 8));
 		}
@@ -774,36 +775,36 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 		write_info();
 		break;
 	case bti_info:
-		read_info(const_memory_range(r, r_end));
+		read_info(const_memory_range(r, s.end));
 		break;
 	case bti_get_peers:
 		alert(Calert::debug, "Peer: get_peers");
-		if (r_end - r >= 2 && time() - m_peers_stime > 300)
+		if (s.end - r >= 2 && time() - m_peers_stime > 300)
 			write_peers();
 		break;
 	case bti_peers:
-		alert(Calert::debug, "Peer: " + n((r_end - r - 2) / 6) + " peers");
-		if (r_end - r >= 2 && time() - m_get_peers_stime < 60)
+		alert(Calert::debug, "Peer: " + n((s.end - r - 2) / 6) + " peers");
+		if (s.end - r >= 2 && time() - m_get_peers_stime < 60)
 		{
-			for (r += 2; r + 6 <= r_end; r += 6)
+			for (r += 2; r + 6 <= s.end; r += 6)
 				m_f->insert_peer(read_int(4, r), read_int(2, r + 4));
 		}
 		break;
 	case bti_extended:
-		if (r_end - r >= 1)
+		if (s.end - r >= 1)
 		{
 			switch (*r++)
 			{
 			case bti_extended_handshake:
 				{
-					Cbvalue v(const_memory_range(r, r_end));
+					Cbvalue v(const_memory_range(r, s.end));
 					const Cbvalue& m = v.d("m");
 					m_ut_pex_extension = m.d("ut_pex").i();
 				}
 				break;
 			case bti_extended_ut_pex:
 				{
-					Cbvalue v(const_memory_range(r, r_end));
+					Cbvalue v(const_memory_range(r, s.end));
 					std::string added = v.d("added").s();
 					for (const char* r = added.data(); r + 6 <= added.data() + added.size(); r += 6)
 						m_f->insert_peer(read_int_le(4, r), read_int_le(2, r + 4));
