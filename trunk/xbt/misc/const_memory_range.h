@@ -16,20 +16,20 @@ public:
 
 	const_memory_range(const void* begin, const void* end)
 	{
-		begin_ = reinterpret_cast<const byte*>(begin);
-		end_ = reinterpret_cast<const byte*>(end);
+		begin_ = reinterpret_cast<const unsigned char*>(begin);
+		end_ = reinterpret_cast<const unsigned char*>(end);
 	}
 
 	const_memory_range(const void* begin, size_t size)
 	{
-		begin_ = reinterpret_cast<const byte*>(begin);
+		begin_ = reinterpret_cast<const unsigned char*>(begin);
 		end_ = begin_ + size;
 	}
 
 	const_memory_range(const std::string& v)
 	{
-		begin_ = reinterpret_cast<const byte*>(v.data());
-		end_ = reinterpret_cast<const byte*>(v.data() + v.size());
+		begin_ = reinterpret_cast<const unsigned char*>(v.data());
+		end_ = reinterpret_cast<const unsigned char*>(v.data() + v.size());
 	}
 
 	template<class T>
@@ -39,12 +39,12 @@ public:
 		end_ = v.data_end();
 	}
 
-	const byte* begin() const
+	const unsigned char* begin() const
 	{
 		return begin_;
 	}
 
-	const byte* end() const
+	const unsigned char* end() const
 	{
 		return end_;
 	}
@@ -54,8 +54,8 @@ public:
 		return end() - begin();
 	}
 private:
-	const byte* begin_;
-	const byte* end_;
+	const unsigned char* begin_;
+	const unsigned char* end_;
 };
 
 #endif // !defined(AFX_CONST_MEMORY_RANGE_H__83C523AF_357D_4ED5_B17A_92F0CED89F1A__INCLUDED_)
