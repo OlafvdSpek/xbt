@@ -62,12 +62,12 @@ public:
 
 	const unsigned char* begin() const
 	{
-		return range().begin();
+		return range().begin;
 	}
 
 	const unsigned char* data() const
 	{
-		return range().begin();
+		return range().begin;
 	}
 
 	unsigned char* data_edit()
@@ -79,7 +79,7 @@ public:
 
 	const unsigned char* end() const
 	{
-		return range().end();
+		return range().end;
 	}
 
 	const_memory_range range() const

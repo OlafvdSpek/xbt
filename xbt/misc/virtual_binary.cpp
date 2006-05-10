@@ -8,8 +8,8 @@ Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
 {
 	m_data = new byte[d.size()];
 	m_size = d.size();
-	if (d.begin())
-		memcpy(m_data, d.begin(), d.size());
+	if (d)
+		memcpy(m_data, d, d.size());
 	mc_references = 1;
 }
 
@@ -119,5 +119,5 @@ byte* Cvirtual_binary::write_start(size_t cb_d)
 
 void Cvirtual_binary::write(const_memory_range d)
 {
-	memcpy(write_start(d.size()), d.begin(), d.size());
+	memcpy(write_start(d.size()), d, d.size());
 }

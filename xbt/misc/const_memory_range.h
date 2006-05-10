@@ -10,45 +10,40 @@ class const_memory_range
 public:
 	const_memory_range()
 	{
-		begin_ = NULL;
-		end_ = NULL;
+		begin = NULL;
+		end = NULL;
 	}
 
-	const_memory_range(const void* begin, const void* end)
+	const_memory_range(const void* begin_, const void* end_)
 	{
-		begin_ = reinterpret_cast<const unsigned char*>(begin);
-		end_ = reinterpret_cast<const unsigned char*>(end);
+		begin = reinterpret_cast<const unsigned char*>(begin_);
+		end = reinterpret_cast<const unsigned char*>(end_);
 	}
 
-	const_memory_range(const void* begin, size_t size)
+	const_memory_range(const void* begin_, size_t size)
 	{
-		begin_ = reinterpret_cast<const unsigned char*>(begin);
-		end_ = begin_ + size;
+		begin = reinterpret_cast<const unsigned char*>(begin_);
+		end = begin + size;
 	}
 
 	const_memory_range(const std::string& v)
 	{
-		begin_ = reinterpret_cast<const unsigned char*>(v.data());
-		end_ = reinterpret_cast<const unsigned char*>(v.data() + v.size());
-	}
-
-	const unsigned char* begin() const
-	{
-		return begin_;
-	}
-
-	const unsigned char* end() const
-	{
-		return end_;
+		begin = reinterpret_cast<const unsigned char*>(v.data());
+		end = reinterpret_cast<const unsigned char*>(v.data() + v.size());
 	}
 
 	size_t size() const
 	{
-		return end() - begin();
+		return end - begin;
 	}
-private:
-	const unsigned char* begin_;
-	const unsigned char* end_;
+
+	operator const unsigned char*() const
+	{
+		return begin;
+	}
+
+	const unsigned char* begin;
+	const unsigned char* end;
 };
 
 #endif // !defined(AFX_CONST_MEMORY_RANGE_H__83C523AF_357D_4ED5_B17A_92F0CED89F1A__INCLUDED_)

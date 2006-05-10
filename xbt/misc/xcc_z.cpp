@@ -14,9 +14,9 @@ Cvirtual_binary xcc_z::gunzip(const_memory_range s)
 	stream.zalloc = NULL;
 	stream.zfree = NULL;
 	stream.opaque = NULL;
-	stream.next_in = const_cast<byte*>(s.begin()) + 10;
+	stream.next_in = const_cast<byte*>(s.begin) + 10;
 	stream.avail_in = s.size() - 18;
-	stream.next_out = d.write_start(read_int_le(4, s.end() - 4));
+	stream.next_out = d.write_start(read_int_le(4, s.end - 4));
 	stream.avail_out = d.size();
 	return stream.next_out
 		&& Z_OK == inflateInit2(&stream, -MAX_WBITS)
@@ -47,7 +47,7 @@ Cvirtual_binary xcc_z::gzip(const_memory_range s)
 		stream.zfree = NULL;
 		stream.opaque = NULL;
 		deflateInit2(&stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY);
-		stream.next_in = const_cast<byte*>(s.begin());
+		stream.next_in = const_cast<byte*>(s.begin);
 		stream.avail_in = s.size();
 		stream.next_out = w;
 		stream.avail_out = cb_d;
@@ -55,7 +55,7 @@ Cvirtual_binary xcc_z::gzip(const_memory_range s)
 		deflateEnd(&stream);
 		w = stream.next_out;
 	}
-	w = write_int_le(4, w, crc32(crc32(0, NULL, 0), s.begin(), s.size()));
+	w = write_int_le(4, w, crc32(crc32(0, NULL, 0), s, s.size()));
 	w = write_int_le(4, w, s.size());
 	d.size(w - d.data());
 	return d;
@@ -64,6 +64,6 @@ Cvirtual_binary xcc_z::gzip(const_memory_range s)
 void xcc_z::gzip_out(const_memory_range s)
 {
 	gzFile f = gzdopen(fileno(stdout), "wb");
-	gzwrite(f, const_cast<unsigned char*>(s.begin()), s.size());
+	gzwrite(f, const_cast<unsigned char*>(s.begin), s.size());
 	gzflush(f, Z_FINISH);
 }

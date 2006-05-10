@@ -95,7 +95,7 @@ const Cbvalue& Cbvalue::operator=(const Cbvalue& v)
 
 int Cbvalue::write(const_memory_range s)
 {
-	return write(reinterpret_cast<const char*>(s.begin()), s.size());
+	return write(reinterpret_cast<const char*>(s.begin), s.size());
 }
 
 int Cbvalue::write(const char* s, int cb_s)
