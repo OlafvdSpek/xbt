@@ -54,7 +54,7 @@ public:
 	int rank() const;
 	int resize(int v);
 	void valid(bool v);
-	int write(int offset, const char* s, int cb_s);
+	int write(int offset, const_memory_range);
 	Cbt_piece();
 
 	int c_sub_pieces_left() const

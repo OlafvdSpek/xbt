@@ -277,8 +277,8 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 						{
 							std::string peers = v.d(bts_peers).s();
 							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
-							for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
-								f.insert_peer(read_int(4, r), read_int(2, r + 4));
+							for (const char* r = peers.data(); r + 6 <= peers.data() + peers.size(); r += 6)
+								f.insert_peer(read_int_le(4, r), read_int_le(2, r + 4));
 						}
 						return 0;
 					}

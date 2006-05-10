@@ -165,11 +165,11 @@ int Cbt_file::t_sub_file::read(long long offset, void* s, int cb_s)
 		|| ::read(m_f, s, cb_s) != cb_s;
 }
 
-int Cbt_file::t_sub_file::write(long long  offset, const void* s, int cb_s)
+int Cbt_file::t_sub_file::write(long long  offset, const_memory_range s)
 {
 	return !*this
 		|| ::_lseeki64(m_f, offset, SEEK_SET) != offset
-		|| ::write(m_f, s, cb_s) != cb_s;
+		|| ::write(m_f, s, s.size()) != s.size();
 }
 
 void Cbt_file::open()
@@ -389,21 +389,21 @@ int Cbt_file::c_valid_pieces() const
 	return (m_size - m_left + mcb_piece - 1) / mcb_piece;
 }
 
-int Cbt_file::write_data(long long offset, const char* s, int cb_s, Cbt_peer_link*)
+int Cbt_file::write_data(long long offset, const_memory_range s, Cbt_peer_link*)
 {
-	if (offset < 0 || cb_s < 0)
+	if (offset < 0)
 		return 1;
 	unsigned int a = offset / mcb_piece;
 	if (a >= m_pieces.size())
 		return 1;
 	Cbt_piece& piece = m_pieces[a];
-	if (piece.valid() || piece.write(offset % mcb_piece, s, cb_s))
+	if (piece.valid() || piece.write(offset % mcb_piece, s))
 	{
 		mc_rejected_chunks++;
 		return 1;
 	}
-	int size = cb_s;
-	const char* r = s;
+	int size = s.size();
+	const byte* r = s;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
 		if (offset >= i->offset() + i->size())
@@ -417,13 +417,13 @@ int Cbt_file::write_data(long long offset, const char* s, int cb_s, Cbt_peer_lin
 			if (i->open(m_name, O_CREAT | O_RDWR))
 			{
 				char b = 0;
-				i->write(i->size() - 1, &b, 1);
+				i->write(i->size() - 1, const_memory_range(&b, 1));
 			}
 			else
 				alert(Calert(Calert::error, "File " + native_slashes(m_name + i->name()) + ": open failed"));
 		}
 		int cb_write = min(size, i->offset() + i->size() - offset);
-		if (i->write(offset - i->offset(), r, cb_write))
+		if (i->write(offset - i->offset(), const_memory_range(r, cb_write)))
 		{
 			alert(Calert(Calert::error, "Piece " + n(a) + ": write failed"));
 			m_state = s_paused;
