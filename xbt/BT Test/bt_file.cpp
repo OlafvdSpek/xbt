@@ -729,7 +729,7 @@ void Cbt_file::load_state(Cstream_reader& r)
 {
 	for (int c_trackers = r.read_int(4); c_trackers--; )
 		m_trackers.push_back(r.read_string());
-	info(r.read_data());
+	info(r.read_data().range());
 	if (!m_info.size())
 		m_info_hash = r.read_string();
 	m_name = r.read_string();
@@ -1013,12 +1013,12 @@ const Cserver* Cbt_file::server() const
 	return m_server;
 }
 
-std::string Cbt_file::peer_id() const
+const std::string& Cbt_file::peer_id() const
 {
 	return server()->peer_id();
 }
 
-std::string Cbt_file::peer_key() const
+const std::string& Cbt_file::peer_key() const
 {
 	return server()->peer_key();
 }

@@ -288,10 +288,10 @@ int Cserver::run()
 	}
 #endif
 	mkpath(local_app_data_dir());
-	load_state(Cvirtual_binary(state_fname()));
-	m_profiles.load(Cxif_key(Cvirtual_binary(profiles_fname())));
-	m_scheduler.load(Cxif_key(Cvirtual_binary(scheduler_fname())));
-	m_tracker_accounts.load(Cvirtual_binary(trackers_fname()));
+	load_state(Cvirtual_binary().load1(state_fname()));
+	m_profiles.load(Cxif_key(Cvirtual_binary().load1(profiles_fname())));
+	m_scheduler.load(Cxif_key(Cvirtual_binary().load1(scheduler_fname())));
+	m_tracker_accounts.load(Cvirtual_binary().load1(trackers_fname()));
 	clean_scheduler();
 	run_scheduler();
 #ifndef WIN32
@@ -690,7 +690,7 @@ Cvirtual_binary Cserver::get_file_status(const std::string& id, int flags)
 	Cvirtual_binary d;
 	Cstream_writer w(d.write_start(pre_file_dump(id, flags)));
 	file_dump(w, id, flags);
-	assert(w.w() == d.data_end());
+	assert(w.w() == d.end());
 	return d;
 }
 
@@ -700,7 +700,7 @@ Cvirtual_binary Cserver::get_status(int flags)
 	Cvirtual_binary d;
 	Cstream_writer w(d.write_start(pre_dump(flags)));
 	dump(w, flags);
-	assert(w.w() == d.data_end());
+	assert(w.w() == d.end());
 	return d;
 }
 
@@ -891,7 +891,7 @@ int Cserver::open(const Cvirtual_binary& info, const std::string& name)
 	Clock l(m_cs);
 	Cbt_file f;
 	f.m_server = this;
-	if (f.torrent(info))
+	if (f.torrent(info.range()))
 		return 1;
 	mkpath(torrents_dir());
 	info.save(torrents_dir() + '/' + f.m_name + ' ' + hex_encode(f.m_info_hash) + ".torrent");
@@ -985,7 +985,7 @@ void Cserver::load_state(const Cvirtual_binary& d)
 		f.load_state(r);
 		m_files.push_back(f);
 	}
-	assert(r.r() == d.data_end());
+	assert(r.r() == d.end());
 }
 
 Cvirtual_binary Cserver::save_state(bool intermediate)
@@ -1002,7 +1002,7 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	w.write_int(4, m_files.size());
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		i->save_state(w, intermediate);
-	assert(w.w() == d.data_end());
+	assert(w.w() == d.end());
 	m_save_state_time = time();
 	return d;
 }
@@ -1267,7 +1267,7 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	}
 	else if (action == bts_open_torrent)
 	{
-		if (open(Cvirtual_binary(s.d(bts_torrent).s().c_str(), s.d(bts_torrent).s().size()), ""))
+		if (open(Cvirtual_binary(s.d(bts_torrent).s()), ""))
 			d.d(bts_failure_reason, std::string("unable to open torrent"));
 	}
 	else if (action == bts_set_options)

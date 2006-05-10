@@ -42,7 +42,7 @@ public:
 	void write_haves();
 	int read_handshake(const char* r);
 	int read_message(const char* s, const char* s_end);
-	void read_info(const char* r, const char* r_end);
+	void read_info(const_memory_range);
 	void write_keepalive();
 	int read_piece(int, int, int, const char*);
 	void read_merkle_piece(long long offset, int size, const char* s, const std::string& hashes);
@@ -66,7 +66,6 @@ public:
 	int send(int& send_quota);
 	int recv();
 	void write(const Cvirtual_binary&);
-	void write(const void* s, int cb_s);
 	void close();
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
@@ -140,6 +139,7 @@ public:
 	Cdata_counter m_up_counter;
 	time_t m_get_peers_stime;
 	time_t m_peers_stime;
+	bool m_extension_list_extension;
 	bool m_get_info_extension;
 	bool m_get_peers_extension;
 	bool m_local_choked_goal;

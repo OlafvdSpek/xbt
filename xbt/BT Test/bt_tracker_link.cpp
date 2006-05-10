@@ -131,7 +131,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 	case 2:
 		if (FD_ISSET(m_s, fd_read_set))
 		{
-			for (int r; r = m_s.recv(m_w, m_d.data_end() - m_w); )
+			for (int r; r = m_s.recv(m_w, m_d.end() - m_w); )
 			{
 				if (r == SOCKET_ERROR)
 				{
@@ -239,23 +239,23 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 
 int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 {
-	for (const byte* r = d; r < d.data_end(); r++)
+	for (const byte* r = d; r < d.end(); r++)
 	{
 		if (*r == ' ')
 		{
-			int http_result = atoi(std::string(reinterpret_cast<const char*>(r), d.data_end() - r).c_str());
+			int http_result = atoi(std::string(reinterpret_cast<const char*>(r), d.end() - r).c_str());
 			if (http_result != 200)
 			{
 				f.alert(Calert(Calert::error, "Tracker: HTTP error: " + n(http_result)));
 				return 1;
 			}
-			for (const byte* r = d; r + 4 <= d.data_end(); r++)
+			for (const byte* r = d; r + 4 <= d.end(); r++)
 			{
 				if (!memcmp(r, "\n\n", 2) || !memcmp(r, "\r\n\r\n", 4))
 				{
 					r += *r == '\n' ? 2 : 4;
 					Cbvalue v;
-					if (v.write(r, d.data_end() - r))
+					if (v.write(const_memory_range(r, d.end())))
 					{
 						f.alert(Calert(Calert::error, "Tracker: bdecode failed"));
 						return 1;

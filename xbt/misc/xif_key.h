@@ -145,7 +145,7 @@ public:
 
 	void set_value_int64(int id, long long v)
 	{
-		set_value_binary(id, Cvirtual_binary(&v, 8));
+		set_value_binary(id, Cvirtual_binary(const_memory_range(&v, 8)));
 	}
 
 	const Cxif_key& get_key(int id) const

@@ -287,12 +287,12 @@ void Cdlg_make_torrent::OnSave()
 		}
 		else
 		{
-			while (cb_d = read(f, w, d.data_end() - w))
+			while (cb_d = read(f, w, d.end() - w))
 			{
 				if (cb_d < 0)
 					break;
 				w += cb_d;
-				if (w == d.data_end())
+				if (w == d.end())
 				{
 					pieces += Csha1(const_memory_range(d, w - d)).read();
 					w = d.data_edit();
@@ -383,8 +383,9 @@ void Cdlg_make_torrent::OnLoadTrackers()
 	CFileDialog dlg(true, "torrent", NULL, OFN_ENABLESIZING | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY, "Torrents|*.torrent|", this);
 	if (IDOK != dlg.DoModal())
 		return;
-	Cvirtual_binary d(static_cast<std::string>(dlg.GetPathName()));
-	Cbt_torrent torrent(d);
+	Cvirtual_binary d;
+	d.load(static_cast<std::string>(dlg.GetPathName()));
+	Cbt_torrent torrent(d.range());
 	if (!torrent.valid())
 		return;
 	m_tracker = torrent.announce().c_str();

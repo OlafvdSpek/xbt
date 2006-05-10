@@ -32,13 +32,6 @@ public:
 		end_ = reinterpret_cast<const unsigned char*>(v.data() + v.size());
 	}
 
-	template<class T>
-	const_memory_range(const T& v)
-	{
-		begin_ = v.data();
-		end_ = v.data_end();
-	}
-
 	const unsigned char* begin() const
 	{
 		return begin_;

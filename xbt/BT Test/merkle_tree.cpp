@@ -241,12 +241,12 @@ std::string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 
 std::string Cmerkle_tree::compute_root(const Cvirtual_binary& s)
 {
-	return compute_root(s, s.data_end());
+	return compute_root(s, s.end());
 }
 
 std::ostream& Cmerkle_tree::operator<<(std::ostream& os) const
 {
-	const char* r_end = reinterpret_cast<const char*>(m_d.data_end());
+	const char* r_end = reinterpret_cast<const char*>(m_d.end());
 	for (const char* r = d(0); r < r_end; r += 21)
 		os << (*r ? 1 : 0) << ' ' << hex_encode(std::string(r + 1, 20)) << std::endl;
 	return os;

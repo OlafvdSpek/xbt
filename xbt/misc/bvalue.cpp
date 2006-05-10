@@ -57,17 +57,10 @@ Cbvalue::Cbvalue(const Cbvalue& v)
 	}
 }
 
-Cbvalue::Cbvalue(const void* s, int cb_s)
+Cbvalue::Cbvalue(const_memory_range s)
 {
 	m_value_type = vt_int;
-	if (write(s, cb_s))
-		clear();
-}
-
-Cbvalue::Cbvalue(const Cvirtual_binary& v)
-{
-	m_value_type = vt_int;
-	if (write(v))
+	if (write(s))
 		clear();
 }
 
@@ -100,14 +93,9 @@ const Cbvalue& Cbvalue::operator=(const Cbvalue& v)
 	return *this;
 }
 
-int Cbvalue::write(const Cvirtual_binary& v)
+int Cbvalue::write(const_memory_range s)
 {
-	return write(v, v.size());
-}
-
-int Cbvalue::write(const void* s, int cb_s)
-{
-	return write(reinterpret_cast<const char*>(s), cb_s);
+	return write(reinterpret_cast<const char*>(s.begin()), s.size());
 }
 
 int Cbvalue::write(const char* s, int cb_s)

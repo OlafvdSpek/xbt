@@ -139,7 +139,7 @@ int Cxif_key::load_key(const byte* data, size_t size)
 			{
 				read_p = d.data();
 				load_new(read_p);
-				error = read_p != d.data_end();
+				error = read_p != d.end();
 				if (header.version == file_version_fast && !error)
 				{
 					read_p = data + sizeof(t_xif_header_fast) + header.size_compressed;
@@ -175,7 +175,7 @@ Cvirtual_binary Cxif_key::vdata(bool fast) const
 		byte* w = d.data_edit() + sizeof(t_xif_header_fast);
 		save(w);
 		external_save(w);
-		assert(d.data_end() == w);
+		assert(d.end() == w);
 		return d;
 	}
 	Cvirtual_binary s;

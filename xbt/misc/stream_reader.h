@@ -18,7 +18,7 @@ public:
 
 	const byte* d_end() const
 	{
-		return m_d.data_end();
+		return m_d.end();
 	}
 
 	const byte* r() const
@@ -41,7 +41,7 @@ public:
 	Cvirtual_binary read_data()
 	{
 		int l = read_int(4);
-		return Cvirtual_binary(read(l), l);
+		return Cvirtual_binary(const_memory_range(read(l), l));
 	}
 
 	std::string read_string()

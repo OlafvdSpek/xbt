@@ -37,7 +37,7 @@ Cvirtual_binary Cbt_tracker_accounts::dump() const
 	w.write_int(4, size());
 	for (const_iterator i = begin(); i != end(); i++)
 		i->dump(w);
-	assert(w.w() == d.data_end());
+	assert(w.w() == d.end());
 	return d;
 
 }
