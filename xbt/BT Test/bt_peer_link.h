@@ -26,7 +26,7 @@ public:
 	const Cserver* server() const;
 	time_t time() const;
 	std::string debug_string() const;
-	int write_data(long long o, const char* s, int cb_s, int latency);
+	int write_data(long long o, const_memory_range, int latency);
 	int c_max_requests_pending() const;
 	void check_pieces();
 	Cbt_logger& logger();

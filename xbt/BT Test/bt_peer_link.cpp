@@ -662,7 +662,7 @@ int Cbt_peer_link::read_piece(int piece, int offset, int size, const char* s)
 	m_f->m_down_counter.add(size, time());
 	m_f->m_total_downloaded += size;
 	m_local_requests.erase(i);
-	write_data(m_f->mcb_piece * piece + offset, s, size, t);
+	write_data(m_f->mcb_piece * piece + offset, const_memory_range(s, size), t);
 	return 0;
 }
 
@@ -674,25 +674,25 @@ void Cbt_peer_link::read_merkle_piece(long long offset, int size, const char* s,
 		alert(Calert::warn, "Chunk " + n(offset >> 15) + ": invalid");
 		return;
 	}
-	write_data(offset, s, size, 0);
+	write_data(offset, const_memory_range(s, size), 0);
 	m_f->m_downloaded += size;
 	m_f->m_down_counter.add(size, time());
 	m_f->m_total_downloaded += size;
 }
 
-int Cbt_peer_link::write_data(long long o, const char* s, int cb_s, int latency)
+int Cbt_peer_link::write_data(long long o, const_memory_range s, int latency)
 {
 	unsigned int a = o / m_f->mcb_piece;
 	if (a >= m_f->m_pieces.size())
 		return 0;
 	Cbt_piece& piece = m_f->m_pieces[a];
-	if (!m_f->write_data(o, s, cb_s, this))
+	if (!m_f->write_data(o, s, this))
 		return 0;
 	int b = o % m_f->mcb_piece / piece.cb_sub_piece();
 	if (o % piece.cb_sub_piece())
-		alert(Calert::debug, "Piece " + n(a) + ", offset " + n(o % m_f->mcb_piece) + ", size: " + b2a(cb_s) + ": invalid offset (" + peer_id2a(m_remote_peer_id) + ")");
-	else if (cb_s != piece.cb_sub_piece(b))
-		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(b) + ", size: " + b2a(cb_s) + ": invalid size (" + peer_id2a(m_remote_peer_id) + ")");
+		alert(Calert::debug, "Piece " + n(a) + ", offset " + n(o % m_f->mcb_piece) + ", size: " + b2a(s.size()) + ": invalid offset (" + peer_id2a(m_remote_peer_id) + ")");
+	else if (s.size() != piece.cb_sub_piece(b))
+		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(b) + ", size: " + b2a(s.size()) + ": invalid size (" + peer_id2a(m_remote_peer_id) + ")");
 	else
 		alert(Calert::debug, "Piece " + n(a) + ", chunk " + n(b) + ", latency: " + n(latency) + " s: rejected (" + peer_id2a(m_remote_peer_id) + ")");
 	return 1;
@@ -805,9 +805,8 @@ int Cbt_peer_link::read_message(const char* r, const char* r_end)
 				{
 					Cbvalue v(const_memory_range(r, r_end));
 					std::string added = v.d("added").s();
-					alert(Calert::debug, "Peer: " + n(added.size() / 6) + " peers");
-					for (size_t r = 0; r + 6 <= added.size(); r += 6)
-						m_f->insert_peer(read_int(4, added.data() + r), read_int(2, added.data() + r + 4));
+					for (const char* r = added.data(); r + 6 <= added.data() + added.size(); r += 6)
+						m_f->insert_peer(read_int_le(4, r), read_int_le(2, r + 4));
 				}
 				break;
 			}

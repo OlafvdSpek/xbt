@@ -54,10 +54,10 @@ void Cbt_piece::erase_peer(Cbt_peer_link* peer, int offset)
 	mc_unrequested_sub_pieces++;
 }
 
-int Cbt_piece::write(int offset, const char* s, int cb_s)
+int Cbt_piece::write(int offset, const_memory_range s)
 {
 	unsigned int b = offset / cb_sub_piece();
-	if (m_valid || offset < 0 || offset >= size() || offset % cb_sub_piece() || cb_s != cb_sub_piece(b)
+	if (m_valid || offset < 0 || offset >= size() || offset % cb_sub_piece() || s.size() != cb_sub_piece(b)
 		|| b >= m_sub_pieces.size() || m_sub_pieces[b].valid())
 		return 1;
 	if (m_sub_pieces[b].m_peers.empty())
