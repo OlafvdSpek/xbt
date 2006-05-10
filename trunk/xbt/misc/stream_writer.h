@@ -11,12 +11,12 @@
 class Cstream_writer
 {
 public:
-	byte* w() const
+	unsigned char* w() const
 	{
 		return m_w;
 	}
 
-	byte* write(int size)
+	unsigned char* write(int size)
 	{
 		m_w += size;
 		return m_w - size;
@@ -43,12 +43,12 @@ public:
 	{
 	}
 
-	Cstream_writer(byte* w)
+	Cstream_writer(unsigned char* w)
 	{
 		m_w = w;
 	}
 private:
-	byte* m_w;
+	unsigned char* m_w;
 };
 
 #endif // !defined(AFX_STREAM_WRITER_H__283B8C8E_68DD_4E16_9122_42ADD010E634__INCLUDED_)

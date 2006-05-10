@@ -415,5 +415,5 @@ std::string Csha1::read()
 
 void Csha1::write(const_memory_range s)
 {
-	SHA1Input(&m_context, s.begin(), s.size());
+	SHA1Input(&m_context, s, s.size());
 }

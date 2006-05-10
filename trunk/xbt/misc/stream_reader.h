@@ -11,22 +11,22 @@
 class Cstream_reader
 {
 public:
-	const byte* d() const
+	const unsigned char* d() const
 	{
 		return m_d;
 	}
 
-	const byte* d_end() const
+	const unsigned char* d_end() const
 	{
 		return m_d.end();
 	}
 
-	const byte* r() const
+	const unsigned char* r() const
 	{
 		return m_r;
 	}
 
-	const byte* read(int size)
+	const unsigned char* read(int size)
 	{
 		m_r += size;
 		return m_r - size;
@@ -60,7 +60,7 @@ public:
 	}
 private:
 	Cvirtual_binary m_d;
-	const byte* m_r;
+	const unsigned char* m_r;
 };
 
 #endif // !defined(AFX_STREAM_READER_H__FC96F4EB_360D_4836_9D31_2C0D0D0377A8__INCLUDED_)
