@@ -210,7 +210,7 @@ int Cbt_peer_link::cb_write_buffer() const
 {
 	int cb = 0;
 	for (t_write_buffer::const_iterator i = m_write_b.begin(); i != m_write_b.end(); i++)
-		cb += i->m_s_end - i->m_r;
+		cb += i->m_s.size();
 	if (!m_local_choked)
 	{
 		for (t_remote_requests::const_iterator i = m_remote_requests.begin(); i != m_remote_requests.end(); i++)
@@ -278,7 +278,7 @@ int Cbt_peer_link::send(int& send_quota)
 		}
 		write_haves();
 		Cbt_pl_write_data& d = m_write_b.front();
-		int r = m_s.send(d.m_r, min(d.m_s_end - d.m_r, send_quota));
+		int r = m_s.send(d.m_s, min(d.m_s.size(), send_quota));
 		if (r == SOCKET_ERROR)
 		{
 			int e = WSAGetLastError();
@@ -293,7 +293,7 @@ int Cbt_peer_link::send(int& send_quota)
 		}
 		else if (!r)
 			return 0;
-		if (r != min(d.m_s_end - d.m_r, send_quota))
+		if (r != min(d.m_s.size(), send_quota))
 			m_can_send = false;
 		if (d.m_user_data)
 		{
@@ -305,8 +305,8 @@ int Cbt_peer_link::send(int& send_quota)
 		}
 		send_quota -= r;
 		m_stime = time();
-		d.m_r += r;
-		if (d.m_r == d.m_s_end)
+		d.m_s += r;
+		if (!d.m_s.size())
 			m_write_b.pop_front();
 		m_f->m_uploaded_l5 += r;
 	}

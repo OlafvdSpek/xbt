@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "const_memory_range.h"
+
 class Cbt_pl_write_data
 {
 public:
@@ -14,9 +16,7 @@ public:
 
 	Cbt_pl_write_data(const Cvirtual_binary&, bool user_data);
 
-	const char* m_s;
-	const char* m_s_end;
-	const char* m_r;
+	const_memory_range m_s;
 	Cvirtual_binary m_vb;
 	bool m_user_data;
 };
