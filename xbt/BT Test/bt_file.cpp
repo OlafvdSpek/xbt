@@ -449,7 +449,6 @@ int Cbt_file::write_data(long long offset, const_memory_range s, Cbt_peer_link*)
 	{
 		mc_rejected_pieces++;
 		alert(Calert(Calert::warn, "Piece " + n(a) + ": invalid"));
-		logger().invalid(m_info_hash, false, a);
 		return 0;
 	}
 	m_left -= piece.size();
@@ -492,7 +491,6 @@ int Cbt_file::write_data(long long offset, const_memory_range s, Cbt_peer_link*)
 	}
 	if (server()->log_piece_valid())
 		alert(Calert(Calert::debug, "Piece " + n(a) + ": valid"));
-	logger().valid(m_info_hash, false, a);
 	return 0;
 }
 
@@ -918,11 +916,6 @@ bool Cbt_file::test_and_set_hashes(long long offset, const std::string& v, const
 		return i->merkle_tree().test_and_set(offset - i->offset() >> 15, v, w);
 	}
 	return false;
-}
-
-Cbt_logger& Cbt_file::logger()
-{
-	return server()->logger();
 }
 
 bool Cbt_file::begin_mode() const

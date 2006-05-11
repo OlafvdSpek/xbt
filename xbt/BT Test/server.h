@@ -9,7 +9,6 @@
 #include "bt_admin_link.h"
 #include "bt_file.h"
 #include "bt_link.h"
-#include "bt_logger.h"
 #include "bt_tracker_account.h"
 #include "bt_tracker_link.h"
 #include "config.h"
@@ -175,11 +174,6 @@ public:
 		return m_config.m_log_piece_valid;
 	}
 
-	Cbt_logger& logger()
-	{
-		return m_logger;
-	}
-
 	const std::string& peer_id() const
 	{
 		return m_peer_id;
@@ -273,7 +267,6 @@ private:
 	t_files m_files;
 	t_http_links m_http_links;
 	t_links m_links;
-	Cbt_logger m_logger;
 	Cbt_tracker_accounts m_tracker_accounts;
 	Cconfig m_config;
 	Cprofiles m_profiles;
