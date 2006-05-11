@@ -39,6 +39,8 @@
 #endif
 #endif
 
+#include "vartypes.h"
+
 //{{AFX_INSERT_LOCATION}}
 
 #endif // !defined(AFX_STDAFX_H__442CF508_B879_4863_8154_1014EBBD78CA__INCLUDED_)
