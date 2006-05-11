@@ -42,7 +42,7 @@ public:
 		return begin;
 	}
 
-	const unsigned char* operator++()
+	const unsigned char* operator++(int)
 	{
 		return begin++;
 	}
@@ -87,7 +87,7 @@ public:
 		return begin;
 	}
 
-	unsigned char* operator++()
+	unsigned char* operator++(int)
 	{
 		return begin++;
 	}
