@@ -5,14 +5,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-inline long long read_float(const void* r)
+inline float read_float(const void* r)
 {
 	float v;
 	memcpy(&v, r, sizeof(float));
 	return v;
 }
 
-inline long long read_float(const void* r0, const void* s_end)
+inline float read_float(const void* r0, const void* s_end)
 {
 	return read_float(r0);
 }
