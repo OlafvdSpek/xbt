@@ -191,6 +191,6 @@ Cvirtual_binary Cxif_key::vdata(bool fast) const
 	header.size_uncompressed = size;
 	header.size_compressed = cb_d;
 	header.size_external = external_size;
-	d.size(sizeof(t_xif_header_fast) + cb_d + external_size);
+	d.resize(sizeof(t_xif_header_fast) + cb_d + external_size);
 	return d;
 }

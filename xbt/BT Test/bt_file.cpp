@@ -158,11 +158,11 @@ int Cbt_file::t_sub_file::pre_dump() const
 	return name().size() + merkle_hash().size() + 28;
 }
 
-int Cbt_file::t_sub_file::read(long long offset, void* s, int cb_s)
+int Cbt_file::t_sub_file::read(long long offset, memory_range s)
 {
 	return !*this
 		|| _lseeki64(m_f, offset, SEEK_SET) != offset
-		|| ::read(m_f, s, cb_s) != cb_s;
+		|| ::read(m_f, s, s.size()) != s.size();
 }
 
 int Cbt_file::t_sub_file::write(long long  offset, const_memory_range s)
@@ -436,9 +436,9 @@ int Cbt_file::write_data(long long offset, const_memory_range s, Cbt_peer_link*)
 	}
 	if (piece.c_sub_pieces_left())
 		return 0;
-	Cvirtual_binary d;
-	read_data(a * mcb_piece, d.write_start(piece.size()), piece.size());
-	piece.valid(m_merkle || !memcmp(compute_sha1(d).c_str(), piece.m_hash, 20));
+	Cvirtual_binary d(piece.size());
+	read_data(a * mcb_piece, d);
+	piece.valid(m_merkle || !memcmp(compute_sha1(d).data(), piece.m_hash, 20));
 	if (!piece.valid())
 	{
 		mc_rejected_pieces++;
@@ -490,16 +490,16 @@ int Cbt_file::write_data(long long offset, const_memory_range s, Cbt_peer_link*)
 	return 0;
 }
 
-int Cbt_file::read_data(long long offset, byte* d, int cb_d)
+int Cbt_file::read_data(long long offset, memory_range d)
 {
-	int size = cb_d;
+	int size = d.size();
 	byte* w = d;
 	for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 	{
 		if (offset >= i->offset() + i->size())
 			continue;
 		int cb_read = min(size, i->offset() + i->size() - offset);
-		if (i->read(offset - i->offset(), w, cb_read))
+		if (i->read(offset - i->offset(), memory_range(w, cb_read)))
 			return 1;
 		size -= cb_read;
 		if (!size)

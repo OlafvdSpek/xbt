@@ -5,16 +5,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-template <class T>
-long long read_float(T r)
+inline long long read_float(const void* r)
 {
 	float v;
 	memcpy(&v, r, sizeof(float));
 	return v;
 }
 
-template <class T>
-long long read_float(T r0, T s_end)
+inline long long read_float(const void* r0, const void* s_end)
 {
 	return read_float(r0);
 }
@@ -27,8 +25,7 @@ static T write_float(T w0, float v)
 	return w + sizeof(float);
 }
 
-template <class T>
-long long read_int(int cb, T r0)
+inline long long read_int(int cb, const void* r0)
 {
 	const unsigned char* r = reinterpret_cast<const unsigned char*>(r0);
 	long long v = 0;
@@ -37,8 +34,7 @@ long long read_int(int cb, T r0)
 	return v;
 }
 
-template <class T>
-long long read_int(int cb, T r, T s_end)
+inline long long read_int(int cb, const void* r, const void* s_end)
 {
 	return read_int(cb, r);
 }
@@ -56,8 +52,7 @@ T write_int(int cb, T w0, long long v)
 	return reinterpret_cast<T>(w + cb);
 }
 
-template <class T>
-long long read_int_le(int cb, T r0)
+inline long long read_int_le(int cb, const void* r0)
 {
 	const unsigned char* r = reinterpret_cast<const unsigned char*>(r0);
 	r += cb;
@@ -67,8 +62,7 @@ long long read_int_le(int cb, T r0)
 	return v;
 }
 
-template <class T>
-long long read_int_le(int cb, T r, T s_end)
+inline long long read_int_le(int cb, const void* r, const void* s_end)
 {
 	return read_int_le(cb, r);
 }

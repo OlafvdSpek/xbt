@@ -57,6 +57,7 @@ public:
 	const Cvirtual_binary& operator=(const Cvirtual_binary&);
 	Cvirtual_binary();
 	Cvirtual_binary(const Cvirtual_binary&);
+	Cvirtual_binary(size_t);
 	Cvirtual_binary(const_memory_range);
 	~Cvirtual_binary();
 
@@ -92,7 +93,7 @@ public:
 		return range().size();
 	}
 
-	void size(size_t v)
+	void resize(size_t v)
 	{
 		assert(m_source);
 		m_source = m_source->pre_edit();
@@ -107,6 +108,11 @@ public:
 	operator const_memory_range() const
 	{
 		return range();
+	}
+
+	operator memory_range()
+	{
+		return memory_range(data_edit(), size());
 	}
 private:
 	Cvirtual_binary_source* m_source;

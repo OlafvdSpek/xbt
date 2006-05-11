@@ -61,7 +61,7 @@ public:
 	int pre_dump(int flags) const;
 	void dump(Cstream_writer&, int flags) const;
 	int next_invalid_piece(const Cbt_peer_link&);
-	int read_data(long long o, byte* d, int cb_d);
+	int read_data(long long o, memory_range);
 	int write_data(long long o, const_memory_range, Cbt_peer_link*);
 	void close();
 	void erase();
@@ -114,7 +114,7 @@ public:
 		void erase(const std::string& parent_name);
 		bool open(const std::string& parent_name, int oflag);
 		int pre_dump() const;
-		int read(long long offset, void* s, int cb_s);
+		int read(long long offset, memory_range);
 		int write(long long offset, const_memory_range);
 
 		const std::string& merkle_hash() const

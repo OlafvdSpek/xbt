@@ -6,7 +6,7 @@
 
 Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
 {
-	m_data = new byte[d.size()];
+	m_data = new unsigned char[d.size()];
 	m_size = d.size();
 	if (d)
 		memcpy(m_data, d, d.size());
@@ -45,6 +45,11 @@ Cvirtual_binary::Cvirtual_binary()
 Cvirtual_binary::Cvirtual_binary(const Cvirtual_binary& v)
 {
 	m_source = v.m_source->attach();
+}
+
+Cvirtual_binary::Cvirtual_binary(size_t v)
+{
+	m_source = new Cvirtual_binary_source(const_memory_range(NULL, v));
 }
 
 Cvirtual_binary::Cvirtual_binary(const_memory_range d)
@@ -107,7 +112,7 @@ size_t Cvirtual_binary::read(void* d) const
 	return size();
 }
 
-byte* Cvirtual_binary::write_start(size_t cb_d)
+unsigned char* Cvirtual_binary::write_start(size_t cb_d)
 {
 	if (data() && size() == cb_d)
 		return data_edit();

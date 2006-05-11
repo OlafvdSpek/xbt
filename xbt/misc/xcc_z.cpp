@@ -57,7 +57,7 @@ Cvirtual_binary xcc_z::gzip(const_memory_range s)
 	}
 	w = write_int_le(4, w, crc32(crc32(0, NULL, 0), s, s.size()));
 	w = write_int_le(4, w, s.size());
-	d.size(w - d.data());
+	d.resize(w - d.data());
 	return d;
 }
 
