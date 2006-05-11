@@ -264,8 +264,8 @@ int Cbt_peer_link::send(int& send_quota)
 			if (!m_local_choked && !m_remote_requests.empty())
 			{
 				const t_remote_request& request = m_remote_requests.front();
-				Cvirtual_binary d;
-				if (!m_f->read_data(request.offset, d.write_start(request.size), request.size))
+				Cvirtual_binary d(request.size);
+				if (!m_f->read_data(request.offset, d))
 				{
 					if (m_f->m_merkle)
 						write_merkle_piece(request.offset, d, m_f->get_hashes(request.offset, request.c_hashes));
@@ -700,7 +700,7 @@ int Cbt_peer_link::write_data(long long o, const_memory_range s, int latency)
 
 int Cbt_peer_link::read_message(const_memory_range s)
 {
-	const byte* r = s;
+	const_memory_range& r = s;
 	switch (*r++)
 	{
 	case bti_choke:
@@ -753,7 +753,7 @@ int Cbt_peer_link::read_message(const_memory_range s)
 	case bti_piece:
 		if (m_f->m_merkle)
 		{
-			if (s.end - r >= 5 && r[4] >= 0 && s.end - r >= 20 * r[4] + 5)
+			if (s.end - r >= 5 && s.end - r >= 20 * r[4] + 5)
 			{
 				r += 5;
 				read_merkle_piece(static_cast<long long>(read_int(4, r - 4)) << 15, const_memory_range(r, s.end - r - 20 * r[-1]), std::string(reinterpret_cast<const char*>(s.end - 20 * r[-1]), 20 * r[-1]));

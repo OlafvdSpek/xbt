@@ -145,7 +145,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				}
 				m_w += r;
 			}
-			m_d.size(m_w - m_d);
+			m_d.resize(m_w - m_d);
 			read(f, m_d);
 			close(f);
 		}
