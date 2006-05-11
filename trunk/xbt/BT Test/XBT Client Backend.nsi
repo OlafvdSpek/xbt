@@ -1,4 +1,4 @@
-!define VERSION "0.7.2"
+!define VERSION "0.7.3"
 
 Name "XBT Client Backend ${VERSION}"
 Outfile "XBT_Client_Backend-${VERSION}.exe"
