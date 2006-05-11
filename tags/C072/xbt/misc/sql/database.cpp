@@ -1,0 +1,72 @@
+#include "stdafx.h"
+#include "database.h"
+
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
+
+#ifdef WIN32
+#pragma comment(lib, "libmysql")
+#endif
+
+Cdatabase::Cdatabase()
+{
+	mysql_init(&m_handle);
+}
+
+Cdatabase::Cdatabase(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors)
+{
+	open(host, user, password, database, echo_errors);
+}
+
+Cdatabase::~Cdatabase()
+{
+	close();
+}
+
+void Cdatabase::open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors)
+{
+	m_echo_errors = echo_errors;
+	bool a0 = true;
+	if (!mysql_init(&m_handle)
+		|| !mysql_real_connect(&m_handle, host.c_str(), user.c_str(), password.c_str(), database.c_str(), MYSQL_PORT, NULL, 0)
+#if MYSQL_VERSION_ID >= 50000
+		|| mysql_options(&m_handle, MYSQL_OPT_RECONNECT, reinterpret_cast<const char*>(&a0))
+#endif
+		)
+		throw exception(mysql_error(&m_handle));
+}
+
+Csql_result Cdatabase::query(const std::string& q)
+{
+	if (!m_query_log.empty())
+	{
+		static std::ofstream f(m_query_log.c_str());
+		f << q << std::endl;
+	}
+	if (mysql_real_query(&m_handle, q.data(), q.size()))
+	{
+		if (m_echo_errors)
+		{
+			std::cerr << mysql_error(&m_handle) << std::endl
+				<< q.substr(0, 79) << std::endl;
+		}
+		throw exception(mysql_error(&m_handle));
+	}
+	return Csql_result(mysql_store_result(&m_handle));
+}
+
+void Cdatabase::close()
+{
+	mysql_close(&m_handle);
+}
+
+int Cdatabase::insert_id()
+{
+	return mysql_insert_id(&m_handle);
+}
+
+void Cdatabase::set_query_log(const std::string& v)
+{
+	m_query_log = v;
+}
