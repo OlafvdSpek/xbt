@@ -5,13 +5,70 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class const_memory_range
+template <class T>
+class memory_range_base
+{
+public:
+	memory_range_base()
+	{
+		begin = NULL;
+		end = NULL;
+	}
+
+	memory_range_base(void* begin_, void* end_)
+	{
+		begin = reinterpret_cast<T>(begin_);
+		end = reinterpret_cast<T>(end_);
+	}
+
+	memory_range_base(void* begin_, size_t size)
+	{
+		begin = reinterpret_cast<T>(begin_);
+		end = begin + size;
+	}
+
+	size_t size() const
+	{
+		return end - begin;
+	}
+
+	operator T() const
+	{
+		return begin;
+	}
+
+	memory_range_base operator++(int)
+	{
+		memory_range_base t = *this;
+		begin++;
+		return t;
+	}
+
+	memory_range_base operator+=(size_t v)
+	{
+		begin += v;
+		return *this;
+	}
+
+	T begin;
+	T end;
+};
+
+typedef memory_range_base<unsigned char*> memory_range;
+
+class const_memory_range: public memory_range_base<const unsigned char*>
 {
 public:
 	const_memory_range()
 	{
 		begin = NULL;
 		end = NULL;
+	}
+
+	const_memory_range(memory_range v)
+	{
+		begin = v.begin;
+		end = v.end;
 	}
 
 	const_memory_range(const void* begin_, const void* end_)
@@ -32,16 +89,6 @@ public:
 		end = reinterpret_cast<const unsigned char*>(v.data() + v.size());
 	}
 
-	size_t size() const
-	{
-		return end - begin;
-	}
-
-	operator const unsigned char*() const
-	{
-		return begin;
-	}
-
 	const_memory_range operator++(int)
 	{
 		const_memory_range t = *this;
@@ -54,57 +101,6 @@ public:
 		begin += v;
 		return *this;
 	}
-
-	const unsigned char* begin;
-	const unsigned char* end;
-};
-
-class memory_range
-{
-public:
-	memory_range()
-	{
-		begin = NULL;
-		end = NULL;
-	}
-
-	memory_range(void* begin_, void* end_)
-	{
-		begin = reinterpret_cast<unsigned char*>(begin_);
-		end = reinterpret_cast<unsigned char*>(end_);
-	}
-
-	memory_range(void* begin_, size_t size)
-	{
-		begin = reinterpret_cast<unsigned char*>(begin_);
-		end = begin + size;
-	}
-
-	size_t size() const
-	{
-		return end - begin;
-	}
-
-	operator unsigned char*() const
-	{
-		return begin;
-	}
-
-	memory_range operator++(int)
-	{
-		memory_range t = *this;
-		begin++;
-		return t;
-	}
-
-	memory_range operator+=(size_t v)
-	{
-		begin += v;
-		return *this;
-	}
-
-	unsigned char* begin;
-	unsigned char* end;
 };
 
 #endif // !defined(AFX_CONST_MEMORY_RANGE_H__83C523AF_357D_4ED5_B17A_92F0CED89F1A__INCLUDED_)
