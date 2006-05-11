@@ -20,27 +20,21 @@ public:
 	unsigned char* data_edit()
 	{
 		assert(mc_references == 1);
-		return m_data;
+		return m_range;
 	}
 
-	const_memory_range range() const
+	memory_range range()
 	{
-		return const_memory_range(m_data, m_size);
+		return m_range;
 	}
 
-	size_t size() const
+	void resize(size_t v)
 	{
-		return m_size;
-	}
-
-	void size(size_t v)
-	{
-		assert(mc_references == 1 && v <= m_size);
-		m_size = v;
+		assert(mc_references == 1 && v <= m_range.size());
+		m_range.end = m_range.begin + v;
 	}
 private:
-	unsigned char* m_data;
-	size_t m_size;
+	memory_range m_range;
 	int mc_references;
 };
 
@@ -97,7 +91,7 @@ public:
 	{
 		assert(m_source);
 		m_source = m_source->pre_edit();
-		m_source->size(v);
+		m_source->resize(v);
 	}
 
 	operator const unsigned char*() const
