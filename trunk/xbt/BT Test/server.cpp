@@ -90,9 +90,6 @@ Cserver::Cserver():
 	InitializeCriticalSection(&m_cs);
 #endif
 	srand(time());
-#ifndef NDEBUG
-	m_logger.open("/temp/bt_logger.txt");
-#endif
 }
 
 Cserver::~Cserver()

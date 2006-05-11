@@ -7,7 +7,6 @@
 
 #include <set>
 #include "alerts.h"
-#include "bt_logger.h"
 #include "bt_peer_data.h"
 #include "bt_pl_write_data.h"
 #include "data_counter.h"
@@ -29,7 +28,6 @@ public:
 	int write_data(long long o, const_memory_range, int latency);
 	int c_max_requests_pending() const;
 	void check_pieces();
-	Cbt_logger& logger();
 	void clear_local_requests();
 	int cb_write_buffer() const;
 	void alert(Calert::t_level, const std::string&);

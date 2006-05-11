@@ -166,7 +166,6 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 				{
 					t_local_request request(m_f->mcb_piece * a + piece.cb_sub_piece() * b, piece.cb_sub_piece(b), time());
 					m_local_requests.push_back(request);
-					logger().request(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), false, request.offset / m_f->mcb_piece, request.offset % m_f->mcb_piece, request.size);
 					if (m_f->m_merkle)
 						write_merkle_request(request.offset, 127);
 					else
@@ -657,7 +656,6 @@ int Cbt_peer_link::read_piece(int piece, int offset, const_memory_range s)
 	t_local_requests::iterator i = m_local_requests.begin();
 	int t = time() - i->stime;
 	mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
-	logger().piece(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, piece, offset, s.size());
 	m_f->m_downloaded += s.size();
 	m_f->m_down_counter.add(s.size(), time());
 	m_f->m_total_downloaded += s.size();
@@ -703,7 +701,6 @@ int Cbt_peer_link::read_message(const_memory_range s)
 	switch (*s++)
 	{
 	case bti_choke:
-		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, true);
 		m_remote_choked = true;
 		// clear_local_requests();
 		// m_local_requests.clear();
@@ -711,7 +708,6 @@ int Cbt_peer_link::read_message(const_memory_range s)
 		mc_max_requests_pending = min(mc_max_requests_pending, 2);
 		break;
 	case bti_unchoke:
-		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, false);
 		m_remote_choked = false;
 		break;
 	case bti_interested:
@@ -853,11 +849,6 @@ void Cbt_peer_link::clear_local_requests()
 		m_f->m_pieces[i->offset / m_f->mcb_piece].erase_peer(this, i->offset % m_f->mcb_piece);
 	m_local_requests.clear();
 	mc_local_requests_pending = 0;
-}
-
-Cbt_logger& Cbt_peer_link::logger()
-{
-	return m_f->logger();
 }
 
 void Cbt_peer_link::check_pieces()

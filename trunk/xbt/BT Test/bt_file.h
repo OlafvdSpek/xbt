@@ -8,7 +8,6 @@
 #include "alerts.h"
 #include "bvalue.h"
 #include "bt_file_data.h"
-#include "bt_logger.h"
 #include "bt_piece.h"
 #include "bt_peer_link.h"
 #include "bt_sub_file_data.h"
@@ -41,7 +40,6 @@ public:
 	int c_max_requests_pending() const;
 	bool end_mode() const;
 	bool begin_mode() const;
-	Cbt_logger& logger();
 	std::string get_hashes(long long offset, int c) const;
 	bool test_and_set_hashes(long long offset, const std::string& v, const std::string& w);
 	bool hash();
@@ -215,7 +213,6 @@ public:
 	Cbt_hasher* m_hasher;
 	bool m_merkle;
 	bool m_validate;
-	Cbt_logger* m_logger;
 	Cserver* m_server;
 };
 
