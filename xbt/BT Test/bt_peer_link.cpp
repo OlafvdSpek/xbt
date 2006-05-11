@@ -700,8 +700,7 @@ int Cbt_peer_link::write_data(long long o, const_memory_range s, int latency)
 
 int Cbt_peer_link::read_message(const_memory_range s)
 {
-	const_memory_range& r = s;
-	switch (*r++)
+	switch (*s++)
 	{
 	case bti_choke:
 		logger().choke(m_f->m_info_hash, inet_ntoa(m_a.sin_addr), true, true);
@@ -722,17 +721,17 @@ int Cbt_peer_link::read_message(const_memory_range s)
 		m_remote_interested = false;
 		break;
 	case bti_have:
-		if (s.end - r >= 4)
-			remote_has(read_int(4, r));
+		if (s.size() >= 4)
+			remote_has(read_int(4, s));
 		break;
 	case bti_bitfield:
 		if (!m_f->m_info.size())
-			m_remote_pieces.resize(s.end - r << 3);
-		for (int i = 0; r < s.end; r++)
+			m_remote_pieces.resize(s.size() << 3);
+		for (int i = 0; s < s.end; s++)
 		{
 			for (int j = 0; j < 8; i++, j++)
 			{
-				if (*r & 0x80 >> j)
+				if (*s & 0x80 >> j)
 					remote_has(i);
 			}
 		}
@@ -740,74 +739,71 @@ int Cbt_peer_link::read_message(const_memory_range s)
 	case bti_request:
 		if (m_f->m_merkle)
 		{
-			if (s.end - r >= 5)
+			if (s.size() >= 5)
 			{
-				remote_merkle_requests(static_cast<long long>(read_int(4, r)) << 15, r[4]);
+				remote_merkle_requests(static_cast<long long>(read_int(4, s)) << 15, s[4]);
 			}
 		}
-		else if (s.end - r >= 12)
+		else if (s.size() >= 12)
 		{
-			remote_requests(read_int(4, r), read_int(4, r + 4), read_int(4, r + 8));
+			remote_requests(read_int(4, s), read_int(4, s + 4), read_int(4, s + 8));
 		}
 		break;
 	case bti_piece:
 		if (m_f->m_merkle)
 		{
-			if (s.end - r >= 5 && s.end - r >= 20 * r[4] + 5)
+			if (s.size() >= 5 && s.size() >= 20 * s[4] + 5)
 			{
-				r += 5;
-				read_merkle_piece(static_cast<long long>(read_int(4, r - 4)) << 15, const_memory_range(r, s.end - r - 20 * r[-1]), std::string(reinterpret_cast<const char*>(s.end - 20 * r[-1]), 20 * r[-1]));
+				s += 5;
+				read_merkle_piece(static_cast<long long>(read_int(4, s - 4)) << 15, const_memory_range(s, s.end - 20 * s[-1]), std::string(reinterpret_cast<const char*>(s.end - 20 * s[-1]), 20 * s[-1]));
 			}
 		}
-		else if (s.end - r >= 8)
+		else if (s.size() >= 8)
 		{
-			r += 8;
-			return read_piece(read_int(4, r - 8), read_int(4, r - 4), const_memory_range(r, s.end));
+			s += 8;
+			return read_piece(read_int(4, s - 8), read_int(4, s - 4), s);
 		}
 		break;
 	case bti_cancel:
-		if (s.end - r >= 12)
+		if (s.size() >= 12)
 		{
-			remote_cancels(read_int(4, r), read_int(4, r + 4), read_int(4, r + 8));
+			remote_cancels(read_int(4, s), read_int(4, s + 4), read_int(4, s + 8));
 		}
 		break;
 	case bti_get_info:
 		write_info();
 		break;
 	case bti_info:
-		read_info(const_memory_range(r, s.end));
+		read_info(s);
 		break;
 	case bti_get_peers:
 		alert(Calert::debug, "Peer: get_peers");
-		if (s.end - r >= 2 && time() - m_peers_stime > 300)
+		if (s.size() >= 2 && time() - m_peers_stime > 300)
 			write_peers();
 		break;
 	case bti_peers:
-		alert(Calert::debug, "Peer: " + n((s.end - r - 2) / 6) + " peers");
-		if (s.end - r >= 2 && time() - m_get_peers_stime < 60)
+		alert(Calert::debug, "Peer: " + n((s.size() - 2) / 6) + " peers");
+		if (s.size() >= 2 && time() - m_get_peers_stime < 60)
 		{
-			for (r += 2; r + 6 <= s.end; r += 6)
-				m_f->insert_peer(read_int(4, r), read_int(2, r + 4));
+			m_f->insert_peers(s += 2);
 		}
 		break;
 	case bti_extended:
-		if (s.end - r >= 1)
+		if (s.size() >= 1)
 		{
-			switch (*r++)
+			switch (*s++)
 			{
 			case bti_extended_handshake:
 				{
-					Cbvalue v(const_memory_range(r, s.end));
+					Cbvalue v(s);
 					const Cbvalue& m = v.d("m");
 					m_ut_pex_extension = m.d("ut_pex").i();
 				}
 				break;
 			case bti_extended_ut_pex:
 				{
-					Cbvalue v(const_memory_range(r, s.end));
-					std::string added = v.d("added").s();
-					for (const char* r = added.data(); r + 6 <= added.data() + added.size(); r += 6)
-						m_f->insert_peer(read_int_le(4, r), read_int_le(2, r + 4));
+					Cbvalue v(s);
+					m_f->insert_peers(v.d("added").s());
 				}
 				break;
 			}

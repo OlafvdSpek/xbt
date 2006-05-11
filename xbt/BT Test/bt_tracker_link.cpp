@@ -219,8 +219,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					f.mc_seeders_total = read_int(4, d + utoa_seeders, d + r);
 					mc_attempts = 0;
 					f.alert(Calert(Calert::info, "Tracker: " + n((r - utoa_size) / 6) + " peers (" + n(r) + " bytes)"));
-					for (int o = utoa_size; o + 6 <= r; o += 6)
-						f.insert_peer(read_int(4, d + o), read_int(2, d + o + 4));
+					f.insert_peers(const_memory_range(d + utoa_size, r));
 					close(f);
 				}
 				else if (r >= utoe_size
@@ -277,8 +276,7 @@ int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
 						{
 							std::string peers = v.d(bts_peers).s();
 							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
-							for (const char* r = peers.data(); r + 6 <= peers.data() + peers.size(); r += 6)
-								f.insert_peer(read_int_le(4, r), read_int_le(2, r + 4));
+							f.insert_peers(peers);
 						}
 						return 0;
 					}

@@ -347,6 +347,12 @@ void Cbt_file::insert_peer(int h, int p)
 	m_new_peers[h] = p;
 }
 
+void Cbt_file::insert_peers(const_memory_range s)
+{
+	for (; s.size() >= 6; s += 6)
+		insert_peer(read_int_le(4, s), read_int_le(2, s + 4));
+}
+
 void Cbt_file::insert_peer(const char* r, const sockaddr_in& a, const Csocket& s)
 {
 	switch (state())

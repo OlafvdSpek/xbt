@@ -931,12 +931,9 @@ int Cserver::open_url(const std::string& v)
 		Sleep(100);
 #endif
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	if (Cbt_file* f = find_torrent(info_hash))
 	{
-		if (i->m_info_hash != info_hash)
-			continue;
-		for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
-			i->insert_peer(read_int(4, r), read_int(2, r + 4));
+		f->insert_peers(peers);
 		return 0;
 	}
 	Cbt_file f;
@@ -945,8 +942,7 @@ int Cserver::open_url(const std::string& v)
 	{
 		f.m_trackers.push_back(uri_decode(trackers.substr(a, b - a)));
 	}
-	for (const char* r = peers.c_str(); r + 6 <= peers.c_str() + peers.length(); r += 6)
-		f.insert_peer(read_int(4, r), read_int(2, r + 4));
+	f.insert_peers(peers);
 	f.m_info_hash = info_hash;
 	if (below_torrent_limit())
 		f.m_state = Cbt_file::s_running;

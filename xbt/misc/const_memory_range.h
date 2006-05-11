@@ -42,14 +42,17 @@ public:
 		return begin;
 	}
 
-	const unsigned char* operator++(int)
+	const_memory_range operator++(int)
 	{
-		return begin++;
+		const_memory_range t = *this;
+		begin++;
+		return t;
 	}
 
-	const unsigned char* operator+=(size_t v)
+	const_memory_range operator+=(size_t v)
 	{
-		return begin += v;
+		begin += v;
+		return *this;
 	}
 
 	const unsigned char* begin;
@@ -87,14 +90,17 @@ public:
 		return begin;
 	}
 
-	unsigned char* operator++(int)
+	memory_range operator++(int)
 	{
-		return begin++;
+		memory_range t = *this;
+		begin++;
+		return t;
 	}
 
-	unsigned char* operator+=(size_t v)
+	memory_range operator+=(size_t v)
 	{
-		return begin += v;
+		begin += v;
+		return *this;
 	}
 
 	unsigned char* begin;
