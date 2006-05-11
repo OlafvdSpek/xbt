@@ -33,7 +33,7 @@ public:
 	void alert(Calert::t_level, const std::string&);
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
-	void write_piece(int, int, const_memory_range);
+	void write_piece(int, int, const Cvirtual_binary&);
 	void write_merkle_piece(long long offset, const_memory_range, const std::string& hashes);
 	void queue_have(int);
 	void write_have(int);
@@ -64,7 +64,7 @@ public:
 	void remote_merkle_requests(long long offset, int c_hashes);
 	int send(int& send_quota);
 	int recv();
-	void write(const Cvirtual_binary&);
+	void write(const Cvirtual_binary&, bool user_data = false);
 	void close();
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);

@@ -201,9 +201,9 @@ void Cbt_peer_link::close()
 	m_remote_pieces.clear();
 }
 
-void Cbt_peer_link::write(const Cvirtual_binary& s)
+void Cbt_peer_link::write(const Cvirtual_binary& s, bool user_data)
 {
-	m_write_b.push_back(Cbt_pl_write_data(s));
+	m_write_b.push_back(Cbt_pl_write_data(s, user_data));
 }
 
 int Cbt_peer_link::cb_write_buffer() const
@@ -295,7 +295,7 @@ int Cbt_peer_link::send(int& send_quota)
 			return 0;
 		if (r != min(d.m_s_end - d.m_r, send_quota))
 			m_can_send = false;
-		if (d.m_vb.size() > 5 && d.m_s[4] == bti_piece)
+		if (d.m_user_data)
 		{
 			m_uploaded += r;
 			m_up_counter.add(r, time());
@@ -471,16 +471,16 @@ void Cbt_peer_link::write_bitfield()
 	write(d);
 }
 
-void Cbt_peer_link::write_piece(int piece, int offset, const_memory_range s)
+void Cbt_peer_link::write_piece(int piece, int offset, const Cvirtual_binary& s)
 {
 	Cvirtual_binary d;
-	byte* w = d.write_start(13 + s.size());
-	w = write_int(4, w, d.size() - 4);
+	byte* w = d.write_start(13);
+	w = write_int(4, w, d.size() + s.size() - 4);
 	*w++ = bti_piece;
 	w = write_int(4, w, piece);
 	w = write_int(4, w, offset);
-	memcpy(w, s, s.size());
 	write(d);
+	write(s, true);
 }
 
 void Cbt_peer_link::write_merkle_piece(long long offset, const_memory_range s, const std::string& hashes)
@@ -496,7 +496,7 @@ void Cbt_peer_link::write_merkle_piece(long long offset, const_memory_range s, c
 	memcpy(w, hashes.data(), hashes.size());
 	w += hashes.size();
 	assert(w == d.end());
-	write(d);
+	write(d, true);
 }
 
 void Cbt_peer_link::choked(bool v)
