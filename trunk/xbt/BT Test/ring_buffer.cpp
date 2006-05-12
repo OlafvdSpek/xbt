@@ -18,7 +18,7 @@ void Cring_buffer::size(size_t cb_d)
 	if (cb_d)
 	{
 		m_r = m_b = m_w = reinterpret_cast<char*>(m_d.write_start(cb_d));
-		m_e = reinterpret_cast<const char*>(m_d.end());
+		m_e = reinterpret_cast<char*>(m_d.mutable_end());
 	}
 	else
 	{
@@ -29,15 +29,14 @@ void Cring_buffer::size(size_t cb_d)
 
 void Cring_buffer::combine()
 {
-	char* d = new char[cb_read()];
+	std::vector<char> d(cb_read());
 	size_t c0 = cb_r();
-	memcpy(d, r(), c0);
+	memcpy(&d.front(), r(), c0);
 	cb_r(c0);
 	size_t c1 = cb_r();
-	memcpy(d + c0, r(), c1);
+	memcpy(&d.front() + c0, r(), c1);
 	cb_r(c1);
-	memcpy(m_b, d, c0 + c1);
+	memcpy(m_b, &d.front(), c0 + c1);
 	m_r = m_b;
 	m_w = m_b + c0 + c1;
-	delete[] d;
 }

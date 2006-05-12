@@ -60,6 +60,11 @@ public:
 		return range().begin;
 	}
 
+	unsigned char* mutable_begin()
+	{
+		return mutable_range().begin;
+	}
+
 	const unsigned char* data() const
 	{
 		return range().begin;
@@ -77,8 +82,20 @@ public:
 		return range().end;
 	}
 
+	unsigned char* mutable_end()
+	{
+		return mutable_range().end;
+	}
+
 	const_memory_range range() const
 	{
+		return m_source ? m_source->range() : memory_range();
+	}
+
+	memory_range mutable_range()
+	{
+		if (m_source)
+			m_source = m_source->pre_edit();
 		return m_source ? m_source->range() : memory_range();
 	}
 
