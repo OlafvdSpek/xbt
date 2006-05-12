@@ -13,7 +13,7 @@ public:
 	static std::string compute_root(const_memory_range);
 	void invalidate();
 	std::string root() const;
-	void root(const std::string&);
+	void root(const_memory_range);
 	int load(const Cvirtual_binary&);
 	Cvirtual_binary save() const;
 	std::ostream& operator<<(std::ostream& os) const;
@@ -21,10 +21,10 @@ public:
 	std::string get(int i, int c) const;
 	bool has(int i) const;
 	void resize(int);
-	void set(int i, const std::string&);
-	void set(int i, const std::string&, const std::string&);
-	bool test(int i, const std::string&, const std::string&);
-	bool test_and_set(int i, const std::string&, const std::string&);
+	void set(int i, const_memory_range);
+	void set(int i, const_memory_range, const_memory_range);
+	bool test(int i, const_memory_range, const_memory_range);
+	bool test_and_set(int i, const_memory_range, const_memory_range);
 	Cmerkle_tree();
 
 	int size() const
@@ -35,7 +35,7 @@ private:
 	char* d(int);
 	const char* d(int) const;
 	std::string get0(int) const;
-	void set0(int, const std::string&);
+	void set0(int, const_memory_range);
 
 	Cvirtual_binary m_d;
 	int m_size;
