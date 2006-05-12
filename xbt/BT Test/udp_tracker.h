@@ -60,10 +60,10 @@ private:
 	void clean_up();
 	long long connection_id(sockaddr_in&) const;
 	void send(Csocket&, sockaddr_in&, const_memory_range);
-	void send_announce(Csocket&, sockaddr_in&, const char* r, const char* r_end);
-	void send_connect(Csocket&, sockaddr_in&, const char* r, const char* r_end);
-	void send_scrape(Csocket&, sockaddr_in&, const char* r, const char* r_end);
-	void send_error(Csocket&, sockaddr_in&, const char* r, const char* r_end, const std::string& msg);
+	void send_announce(Csocket&, sockaddr_in&, const_memory_range);
+	void send_connect(Csocket&, sockaddr_in&, const_memory_range);
+	void send_scrape(Csocket&, sockaddr_in&, const_memory_range);
+	void send_error(Csocket&, sockaddr_in&, const_memory_range, const std::string& msg);
 
 	int m_announce_interval;
 	time_t m_clean_up_time;
