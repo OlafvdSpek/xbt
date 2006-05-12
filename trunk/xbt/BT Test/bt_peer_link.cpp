@@ -99,7 +99,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			case 4:
 				if (m_read_b.cb_r() < 20)
 					break;
-				m_remote_peer_id.assign(reinterpret_cast<const char*>(m_read_b.r().begin), 20);
+				m_remote_peer_id = m_read_b.r().sub_range(0, 20).string();
 				if (m_remote_peer_id == m_f->peer_id())
 					return 1;
 				m_read_b.cb_r(20);
@@ -365,7 +365,7 @@ void Cbt_peer_link::remote_merkle_cancels(long long offset)
 
 int Cbt_peer_link::read_handshake(const_memory_range h)
 {
-	if (std::string(reinterpret_cast<const char*>(h + hs_info_hash), 20) != m_f->m_info_hash)
+	if (h.sub_range(hs_info_hash, 20).string() != m_f->m_info_hash)
 	{
 		alert(Calert::warn, "Peer: handshake failed");
 		return 1;
@@ -664,10 +664,10 @@ int Cbt_peer_link::read_piece(int piece, int offset, const_memory_range s)
 	return 0;
 }
 
-void Cbt_peer_link::read_merkle_piece(long long offset, const_memory_range s, const std::string& hashes)
+void Cbt_peer_link::read_merkle_piece(long long offset, const_memory_range s, const_memory_range hashes)
 {
 	mc_local_requests_pending--;
-	if (!m_f->test_and_set_hashes(offset, Cmerkle_tree::compute_root(s), hashes))
+	if (!m_f->test_and_set_hashes(offset, Cmerkle_tree::compute_root(s), hashes.string()))
 	{
 		alert(Calert::warn, "Chunk " + n(offset >> 15) + ": invalid");
 		return;
@@ -751,7 +751,7 @@ int Cbt_peer_link::read_message(const_memory_range s)
 			if (s.size() >= 5 && s.size() >= 20 * s[4] + 5)
 			{
 				s += 5;
-				read_merkle_piece(static_cast<long long>(read_int(4, s - 4)) << 15, const_memory_range(s, s.end - 20 * s[-1]), std::string(reinterpret_cast<const char*>(s.end - 20 * s[-1]), 20 * s[-1]));
+				read_merkle_piece(static_cast<long long>(read_int(4, s - 4)) << 15, s.sub_range(0, s.size() - 20 * s[-1]), s.sub_range(s.size() - 20 * s[-1], 20 * s[-1]));
 			}
 		}
 		else if (s.size() >= 8)

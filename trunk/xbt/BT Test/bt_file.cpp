@@ -54,7 +54,7 @@ int Cbt_file::info(const Cbvalue& info)
 	if (m_name.empty())
 		return 1;
 	m_info = info.read();
-	m_info_hash = compute_sha1(m_info);
+	m_info_hash = Csha1(m_info).read();
 	m_merkle = info.d(bts_pieces).s().empty();
 	mcb_piece = info.d(bts_piece_length).i();
 	{
@@ -444,7 +444,7 @@ int Cbt_file::write_data(long long offset, const_memory_range s, Cbt_peer_link*)
 		return 0;
 	Cvirtual_binary d(piece.size());
 	read_data(a * mcb_piece, d);
-	piece.valid(m_merkle || !memcmp(compute_sha1(d).data(), piece.m_hash, 20));
+	piece.valid(m_merkle || !memcmp(Csha1(d).read().data(), piece.m_hash, 20));
 	if (!piece.valid())
 	{
 		mc_rejected_pieces++;

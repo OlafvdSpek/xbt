@@ -203,19 +203,17 @@ Cvirtual_binary Cmerkle_tree::save() const
 	return m_d;
 }
 
-std::string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
+std::string Cmerkle_tree::compute_root(const_memory_range r)
 {
 	typedef std::map<int, std::string> t_map;
 
 	t_map map;
-	const byte* s = reinterpret_cast<const byte*>(s0);
-	const byte* s_end = reinterpret_cast<const byte*>(s_end0);
 	char d[1025];
-	for (const byte* r = s; r < s_end; r += 1024)
+	for (; r.size(); r += 1024)
 	{
 		*d = 0;
-		memcpy(d + 1, r, min(s_end - r, 1024));
-		std::string h = Csha1(const_memory_range(d, min(s_end - r, 1024) + 1)).read();
+		memcpy(d + 1, r, min(r.size(), 1024));
+		std::string h = Csha1(const_memory_range(d, min(r.size(), 1024) + 1)).read();
 		*d = 1;
 		int i;
 		for (i = 0; map.find(i) != map.end(); i++)
@@ -237,11 +235,6 @@ std::string Cmerkle_tree::compute_root(const void* s0, const void* s_end0)
 		map[0] = Csha1(const_memory_range(d, 41)).read();
 	}
 	return map.empty() ? "" : map.begin()->second;
-}
-
-std::string Cmerkle_tree::compute_root(const Cvirtual_binary& s)
-{
-	return compute_root(s, s.end());
 }
 
 std::ostream& Cmerkle_tree::operator<<(std::ostream& os) const

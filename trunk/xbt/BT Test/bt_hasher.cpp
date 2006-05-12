@@ -28,7 +28,7 @@ bool Cbt_hasher::run(Cbt_file& f)
 			piece.valid(!f.read_data(f.mcb_piece * m_i, d));
 			for (const byte* r = d; r < d.end(); r += 0x8000)
 			{
-				std::string h = Cmerkle_tree::compute_root(r, std::min(r + 0x8000, d.end()));
+				std::string h = Cmerkle_tree::compute_root(const_memory_range(r, std::min(r + 0x8000, d.end())));
 				if (root_valid)
 				{
 					if (piece.valid() && (!m_sub_file->merkle_tree().has(m_j) || h != m_sub_file->merkle_tree().get(m_j)))
@@ -43,7 +43,7 @@ bool Cbt_hasher::run(Cbt_file& f)
 		{
 			d.write_start(piece.size());
 			piece.valid(!f.read_data(f.mcb_piece * m_i, d)
-				&& !memcmp(compute_sha1(d).c_str(), piece.m_hash, 20));
+				&& !memcmp(Csha1(d).read().data(), piece.m_hash, 20));
 		}
 	}
 	if (!piece.valid())

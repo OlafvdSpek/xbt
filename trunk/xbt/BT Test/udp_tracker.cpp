@@ -72,7 +72,7 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const_memory_range 
 {
 	if (read_int(8, r + uti_connection_id, r.end) != connection_id(a))
 		return;
-	t_file& file = m_files[std::string(reinterpret_cast<const char*>(r + utia_info_hash), 20)];
+	t_file& file = m_files[r.sub_range(utia_info_hash, 20).string()];
 	int ipa = read_int(4, r + utia_ipa, r.end) && is_private_ipa(a.sin_addr.s_addr)
 		? htonl(read_int(4, r + utia_ipa, r.end))
 		: a.sin_addr.s_addr;
@@ -152,7 +152,7 @@ void Cudp_tracker::send_scrape(Csocket& s, sockaddr_in& a, const_memory_range r)
 	char* w = d + utos_size;
 	for (; r + 20 <= r.end && w + 12 <= d + cb_d; r += 20)
 	{
-		const t_files::const_iterator file = m_files.find(std::string(reinterpret_cast<const char*>(r.begin), 20));
+		const t_files::const_iterator file = m_files.find(r.sub_range(0, 20).string());
 		if (file == m_files.end())
 		{
 			w = write_int(4, w, file->second.seeders);

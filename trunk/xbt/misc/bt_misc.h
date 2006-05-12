@@ -32,16 +32,6 @@ std::string uri_encode(const std::string&);
 long long xbt_atoll(const char*);
 std::string xbt_version2a(int);
 
-inline std::string compute_sha1(const void* s, size_t cb_s)
-{
-	return Csha1(const_memory_range(s, cb_s)).read();
-}
-
-inline std::string compute_sha1(const Cvirtual_binary& s)
-{
-	return compute_sha1(s, s.size());
-}
-
 inline long long htonll(long long v)
 {
 	const unsigned char* a = reinterpret_cast<const unsigned char*>(&v);
