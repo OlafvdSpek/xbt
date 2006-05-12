@@ -38,7 +38,7 @@ public:
 	void queue_have(int);
 	void write_have(int);
 	void write_haves();
-	int read_handshake(const char* r);
+	int read_handshake(const_memory_range);
 	int read_message(const_memory_range);
 	void read_info(const_memory_range);
 	void write_keepalive();

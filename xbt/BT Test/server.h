@@ -115,7 +115,7 @@ public:
 	void file_dump(Cstream_writer&, const std::string& id, int flags) const;
 	int pre_dump(int flags) const;
 	void dump(Cstream_writer&, int flags) const;
-	void insert_peer(const char* r, const sockaddr_in& a, const Csocket& s);
+	void insert_peer(const_memory_range, const sockaddr_in& a, const Csocket& s);
 	int run();
 	void stop();
 	static void term();

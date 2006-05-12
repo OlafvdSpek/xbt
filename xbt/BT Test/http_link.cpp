@@ -57,7 +57,7 @@ int Chttp_link::recv()
 		m_read_b.cb_w(r);
 	}
 	if (m_response_handler)
-		m_response_handler->handle(std::string(m_read_b.r(), m_read_b.cb_r()));
+		m_response_handler->handle(std::string(reinterpret_cast<const char*>(m_read_b.r().begin), m_read_b.cb_r()));
 	return 1;
 }
 
