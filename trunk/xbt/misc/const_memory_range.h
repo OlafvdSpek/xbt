@@ -69,45 +69,45 @@ class const_memory_range_base: public memory_range_base<T>
 public:
 	const_memory_range_base()
 	{
-		begin = NULL;
-		end = NULL;
+		memory_range_base<T>::begin = NULL;
+		memory_range_base<T>::end = NULL;
 	}
 
 	template <class U>
 	const_memory_range_base(U v)
 	{
-		begin = reinterpret_cast<T>(v.begin);
-		end = reinterpret_cast<T>(v.end);
+		memory_range_base<T>::begin = reinterpret_cast<T>(v.begin);
+		memory_range_base<T>::end = reinterpret_cast<T>(v.end);
 	}
 
 	const_memory_range_base(const void* begin_, const void* end_)
 	{
-		begin = reinterpret_cast<T>(begin_);
-		end = reinterpret_cast<T>(end_);
+		memory_range_base<T>::begin = reinterpret_cast<T>(begin_);
+		memory_range_base<T>::end = reinterpret_cast<T>(end_);
 	}
 
 	const_memory_range_base(const void* begin_, size_t size)
 	{
-		begin = reinterpret_cast<T>(begin_);
-		end = begin + size;
+		memory_range_base<T>::begin = reinterpret_cast<T>(begin_);
+		memory_range_base<T>::end = begin + size;
 	}
 
 	const_memory_range_base(const std::string& v)
 	{
-		begin = reinterpret_cast<T>(v.data());
-		end = reinterpret_cast<T>(v.data() + v.size());
+		memory_range_base<T>::begin = reinterpret_cast<T>(v.data());
+		memory_range_base<T>::end = reinterpret_cast<T>(v.data() + v.size());
 	}
 
 	const_memory_range_base operator++(int)
 	{
 		const_memory_range_base t = *this;
-		begin++;
+		memory_range_base<T>::begin++;
 		return t;
 	}
 
 	const_memory_range_base operator+=(size_t v)
 	{
-		begin += v;
+		memory_range_base<T>::begin += v;
 		return *this;
 	}
 };
