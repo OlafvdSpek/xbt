@@ -45,9 +45,9 @@ int Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 				{
 					if (m_read_b.cb_r() < 4 + cb_m)
 						break;
-					const char* s = m_read_b.r() + 4;
+					const byte* s = m_read_b.r() + 4;
 					m_read_b.cb_r(4 + cb_m);
-					read_message(s, s + cb_m);
+					read_message(const_memory_range(s, s + cb_m));
 				}
 				else
 					m_read_b.cb_r(4);
@@ -106,14 +106,14 @@ void Cbt_admin_link::close()
 	m_s.close();
 }
 
-void Cbt_admin_link::read_message(const char* r, const char* r_end)
+void Cbt_admin_link::read_message(const_memory_range r)
 {
 	switch (*r++)
 	{
 	case bti_bvalue:
 		{
 			Cbvalue v;
-			if (v.write(r, r_end - r))
+			if (v.write(r))
 				break;
 			Cvirtual_binary d1 = m_server->admin_request(v).read();
 			if (m_write_b.cb_write() < 5 + d1.size())

@@ -18,7 +18,7 @@ public:
 	void close();
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
-	void read_message(const char* r, const char* r_end);
+	void read_message(const_memory_range);
 	int recv();
 	int send();
 	Cbt_admin_link();

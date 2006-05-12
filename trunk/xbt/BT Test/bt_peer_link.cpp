@@ -99,7 +99,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 			case 4:
 				if (m_read_b.cb_r() < 20)
 					break;
-				m_remote_peer_id.assign(m_read_b.r(), 20);
+				m_remote_peer_id.assign(reinterpret_cast<const char*>(m_read_b.r().begin), 20);
 				if (m_remote_peer_id == m_f->peer_id())
 					return 1;
 				m_read_b.cb_r(20);
@@ -122,7 +122,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 								return 1;
 							if (m_read_b.cb_r() < 4 + cb_m)
 								break;
-							const char* s = m_read_b.r() + 4;
+							const byte* s = m_read_b.r() + 4;
 							m_read_b.cb_r(4 + cb_m);
 							if (read_message(const_memory_range(s, cb_m)))
 								return 1;
@@ -363,9 +363,9 @@ void Cbt_peer_link::remote_merkle_cancels(long long offset)
 	}
 }
 
-int Cbt_peer_link::read_handshake(const char* h)
+int Cbt_peer_link::read_handshake(const_memory_range h)
 {
-	if (std::string(h + hs_info_hash, 20) != m_f->m_info_hash)
+	if (std::string(reinterpret_cast<const char*>(h + hs_info_hash), 20) != m_f->m_info_hash)
 	{
 		alert(Calert::warn, "Peer: handshake failed");
 		return 1;

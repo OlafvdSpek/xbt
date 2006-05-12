@@ -658,11 +658,11 @@ void Cserver::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, m_start_time);
 }
 
-void Cserver::insert_peer(const char* r, const sockaddr_in& a, const Csocket& s)
+void Cserver::insert_peer(const_memory_range r, const sockaddr_in& a, const Csocket& s)
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
-		if (i->m_info_hash == std::string(r + hs_info_hash, 20))
+		if (i->m_info_hash == std::string(reinterpret_cast<const char*>(r + hs_info_hash), 20))
 			i->insert_peer(r, a, s);
 	}
 }

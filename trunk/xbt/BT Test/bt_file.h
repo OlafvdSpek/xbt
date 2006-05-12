@@ -70,7 +70,7 @@ public:
 	void insert_old_peer(int h, int p);
 	void insert_peer(int h, int p);
 	void insert_peers(const_memory_range);
-	void insert_peer(const char* r, const sockaddr_in& a, const Csocket& s);
+	void insert_peer(const_memory_range, const sockaddr_in& a, const Csocket& s);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	int torrent(const Cbvalue&);
