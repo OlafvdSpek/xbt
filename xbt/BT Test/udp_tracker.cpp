@@ -24,7 +24,7 @@ void Cudp_tracker::recv(Csocket& s)
 	while (1)
 	{
 		socklen_t cb_a = sizeof(sockaddr_in);
-		int r = s.recvfrom(b, cb_b, reinterpret_cast<sockaddr*>(&a), &cb_a);
+		int r = s.recvfrom(memory_range(b, cb_b), reinterpret_cast<sockaddr*>(&a), &cb_a);
 		if (r == SOCKET_ERROR)
 			return;
 		if (r < uti_size)
@@ -65,7 +65,7 @@ void Cudp_tracker::send_connect(Csocket& s, sockaddr_in& a, const char* r, const
 	write_int(4, d + uto_action, uta_connect);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	write_int(8, d + utoc_connection_id, connection_id(a));
-	send(s, a, d, utoc_size);
+	send(s, a, const_memory_range(d, utoc_size));
 }
 
 void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, const char* r_end)
@@ -138,7 +138,7 @@ void Cudp_tracker::send_announce(Csocket& s, sockaddr_in& a, const char* r, cons
 			w = write_int(2, w, ntohs((*i)->second.port));
 		}
 	}
-	send(s, a, d, w - d);
+	send(s, a, const_memory_range(d, w));
 }
 
 void Cudp_tracker::send_scrape(Csocket& s, sockaddr_in& a, const char* r, const char* r_end)
@@ -166,7 +166,7 @@ void Cudp_tracker::send_scrape(Csocket& s, sockaddr_in& a, const char* r, const 
 			w = write_int(4, w, 0);
 		}
 	}
-	send(s, a, d, w - d);
+	send(s, a, const_memory_range(d, w));
 }
 
 void Cudp_tracker::send_error(Csocket& s, sockaddr_in& a, const char* r, const char* r_end, const std::string& msg)
@@ -176,12 +176,12 @@ void Cudp_tracker::send_error(Csocket& s, sockaddr_in& a, const char* r, const c
 	write_int(4, d + uto_action, uta_error);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	memcpy(d + utoe_size, msg.c_str(), msg.length());
-	send(s, a, d, utoe_size + msg.length());
+	send(s, a, const_memory_range(d, utoe_size + msg.length()));
 }
 
-void Cudp_tracker::send(Csocket& s, sockaddr_in& a, const void* b, int cb_b)
+void Cudp_tracker::send(Csocket& s, sockaddr_in& a, const_memory_range b)
 {
-	s.sendto(b, cb_b, reinterpret_cast<const sockaddr*>(&a), sizeof(sockaddr_in));
+	s.sendto(b, reinterpret_cast<const sockaddr*>(&a), sizeof(sockaddr_in));
 }
 
 void Cudp_tracker::t_file::clean_up(time_t t)

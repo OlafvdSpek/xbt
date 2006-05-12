@@ -66,7 +66,7 @@ int Cbt_admin_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_se
 
 int Cbt_admin_link::recv()
 {
-	for (int r; r = m_s.recv(m_read_b.w(), m_read_b.cb_w()); )
+	for (int r; r = m_s.recv(m_read_b.w()); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -85,7 +85,7 @@ int Cbt_admin_link::recv()
 
 int Cbt_admin_link::send()
 {
-	for (int r; r = m_s.send(m_write_b.r(), m_write_b.cb_r()); )
+	for (int r; r = m_s.send(m_write_b.r()); )
 	{
 		if (r == SOCKET_ERROR)
 		{

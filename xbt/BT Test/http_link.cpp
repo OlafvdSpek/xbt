@@ -44,7 +44,7 @@ int Chttp_link::recv()
 	m_state = 2;
 	if (!m_read_b.size())
 		m_read_b.size(65 << 10);
-	for (int r; r = m_s.recv(m_read_b.w(), m_read_b.cb_w()); )
+	for (int r; r = m_s.recv(m_read_b.w()); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -64,7 +64,7 @@ int Chttp_link::recv()
 int Chttp_link::send()
 {
 	m_state = 2;
-	for (int r; r = m_s.send(m_write_b.r(), m_write_b.cb_r()); )
+	for (int r; r = m_s.send(m_write_b.r()); )
 	{
 		if (r == SOCKET_ERROR)
 		{

@@ -81,7 +81,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 #endif
 			write_int(4, d + uti_action, uta_connect);
 			write_int(4, d + uti_transaction_id, m_transaction_id = rand());
-			if (m_s.send(d, utic_size) != utic_size)
+			if (m_s.send(const_memory_range(d, utic_size)) != utic_size)
 			{
 				close(f);
 				return 0;
@@ -115,7 +115,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 		if (FD_ISSET(m_s, fd_write_set))
 		{
 			std::string v = http_request(f);
-			if (m_s.send(v.c_str(), v.size()) != v.size())
+			if (m_s.send(v) != v.size())
 				close(f);
 			else
 				m_state = 2;
@@ -131,7 +131,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 	case 2:
 		if (FD_ISSET(m_s, fd_read_set))
 		{
-			for (int r; r = m_s.recv(m_w, m_d.end() - m_w); )
+			for (int r; r = m_s.recv(memory_range(m_w, m_d.end() - m_w)); )
 			{
 				if (r == SOCKET_ERROR)
 				{
@@ -155,7 +155,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 		{
 			const int cb_d = 2 << 10;
 			char d[cb_d];
-			int r = m_s.recv(d, cb_d);
+			int r = m_s.recv(memory_range(d, cb_d));
 			if (r != SOCKET_ERROR
 				&& r >= utoc_size
 				&& read_int(4, d + uto_transaction_id, d + r) == m_transaction_id
@@ -188,7 +188,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 					Csha1(const_memory_range(b, w + 20)).read(w);
 					w += 8;
 				}
-				if (m_s.send(b, w - b) != w - b)
+				if (m_s.send(const_memory_range(b, w)) != w - b)
 				{
 					close(f);
 					return;
@@ -206,7 +206,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 		{
 			const int cb_d = 2 << 10;
 			char d[cb_d];
-			int r = m_s.recv(d, cb_d);
+			int r = m_s.recv(memory_range(d, cb_d));
 			if (r != SOCKET_ERROR
 				&& r >= uto_size
 				&& read_int(4, d + uto_transaction_id, d + r) == m_transaction_id)

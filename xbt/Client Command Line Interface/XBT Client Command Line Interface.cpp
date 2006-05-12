@@ -14,7 +14,7 @@ int recv(Csocket& s, Cbvalue* v)
 	std::vector<char> d(5);
 	std::vector<char>::iterator w = d.begin();
 	int r;
-	while (w != d.end() && (r = s.recv(&*w, d.end() - w)))
+	while (w != d.end() && (r = s.recv(memory_range(&*w, &*d.end()))))
 	{
 		if (r == SOCKET_ERROR)
 			return r;
@@ -22,7 +22,7 @@ int recv(Csocket& s, Cbvalue* v)
 	}
 	d.resize(read_int(4, &d.front()) - 1);
 	w = d.begin();
-	while (w != d.end() && (r = s.recv(&*w, d.end() - w)))
+	while (w != d.end() && (r = s.recv(memory_range(&*w, &*d.end()))))
 	{
 		if (r == SOCKET_ERROR)
 			return r;
@@ -37,9 +37,9 @@ int send(Csocket& s, const Cbvalue& v)
 	Cvirtual_binary d1 = v.read();
 	write_int(4, d0, d1.size() + 1);
 	d0[4] = bti_bvalue;
-	if (s.send(d0, 5) != 5)
+	if (s.send(const_memory_range(d0, 5)) != 5)
 		return 1;
-	return s.send(d1, d1.size()) != d1.size();
+	return s.send(d1) != d1.size();
 }
 
 Cbvalue send_recv(Csocket& s, const Cbvalue& v)

@@ -225,7 +225,7 @@ int Cbt_peer_link::recv()
 {
 	if (m_can_recv && !m_read_b.size())
 		m_read_b.size(65 << 10);
-	for (int r; m_can_recv && m_read_b.cb_w() && (r = m_s.recv(m_read_b.w(), m_read_b.cb_w())); )
+	for (int r; m_can_recv && m_read_b.cb_w() && (r = m_s.recv(m_read_b.w())); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -278,7 +278,7 @@ int Cbt_peer_link::send(int& send_quota)
 		}
 		write_haves();
 		Cbt_pl_write_data& d = m_write_b.front();
-		int r = m_s.send(d.m_s, min(d.m_s.size(), send_quota));
+		int r = m_s.send(const_memory_range(d.m_s, min(d.m_s.size(), send_quota)));
 		if (r == SOCKET_ERROR)
 		{
 			int e = WSAGetLastError();

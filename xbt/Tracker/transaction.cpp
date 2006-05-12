@@ -71,7 +71,7 @@ void Ctransaction::recv()
 	while (1)
 	{
 		socklen_t cb_a = sizeof(sockaddr_in);
-		int r = m_s.recvfrom(b, cb_b, reinterpret_cast<sockaddr*>(&m_a), &cb_a);
+		int r = m_s.recvfrom(memory_range(b, cb_b), reinterpret_cast<sockaddr*>(&m_a), &cb_a);
 		if (r == SOCKET_ERROR)
 		{
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
@@ -107,7 +107,7 @@ void Ctransaction::send_connect(const char* r, const char* r_end)
 	write_int(4, d + uto_action, uta_connect);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	write_int(8, d + utoc_connection_id, connection_id());
-	send(d, utoc_size);
+	send(const_memory_range(d, utoc_size));
 }
 
 void Ctransaction::send_announce(const char* r, const char* r_end)
@@ -151,7 +151,7 @@ void Ctransaction::send_announce(const char* r, const char* r_end)
 	Cannounce_output_udp o;
 	o.w(d + utoa_size);
 	file->select_peers(ti, o);
-	send(d, o.w() - d);
+	send(const_memory_range(d, o.w()));
 }
 
 void Ctransaction::send_scrape(const char* r, const char* r_end)
@@ -185,7 +185,7 @@ void Ctransaction::send_scrape(const char* r, const char* r_end)
 		}
 	}
 	m_server.stats().scraped_udp++;
-	send(d, w - d);
+	send(const_memory_range(d, w));
 }
 
 void Ctransaction::send_error(const char* r, const char* r_end, const std::string& msg)
@@ -195,11 +195,11 @@ void Ctransaction::send_error(const char* r, const char* r_end, const std::strin
 	write_int(4, d + uto_action, uta_error);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r_end));
 	memcpy(d + utoe_size, msg.data(), msg.length());
-	send(d, utoe_size + msg.length());
+	send(const_memory_range(d, utoe_size + msg.length()));
 }
 
-void Ctransaction::send(const void* b, int cb_b)
+void Ctransaction::send(const_memory_range b)
 {
-	if (m_s.sendto(b, cb_b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != cb_b)
+	if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != b.size())
 		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 }
