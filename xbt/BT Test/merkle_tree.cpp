@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "merkle_tree.h"
 
-std::string internal_hash(const std::string& a, const std::string& b)
+std::string internal_hash(const_memory_range a, const_memory_range b)
 {
 	assert(a.size() == 20);
 	assert(b.size() == 20);
 	char d[41];
 	*d = 1;
-	memcpy(d + 1, a.c_str(), 20);
-	memcpy(d + 21, b.c_str(), 20);
+	memcpy(d + 1, a, 20);
+	memcpy(d + 21, b, 20);
 	return Csha1(const_memory_range(d, 41)).read();
 }
 
@@ -62,24 +62,24 @@ std::string Cmerkle_tree::get(int i, int c) const
 	return v;
 }
 
-bool Cmerkle_tree::test(int i, const std::string& v, const std::string& w)
+bool Cmerkle_tree::test(int i, const_memory_range v, const_memory_range w)
 {
 	assert(i >= 0);
 	assert(i < m_size);
 	int a = 0;
 	int b = m_size;
 	unsigned int z = 0;
-	std::string h = v;
+	const_memory_range h = v;
 	while (1)
 	{
 		if (*d(a + i))
-			return h == get0(a + i);
+			return h.string() == get0(a + i);
 		if (b - a < 2 || z + 20 > w.size())
 			return false;
 		int j = i ^ 1;
 		if (a + j < b)
 		{
-			h = i < j ? internal_hash(h, w.substr(z, 20)) : internal_hash(w.substr(z, 20), h);
+			h = i < j ? internal_hash(h, w.sub_range(z, 20)) : internal_hash(w.sub_range(z, 20), h);
 			z += 20;
 		}
 		int c = a;
@@ -96,14 +96,14 @@ bool Cmerkle_tree::has(int i) const
 	return m_d[21 * i];
 }
 
-void Cmerkle_tree::set0(int i, const std::string& v)
+void Cmerkle_tree::set0(int i, const_memory_range v)
 {
 	assert(v.size() == 20);
 	*d(i) = true;
-	memcpy(d(i) + 1, v.c_str(), 20);
+	memcpy(d(i) + 1, v, 20);
 }
 
-void Cmerkle_tree::set(int i, const std::string& v)
+void Cmerkle_tree::set(int i, const_memory_range v)
 {
 	assert(i >= 0);
 	assert(i < m_size);
@@ -131,7 +131,7 @@ void Cmerkle_tree::set(int i, const std::string& v)
 	}
 }
 
-void Cmerkle_tree::set(int i, const std::string& v, const std::string& w)
+void Cmerkle_tree::set(int i, const_memory_range v, const_memory_range w)
 {
 	assert(i >= 0);
 	assert(i < m_size);
@@ -146,7 +146,7 @@ void Cmerkle_tree::set(int i, const std::string& v, const std::string& w)
 		{
 			if (*d(a + j))
 				return;
-			set0(a + j, w.substr(z, 20));
+			set0(a + j, w.sub_range(z, 20));
 			z += 20;
 		}
 		int c = a;
@@ -156,7 +156,7 @@ void Cmerkle_tree::set(int i, const std::string& v, const std::string& w)
 	}
 }
 
-bool Cmerkle_tree::test_and_set(int i, const std::string& v, const std::string& w)
+bool Cmerkle_tree::test_and_set(int i, const_memory_range v, const_memory_range w)
 {
 	if (!test(i, v, w))
 		return false;
@@ -169,7 +169,7 @@ std::string Cmerkle_tree::root() const
 	return get0(m_d.size() / 21 - 1);
 }
 
-void Cmerkle_tree::root(const std::string& v)
+void Cmerkle_tree::root(const_memory_range v)
 {
 	set0(m_d.size() / 21 - 1, v);
 }
@@ -194,7 +194,7 @@ int Cmerkle_tree::load(const Cvirtual_binary& v)
 	for (int i = 1; i < m_size; i <<= 1)
 		m_size -= i;
 	if (m_size)
-	m_d = v;
+		m_d = v;
 	return 0;
 }
 
