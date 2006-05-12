@@ -64,52 +64,65 @@ public:
 typedef memory_range_base<unsigned char*> memory_range;
 
 template <class T>
-class const_memory_range_base: public memory_range_base<T>
+class const_memory_range_base
 {
 public:
 	const_memory_range_base()
 	{
-		memory_range_base<T>::begin = NULL;
-		memory_range_base<T>::end = NULL;
+		begin = NULL;
+		end = NULL;
 	}
 
 	template <class U>
 	const_memory_range_base(U v)
 	{
-		memory_range_base<T>::begin = reinterpret_cast<T>(v.begin);
-		memory_range_base<T>::end = reinterpret_cast<T>(v.end);
+		begin = reinterpret_cast<T>(v.begin);
+		end = reinterpret_cast<T>(v.end);
 	}
 
 	const_memory_range_base(const void* begin_, const void* end_)
 	{
-		memory_range_base<T>::begin = reinterpret_cast<T>(begin_);
-		memory_range_base<T>::end = reinterpret_cast<T>(end_);
+		begin = reinterpret_cast<T>(begin_);
+		end = reinterpret_cast<T>(end_);
 	}
 
 	const_memory_range_base(const void* begin_, size_t size)
 	{
-		memory_range_base<T>::begin = reinterpret_cast<T>(begin_);
-		memory_range_base<T>::end = begin + size;
+		begin = reinterpret_cast<T>(begin_);
+		end = begin + size;
 	}
 
 	const_memory_range_base(const std::string& v)
 	{
-		memory_range_base<T>::begin = reinterpret_cast<T>(v.data());
-		memory_range_base<T>::end = reinterpret_cast<T>(v.data() + v.size());
+		begin = reinterpret_cast<T>(v.data());
+		end = reinterpret_cast<T>(v.data() + v.size());
+	}
+
+	size_t size() const
+	{
+		return end - begin;
+	}
+
+	operator T() const
+	{
+		return begin;
 	}
 
 	const_memory_range_base operator++(int)
 	{
 		const_memory_range_base t = *this;
-		memory_range_base<T>::begin++;
+		begin++;
 		return t;
 	}
 
 	const_memory_range_base operator+=(size_t v)
 	{
-		memory_range_base<T>::begin += v;
+		begin += v;
 		return *this;
 	}
+
+	T begin;
+	T end;
 };
 
 typedef const_memory_range_base<const unsigned char*> const_memory_range;
