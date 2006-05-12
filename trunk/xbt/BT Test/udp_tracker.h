@@ -59,7 +59,7 @@ private:
 
 	void clean_up();
 	long long connection_id(sockaddr_in&) const;
-	void send(Csocket&, sockaddr_in&, const void* d, int cb_d);
+	void send(Csocket&, sockaddr_in&, const_memory_range);
 	void send_announce(Csocket&, sockaddr_in&, const char* r, const char* r_end);
 	void send_connect(Csocket&, sockaddr_in&, const char* r, const char* r_end);
 	void send_scrape(Csocket&, sockaddr_in&, const char* r, const char* r_end);

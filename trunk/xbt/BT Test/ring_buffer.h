@@ -19,9 +19,9 @@ public:
 		return m_d.size();
 	}
 
-	const char* r() const
+	const_memory_range_base<const char*> r() const
 	{
-		return m_r;
+		return const_memory_range_base<const char*>(m_r, cb_r());
 	}
 
 	const char* r_end() const
@@ -56,9 +56,9 @@ public:
 		m_w = w;
 	}
 
-	char* w()
+	memory_range_base<char*> w()
 	{
-		return m_w;
+		return memory_range_base<char*>(m_w, cb_w());
 	}
 
 	size_t cb_w() const

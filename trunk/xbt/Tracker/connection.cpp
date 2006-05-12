@@ -43,7 +43,7 @@ int Cconnection::recv()
 {
 	if (!m_read_b.size())
 		m_read_b.resize(4 << 10);
-	for (int r; r = m_s.recv(&m_read_b.front() + m_w, m_read_b.size() - m_w); )
+	for (int r; r = m_s.recv(memory_range(&m_read_b.front() + m_w, m_read_b.size() - m_w)); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -103,7 +103,7 @@ int Cconnection::recv()
 
 int Cconnection::send()
 {
-	for (int r; !m_write_b.empty() && (r = m_s.send(&m_write_b.front() + m_r, m_write_b.size() - m_r)); )
+	for (int r; !m_write_b.empty() && (r = m_s.send(memory_range(&m_write_b.front() + m_r, m_write_b.size() - m_r))); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -267,7 +267,7 @@ void Cconnection::read(const std::string& v)
 	Cvirtual_binary d;
 	memcpy(d.write_start(h.size() + s.size()), h.data(), h.size());
 	s.read(d.data_edit() + h.size());
-	int r = m_s.send(d, d.size());
+	int r = m_s.send(d);
 	if (r == SOCKET_ERROR)
 		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 	else if (r != d.size())

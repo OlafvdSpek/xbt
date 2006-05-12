@@ -192,7 +192,7 @@ int Cserver::run()
 #ifdef EPOLL
 		int r = m_epoll.wait(events, c_events, 1000);
 		if (r == -1)
-			cerr << "epoll_wait failed: " << errno << endl;
+			std::cerr << "epoll_wait failed: " << errno << std::endl;
 		else
 		{
 			int prev_time = m_time;

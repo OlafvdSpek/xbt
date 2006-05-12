@@ -33,7 +33,7 @@ int Cbt_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 
 int Cbt_link::recv()
 {
-	for (int r; r = m_s.recv(m_read_b.w(), m_read_b.cb_w()); )
+	for (int r; r = m_s.recv(m_read_b.w()); )
 	{
 		if (r == SOCKET_ERROR)
 		{

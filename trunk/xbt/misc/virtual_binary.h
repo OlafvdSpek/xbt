@@ -79,7 +79,7 @@ public:
 
 	const_memory_range range() const
 	{
-		return m_source ? m_source->range() : const_memory_range();
+		return m_source ? m_source->range() : memory_range();
 	}
 
 	size_t size() const

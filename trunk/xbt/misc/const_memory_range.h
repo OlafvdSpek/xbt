@@ -15,6 +15,13 @@ public:
 		end = NULL;
 	}
 
+	template <class U>
+	memory_range_base(U v)
+	{
+		begin = reinterpret_cast<T>(v.begin);
+		end = reinterpret_cast<T>(v.end);
+	}
+
 	memory_range_base(void* begin_, void* end_)
 	{
 		begin = reinterpret_cast<T>(begin_);
@@ -56,51 +63,55 @@ public:
 
 typedef memory_range_base<unsigned char*> memory_range;
 
-class const_memory_range: public memory_range_base<const unsigned char*>
+template <class T>
+class const_memory_range_base: public memory_range_base<T>
 {
 public:
-	const_memory_range()
+	const_memory_range_base()
 	{
 		begin = NULL;
 		end = NULL;
 	}
 
-	const_memory_range(memory_range v)
+	template <class U>
+	const_memory_range_base(U v)
 	{
-		begin = v.begin;
-		end = v.end;
+		begin = reinterpret_cast<T>(v.begin);
+		end = reinterpret_cast<T>(v.end);
 	}
 
-	const_memory_range(const void* begin_, const void* end_)
+	const_memory_range_base(const void* begin_, const void* end_)
 	{
-		begin = reinterpret_cast<const unsigned char*>(begin_);
-		end = reinterpret_cast<const unsigned char*>(end_);
+		begin = reinterpret_cast<T>(begin_);
+		end = reinterpret_cast<T>(end_);
 	}
 
-	const_memory_range(const void* begin_, size_t size)
+	const_memory_range_base(const void* begin_, size_t size)
 	{
-		begin = reinterpret_cast<const unsigned char*>(begin_);
+		begin = reinterpret_cast<T>(begin_);
 		end = begin + size;
 	}
 
-	const_memory_range(const std::string& v)
+	const_memory_range_base(const std::string& v)
 	{
-		begin = reinterpret_cast<const unsigned char*>(v.data());
-		end = reinterpret_cast<const unsigned char*>(v.data() + v.size());
+		begin = reinterpret_cast<T>(v.data());
+		end = reinterpret_cast<T>(v.data() + v.size());
 	}
 
-	const_memory_range operator++(int)
+	const_memory_range_base operator++(int)
 	{
-		const_memory_range t = *this;
+		const_memory_range_base t = *this;
 		begin++;
 		return t;
 	}
 
-	const_memory_range operator+=(size_t v)
+	const_memory_range_base operator+=(size_t v)
 	{
 		begin += v;
 		return *this;
 	}
 };
+
+typedef const_memory_range_base<const unsigned char*> const_memory_range;
 
 #endif // !defined(AFX_CONST_MEMORY_RANGE_H__83C523AF_357D_4ED5_B17A_92F0CED89F1A__INCLUDED_)
