@@ -21,7 +21,7 @@ public:
 
 	const_memory_range_base<const char*> r() const
 	{
-		return const_memory_range_base<const char*>(m_r, cb_r());
+		return const_memory_range_base<const char*>(m_r, m_r <= m_w ? m_w : m_e);
 	}
 
 	const char* r_end() const
@@ -31,12 +31,13 @@ public:
 
 	void r(const char* r)
 	{
-		m_r = r;
+		m_r = const_cast<char*>(r);
 	}
 
 	size_t cb_r() const
 	{
-		return m_r <= m_w ? m_w - m_r : m_e - m_r;
+		// return m_r <= m_w ? m_w - m_r : m_e - m_r;
+		return r().size();
 	}
 
 	size_t cb_read() const
@@ -58,12 +59,13 @@ public:
 
 	memory_range_base<char*> w()
 	{
-		return memory_range_base<char*>(m_w, cb_w());
+		return memory_range_base<char*>(m_w, m_r <= m_w ? (m_b == m_r ? m_e - 1 : m_e) : m_r - 1);
 	}
 
-	size_t cb_w() const
+	size_t cb_w()
 	{
-		return m_r <= m_w ? (m_b == m_r ? m_e - m_w - 1 : m_e - m_w) : m_r - m_w - 1;
+		// return m_r <= m_w ? (m_b == m_r ? m_e - m_w - 1 : m_e - m_w) : m_r - m_w - 1;
+		return w().size();
 	}
 
 	size_t cb_write() const
@@ -80,9 +82,9 @@ public:
 private:
 	Cvirtual_binary m_d;
 	char* m_b;
-	const char* m_r;
+	char* m_r;
 	char* m_w;
-	const char* m_e;
+	char* m_e;
 };
 
 #endif // !defined(AFX_RING_BUFFER_H__67856C4E_F9FE_4D73_8553_27AF76B4C5F2__INCLUDED_)
