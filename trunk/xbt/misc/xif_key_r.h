@@ -6,7 +6,6 @@
 #endif // _MSC_VER > 1000
 
 #include <vector>
-#include "virtual_binary.h"
 #include "xif_value.h"
 
 class Cxif_key_r
@@ -94,7 +93,7 @@ public:
 
 	t_key_map::const_iterator find_key(int id) const;
 	t_value_map::const_iterator find_value(int id) const;
-	int import(Cvirtual_binary s);
+	int import(const_memory_range);
 private:
 	int load(const byte* s);
 

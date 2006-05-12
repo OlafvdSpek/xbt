@@ -12,12 +12,12 @@ class Cmerkle_tree
 public:
 	static std::string compute_root(const_memory_range);
 	void invalidate();
-	std::string root() const;
+	const_memory_range root() const;
 	void root(const_memory_range);
 	int load(const Cvirtual_binary&);
 	Cvirtual_binary save() const;
 	std::ostream& operator<<(std::ostream& os) const;
-	std::string get(int i) const;
+	const_memory_range get(int i) const;
 	std::string get(int i, int c) const;
 	bool has(int i) const;
 	void resize(int);
@@ -34,7 +34,7 @@ public:
 private:
 	char* d(int);
 	const char* d(int) const;
-	std::string get0(int) const;
+	const_memory_range get0(int) const;
 	void set0(int, const_memory_range);
 
 	Cvirtual_binary m_d;
