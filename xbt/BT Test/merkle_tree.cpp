@@ -29,13 +29,13 @@ void Cmerkle_tree::invalidate()
 	memset(m_d.data_edit(), 0, m_d.size());
 }
 
-std::string Cmerkle_tree::get0(int i) const
+const_memory_range Cmerkle_tree::get0(int i) const
 {
 	assert(d(i));
-	return std::string(d(i) + 1, 20);
+	return const_memory_range(d(i) + 1, 20);
 }
 
-std::string Cmerkle_tree::get(int i) const
+const_memory_range Cmerkle_tree::get(int i) const
 {
 	assert(i >= 0);
 	assert(i < m_size);
@@ -53,7 +53,7 @@ std::string Cmerkle_tree::get(int i, int c) const
 	{
 		int j = i ^ 1;
 		if (a + j < b)
-			v += get0(a + j);
+			v += get0(a + j).string();
 		int c = a;
 		a = b;
 		b += b - c + 1 >> 1;
@@ -73,7 +73,7 @@ bool Cmerkle_tree::test(int i, const_memory_range v, const_memory_range w)
 	while (1)
 	{
 		if (*d(a + i))
-			return h.string() == get0(a + i);
+			return h.string() == get0(a + i).string();
 		if (b - a < 2 || z + 20 > w.size())
 			return false;
 		int j = i ^ 1;
@@ -164,7 +164,7 @@ bool Cmerkle_tree::test_and_set(int i, const_memory_range v, const_memory_range 
 	return true;
 }
 
-std::string Cmerkle_tree::root() const
+const_memory_range Cmerkle_tree::root() const
 {
 	return get0(m_d.size() / 21 - 1);
 }

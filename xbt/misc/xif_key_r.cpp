@@ -3,6 +3,7 @@
 
 #include <zlib.h>
 #include "stream_int.h"
+#include "virtual_binary.h"
 #include "xif_key.h"
 
 static int read_int(const byte*& r)
@@ -11,10 +12,10 @@ static int read_int(const byte*& r)
 	return read_int_le(4, r - 4);
 }
 
-int Cxif_key_r::import(Cvirtual_binary s)
+int Cxif_key_r::import(const_memory_range s)
 {
 	Cvirtual_binary d;
-	const t_xif_header_fast& h = *reinterpret_cast<const t_xif_header_fast*>(s.data());
+	const t_xif_header_fast& h = *reinterpret_cast<const t_xif_header_fast*>(s.begin);
 	if (s.size() < sizeof(t_xif_header_fast) + 8
 		|| h.id != file_id
 		|| h.version != file_version_fast)		
