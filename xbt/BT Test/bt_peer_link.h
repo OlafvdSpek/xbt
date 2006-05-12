@@ -43,7 +43,7 @@ public:
 	void read_info(const_memory_range);
 	void write_keepalive();
 	int read_piece(int, int, const_memory_range);
-	void read_merkle_piece(long long offset, const_memory_range, const std::string& hashes);
+	void read_merkle_piece(long long offset, const_memory_range, const_memory_range hashes);
 	void write_extended_handshake();
 	void write_handshake();
 	void write_request(int, int, int);

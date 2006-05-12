@@ -10,8 +10,7 @@
 class Cmerkle_tree
 {
 public:
-	static std::string compute_root(const void* s, const void* s_end);
-	static std::string compute_root(const Cvirtual_binary&);
+	static std::string compute_root(const_memory_range);
 	void invalidate();
 	std::string root() const;
 	void root(const std::string&);

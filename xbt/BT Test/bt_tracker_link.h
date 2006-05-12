@@ -27,7 +27,7 @@ public:
 	int pre_dump() const;
 	void dump(Cstream_writer&) const;
 	void close(Cbt_file&);
-	int read(Cbt_file& f, const Cvirtual_binary&);
+	int read(Cbt_file& f, const_memory_range);
 	int pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	void post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
 	Cbt_tracker_link();

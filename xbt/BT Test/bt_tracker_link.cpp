@@ -236,56 +236,55 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 	}
 }
 
-int Cbt_tracker_link::read(Cbt_file& f, const Cvirtual_binary& d)
+int Cbt_tracker_link::read(Cbt_file& f, const_memory_range d)
 {
-	for (const byte* r = d; r < d.end(); r++)
+	const_memory_range r = d;
+	for (; r.size(); r++)
 	{
-		if (*r == ' ')
+		if (*r != ' ')
+			continue;
+		int http_result = atoi(r.string().c_str());
+		if (http_result != 200)
 		{
-			int http_result = atoi(std::string(reinterpret_cast<const char*>(r), d.end() - r).c_str());
-			if (http_result != 200)
+			f.alert(Calert(Calert::error, "Tracker: HTTP error: " + n(http_result)));
+			return 1;
+		}
+		for (; r.size() >= 4; r++)
+		{
+			if (memcmp(r, "\n\n", 2) && memcmp(r, "\r\n\r\n", 4))
+				continue;
+			r += *r == '\n' ? 2 : 4;
+			Cbvalue v;
+			if (v.write(r))
 			{
-				f.alert(Calert(Calert::error, "Tracker: HTTP error: " + n(http_result)));
+				f.alert(Calert(Calert::error, "Tracker: bdecode failed"));
 				return 1;
 			}
-			for (const byte* r = d; r + 4 <= d.end(); r++)
+			if (v.d(bts_failure_reason).s().empty())
 			{
-				if (!memcmp(r, "\n\n", 2) || !memcmp(r, "\r\n\r\n", 4))
+				m_announce_time = f.m_server->time() + max(300, v.d(bts_interval).i());
+				f.mc_leechers_total = v.d(bts_incomplete).i();
+				f.mc_seeders_total = v.d(bts_complete).i();
+				mc_attempts = 0;
+				if (v.d(bts_peers).s().empty())
 				{
-					r += *r == '\n' ? 2 : 4;
-					Cbvalue v;
-					if (v.write(const_memory_range(r, d.end())))
-					{
-						f.alert(Calert(Calert::error, "Tracker: bdecode failed"));
-						return 1;
-					}
-					if (v.d(bts_failure_reason).s().empty())
-					{
-						m_announce_time = f.m_server->time() + max(300, v.d(bts_interval).i());
-						f.mc_leechers_total = v.d(bts_incomplete).i();
-						f.mc_seeders_total = v.d(bts_complete).i();
-						mc_attempts = 0;
-						if (v.d(bts_peers).s().empty())
-						{
-							const Cbvalue::t_list& peers = v.d(bts_peers).l();
-							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size()) + " peers (" + n(d.size()) + " bytes)"));
-							for (Cbvalue::t_list::const_iterator i = peers.begin(); i != peers.end(); i++)
-								f.insert_peer(inet_addr(i->d(bts_ipa).s().c_str()), htons(i->d(bts_port).i()));
-						}
-						else
-						{
-							std::string peers = v.d(bts_peers).s();
-							f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
-							f.insert_peers(peers);
-						}
-						return 0;
-					}
-					f.alert(Calert(Calert::error, "Tracker: failure reason: " + v.d(bts_failure_reason).s()));
-					return 1;
+					const Cbvalue::t_list& peers = v.d(bts_peers).l();
+					f.alert(Calert(Calert::info, "Tracker: " + n(peers.size()) + " peers (" + n(d.size()) + " bytes)"));
+					for (Cbvalue::t_list::const_iterator i = peers.begin(); i != peers.end(); i++)
+						f.insert_peer(inet_addr(i->d(bts_ipa).s().c_str()), htons(i->d(bts_port).i()));
 				}
+				else
+				{
+					std::string peers = v.d(bts_peers).s();
+					f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
+					f.insert_peers(peers);
+				}
+				return 0;
 			}
-			break;
+			f.alert(Calert(Calert::error, "Tracker: failure reason: " + v.d(bts_failure_reason).s()));
+			return 1;
 		}
+		break;
 	}
 	f.alert(Calert(Calert::error, "Tracker: Invalid HTTP output"));
 	return 1;

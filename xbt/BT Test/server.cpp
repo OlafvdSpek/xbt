@@ -662,7 +662,7 @@ void Cserver::insert_peer(const_memory_range r, const sockaddr_in& a, const Csoc
 {
 	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
-		if (i->m_info_hash == std::string(reinterpret_cast<const char*>(r + hs_info_hash), 20))
+		if (i->m_info_hash == r.sub_range(hs_info_hash, 20).string())
 			i->insert_peer(r, a, s);
 	}
 }

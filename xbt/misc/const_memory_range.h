@@ -39,6 +39,16 @@ public:
 		return end - begin;
 	}
 
+	std::string string() const
+	{
+		return std::string(reinterpret_cast<const char*>(begin), size());
+	}
+
+	memory_range_base sub_range(size_t o, size_t s)
+	{
+		return memory_range_base(begin + o, s);
+	}
+
 	operator T() const
 	{
 		return begin;
@@ -101,6 +111,16 @@ public:
 	size_t size() const
 	{
 		return end - begin;
+	}
+
+	std::string string() const
+	{
+		return std::string(reinterpret_cast<const char*>(begin), size());
+	}
+
+	const_memory_range_base sub_range(size_t o, size_t s)
+	{
+		return const_memory_range_base(begin + o, s);
 	}
 
 	operator T() const
