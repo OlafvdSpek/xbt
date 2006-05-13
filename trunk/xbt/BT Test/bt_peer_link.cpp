@@ -118,7 +118,7 @@ int Cbt_peer_link::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set
 						unsigned int cb_m = read_int(4, m_read_b.r());
 						if (cb_m)
 						{
-							if (cb_m < 0 || cb_m > 64 << 10)
+							if (cb_m > 32 << 10)
 								return 1;
 							if (m_read_b.cb_r() < 4 + cb_m)
 								break;
@@ -224,7 +224,7 @@ int Cbt_peer_link::cb_write_buffer() const
 int Cbt_peer_link::recv()
 {
 	if (m_can_recv && !m_read_b.size())
-		m_read_b.size(65 << 10);
+		m_read_b.size(33 << 10);
 	for (int r; m_can_recv && m_read_b.cb_w() && (r = m_s.recv(m_read_b.w())); )
 	{
 		if (r == SOCKET_ERROR)

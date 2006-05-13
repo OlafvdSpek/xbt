@@ -1,15 +1,16 @@
 #include "stdafx.h"
 #include "ring_buffer.h"
 
-void Cring_buffer::write(const void* d, size_t cb_d)
+void Cring_buffer::write(const_memory_range d)
 {
-	size_t cb = min(cb_d, cb_w());
+	size_t cb = min(d.size(), cb_w());
 	memcpy(w(), d, cb);
 	cb_w(cb);
-	if (cb_d -= cb)
+	d += cb;
+	if (d.size())
 	{
-		memcpy(w(), reinterpret_cast<const char*>(d) + cb, cb_d);
-		cb_w(cb_d);
+		memcpy(w(), d, d.size());
+		cb_w(d.size());
 	}
 }
 
@@ -17,7 +18,7 @@ void Cring_buffer::size(size_t cb_d)
 {
 	if (cb_d)
 	{
-		m_r = m_b = m_w = m_d.write_start(cb_d);
+		m_r = m_b = m_w = m_d.write_start(cb_d + 1);
 		m_e = m_d.mutable_end();
 	}
 	else
