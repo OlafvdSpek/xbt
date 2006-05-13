@@ -121,8 +121,8 @@ void Cbt_admin_link::read_message(const_memory_range r)
 			byte d0[5];
 			write_int(4, d0, d1.size() + 1);
 			d0[4] = bti_bvalue;
-			m_write_b.write(d0, 5);
-			m_write_b.write(d1, d1.size());
+			m_write_b.write(const_memory_range(d0, 5));
+			m_write_b.write(d1);
 		}
 		break;
 	}
