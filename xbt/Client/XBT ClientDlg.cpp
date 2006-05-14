@@ -197,8 +197,6 @@ BEGIN_MESSAGE_MAP(CXBTClientDlg, ETSLayoutDialog)
 	ON_REGISTERED_MESSAGE(g_taskbar_created_message_id, OnTaskbarCreated)
 	ON_REGISTERED_MESSAGE(g_tray_message_id, OnTray)
 	ON_MESSAGE(WM_HOTKEY, OnHotKey)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_FILES, OnCustomdrawFiles)
-	ON_NOTIFY(NM_CUSTOMDRAW, IDC_PEERS, OnCustomdrawPeers)
 	ON_WM_CONTEXTMENU()
 	ON_WM_SYSCOMMAND()
 	//{{AFX_MSG_MAP(CXBTClientDlg)
@@ -2413,36 +2411,6 @@ void CXBTClientDlg::OnPopupViewGlobalEvents()
 	set_bottom_view(v_global_events);
 }
 
-void CXBTClientDlg::OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	NMLVCUSTOMDRAW* pCustomDraw = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
-	switch (pCustomDraw->nmcd.dwDrawStage)
-	{
-	case CDDS_PREPAINT:
-		*pResult = CDRF_NOTIFYITEMDRAW;
-		break;
-	case CDDS_ITEMPREPAINT:
-		pCustomDraw->clrTextBk = pCustomDraw->nmcd.dwItemSpec & 1 ? RGB(0xf8, 0xf8, 0xf8) : RGB(0xff, 0xff, 0xff);
-		*pResult = CDRF_DODEFAULT;
-		break;
-	}
-}
-
-void CXBTClientDlg::OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	NMLVCUSTOMDRAW* pCustomDraw = reinterpret_cast<NMLVCUSTOMDRAW*>(pNMHDR);
-	switch (pCustomDraw->nmcd.dwDrawStage)
-	{
-	case CDDS_PREPAINT:
-		*pResult = CDRF_NOTIFYITEMDRAW;
-		break;
-	case CDDS_ITEMPREPAINT:
-		pCustomDraw->clrTextBk = pCustomDraw->nmcd.dwItemSpec & 1 ? RGB(0xf8, 0xf8, 0xf8) : RGB(0xff, 0xff, 0xff);
-		*pResult = CDRF_DODEFAULT;
-		break;
-	}
-}
-
 void CXBTClientDlg::OnPopupPriorityHigh()
 {
 	set_priority(1);
@@ -2952,6 +2920,7 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.torrent_limit(data.torrent_limit);
 	m_server.tracker_port(data.tracker_port);
 	m_server.upload_rate(data.upload_rate);
+	m_server.m_upload_rate_enabled = true;
 	m_server.upload_slots(data.upload_slots);
 	m_server.upnp(data.upnp);
 	m_server.user_agent(data.user_agent);

@@ -94,8 +94,6 @@ protected:
 	afx_msg long OnTray(WPARAM, LPARAM);
 	afx_msg void OnContextMenu(CWnd*, CPoint point);
 	void OnTrayMenu();
-	afx_msg void OnCustomdrawFiles(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnCustomdrawPeers(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg long OnHotKey(WPARAM, LPARAM);
 	HACCEL m_hAccel;
 	HICON m_hIcon;

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ListCtrlEx1.h"
 
-BEGIN_MESSAGE_MAP(CListCtrlEx1, CListCtrl)
+BEGIN_MESSAGE_MAP(CListCtrlEx1, CListCtrlEx)
 	//{{AFX_MSG_MAP(CListCtrlEx1)
 	ON_WM_CONTEXTMENU()
 	//}}AFX_MSG_MAP
