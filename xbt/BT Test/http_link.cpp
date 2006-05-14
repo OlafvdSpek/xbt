@@ -95,7 +95,7 @@ int Chttp_link::set_request(int h, int p, const std::string& v, Chttp_response_h
 		return 1;
 	m_state = 1;
 	m_response_handler = response_handler;
-	m_write_b.size(v.size() + 1);
+	m_write_b.size(v.size());
 	m_write_b.write(v);
 	return 0;
 }
