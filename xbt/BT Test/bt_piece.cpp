@@ -18,7 +18,12 @@ int Cbt_piece::resize(int v)
 void Cbt_piece::valid(bool v)
 {
 	m_valid = v;
-	if (!v && m_sub_pieces.empty())
+	if (v)
+	{
+		mc_sub_pieces_left = mc_unrequested_sub_pieces = 0;
+		m_sub_pieces.clear();
+	}
+	else if (m_sub_pieces.empty())
 		mc_sub_pieces_left = mc_unrequested_sub_pieces = c_sub_pieces();
 }
 

@@ -3,7 +3,7 @@
 
 Cbt_file_data::Cbt_file_data()
 {
-	m_allow_end_mode = false;
+	m_allow_end_mode = true;
 	m_end_mode = false;
 	m_seeding_ratio = 0;
 	m_seeding_ratio_override = false;
