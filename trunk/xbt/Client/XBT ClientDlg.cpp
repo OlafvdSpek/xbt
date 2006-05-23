@@ -814,7 +814,7 @@ void CXBTClientDlg::OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult)
 
 void CXBTClientDlg::OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult)
 {
-	if (!m_file)
+	if (!m_file || m_file->events.empty())
 		return;
 	LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pNMHDR);
 	std::string& buffer = m_peers.get_buffer();
