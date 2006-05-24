@@ -48,6 +48,17 @@ Just start the executable. An empty DOS window should appear.
 <hr>
 <h2>Installing under Linux</h2>
 
+The following commands can be used to install the dependencies on Debian.
+The g++ version should be at least 3.4.
+<pre>
+apt-get install g++
+apt-get install libboost-dev
+apt-get install libboost-program-options-dev
+apt-get install libmysqlclient15-dev
+apt-get install subversion
+apt-get install zlib1g-dev
+</pre>
+
 Enter the following commands in a terminal.
 Be patient while g++ is running, it'll take a few minutes.
 <pre>
