@@ -87,6 +87,7 @@ kill `cat xbt_tracker.pid`
 
 <p>
 The tracker reads it's configuration from the SQL table xbt_config.
+There is no need to insert default values into this table.
 
 <table>
 	<tr>
