@@ -2,6 +2,7 @@
 #include "sql_query.h"
 
 #include <cstdio>
+#include <vector>
 #include "database.h"
 
 Csql_query::Csql_query(Cdatabase& database, const std::string& v):
