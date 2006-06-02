@@ -14,7 +14,7 @@ Cvirtual_binary xcc_z::gunzip(const_memory_range s)
 	stream.zalloc = NULL;
 	stream.zfree = NULL;
 	stream.opaque = NULL;
-	stream.next_in = const_cast<byte*>(s.begin) + 10;
+	stream.next_in = const_cast<unsigned char*>(s.begin) + 10;
 	stream.avail_in = s.size() - 18;
 	stream.next_out = d.write_start(read_int_le(4, s.end - 4));
 	stream.avail_out = d.size();
@@ -30,7 +30,7 @@ Cvirtual_binary xcc_z::gzip(const_memory_range s)
 {
 	Cvirtual_binary d;
 	unsigned long cb_d = s.size() + (s.size() + 999) / 1000 + 12;
-	byte* w = d.write_start(10 + cb_d + 8);
+	unsigned char* w = d.write_start(10 + cb_d + 8);
 	*w++ = 0x1f;
 	*w++ = 0x8b;
 	*w++ = Z_DEFLATED;
@@ -47,7 +47,7 @@ Cvirtual_binary xcc_z::gzip(const_memory_range s)
 		stream.zfree = NULL;
 		stream.opaque = NULL;
 		deflateInit2(&stream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY);
-		stream.next_in = const_cast<byte*>(s.begin);
+		stream.next_in = const_cast<unsigned char*>(s.begin);
 		stream.avail_in = s.size();
 		stream.next_out = w;
 		stream.avail_out = cb_d;
