@@ -59,6 +59,12 @@ apt-get install subversion
 apt-get install zlib1g-dev
 </pre>
 
+The following commands can be used to install some of the dependencies on Fedora Core.
+The g++ version should be at least 3.4.
+<pre>
+yum install boost-devel
+</pre>
+
 Enter the following commands in a terminal.
 Be patient while g++ is running, it'll take a few minutes.
 <pre>
