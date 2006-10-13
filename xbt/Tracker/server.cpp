@@ -324,12 +324,8 @@ void Cserver::accept(const Csocket& l)
 		else
 		{
 			t_deny_from_hosts::const_iterator i = m_deny_from_hosts.lower_bound(ntohl(a.sin_addr.s_addr));
-			if (i != m_deny_from_hosts.begin())
-			{
-				i--;
-				if (ntohl(a.sin_addr.s_addr) <= i->second.end)
-					continue;
-			}
+			if (i != m_deny_from_hosts.end() && ntohl(a.sin_addr.s_addr) <= i->second.end)
+				continue;
 			if (s.blocking(false))
 				std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #ifdef TCP_CORK
