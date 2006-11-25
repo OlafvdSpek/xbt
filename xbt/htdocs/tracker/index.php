@@ -51,12 +51,7 @@ Just start the executable. An empty DOS window should appear.
 The following commands can be used to install the dependencies on Debian.
 The g++ version should be at least 3.4.
 <pre>
-apt-get install g++
-apt-get install libboost-dev
-apt-get install libboost-program-options-dev
-apt-get install libmysqlclient15-dev
-apt-get install subversion
-apt-get install zlib1g-dev
+apt-get install g++ libboost-dev libboost-program-options-dev libmysqlclient15-dev subversion zlib1g-dev
 </pre>
 
 The following commands can be used to install some of the dependencies on Fedora Core.
