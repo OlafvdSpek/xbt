@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <boost/intrusive_ptr.hpp>
+#include <boost/utility.hpp>
 #ifdef _MSC_VER
 #include <winsock.h>
 #include <mysql.h>
@@ -13,35 +15,43 @@
 #endif
 #include "const_memory_range.h"
 
-class Csql_result_source
+class Csql_result_source: boost::noncopyable
 {
 public:
 	Csql_result_source(MYSQL_RES* h)
 	{
 		m_h = h;
-		mc_references = 1;
+		mc_references = 0;
 	}
 
-	Csql_result_source* attach()
+	~Csql_result_source()
 	{
-		this && mc_references++;
-		return this;
-	}
-
-	void detach()
-	{
-		if (this && !--mc_references)
-			mysql_free_result(m_h);
+		mysql_free_result(m_h);
 	}
 
 	MYSQL_RES* h() const
 	{
 		return m_h;
 	}
+
+	friend void intrusive_ptr_add_ref(Csql_result_source*);
+	friend void intrusive_ptr_release(Csql_result_source*);
 private:
 	MYSQL_RES* m_h;
 	int mc_references;
 };
+
+inline void intrusive_ptr_add_ref(Csql_result_source* v)
+{
+	v->mc_references++;
+}
+
+inline void intrusive_ptr_release(Csql_result_source* v)
+{
+	v->mc_references--;
+	if (!v->mc_references)
+		delete v;
+}
 
 class Csql_field
 {
@@ -85,14 +95,14 @@ private:
 	int m_size;
 };
 
-class Csql_row
+class Csql_row  
 {
 public:
-	const Csql_row& operator=(const Csql_row& v);
-	Csql_row();
-	Csql_row(MYSQL_ROW data, unsigned long* sizes, Csql_result_source* source);
-	Csql_row(const Csql_row& v);
-	~Csql_row();
+	Csql_row()
+	{
+	}
+
+	Csql_row(MYSQL_ROW, unsigned long* sizes, boost::intrusive_ptr<Csql_result_source>);
 
 	operator bool() const
 	{
@@ -106,27 +116,40 @@ public:
 private:
 	MYSQL_ROW m_data;
 	unsigned long* m_sizes;
-	Csql_result_source* m_source;
+	boost::intrusive_ptr<Csql_result_source> m_source;
 };
 
-class Csql_result
+class Csql_result  
 {
 public:
-	int c_fields() const;
-	int c_rows() const;
-	void data_seek(int i);
 	Csql_row fetch_row() const;
-	const Csql_result& operator=(const Csql_result& v);
-	Csql_result(MYSQL_RES* h);
-	Csql_result(const Csql_result& v);
-	~Csql_result();
+
+	Csql_result(MYSQL_RES* h)
+	{
+		m_source = new Csql_result_source(h);
+	}
+
+	int c_fields() const
+	{
+		return mysql_num_fields(h());
+	}
+
+	int c_rows() const
+	{
+		return mysql_num_rows(h());
+	}
+
+	void data_seek(int i)
+	{
+		mysql_data_seek(h(), i);
+	}
 private:
 	MYSQL_RES* h() const
 	{
 		return m_source->h();
 	}
 
-	Csql_result_source* m_source;
+	boost::intrusive_ptr<Csql_result_source> m_source;
 };
 
 #endif // !defined(AFX_SQL_RESULT_H__EA1254C8_2222_11D5_B606_0000B4936994__INCLUDED_)
