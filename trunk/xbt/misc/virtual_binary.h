@@ -5,17 +5,22 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <boost/intrusive_ptr.hpp>
+#include <boost/utility.hpp>
 #include <cassert>
 #include <string>
 #include "const_memory_range.h"
 
-class Cvirtual_binary_source
+class Cvirtual_binary_source: boost::noncopyable
 {
 public:
 	Cvirtual_binary_source(const_memory_range);
-	Cvirtual_binary_source* attach();
-	void detach();
 	Cvirtual_binary_source* pre_edit();
+
+	~Cvirtual_binary_source()
+	{
+		delete[] m_range.begin;
+	}
 
 	unsigned char* data_edit()
 	{
@@ -33,10 +38,25 @@ public:
 		assert(mc_references == 1 && v <= m_range.size());
 		m_range.end = m_range.begin + v;
 	}
+	
+	friend void intrusive_ptr_add_ref(Cvirtual_binary_source*);
+	friend void intrusive_ptr_release(Cvirtual_binary_source*);
 private:
 	memory_range m_range;
 	int mc_references;
 };
+
+inline void intrusive_ptr_add_ref(Cvirtual_binary_source* v)
+{
+	v->mc_references++;
+}
+
+inline void intrusive_ptr_release(Cvirtual_binary_source* v)
+{
+	v->mc_references--;
+	if (!v->mc_references)
+		delete v;
+}
 
 class Cvirtual_binary
 {
@@ -48,12 +68,12 @@ public:
 	size_t read(void* d) const;
 	unsigned char* write_start(size_t cb_d);
 	void write(const_memory_range);
-	const Cvirtual_binary& operator=(const Cvirtual_binary&);
-	Cvirtual_binary();
-	Cvirtual_binary(const Cvirtual_binary&);
 	Cvirtual_binary(size_t);
 	Cvirtual_binary(const_memory_range);
-	~Cvirtual_binary();
+
+	Cvirtual_binary()
+	{
+	}
 
 	const unsigned char* begin() const
 	{
@@ -94,9 +114,10 @@ public:
 
 	memory_range mutable_range()
 	{
-		if (m_source)
-			m_source = m_source->pre_edit();
-		return m_source ? m_source->range() : memory_range();
+		if (!m_source)
+			return memory_range();
+		m_source = m_source->pre_edit();
+		return m_source->range();
 	}
 
 	size_t size() const
@@ -126,7 +147,7 @@ public:
 		return memory_range(data_edit(), size());
 	}
 private:
-	Cvirtual_binary_source* m_source;
+	boost::intrusive_ptr<Cvirtual_binary_source> m_source;
 };
 
 #endif // !defined(AFX_VIRTUAL_BINARY_H__B59C9DC0_DB25_11D4_A95D_0050042229FC__INCLUDED_)

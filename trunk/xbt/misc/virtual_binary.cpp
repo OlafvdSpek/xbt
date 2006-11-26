@@ -10,42 +10,15 @@ Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
 	m_range.end = m_range.begin + d.size();
 	if (d)
 		memcpy(m_range, d, d.size());
-	mc_references = 1;
-}
-
-Cvirtual_binary_source* Cvirtual_binary_source::attach()
-{
-	if (this)
-		mc_references++;
-	return this;
-}
-
-void Cvirtual_binary_source::detach()
-{
-	if (!this || --mc_references)
-		return;
-	delete[] m_range.begin;
-	delete this;
+	mc_references = 0;
 }
 
 Cvirtual_binary_source* Cvirtual_binary_source::pre_edit()
 {
 	if (mc_references == 1)
 		return this;
-	Cvirtual_binary_source t = *this;
-	detach();
-	return new Cvirtual_binary_source(t.range());
+	return new Cvirtual_binary_source(range());
 }	
-
-Cvirtual_binary::Cvirtual_binary()
-{
-	m_source = NULL;
-}
-
-Cvirtual_binary::Cvirtual_binary(const Cvirtual_binary& v)
-{
-	m_source = v.m_source->attach();
-}
 
 Cvirtual_binary::Cvirtual_binary(size_t v)
 {
@@ -55,21 +28,6 @@ Cvirtual_binary::Cvirtual_binary(size_t v)
 Cvirtual_binary::Cvirtual_binary(const_memory_range d)
 {
 	m_source = new Cvirtual_binary_source(d);
-}
-
-Cvirtual_binary::~Cvirtual_binary()
-{
-	m_source->detach();
-}
-
-const Cvirtual_binary& Cvirtual_binary::operator=(const Cvirtual_binary& v)
-{
-	if (this != &v)
-	{
-		m_source->detach();
-		m_source = v.m_source->attach();
-	}
-	return *this;
 }
 
 int Cvirtual_binary::save(const std::string& fname) const
@@ -101,7 +59,6 @@ Cvirtual_binary& Cvirtual_binary::load1(const std::string& fname)
 
 void Cvirtual_binary::clear()
 {
-	m_source->detach();
 	m_source = NULL;
 }
 
@@ -115,7 +72,6 @@ unsigned char* Cvirtual_binary::write_start(size_t cb_d)
 {
 	if (data() && size() == cb_d)
 		return data_edit();
-	m_source->detach();
 	m_source = new Cvirtual_binary_source(const_memory_range(NULL, cb_d));
 	return data_edit();
 }
