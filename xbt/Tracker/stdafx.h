@@ -35,6 +35,8 @@
 #include <unistd.h>
 
 #ifdef BSD
+#include "bt_misc.h"
+
 #define atoll xbt_atoll
 #endif
 #endif
