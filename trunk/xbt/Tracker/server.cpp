@@ -336,8 +336,15 @@ void Cserver::accept(const Csocket& l)
 			if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
 				std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
-			m_connections.push_back(Cconnection(this, s, a, m_config.m_log_access));
-			m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
+			Cconnection connection(this, s, a, m_config.m_log_access);
+#ifdef TCP_DEFER_ACCEPT
+			connection.process_events(EPOLLIN);
+#endif
+			if (connection.s() != INVALID_SOCKET)
+			{
+				m_connections.push_back(connection);
+				m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
+			}
 		}
 	}
 }
