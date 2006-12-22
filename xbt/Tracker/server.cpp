@@ -332,7 +332,7 @@ void Cserver::accept(const Csocket& l)
 				continue;
 			if (s.blocking(false))
 				std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-#ifdef TCP_CORK
+#if 0 // def TCP_CORK
 			if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
 				std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
