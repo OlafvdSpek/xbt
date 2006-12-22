@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <boost/intrusive_ptr.hpp>
+#include <boost/utility.hpp>
 #include <string>
 #include "const_memory_range.h"
 
@@ -70,21 +72,43 @@ const int INVALID_SOCKET = -1;
 const int SOCKET_ERROR = -1;
 #endif
 
-class Csocket_source
+class Csocket_source: boost::noncopyable
 {
 public:
-	Csocket_source* attach();
-	void detach();
-	Csocket_source(SOCKET s);
+	Csocket_source(SOCKET s)
+	{
+		m_s = s;
+		mc_references = 0;
+	}
+
+	~Csocket_source()
+	{
+		closesocket(m_s);
+	}
 
 	operator SOCKET() const
 	{
 		return m_s;
 	}
+
+	friend void intrusive_ptr_add_ref(Csocket_source*);
+	friend void intrusive_ptr_release(Csocket_source*);
 private:
 	SOCKET m_s;
 	int mc_references;
 };
+
+inline void intrusive_ptr_add_ref(Csocket_source* v)
+{
+	v->mc_references++;
+}
+
+inline void intrusive_ptr_release(Csocket_source* v)
+{
+	v->mc_references--;
+	if (!v->mc_references)
+		delete v;
+}
 
 class Csocket
 {
@@ -109,16 +133,13 @@ public:
 	int setsockopt(int level, int name, const void* v, int cb_v);
 	int setsockopt(int level, int name, int v);
 	Csocket(SOCKET = INVALID_SOCKET);
-	Csocket(const Csocket&);
-	const Csocket& operator=(const Csocket&);
-	~Csocket();
 
 	operator SOCKET() const
 	{
 		return m_source ? static_cast<SOCKET>(*m_source) : INVALID_SOCKET;
 	}
 private:
-	Csocket_source* m_source;
+	boost::intrusive_ptr<Csocket_source> m_source;
 };
 
 #endif // !defined(AFX_SOCKET_H__7FCC2721_54CD_4609_8737_92478B4090EA__INCLUDED_)

@@ -21,50 +21,9 @@ const int MSG_NOSIGNAL = 0;
 
 static bool g_start_up_done = false;
 
-Csocket_source::Csocket_source(SOCKET s)
-{
-	m_s = s;
-	mc_references = 1;
-}
-
-Csocket_source* Csocket_source::attach()
-{
-	if (this)
-		mc_references++;
-	return this;
-}
-
-void Csocket_source::detach()
-{
-	if (!this || --mc_references)
-		return;
-	closesocket(m_s);
-	delete this;
-}
-
 Csocket::Csocket(SOCKET s)
 {
 	m_source = s == INVALID_SOCKET ? NULL : new Csocket_source(s);
-}
-
-Csocket::Csocket(const Csocket& v)
-{
-	m_source = v.m_source->attach();
-}
-
-Csocket::~Csocket()
-{
-	m_source->detach();
-}
-
-const Csocket& Csocket::operator=(const Csocket& v)
-{
-	if (this != &v)
-	{
-		m_source->detach();
-		m_source = v.m_source->attach();
-	}
-	return *this;
 }
 
 int Csocket::accept(int& h, int& p)
