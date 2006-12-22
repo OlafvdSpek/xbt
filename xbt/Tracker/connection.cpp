@@ -43,7 +43,8 @@ int Cconnection::recv()
 {
 	if (!m_read_b.size())
 		m_read_b.resize(4 << 10);
-	for (int r; r = m_s.recv(memory_range(&m_read_b.front() + m_w, m_read_b.size() - m_w)); )
+	bool can_recv = true;
+	for (int r; can_recv && (r = m_s.recv(memory_range(&m_read_b.front() + m_w, m_read_b.size() - m_w))); )
 	{
 		if (r == SOCKET_ERROR)
 		{
@@ -61,6 +62,8 @@ int Cconnection::recv()
 		}
 		if (m_state == 5)
 			return 0;
+		if (r != m_read_b.size() - m_w)
+			can_recv = false;
 		char* a = &m_read_b.front() + m_w;
 		m_w += r;
 		int state;
