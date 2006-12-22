@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <boost/utility.hpp>
+
 #ifdef EPOLL
 #include <sys/epoll.h>
 #else
@@ -29,7 +31,7 @@ enum
 typedef void epoll_event;
 #endif
 
-class Cepoll
+class Cepoll: boost::noncopyable
 {
 public:
 	int create(int size);
@@ -38,9 +40,6 @@ public:
 	Cepoll();
 	~Cepoll();
 private:
-	Cepoll(const Cepoll&);
-	const Cepoll& operator=(const Cepoll&);
-
 	int m_fd;
 };
 
