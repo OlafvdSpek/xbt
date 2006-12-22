@@ -17,7 +17,7 @@ Cepoll::~Cepoll()
 int Cepoll::create(int size)
 {
 #ifdef EPOLL
-	m_fd = epoll_create(size);
+	return m_fd = epoll_create(size);
 #else
 	return 0;
 #endif
