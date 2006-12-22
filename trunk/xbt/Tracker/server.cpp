@@ -114,6 +114,10 @@ int Cserver::run()
 				std::cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else
 			{
+#ifdef TCP_DEFER_ACCEPT
+				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, true))
+					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+#endif
 				lt.push_back(Ctcp_listen_socket(this, l));
 				if (m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
 					return 1;
