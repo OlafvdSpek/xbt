@@ -1,4 +1,4 @@
-!define VERSION "0.2.4"
+!define VERSION "0.2.5"
 
 Name "XBT Tracker ${VERSION}"
 Outfile "XBT_Tracker-${VERSION}.exe"
@@ -16,7 +16,7 @@ Section "Install"
 	Delete "$INSTDIR\XBT Tracker.exe"
 	Delete "$INSTDIR\XBT Tracker Old.exe"
 	Rename "$INSTDIR\XBT Tracker.exe" "$INSTDIR\XBT Tracker Old.exe"
-	File release\*.exe
+	File "release\XBT Tracker.exe"
 	File xbt_tracker.conf.default
 	File xbt_tracker.sql
 	SetOverwrite off
