@@ -13,6 +13,7 @@ Cconfig::Cconfig()
 	m_clean_up_interval = 60;
 	m_daemon = true;
 	m_debug = false;
+	m_full_scrape = true;
 	m_gzip_announce = true;
 	m_gzip_debug = true;
 	m_gzip_scrape = true;
@@ -37,10 +38,10 @@ int Cconfig::set(const std::string& name, const std::string& value)
 	t_attribute<std::string> attributes[] =
 	{
 		"column_files_completed", &m_column_files_completed,
-		"column_files_fid", &m_column_files_fid, 
-		"column_files_leechers", &m_column_files_leechers, 
-		"column_files_seeders", &m_column_files_seeders, 
-		"column_users_uid", &m_column_users_uid, 
+		"column_files_fid", &m_column_files_fid,
+		"column_files_leechers", &m_column_files_leechers,
+		"column_files_seeders", &m_column_files_seeders,
+		"column_users_uid", &m_column_users_uid,
 		"mysql_database", &m_mysql_database,
 		"mysql_host", &m_mysql_host,
 		"mysql_password", &m_mysql_password,
@@ -98,6 +99,7 @@ int Cconfig::set(const std::string& name, bool value)
 		"anonymous_scrape", &m_anonymous_scrape,
 		"daemon", &m_daemon,
 		"debug", &m_debug,
+		"full_scrape", &m_full_scrape,
 		"gzip_announce", &m_gzip_announce,
 		"gzip_debug", &m_gzip_debug,
 		"gzip_scrape", &m_gzip_scrape,

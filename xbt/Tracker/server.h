@@ -185,6 +185,11 @@ public:
 		return m_config.m_debug;
 	}
 
+	bool full_scrape() const
+	{
+		return m_config.m_full_scrape;
+	}
+
 	bool gzip_announce() const
 	{
 		return m_config.m_gzip_announce;

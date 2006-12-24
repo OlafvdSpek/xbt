@@ -611,6 +611,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 
 void Cserver::read_db_deny_from_hosts()
 {
+	m_read_db_deny_from_hosts_time = time();
 	if (!m_use_sql)
 		return;
 	try
@@ -637,7 +638,6 @@ void Cserver::read_db_deny_from_hosts()
 	catch (Cdatabase::exception&)
 	{
 	}
-	m_read_db_deny_from_hosts_time = time();
 }
 
 void Cserver::read_db_files()
@@ -1002,6 +1002,7 @@ std::string Cserver::statistics() const
 		+ "<tr><td>anonymous announce<td align=right>" + n(m_config.m_anonymous_announce)
 		+ "<tr><td>anonymous scrape<td align=right>" + n(m_config.m_anonymous_scrape)
 		+ "<tr><td>auto register<td align=right>" + n(m_config.m_auto_register)
+		+ "<tr><td>full scrape<td align=right>" + n(m_config.m_full_scrape)
 		+ "<tr><td>listen check<td align=right>" + n(m_config.m_listen_check)
 		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_config.m_read_config_interval)
 		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_config.m_clean_up_interval)
