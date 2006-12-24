@@ -587,6 +587,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	Cbvalue files(Cbvalue::vt_dictionary);
 	if (ti.m_info_hash.empty())
 	{
+		m_stats.scraped_full++;
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			if (i->second.leechers || i->second.seeders)
@@ -989,7 +990,8 @@ std::string Cserver::statistics() const
 			+ "<tr><td>announced http no peer id<td align=right>" + n(m_stats.announced_http_no_peer_id) + "<td align=right>" + n(m_stats.announced_http_no_peer_id * 100 / m_stats.announced()) + " %"
 			+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp) + "<td align=right>" + n(m_stats.announced_udp * 100 / m_stats.announced()) + " %";
 	}
-	page += "<tr><td>scraped<td align=right>" + n(m_stats.scraped());
+	page += "<tr><td>scraped full<td align=right>" + n(m_stats.scraped_full)
+		+ "<tr><td>scraped<td align=right>" + n(m_stats.scraped());
 	if (m_stats.scraped())
 	{
 		page += "<tr><td>scraped http<td align=right>" + n(m_stats.scraped_http) + "<td align=right>" + n(m_stats.scraped_http * 100 / m_stats.scraped()) + " %"

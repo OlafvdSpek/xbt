@@ -26,6 +26,7 @@ public:
 	int announced_http_compact;
 	int announced_http_no_peer_id;
 	int announced_udp;
+	int scraped_full;
 	int scraped_http;
 	int scraped_udp;
 	time_t start_time;
