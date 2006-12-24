@@ -236,7 +236,7 @@ void Cconnection::read(const std::string& v)
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(v);
 		}
-		else
+		else if (m_server->full_scrape() || !ti.m_info_hash.empty())
 		{
 			gzip = m_server->gzip_scrape() && ti.m_info_hash.empty();
 			s = m_server->scrape(ti).read();
