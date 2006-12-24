@@ -87,7 +87,7 @@ kill `cat xbt_tracker.pid`
 <h2>Configuration</h2>
 
 <p>
-The tracker reads it's configuration from the SQL table xbt_config.
+The tracker reads it's configuration from the file xbt_tracker.conf and the SQL table xbt_config.
 There is no need to insert default values into this table.
 
 <table>
@@ -127,6 +127,10 @@ There is no need to insert default values into this table.
 		<td>debug
 		<td>
 		<td align=right>0
+	<tr>
+		<td>full_scrape
+		<td>
+		<td align=right>1
 	<tr>
 		<td>gzip_announce
 		<td>
