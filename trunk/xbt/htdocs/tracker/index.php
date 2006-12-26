@@ -63,8 +63,8 @@ yum install boost-devel
 Enter the following commands in a terminal.
 Be patient while g++ is running, it'll take a few minutes.
 <pre>
-svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt/misc xbt/misc
-svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt/Tracker xbt/Tracker
+svn co https://xbtt.svn.sourceforge.net/svnroot/xbtt/trunk/xbt/misc xbt/misc
+svn co https://xbtt.svn.sourceforge.net/svnroot/xbtt/trunk/xbt/Tracker xbt/Tracker
 cd xbt/Tracker
 ./make.sh
 cp xbt_tracker.conf.default xbt_tracker.conf
