@@ -23,7 +23,7 @@ public:
 	};
 
 	template <class T>
-	class t_attributes: public std::map<std::string, t_attribute<T>>
+	class t_attributes: public std::map<std::string, t_attribute<T> >
 	{
 	};
 
