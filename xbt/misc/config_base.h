@@ -102,7 +102,7 @@ protected:
 	template <class T>
 	void save_map(std::ostream& os, const T& v) const
 	{
-		for (T::const_iterator i = v.begin(); i != v.end(); i++)
+		for (typename T::const_iterator i = v.begin(); i != v.end(); i++)
 		{
 			if (*i->second.value == i->second.default_value)
 				os << "# ";
