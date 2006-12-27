@@ -17,6 +17,8 @@ public:
 	int set(const std::string& name, int value);
 	int set(const std::string& name, bool value);
 	Cconfig();
+	Cconfig(const Cconfig&);
+	const Cconfig& operator=(const Cconfig&);
 
 	bool m_anonymous_announce;
 	bool m_anonymous_connect;
@@ -60,6 +62,8 @@ public:
 	std::string m_table_users;
 	t_listen_ipas m_listen_ipas;
 	t_listen_ports m_listen_ports;
+private:
+	void fill_maps(const Cconfig*);
 };
 
 #endif // !defined(AFX_CONFIG_H__9BC23017_7D28_49AE_BDBC_6B920E27CA97__INCLUDED_)
