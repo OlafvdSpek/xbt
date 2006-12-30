@@ -478,7 +478,11 @@ int Cserver::run()
 		else if (time() - m_update_states_time > 15)
 			update_states();
 		else if (time() - m_save_state_time > 60)
+		{
+			std::ofstream os(conf_fname().c_str());
+			os << m_config;
 			save_state(true).save(state_fname());
+		}
 		else if (time() - m_run_scheduler_time > 60)
 			run_scheduler();
 		else if (time() - m_check_remote_links_time > 900)
@@ -902,7 +906,7 @@ int Cserver::open(const Cvirtual_binary& info, const std::string& name)
 	if (below_torrent_limit())
 		f.open();
 	m_files.push_back(f);
-	save_state(true).save(state_fname());
+	m_save_state_time = 0;
 	return 0;
 }
 
@@ -944,7 +948,7 @@ int Cserver::open_url(const std::string& v)
 	if (below_torrent_limit())
 		f.m_state = Cbt_file::s_running;
 	m_files.push_back(f);
-	save_state(true).save(state_fname());
+	m_save_state_time = 0;
 	return 0;
 }
 
@@ -959,7 +963,7 @@ int Cserver::close(const std::string& id, bool erase)
 		if (erase)
 			i->erase();
 		m_files.erase(i);
-		save_state(true).save(state_fname());
+		m_save_state_time = 0;
 		return 0;
 	}
 	return 1;

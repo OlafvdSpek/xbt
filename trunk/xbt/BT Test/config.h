@@ -10,11 +10,10 @@
 class Cconfig: public Cconfig_base
 {
 public:
-	Cconfig();
-	int set(const std::string& name, const std::string& value);
-	int set(const std::string& name, int value);
-	int set(const std::string& name, bool value);
 	std::ostream& operator<<(std::ostream&) const;
+	Cconfig();
+	Cconfig(const Cconfig&);
+	const Cconfig& operator=(const Cconfig&);
 
 	bool m_bind_before_connect;
 	bool m_log_peer_connect_failures;
@@ -43,6 +42,8 @@ public:
 	std::string m_peer_id_prefix;
 	std::string m_torrents_dir;
 	std::string m_user_agent;
+private:
+	void fill_maps(const Cconfig*);
 };
 
 std::ostream& operator<<(std::ostream&, const Cconfig&);
