@@ -12,23 +12,23 @@ class Cstats
 public:
 	Cstats();
 
-	int announced() const
+	long long announced() const
 	{
 		return announced_http + announced_http_compact + announced_http_no_peer_id + announced_udp;
 	}
 
-	int scraped() const
+	long long scraped() const
 	{
 		return scraped_http + scraped_udp;
 	}
 
-	int announced_http;
-	int announced_http_compact;
-	int announced_http_no_peer_id;
-	int announced_udp;
-	int scraped_full;
-	int scraped_http;
-	int scraped_udp;
+	long long announced_http;
+	long long announced_http_compact;
+	long long announced_http_no_peer_id;
+	long long announced_udp;
+	long long scraped_full;
+	long long scraped_http;
+	long long scraped_udp;
 	time_t start_time;
 };
 
