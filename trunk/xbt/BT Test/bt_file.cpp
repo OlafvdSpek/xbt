@@ -553,7 +553,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 int Cbt_file::pre_dump(int flags) const
 {
-	int size = m_info_hash.length() + m_name.length() + 208;
+	int size = m_info_hash.length() + m_name.length() + 216;
 	if (flags & Cserver::df_trackers)
 	{
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
@@ -646,6 +646,8 @@ void Cbt_file::dump(Cstream_writer& w, int flags) const
 	w.write_int(4, m_upload_slots_max_override);
 	w.write_int(4, upload_slots_min());
 	w.write_int(4, m_upload_slots_min_override);
+	w.write_int(4, m_last_chunk_downloaded_at);
+	w.write_int(4, m_last_chunk_uploaded_at);
 	if (flags & Cserver::df_peers)
 	{
 		w.write_int(4, m_peers.size());

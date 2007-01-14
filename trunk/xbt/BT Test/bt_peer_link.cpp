@@ -481,6 +481,7 @@ void Cbt_peer_link::write_piece(int piece, int offset, const Cvirtual_binary& s)
 	w = write_int(4, w, offset);
 	write(d);
 	write(s, true);
+	m_f->m_last_chunk_uploaded_at = time();
 }
 
 void Cbt_peer_link::write_merkle_piece(long long offset, const_memory_range s, const std::string& hashes)
@@ -658,6 +659,7 @@ int Cbt_peer_link::read_piece(int piece, int offset, const_memory_range s)
 	mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
 	m_f->m_downloaded += s.size();
 	m_f->m_down_counter.add(s.size(), time());
+	m_f->m_last_chunk_downloaded_at = time();
 	m_f->m_total_downloaded += s.size();
 	m_local_requests.erase(i);
 	write_data(m_f->mcb_piece * piece + offset, s, t);
