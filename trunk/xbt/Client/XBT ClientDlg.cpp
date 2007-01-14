@@ -124,9 +124,10 @@ enum
 	dr_completed_at,
 	dr_distributed_copies,
 	dr_downloaded,
-	dr_downloaded_l5_overhead,
 	dr_files,
 	dr_hash,
+	dr_last_chunk_downloaded_at,
+	dr_last_chunk_uploaded_at,
 	dr_leechers,
 	dr_left,
 	dr_name,
@@ -143,7 +144,6 @@ enum
 	dr_upload_slots_min,
 	dr_upload_slots_max,
 	dr_uploaded,
-	dr_uploaded_l5_overhead,
 	dr_count
 };
 
@@ -576,9 +576,10 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Completed at",
 		"Distributed Copies",
 		"Downloaded",
-		"Downloaded (layer 5 overhead)",
 		"Files",
 		"Hash",
+		"Last Chunk Downloaded at",
+		"Last Chunk Uploaded at",
 		"Leechers",
 		"Left",
 		"Name",
@@ -595,7 +596,6 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 		"Upload Slots Min",
 		"Upload Slots Max",
 		"Uploaded",
-		"Uploaded (layer 5 overhead)",
 	};
 	switch (m_peers.GetColumnID(pDispInfo->item.iSubItem))
 	{
@@ -631,14 +631,19 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 			if (m_file->m_size)
 				buffer += " (" + n(m_file->m_total_downloaded * 100 / m_file->m_size) + " %)";
 			break;
-		case dr_downloaded_l5_overhead:
-			buffer = b2a(m_file->m_downloaded_l5 - m_file->m_downloaded, "b");
-			break;
 		case dr_files:
 			buffer = n(m_file->m_sub_files.size());
 			break;
 		case dr_hash:
 			buffer = hex_encode(m_file->m_info_hash);
+			break;
+		case dr_last_chunk_downloaded_at:
+			if (m_file->m_last_chunk_downloaded_at)
+				buffer = time2a(m_file->m_last_chunk_downloaded_at) + " (" + duration2a(time(NULL) - m_file->m_last_chunk_downloaded_at) + " ago)";
+			break;
+		case dr_last_chunk_uploaded_at:
+			if (m_file->m_last_chunk_uploaded_at)
+				buffer = time2a(m_file->m_last_chunk_uploaded_at) + " (" + duration2a(time(NULL) - m_file->m_last_chunk_uploaded_at) + " ago)";
 			break;
 		case dr_leechers:
 			buffer = n(m_file->mc_leechers);
@@ -715,9 +720,6 @@ void CXBTClientDlg::OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult)
 				buffer += " / " + b2a(m_file->m_total_uploaded, "b");
 			if (m_file->m_size)
 				buffer += " (" + n(m_file->m_total_uploaded * 100 / m_file->m_size) + " %)";
-			break;
-		case dr_uploaded_l5_overhead:
-			buffer = b2a(m_file->m_uploaded_l5 - m_file->m_uploaded, "b");
 			break;
 		}
 		break;
@@ -1266,6 +1268,8 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	f.m_upload_slots_max_override = sr.read_int(4);
 	f.m_upload_slots_min = sr.read_int(4);
 	f.m_upload_slots_min_override = sr.read_int(4);
+	f.m_last_chunk_downloaded_at = sr.read_int(4);
+	f.m_last_chunk_uploaded_at = sr.read_int(4);
 	f.m_removed = false;
 	{
 		int i = f.m_display_name.rfind('\\');
