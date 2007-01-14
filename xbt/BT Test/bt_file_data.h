@@ -35,6 +35,8 @@ public:
 	bool m_upload_slots_max_override;
 	bool m_upload_slots_min_override;
 	time_t m_completed_at;
+	time_t m_last_chunk_downloaded_at;
+	time_t m_last_chunk_uploaded_at;
 	int m_priority;
 	int m_seeding_ratio;
 	time_t m_seeding_ratio_reached_at;
