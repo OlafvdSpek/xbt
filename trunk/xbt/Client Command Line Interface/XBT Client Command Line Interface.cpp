@@ -12,17 +12,17 @@ namespace po = boost::program_options;
 int recv(Csocket& s, Cbvalue* v)
 {
 	std::vector<char> d(5);
-	std::vector<char>::iterator w = d.begin();
+	memory_range w(&*d.begin(), d.size());
 	int r;
-	while (w != d.end() && (r = s.recv(memory_range(&*w, &*d.end()))))
+	while (w.size() && (r = s.recv(w)))
 	{
 		if (r == SOCKET_ERROR)
 			return r;
 		w += r;
 	}
 	d.resize(read_int(4, &d.front()) - 1);
-	w = d.begin();
-	while (w != d.end() && (r = s.recv(memory_range(&*w, &*d.end()))))
+	w = memory_range(&*d.begin(), d.size());
+	while (w.size() && (r = s.recv(w)))
 	{
 		if (r == SOCKET_ERROR)
 			return r;
