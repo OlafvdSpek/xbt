@@ -1312,7 +1312,7 @@ void Cserver::term()
 
 int Cserver::version()
 {
-	return 73;
+	return 74;
 }
 
 Chttp_link* Cserver::http_request(int h, int p, const std::string& request, Chttp_response_handler* response_handler)
