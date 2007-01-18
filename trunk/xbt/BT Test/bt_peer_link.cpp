@@ -643,27 +643,23 @@ void Cbt_peer_link::write_peers()
 
 int Cbt_peer_link::read_piece(int piece, int offset, const_memory_range s)
 {
-	while (!m_local_requests.empty() && m_local_requests.front().offset != m_f->mcb_piece * piece + offset)
+	for (t_local_requests::iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
 	{
-		m_f->m_pieces[m_local_requests.front().offset / m_f->mcb_piece].erase_peer(this, m_local_requests.front().offset % m_f->mcb_piece);
-		m_local_requests.pop_front();
+		if (i->offset != m_f->mcb_piece * piece + offset)
+			continue;
+		mc_local_requests_pending--;
+		int t = time() - i->stime;
+		mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
+		m_f->m_downloaded += s.size();
+		m_f->m_down_counter.add(s.size(), time());
+		m_f->m_last_chunk_downloaded_at = time();
+		m_f->m_total_downloaded += s.size();
+		m_local_requests.erase(i);
+		write_data(m_f->mcb_piece * piece + offset, s, t);
+		return 0;
 	}
-	if (m_local_requests.empty())
-	{
-		alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(s.size(), "b") + " (" + peer_id2a(m_remote_peer_id) + ")");
-		return 1;
-	}
-	mc_local_requests_pending--;
-	t_local_requests::iterator i = m_local_requests.begin();
-	int t = time() - i->stime;
-	mc_max_requests_pending = t ? max(1, min(min(120 / t, mc_max_requests_pending + 1), 8)) : 8;
-	m_f->m_downloaded += s.size();
-	m_f->m_down_counter.add(s.size(), time());
-	m_f->m_last_chunk_downloaded_at = time();
-	m_f->m_total_downloaded += s.size();
-	m_local_requests.erase(i);
-	write_data(m_f->mcb_piece * piece + offset, s, t);
-	return 0;
+	alert(Calert::warn, "No matching request found, piece: " + n(piece) + ", offset: " + n(offset) + ", size: " + b2a(s.size(), "b") + " (" + peer_id2a(m_remote_peer_id) + ")");
+	return 1;
 }
 
 void Cbt_peer_link::read_merkle_piece(long long offset, const_memory_range s, const_memory_range hashes)
