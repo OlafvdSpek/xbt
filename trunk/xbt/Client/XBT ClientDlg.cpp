@@ -75,6 +75,7 @@ enum
 	pc_port,
 	pc_peer_id,
 	pc_debug,
+	pc_ctime,
 	pc_end,
 
 	sfc_name,
@@ -986,6 +987,9 @@ void CXBTClientDlg::OnGetdispinfoPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	case pc_debug:
 		buffer = e.m_debug;
 		break;
+	case pc_ctime:
+		buffer = duration2a(time(NULL) - e.m_ctime) + " ago";
+		break;
 	}
 	pDispInfo->item.pszText = const_cast<char*>(buffer.c_str());
 	*pResult = 0;
@@ -1399,7 +1403,7 @@ void CXBTClientDlg::read_peer_dump(t_file& f, Cstream_reader& sr)
 	p.m_remote_choked = sr.read_int(1);
 	p.m_remote_interested = sr.read_int(1);
 	p.mc_remote_requests = sr.read_int(4);
-	p.mc_pieces = sr.read_int(4);
+	p.m_ctime = sr.read_int(4);
 	p.m_rtime = sr.read_int(4);
 	p.m_stime = sr.read_int(4);
 	p.m_debug = sr.read_string();
@@ -1975,6 +1979,8 @@ int CXBTClientDlg::peers_compare(int id_a, int id_b) const
 		return compare(a.m_remote_peer_id, b.m_remote_peer_id);
 	case pc_client:
 		return compare(peer_id2a(a.m_remote_peer_id), peer_id2a(b.m_remote_peer_id));
+	case pc_ctime:
+		return compare(a.m_ctime, b.m_ctime);
 	}
 	return 0;
 }
@@ -2216,6 +2222,7 @@ void CXBTClientDlg::insert_bottom_columns()
 		pc_port, "Port", "", LVCFMT_RIGHT, true,
 		pc_host_name, "Host Name", "", LVCFMT_LEFT, true,
 		pc_peer_id, "Peer ID", "", LVCFMT_LEFT, false,
+		pc_ctime, "Connected", "", LVCFMT_LEFT, false,
 		pc_end, "", "", LVCFMT_LEFT, true,
 		0, NULL
 	};

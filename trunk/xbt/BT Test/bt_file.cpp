@@ -524,7 +524,6 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 
 	invalid_pieces.reserve(c_invalid_pieces());
 	bool begin_mode = Cbt_file::begin_mode();
-	bool end_mode = Cbt_file::end_mode();
 	int rank = INT_MAX;
 	int c_unrequested_sub_pieces = 0;
 	for (size_t i = 0; i < m_pieces.size(); i++)
@@ -534,7 +533,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 			|| !m_pieces[i].c_unrequested_sub_pieces())
 			continue;
 		c_unrequested_sub_pieces += m_pieces[i].c_unrequested_sub_pieces();
-		if (!peer.m_remote_pieces[i] )
+		if (!peer.m_remote_pieces[i])
 			continue;
 		if (begin_mode && !m_pieces[i].sub_pieces().empty())
 			return i;
@@ -546,8 +545,11 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 		rank = piece_rank;
 		invalid_pieces.push_back(i);
 	}
-	if (c_unrequested_sub_pieces < 256)
+	if (!m_end_mode && c_unrequested_sub_pieces < 256)
+	{
 		m_end_mode = true;
+		alert(Calert(Calert::debug, "End mode enabled"));
+	}
 	return invalid_pieces.empty() ? -1 : invalid_pieces[rand() % invalid_pieces.size()];
 }
 

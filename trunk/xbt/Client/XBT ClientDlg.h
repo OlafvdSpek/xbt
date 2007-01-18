@@ -229,9 +229,6 @@ private:
 		int m_up_rate;
 		int mc_local_requests;
 		int mc_remote_requests;
-		int mc_pieces;
-		int m_rtime;
-		int m_stime;
 		std::string m_debug;
 		std::string m_host_name;
 		bool m_removed;

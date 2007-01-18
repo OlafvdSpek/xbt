@@ -13,6 +13,9 @@ public:
 	long long m_downloaded;
 	long long m_left;
 	long long m_uploaded;
+	time_t m_ctime;
+	time_t m_rtime;
+	time_t m_stime;
 	bool m_local_link;
 	bool m_local_choked;
 	bool m_local_interested;
