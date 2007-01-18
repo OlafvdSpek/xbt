@@ -543,7 +543,7 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 		rank = piece_rank;
 		invalid_pieces.push_back(i);
 	}
-	if (!m_end_mode && c_unrequested_sub_pieces < 256)
+	if (!m_end_mode && !c_unrequested_sub_pieces)
 	{
 		m_end_mode = true;
 		alert(Calert(Calert::debug, "End mode enabled"));
