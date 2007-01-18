@@ -535,8 +535,6 @@ int Cbt_file::next_invalid_piece(const Cbt_peer_link& peer)
 		c_unrequested_sub_pieces += m_pieces[i].c_unrequested_sub_pieces();
 		if (!peer.m_remote_pieces[i])
 			continue;
-		if (begin_mode && !m_pieces[i].sub_pieces().empty())
-			return i;
 		int piece_rank = m_pieces[i].rank();
 		if (piece_rank > rank)
 			continue;
