@@ -126,8 +126,6 @@ public:
 	Cring_buffer m_read_b;
 	t_write_buffer m_write_b;
 	t_have_queue m_have_queue;
-	time_t m_rtime;
-	time_t m_stime;
 	time_t m_check_pieces_time;
 	int mc_max_requests_pending;
 	t_local_requests m_local_requests;

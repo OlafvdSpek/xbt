@@ -397,7 +397,7 @@ void Cbt_peer_link::write_handshake()
 	mc_local_requests_pending = 0;
 	mc_max_requests_pending = 1;
 	m_peers_stime = 0;
-	m_check_pieces_time = m_rtime = m_stime = time();
+	m_check_pieces_time = m_ctime = m_rtime = m_stime = time();
 }
 
 void Cbt_peer_link::write_extended_handshake()
@@ -830,7 +830,7 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(1, m_remote_choked);
 	w.write_int(1, m_remote_interested);
 	w.write_int(4, m_remote_requests.size());
-	w.write_int(4, 0);
+	w.write_int(4, m_ctime);
 	w.write_int(4, m_rtime);
 	w.write_int(4, m_stime);
 	w.write_string(debug_string());
