@@ -116,10 +116,10 @@ void Cdlg_options::set(const t_data& v)
 	m_admin_port = v.admin_port;
 	m_ask_for_location = v.ask_for_location;
 	m_bind_before_connect = v.bind_before_connect;
-	m_completes_dir = backward_slashes(v.completes_dir).c_str();
+	m_completes_dir = native_slashes(v.completes_dir).c_str();
 	m_hide_on_deactivate = v.hide_on_deactivate;
 	m_hot_key_value = v.hot_key;
-	m_incompletes_dir = backward_slashes(v.incompletes_dir).c_str();
+	m_incompletes_dir = native_slashes(v.incompletes_dir).c_str();
 	m_lower_process_priority = v.lower_process_priority;
 	m_peer_id = v.peer_id.c_str();
 	m_peer_limit = v.peer_limit;
@@ -131,7 +131,7 @@ void Cdlg_options::set(const t_data& v)
 	m_show_tray_icon = v.show_tray_icon;
 	m_start_minimized = v.start_minimized;
 	m_torrent_limit = v.torrent_limit;
-	m_torrents_dir = backward_slashes(v.torrents_dir).c_str();
+	m_torrents_dir = native_slashes(v.torrents_dir).c_str();
 	m_tracker_port = v.tracker_port;
 	m_upload_rate = v.upload_rate >> 10;
 	m_upload_slots = v.upload_slots;

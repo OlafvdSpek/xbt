@@ -1226,7 +1226,7 @@ void CXBTClientDlg::read_file_dump(Cstream_reader& sr)
 	else
 		id = i->first;
 	t_file& f = m_files_map.find(id)->second;
-	f.m_display_name = f.m_name = backward_slashes(sr.read_string());
+	f.m_display_name = f.m_name = native_slashes(sr.read_string());
 	f.m_info_hash = info_hash;
 	f.m_trackers.clear();
 	for (int c_trackers = sr.read_int(4); c_trackers--; )
@@ -1521,7 +1521,7 @@ void CXBTClientDlg::OnPopupExplore()
 	int id = m_files.GetItemData(m_files.GetNextItem(-1, LVNI_SELECTED));
 	if (id == -1)
 	{
-		ShellExecute(m_hWnd, "open", backward_slashes(m_server.completes_dir()).c_str(), NULL, NULL, SW_SHOW);
+		ShellExecute(m_hWnd, "open", native_slashes(m_server.completes_dir()).c_str(), NULL, NULL, SW_SHOW);
 		return;
 	}
 	std::string name = m_files_map.find(id)->second.m_name;
