@@ -2521,7 +2521,7 @@ void CXBTClientDlg::OnDblclkPeers(NMHDR* pNMHDR, LRESULT* pResult)
 	if (id == -1)
 		return;
 	const t_sub_file& e = m_file->m_sub_files[id];
-	ShellExecute(m_hWnd, "open", (m_file->m_name + e.m_name).c_str(), NULL, NULL, SW_SHOW);
+	ShellExecute(m_hWnd, "open", native_slashes(m_file->m_name + e.m_name).c_str(), NULL, NULL, SW_SHOW);
 }
 
 void CXBTClientDlg::OnPopupViewTrayIcon()
