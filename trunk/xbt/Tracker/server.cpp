@@ -194,7 +194,7 @@ int Cserver::run()
 	while (!g_sig_term)
 	{
 #ifdef EPOLL
-		int r = m_epoll.wait(events, c_events, 1000);
+		int r = m_epoll.wait(events, c_events, 5000);
 		if (r == -1)
 			std::cerr << "epoll_wait failed: " << errno << std::endl;
 		else
@@ -252,7 +252,7 @@ int Cserver::run()
 			n = std::max<int>(n, i->s());
 		}
 		timeval tv;
-		tv.tv_sec = 1;
+		tv.tv_sec = 5;
 		tv.tv_usec = 0;
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
 			std::cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
