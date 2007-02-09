@@ -8,13 +8,15 @@
 #include "bvalue.h"
 
 namespace po = boost::program_options;
+using namespace boost::asio;
+using ip::tcp;
 
-int recv(Csocket& s, Cbvalue* v)
+int recv(tcp::socket& s, Cbvalue* v)
 {
 	std::vector<char> d(5);
 	memory_range w(&*d.begin(), d.size());
 	int r;
-	while (w.size() && (r = s.recv(w)))
+	while (w.size() && (r = s.receive(mutable_buffer_container_1(mutable_buffer(w.begin, w.size())))))
 	{
 		if (r == SOCKET_ERROR)
 			return r;
@@ -22,7 +24,7 @@ int recv(Csocket& s, Cbvalue* v)
 	}
 	d.resize(read_int(4, &d.front()) - 1);
 	w = memory_range(&*d.begin(), d.size());
-	while (w.size() && (r = s.recv(w)))
+	while (w.size() && (r = s.receive(mutable_buffer_container_1(mutable_buffer(w.begin, w.size())))))
 	{
 		if (r == SOCKET_ERROR)
 			return r;
@@ -31,18 +33,18 @@ int recv(Csocket& s, Cbvalue* v)
 	return v ? v->write(&d.front(), d.size()) : 0;
 }
 
-int send(Csocket& s, const Cbvalue& v)
+int send(tcp::socket& s, const Cbvalue& v)
 {
 	char d0[5];
 	Cvirtual_binary d1 = v.read();
 	write_int(4, d0, d1.size() + 1);
 	d0[4] = bti_bvalue;
-	if (s.send(const_memory_range(d0, 5)) != 5)
+	if (s.send(const_buffer_container_1(const_buffer(d0, 5))) != 5)
 		return 1;
-	return s.send(d1) != d1.size();
+	return s.send(const_buffer_container_1(const_buffer(d1, d1.size()))) != d1.size();
 }
 
-Cbvalue send_recv(Csocket& s, const Cbvalue& v)
+Cbvalue send_recv(tcp::socket& s, const Cbvalue& v)
 {
 	if (int r = send(s, v))
 		throw std::runtime_error(("Csocket::send failed: " + Csocket::error2a(WSAGetLastError())));
@@ -114,7 +116,7 @@ int main(int argc, char* argv[])
 		po::options_description desc;
 		desc.add_options()
 			("backend_host", po::value<std::string>()->default_value("localhost"))
-			("backend_port", po::value<int>()->default_value(6879))
+			("backend_port", po::value<std::string>()->default_value("6879"))
 			("backend_user", po::value<std::string>()->default_value(""))
 			("backend_pass", po::value<std::string>()->default_value(""))
 			("close", po::value<std::string>())
@@ -144,11 +146,20 @@ int main(int argc, char* argv[])
 			std::cerr << desc;
 			return 1;
 		}
-		Csocket s;
-		if (s.open(SOCK_STREAM, true) == INVALID_SOCKET)
-			throw std::runtime_error(("Csocket::open failed: " + Csocket::error2a(WSAGetLastError())));
-		if (s.connect(Csocket::get_host(vm["backend_host"].as<std::string>()), htons(vm["backend_port"].as<int>())))
-			throw std::runtime_error(("Csocket::connect failed: " + Csocket::error2a(WSAGetLastError())));
+		boost::asio::io_service io_service;
+		tcp::resolver resolver(io_service);
+		tcp::resolver::query query(vm["backend_host"].as<std::string>(), vm["backend_port"].as<std::string>());
+		tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+		tcp::resolver::iterator end;
+		tcp::socket s(io_service);
+		boost::asio::error error = boost::asio::error::host_not_found;
+		while (error && endpoint_iterator != end)
+		{
+			s.close();
+			s.connect(*endpoint_iterator++, boost::asio::assign_error(error));
+		}
+		if (error)
+			throw error;		
 		Cbvalue v;
 		if (vm.count("close"))
 		{
