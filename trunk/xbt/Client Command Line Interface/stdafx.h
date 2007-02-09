@@ -6,6 +6,9 @@
 #pragma warning(disable: 4244 4554 4800)
 #endif // _MSC_VER > 1000
 
+#define NOMINMAX
+
+#include <boost/asio.hpp>
 #include <cassert>
 #include <ctime>
 #include <fstream>
