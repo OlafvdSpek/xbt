@@ -12,7 +12,7 @@ CREATE TABLE xbt_announce_log
   uid int NOT NULL,
   mtime int NOT NULL,
   PRIMARY KEY (id)
-);
+) engine = myisam;
 
 CREATE TABLE xbt_config
 (
@@ -30,10 +30,10 @@ CREATE TABLE xbt_files
 (
   fid int NOT NULL auto_increment,
   info_hash blob NOT NULL,
-  leechers int NOT NULL,
-  seeders int NOT NULL,
-  completed int NOT NULL,
-  flags int NOT NULL,
+  leechers int NOT NULL default 0,
+  seeders int NOT NULL default 0,
+  completed int NOT NULL default 0,
+  flags int NOT NULL default 0,
   mtime int NOT NULL,
   ctime int NOT NULL,
   PRIMARY KEY (fid),
@@ -79,4 +79,4 @@ CREATE TABLE xbt_users
   downloaded bigint NOT NULL,
   uploaded bigint NOT NULL,
   PRIMARY KEY (uid)
-);
+) engine = myisam;
