@@ -63,7 +63,7 @@ CREATE TABLE xbt_scrape_log
   uid int NOT NULL,
   mtime int NOT NULL,
   PRIMARY KEY (id)
-);
+) engine = myisam;
 
 CREATE TABLE xbt_users
 (
@@ -79,4 +79,4 @@ CREATE TABLE xbt_users
   downloaded bigint NOT NULL,
   uploaded bigint NOT NULL,
   PRIMARY KEY (uid)
-) engine = myisam;
+);
