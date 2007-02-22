@@ -22,6 +22,8 @@ int main1()
 		strcat(b, "xbt_tracker.conf");
 		if (config.load(b))
 			std::cerr << "Unable to read " << g_conf_file << std::endl;
+		else
+			g_conf_file = b;
 	}
 #else
 		std::cerr << "Unable to read " << g_conf_file << std::endl;
@@ -38,7 +40,7 @@ int main1()
 		return 1;
 	}
 	database.set_query_log(config.m_query_log);
-	return Cserver(database, config.m_mysql_table_prefix, config.m_mysql_host != "-").run();
+	return Cserver(database, config.m_mysql_table_prefix, config.m_mysql_host != "-", g_conf_file).run();
 }
 
 #ifdef WIN32
