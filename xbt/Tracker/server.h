@@ -152,7 +152,7 @@ public:
 	Cbvalue scrape(const Ctracker_input&);
 	int run();
 	static void term();
-	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql);
+	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 
 	int announce_interval() const
 	{
@@ -273,6 +273,7 @@ private:
 	t_users_names m_users_names;
 	t_users_torrent_passes m_users_torrent_passes;
 	std::string m_announce_log_buffer;
+	std::string m_conf_file;
 	std::string m_files_users_updates_buffer;
 	std::string m_scrape_log_buffer;
 	std::string m_table_prefix;

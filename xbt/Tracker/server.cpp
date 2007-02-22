@@ -76,13 +76,14 @@ private:
 	Cbvalue m_peers;
 };
 
-Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql):
+Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql, const std::string& conf_file):
 	m_database(database)
 {
 	m_fid_end = 0;
 
 	for (int i = 0; i < 8; i++)
 		m_secret = m_secret << 8 ^ rand();
+	m_conf_file = conf_file;
 	m_table_prefix = table_prefix;
 	m_time = ::time(NULL);
 	m_use_sql = use_sql;
@@ -892,7 +893,7 @@ void Cserver::read_config()
 			Cconfig config;
 			for (Csql_row row; row = result.fetch_row(); )
 				config.set(row[0].s(), row[1].s());
-			config.load("xbt_tracker.conf");
+			config.load(m_conf_file);
 			m_config = config;
 		}
 		catch (Cdatabase::exception&)
@@ -902,7 +903,7 @@ void Cserver::read_config()
 	else
 	{
 		Cconfig config;
-		if (!config.load("xbt_tracker.conf"))
+		if (!config.load(m_conf_file))
 			m_config = config;
 	}
 	if (m_config.m_listen_ipas.empty())
