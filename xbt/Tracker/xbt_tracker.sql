@@ -47,9 +47,9 @@ CREATE TABLE xbt_files_users
   active tinyint NOT NULL,
   announced int NOT NULL,
   completed int NOT NULL,
-  downloaded bigint(20) NOT NULL,
-  `left` bigint(20) NOT NULL,
-  uploaded bigint(20) NOT NULL,
+  downloaded bigint NOT NULL,
+  `left` bigint NOT NULL,
+  uploaded bigint NOT NULL,
   mtime int NOT NULL,
   UNIQUE KEY (fid, uid),
   KEY (uid)
