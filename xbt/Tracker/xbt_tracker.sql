@@ -1,82 +1,82 @@
-CREATE TABLE xbt_announce_log
+create table if not exists xbt_announce_log
 (
-  id int NOT NULL auto_increment,
-  ipa int unsigned NOT NULL,
-  port int NOT NULL,
-  event int NOT NULL,
-  info_hash blob NOT NULL,
-  peer_id blob NOT NULL,
-  downloaded bigint NOT NULL,
-  left0 bigint NOT NULL,
-  uploaded bigint NOT NULL,
-  uid int NOT NULL,
-  mtime int NOT NULL,
-  PRIMARY KEY (id)
+  id int not null auto_increment,
+  ipa int unsigned not null,
+  port int not null,
+  event int not null,
+  info_hash blob not null,
+  peer_id blob not null,
+  downloaded bigint not null,
+  left0 bigint not null,
+  uploaded bigint not null,
+  uid int not null,
+  mtime int not null,
+  primary key (id)
 ) engine = myisam;
 
-CREATE TABLE xbt_config
+create table if not exists xbt_config
 (
-  name varchar(255) NOT NULL,
-  value varchar(255) NOT NULL
+  name varchar(255) not null,
+  value varchar(255) not null
 );
 
-CREATE TABLE xbt_deny_from_hosts
+create table if not exists xbt_deny_from_hosts
 (
-  begin int NOT NULL,
-  end int NOT NULL
+  begin int not null,
+  end int not null
 );
 
-CREATE TABLE xbt_files
+create table if not exists xbt_files
 (
-  fid int NOT NULL auto_increment,
-  info_hash blob NOT NULL,
-  leechers int NOT NULL default 0,
-  seeders int NOT NULL default 0,
-  completed int NOT NULL default 0,
-  flags int NOT NULL default 0,
-  mtime int NOT NULL,
-  ctime int NOT NULL,
-  PRIMARY KEY (fid),
-  UNIQUE KEY (info_hash(20))
+  fid int not null auto_increment,
+  info_hash blob not null,
+  leechers int not null default 0,
+  seeders int not null default 0,
+  completed int not null default 0,
+  flags int not null default 0,
+  mtime int not null,
+  ctime int not null,
+  primary key (fid),
+  unique key (info_hash(20))
 );
 
-CREATE TABLE xbt_files_users
+create table if not exists xbt_files_users
 (
-  fid int NOT NULL,
-  uid int NOT NULL,
-  active tinyint NOT NULL,
-  announced int NOT NULL,
-  completed int NOT NULL,
-  downloaded bigint NOT NULL,
-  `left` bigint NOT NULL,
-  uploaded bigint NOT NULL,
-  mtime int NOT NULL,
-  UNIQUE KEY (fid, uid),
-  KEY (uid)
+  fid int not null,
+  uid int not null,
+  active tinyint not null,
+  announced int not null,
+  completed int not null,
+  downloaded bigint not null,
+  `left` bigint not null,
+  uploaded bigint not null,
+  mtime int not null,
+  unique key (fid, uid),
+  key (uid)
 );
 
-CREATE TABLE xbt_scrape_log
+create table if not exists xbt_scrape_log
 (
-  id int NOT NULL auto_increment,
-  ipa int NOT NULL,
+  id int not null auto_increment,
+  ipa int not null,
   info_hash blob,
-  uid int NOT NULL,
-  mtime int NOT NULL,
-  PRIMARY KEY (id)
+  uid int not null,
+  mtime int not null,
+  primary key (id)
 ) engine = myisam;
 
-CREATE TABLE xbt_users
+create table if not exists xbt_users
 (
-  uid int NOT NULL auto_increment,
-  name char(8) NOT NULL,
-  pass blob NOT NULL,
-  can_leech tinyint NOT NULL default 1,
-  wait_time int NOT NULL,
-  peers_limit int NOT NULL,
-  torrents_limit int NOT NULL,
-  torrent_pass char(32) NOT NULL,
-  torrent_pass_secret bigint NOT NULL,
-  downloaded bigint NOT NULL,
-  uploaded bigint NOT NULL,
-  PRIMARY KEY (uid)
+  uid int not null auto_increment,
+  name char(8) not null,
+  pass blob not null,
+  can_leech tinyint not null default 1,
+  wait_time int not null,
+  peers_limit int not null,
+  torrents_limit int not null,
+  torrent_pass char(32) not null,
+  torrent_pass_secret bigint not null,
+  downloaded bigint not null,
+  uploaded bigint not null,
+  primary key (uid)
 );
