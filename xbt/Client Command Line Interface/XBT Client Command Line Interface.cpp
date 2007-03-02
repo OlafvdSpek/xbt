@@ -261,4 +261,9 @@ int main(int argc, char* argv[])
 		std::cerr << e.what() << std::endl;
 		return 1;
 	}
+	catch (asio::error_code& e)
+	{
+		std::cerr << e.message() << std::endl;
+		return 1;
+	}
 }
