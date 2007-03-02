@@ -8,15 +8,14 @@
 #include "bvalue.h"
 
 namespace po = boost::program_options;
-using namespace boost::asio;
-using ip::tcp;
+using asio::ip::tcp;
 
 int recv(tcp::socket& s, Cbvalue* v)
 {
 	std::vector<char> d(5);
 	memory_range w(&*d.begin(), d.size());
 	int r;
-	while (w.size() && (r = s.receive(mutable_buffer_container_1(mutable_buffer(w.begin, w.size())))))
+	while (w.size() && (r = s.receive(asio::mutable_buffers_1(asio::mutable_buffer(w.begin, w.size())))))
 	{
 		if (r == SOCKET_ERROR)
 			return r;
@@ -24,7 +23,7 @@ int recv(tcp::socket& s, Cbvalue* v)
 	}
 	d.resize(read_int(4, &d.front()) - 1);
 	w = memory_range(&*d.begin(), d.size());
-	while (w.size() && (r = s.receive(mutable_buffer_container_1(mutable_buffer(w.begin, w.size())))))
+	while (w.size() && (r = s.receive(asio::mutable_buffers_1(asio::mutable_buffer(w.begin, w.size())))))
 	{
 		if (r == SOCKET_ERROR)
 			return r;
@@ -39,9 +38,9 @@ int send(tcp::socket& s, const Cbvalue& v)
 	Cvirtual_binary d1 = v.read();
 	write_int(4, d0, d1.size() + 1);
 	d0[4] = bti_bvalue;
-	if (s.send(const_buffer_container_1(const_buffer(d0, 5))) != 5)
+	if (s.send(asio::const_buffers_1(asio::const_buffer(d0, 5))) != 5)
 		return 1;
-	return s.send(const_buffer_container_1(const_buffer(d1, d1.size()))) != d1.size();
+	return s.send(asio::const_buffers_1(asio::const_buffer(d1, d1.size()))) != d1.size();
 }
 
 Cbvalue send_recv(tcp::socket& s, const Cbvalue& v)
@@ -146,17 +145,17 @@ int main(int argc, char* argv[])
 			std::cerr << desc;
 			return 1;
 		}
-		boost::asio::io_service io_service;
+		asio::io_service io_service;
 		tcp::resolver resolver(io_service);
 		tcp::resolver::query query(vm["backend_host"].as<std::string>(), vm["backend_port"].as<std::string>());
 		tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 		tcp::resolver::iterator end;
 		tcp::socket s(io_service);
-		boost::asio::error error = boost::asio::error::host_not_found;
+		asio::error_code error = asio::error::host_not_found;
 		while (error && endpoint_iterator != end)
 		{
 			s.close();
-			s.connect(*endpoint_iterator++, boost::asio::assign_error(error));
+			s.connect(*endpoint_iterator++, error);
 		}
 		if (error)
 			throw error;		
