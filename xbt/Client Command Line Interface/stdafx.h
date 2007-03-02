@@ -8,7 +8,7 @@
 
 #define NOMINMAX
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <cassert>
 #include <ctime>
 #include <fstream>
