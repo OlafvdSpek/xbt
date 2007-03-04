@@ -22,9 +22,6 @@
 #include <vector>
 
 #ifdef WIN32
-#define FD_SETSIZE 1024
-#define NOMINMAX
-
 #include <io.h>
 #include <windows.h>
 
@@ -46,7 +43,6 @@
 #endif
 #include "bt_misc.h"
 #include "bvalue.h"
-#include "socket.h"
 #include "vartypes.h"
 #include "virtual_binary.h"
 
