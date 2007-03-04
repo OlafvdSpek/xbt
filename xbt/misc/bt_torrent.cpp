@@ -68,8 +68,7 @@ bool Cbt_torrent::valid() const
 		if (i->size() < 0)
 			return false;
 	}
-	return !announce().empty()
-		&& !files().empty()
+	return !files().empty()
 		&& !name().empty()
 		&& name()[0] != '.'
 		&& name().find_first_of("\"*/:<>?\\|") == std::string::npos
