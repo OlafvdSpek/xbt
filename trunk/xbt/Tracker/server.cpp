@@ -47,8 +47,6 @@ public:
 	void peer(int h, const Cserver::t_peer& p)
 	{
 		Cbvalue peer;
-		if (!m_no_peer_id)
-			peer.d(bts_peer_id, p.peer_id);
 		peer.d(bts_ipa, Csocket::inet_ntoa(h));
 		peer.d(bts_port, ntohs(p.port));
 		m_peers.l(peer);
@@ -477,7 +475,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 	return "";
 }
 
-void Cserver::update_peer(const std::string& file_id, int peer_id, bool listening)
+void Cserver::update_peer(const std::string& file_id, t_peers::key_type peer_id, bool listening)
 {
 	t_files::iterator i = m_files.find(file_id);
 	if (i == m_files.end())

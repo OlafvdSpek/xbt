@@ -145,7 +145,7 @@ public:
 	void read_db_users();
 	void clean_up();
 	std::string insert_peer(const Ctracker_input&, bool listen_check, bool udp, t_user*);
-	void update_peer(const std::string& file_id, int peer_id, bool listening);
+	void update_peer(const std::string& file_id, t_peers::key_type peer_id, bool listening);
 	std::string debug(const Ctracker_input&) const;
 	std::string statistics() const;
 	Cbvalue select_peers(const Ctracker_input&, const t_user*);
