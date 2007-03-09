@@ -23,7 +23,7 @@ std::string n(long long);
 std::string native_slashes(const std::string&);
 std::string hex_decode(const std::string&);
 std::string hex_encode(int l, int v);
-std::string hex_encode(const std::string&);
+std::string hex_encode(const_memory_range);
 std::string js_encode(const std::string&);
 std::string peer_id2a(const std::string&);
 std::string time2a(time_t);

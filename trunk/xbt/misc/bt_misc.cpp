@@ -84,11 +84,11 @@ std::string n(long long v)
 	return b;
 }
 
-std::string hex_encode(const std::string& v)
+std::string hex_encode(const_memory_range v)
 {
 	std::string r;
-	r.reserve(v.length() << 1);
-	for (size_t i = 0; i < v.length(); i++)
+	r.reserve(v.size() << 1);
+	for (size_t i = 0; i < v.size(); i++)
 		r += hex_encode(2, v[i]);
 	return r;
 }
