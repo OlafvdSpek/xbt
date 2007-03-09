@@ -229,7 +229,7 @@ void Cconnection::read(const std::string& v)
 		}
 		break;
 	case 's':
-		if (v.length() >= 7 && v[6] == 't')
+		if (v.size() >= 7 && v[6] == 't')
 		{
 			gzip = m_server->gzip_debug();
 			std::string v = m_server->statistics();
