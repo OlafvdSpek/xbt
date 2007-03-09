@@ -45,7 +45,7 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 		}
 		break;
 	case 'i':
-		if (name == "info_hash" && value.length() == 20)
+		if (name == "info_hash" && value.size() == 20)
 			m_info_hash = value;
 		else if (name == "ip")
 			m_ipa = inet_addr(value.c_str());
@@ -65,7 +65,7 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 			m_num_want = atoi(value.c_str());
 		break;
 	case 'p':
-		if (name == "peer_id" && value.length() == 20)
+		if (name == "peer_id" && value.size() == 20)
 			m_peer_id = value;
 		else if (name == "port")
 			m_port = htons(atoi(value.c_str()));
@@ -81,9 +81,9 @@ bool Ctracker_input::valid() const
 {
 	return m_downloaded >= 0
 		&& (m_event != e_completed || !m_left)
-		&& m_info_hash.length() == 20
+		&& m_info_hash.size() == 20
 		&& m_left >= -1
-		&& m_peer_id.length() == 20
+		&& m_peer_id.size() == 20
 		&& m_port >= 0
 		&& m_uploaded >= 0;
 }
