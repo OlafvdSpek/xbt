@@ -16,7 +16,6 @@
 #include "profiles.h"
 #include "scheduler.h"
 #include "stream_writer.h"
-#include "udp_tracker.h"
 #include "version_check_handler.h"
 
 class Cserver
@@ -97,7 +96,6 @@ public:
 	void torrent_upload_slots_max(const std::string& file_id, bool override, int v);
 	void torrent_upload_slots_min(const std::string& file_id, bool override, int v);
 	void torrents_dir(const std::string&);
-	void tracker_port(int);
 	void unlock();
 	void update_chokes();
 	void update_states();
@@ -244,11 +242,6 @@ public:
 		return m_tracker_accounts;
 	}
 
-	int tracker_port() const
-	{
-		return m_tracker_port;
-	}
-
 	int upload_rate() const
 	{
 		return m_config.m_upload_rate;
@@ -271,7 +264,6 @@ private:
 	Cconfig m_config;
 	Cprofiles m_profiles;
 	Cscheduler m_scheduler;
-	Cudp_tracker m_udp_tracker;
 
 	int m_admin_port;
 	int m_peer_port;
@@ -282,7 +274,6 @@ private:
 	time_t m_save_state_time;
 	time_t m_start_time;
 	time_t m_time;
-	int m_tracker_port;
 	time_t m_update_chokes_time;
 	time_t m_update_send_quotas_time;
 	time_t m_update_states_time;

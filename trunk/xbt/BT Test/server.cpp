@@ -80,7 +80,6 @@ Cserver::Cserver():
 	m_send_quota = 0;
 	m_start_time = ::time(NULL);
 	m_time = ::time(NULL);
-	m_tracker_port = m_config.m_tracker_port;
 	m_update_chokes_time = 0;
 	m_update_send_quotas_time = time();
 	m_update_states_time = 0;
@@ -122,11 +121,6 @@ void Cserver::seeding_ratio(int v)
 void Cserver::send_stop_event(bool v)
 {
 	m_config.m_send_stop_event = v;
-}
-
-void Cserver::tracker_port(int v)
-{
-	m_config.m_tracker_port = max(0, v);
 }
 
 void Cserver::upload_rate(int v)
@@ -196,8 +190,7 @@ int Cserver::run()
 	m_admin_port = m_config.m_admin_port;
 	m_peer_id = new_peer_id(peer_id_prefix());
 	m_peer_port = m_config.m_peer_port;
-	m_tracker_port = m_config.m_tracker_port;
-	Csocket l, la, lt;
+	Csocket l, la;
 	if (admin_port())
 	{
 		if (la.open(SOCK_STREAM) == INVALID_SOCKET)
@@ -265,16 +258,6 @@ int Cserver::run()
 				alert(Calert(Calert::error, "Server", "listen failed: " + Csocket::error2a(WSAGetLastError())));
 				l.close();
 			}
-		}
-	}
-	if (tracker_port())
-	{
-		if (lt.open(SOCK_DGRAM) == INVALID_SOCKET)
-			alert(Calert(Calert::error, "Server", "socket failed: " + Csocket::error2a(WSAGetLastError())));
-		else
-		{
-			while (tracker_port() < 0x10000 && lt.bind(htonl(INADDR_ANY), htons(tracker_port())) && WSAGetLastError() == WSAEADDRINUSE)
-				m_tracker_port++;
 		}
 	}
 #ifdef WIN32
@@ -346,21 +329,6 @@ int Cserver::run()
 				m_peer_port = m_config.m_peer_port;
 			}
 		}
-		if (m_config.m_tracker_port != m_tracker_port)
-		{
-			Csocket s;
-			if (!m_config.m_tracker_port)
-			{
-				lt.close();
-				m_tracker_port = m_config.m_tracker_port;
-			}
-			else if (s.open(SOCK_DGRAM) != INVALID_SOCKET
-				&& !s.bind(htonl(INADDR_ANY), htons(m_config.m_tracker_port)))
-			{
-				lt = s;
-				m_tracker_port = m_config.m_tracker_port;
-			}
-		}
 		FD_ZERO(&fd_read_set);
 		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
@@ -380,11 +348,6 @@ int Cserver::run()
 		{
 			FD_SET(la, &fd_read_set);
 			n = max(n, static_cast<SOCKET>(la));
-		}
-		if (lt != INVALID_SOCKET)
-		{
-			FD_SET(lt, &fd_read_set);
-			n = max(n, static_cast<SOCKET>(lt));
 		}
 		unlock();
 		timeval tv;
@@ -456,8 +419,6 @@ int Cserver::run()
 				}
 			}
 		}
-		if (lt != INVALID_SOCKET && FD_ISSET(lt, &fd_read_set))
-			m_udp_tracker.recv(lt);
 		post_select(&fd_read_set, &fd_write_set, &fd_except_set);
 		if (stopping)
 		{
@@ -1221,7 +1182,6 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	{
 		d.d(bts_admin_port, admin_port());
 		d.d(bts_peer_port, peer_port());
-		d.d(bts_tracker_port, tracker_port());
 		d.d(bts_upload_rate, upload_rate());
 		d.d(bts_upload_slots, upload_slots());
 		d.d(bts_seeding_ratio, seeding_ratio());
@@ -1271,8 +1231,6 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	{
 		if (s.d_has(bts_peer_port))
 			peer_port(s.d(bts_peer_port).i());
-		if (s.d_has(bts_tracker_port))
-			tracker_port(s.d(bts_tracker_port).i());
 		if (s.d_has(bts_upload_rate))
 			upload_rate(s.d(bts_upload_rate).i());
 		if (s.d_has(bts_upload_slots))

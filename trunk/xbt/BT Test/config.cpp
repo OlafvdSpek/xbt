@@ -47,7 +47,6 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"torrent_limit", &m_torrent_limit, 0,
 			"torrent_upload_slots_max", &m_torrent_upload_slots_max, 0,
 			"torrent_upload_slots_min", &m_torrent_upload_slots_min, 0,
-			"tracker_port", &m_tracker_port, 2710,
 			"upload_rate", &m_upload_rate, 0,
 			"upload_slots", &m_upload_slots, 8,
 			NULL
