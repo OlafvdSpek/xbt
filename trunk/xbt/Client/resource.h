@@ -29,7 +29,6 @@
 #define IDC_PEER_PORT                   1003
 #define IDC_ALERTS                      1004
 #define IDC_UPLOAD_RATE                 1004
-#define IDC_TRACKER_PORT                1005
 #define IDC_PEER_LIMIT                  1007
 #define IDC_TORRENT_LIMIT               1008
 #define IDC_PUBLIC_IPA                  1010
@@ -113,7 +112,6 @@
 #define IDC_COMPLETES_DIRECTORY_STATIC  1076
 #define IDC_INCOMPLETES_DIRECTORY_STATIC 1077
 #define IDC_TORRENTS_DIRECTORY_STATIC   1078
-#define IDC_TRACKER_PORT_STATIC         1079
 #define IDC_PEER_LIMIT_STATIC           1080
 #define IDC_TORRENT_LIMIT_STATIC        1081
 #define IDC_HOT_KEY_STATIC              1082

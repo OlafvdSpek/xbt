@@ -31,7 +31,6 @@ public:
 		bool show_tray_icon;
 		bool start_minimized;
 		int torrent_limit;
-		int tracker_port;
 		int upload_rate;
 		int upload_slots;
 		bool upnp;
@@ -54,7 +53,6 @@ public:
 	BOOL	m_show_tray_icon;
 	BOOL	m_start_minimized;
 	BOOL	m_ask_for_location;
-	int		m_tracker_port;
 	BOOL	m_lower_process_priority;
 	int		m_peer_limit;
 	BOOL	m_bind_before_connect;

@@ -16,7 +16,6 @@ Cdlg_options::Cdlg_options(CWnd* pParent /*=NULL*/)
 	m_show_tray_icon = FALSE;
 	m_start_minimized = FALSE;
 	m_ask_for_location = FALSE;
-	m_tracker_port = 0;
 	m_lower_process_priority = FALSE;
 	m_peer_limit = 0;
 	m_bind_before_connect = FALSE;
@@ -50,8 +49,6 @@ void Cdlg_options::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_SHOW_TRAY_ICON, m_show_tray_icon);
 	DDX_Check(pDX, IDC_START_MINIMIZED, m_start_minimized);
 	DDX_Check(pDX, IDC_ASK_FOR_LOCATION, m_ask_for_location);
-	DDX_Text(pDX, IDC_TRACKER_PORT, m_tracker_port);
-	DDV_MinMaxInt(pDX, m_tracker_port, 0, 65535);
 	DDX_Check(pDX, IDC_LOWER_PROCESS_PRIORITY, m_lower_process_priority);
 	DDX_Text(pDX, IDC_PEER_LIMIT, m_peer_limit);
 	DDX_Check(pDX, IDC_BIND_BEFORE_CONNECT, m_bind_before_connect);
@@ -103,7 +100,6 @@ Cdlg_options::t_data Cdlg_options::get() const
 	v.start_minimized = m_start_minimized;
 	v.torrent_limit = m_torrent_limit;
 	v.torrents_dir = m_torrents_dir;
-	v.tracker_port = m_tracker_port;
 	v.upload_rate = m_upload_rate << 10;
 	v.upload_slots = m_upload_slots;
 	v.upnp = m_upnp;
@@ -132,7 +128,6 @@ void Cdlg_options::set(const t_data& v)
 	m_start_minimized = v.start_minimized;
 	m_torrent_limit = v.torrent_limit;
 	m_torrents_dir = native_slashes(v.torrents_dir).c_str();
-	m_tracker_port = v.tracker_port;
 	m_upload_rate = v.upload_rate >> 10;
 	m_upload_slots = v.upload_slots;
 	m_upnp = v.upnp;
@@ -183,7 +178,6 @@ BOOL Cdlg_options::OnInitDialog()
 				<< item(IDC_PUBLIC_IPA_STATIC, NORESIZE)
 				<< item(IDC_ADMIN_PORT_STATIC, NORESIZE)
 				<< item(IDC_PEER_PORT_STATIC, NORESIZE)
-				<< item(IDC_TRACKER_PORT_STATIC, NORESIZE)
 				<< item(IDC_HOT_KEY_STATIC, NORESIZE)
 				<< item(IDC_PEER_ID_STATIC, NORESIZE)
 				<< item(IDC_USER_AGENT_STATIC, NORESIZE)
@@ -209,7 +203,6 @@ BOOL Cdlg_options::OnInitDialog()
 				<< item(IDC_PUBLIC_IPA, ABSOLUTE_VERT)
 				<< item(IDC_ADMIN_PORT, ABSOLUTE_VERT)
 				<< item(IDC_PEER_PORT, ABSOLUTE_VERT)
-				<< item(IDC_TRACKER_PORT, ABSOLUTE_VERT)
 				<< item(IDC_HOT_KEY, ABSOLUTE_VERT)
 				<< item(IDC_PEER_ID, ABSOLUTE_VERT)
 				<< item(IDC_USER_AGENT, ABSOLUTE_VERT)
