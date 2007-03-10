@@ -399,7 +399,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 		long long downloaded = 0;
 		long long uploaded = 0;
 		if (i != file.peers.end()
-			&& i->second.peer_id == v.m_peer_id
+			&& boost::equals(i->second.peer_id, v.m_peer_id)
 			&& v.m_downloaded >= i->second.downloaded
 			&& v.m_uploaded >= i->second.uploaded)
 		{
@@ -432,7 +432,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 		t_peer& peer = file.peers[v.m_ipa];
 		peer.downloaded = v.m_downloaded;
 		peer.left = v.m_left;
-		peer.peer_id = v.m_peer_id;
+		std::copy(v.m_peer_id.begin(), v.m_peer_id.end(), peer.peer_id.begin());
 		peer.port = v.m_port;
 		peer.uid = user ? user->uid : 0;
 		peer.uploaded = v.m_uploaded;
@@ -921,7 +921,7 @@ std::string Cserver::t_file::debug() const
 			+ "<td>" + (i->second.listening ? '*' : ' ')
 			+ "<td align=right>" + n(i->second.left)
 			+ "<td align=right>" + n(::time(NULL) - i->second.mtime)
-			+ "<td>" + hex_encode(i->second.peer_id);
+			+ "<td>" + hex_encode(const_memory_range(i->second.peer_id.begin(), i->second.peer_id.end()));
 	}
 	return page;
 }
