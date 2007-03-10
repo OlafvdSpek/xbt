@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <boost/array.hpp>
 #include <map>
 #include "sql/database.h"
 #include "bvalue.h"
@@ -29,14 +30,13 @@ public:
 		}
 
 		long long downloaded;
-		long long left;
-		std::string peer_id;
+		long long uploaded;
+		time_t mtime;
 		int port;
 		int uid;
-		long long uploaded;
-
+		bool left;
 		bool listening;
-		time_t mtime;
+		boost::array<char, 20> peer_id;
 	};
 
 	typedef std::map<int, t_peer> t_peers;
