@@ -2899,7 +2899,6 @@ void CXBTClientDlg::OnToolsOptions()
 	data.start_minimized = get_profile_start_minimized();
 	data.torrent_limit = m_server.torrent_limit();
 	data.torrents_dir = m_server.torrents_dir();
-	data.tracker_port = m_server.tracker_port();
 	data.upload_rate = m_server.upload_rate();
 	data.upload_slots = m_server.upload_slots();
 	data.upnp = m_server.config().m_upnp;
@@ -2929,7 +2928,6 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.send_stop_event(data.send_stop_event);
 	m_show_tray_icon = data.show_tray_icon;
 	m_server.torrent_limit(data.torrent_limit);
-	m_server.tracker_port(data.tracker_port);
 	m_server.upload_rate(data.upload_rate);
 	m_server.m_upload_rate_enabled = true;
 	m_server.upload_slots(data.upload_slots);
