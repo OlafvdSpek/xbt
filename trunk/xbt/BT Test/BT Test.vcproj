@@ -899,28 +899,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="udp_tracker.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="version_check_handler.cpp"
 				>
 				<FileConfiguration
@@ -1145,10 +1123,6 @@
 			</File>
 			<File
 				RelativePath="..\misc\stream_writer.h"
-				>
-			</File>
-			<File
-				RelativePath="udp_tracker.h"
 				>
 			</File>
 			<File

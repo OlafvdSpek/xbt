@@ -238,7 +238,6 @@
 		$d .= '<th>';
 		$d .= sprintf('<tr><td align=left>Admin Port (TCP)<td><input type=text name=admin_port size=80 value=%d style="text-align: right"><td>', $v['admin port']['value']);
 		$d .= sprintf('<tr><td align=left>Peer Port (TCP)<td><input type=text name=peer_port size=80 value=%d style="text-align: right"><td>', $v['peer port']['value']);
-		$d .= sprintf('<tr><td align=left>Tracker Port (UDP)<td><input type=text name=tracker_port size=80 value=%d style="text-align: right"><td>', $v['tracker port']['value']);
 		$d .= sprintf('<tr><td align=left>Upload Rate<td><input type=text name=upload_rate size=80 value=%d style="text-align: right"><td align=left>kb/s', $v['upload rate']['value'] >> 10);
 		$d .= sprintf('<tr><td align=left>Upload Slots<td><input type=text name=upload_slots size=80 value=%d style="text-align: right"><td>', $v['upload slots']['value']);
 		$d .= sprintf('<tr><td align=left>Seeding Ratio<td><input type=text name=seeding_ratio size=80 value=%d style="text-align: right"><td align=left>%%', $v['seeding ratio']['value']);
