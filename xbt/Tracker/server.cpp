@@ -376,7 +376,8 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 		file.ctime = time();
 	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > time())
 		return bts_wait_time;
-	t_peers::iterator i = file.peers.find(v.m_ipa);
+	t_peers::key_type peer_key = v.m_ipa;
+	t_peers::iterator i = file.peers.find(peer_key);
 	if (i != file.peers.end())
 	{
 		(i->second.left ? file.leechers : file.seeders)--;
@@ -426,10 +427,10 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 		}
 	}
 	if (v.m_event == Ctracker_input::e_stopped)
-		file.peers.erase(v.m_ipa);
+		file.peers.erase(peer_key);
 	else
 	{
-		t_peer& peer = file.peers[v.m_ipa];
+		t_peer& peer = file.peers[peer_key];
 		peer.downloaded = v.m_downloaded;
 		peer.left = v.m_left;
 		std::copy(v.m_peer_id.begin(), v.m_peer_id.end(), peer.peer_id.begin());
@@ -444,7 +445,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 			peer.listening = true;
 		else if (!peer.listening && time() - peer.mtime > 7200)
 		{
-			Cpeer_link peer_link(v.m_ipa, v.m_port, this, v.m_info_hash, v.m_ipa);
+			Cpeer_link peer_link(v.m_ipa, v.m_port, this, v.m_info_hash, peer_key);
 			if (peer_link.s() != INVALID_SOCKET)
 			{
 				m_peer_links.push_back(peer_link);
