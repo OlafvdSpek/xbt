@@ -724,6 +724,7 @@ void Cserver::read_db_files_sql()
 
 void Cserver::read_db_users()
 {
+	m_read_db_users_time = time();
 	if (!m_use_sql)
 		return;
 	try
@@ -763,11 +764,11 @@ void Cserver::read_db_users()
 	catch (Cdatabase::exception&)
 	{
 	}
-	m_read_db_users_time = time();
 }
 
 void Cserver::write_db_files()
 {
+	m_write_db_files_time = time();
 	if (!m_use_sql)
 		return;
 	try
@@ -834,11 +835,11 @@ void Cserver::write_db_files()
 		}
 		m_scrape_log_buffer.erase();
 	}
-	m_write_db_files_time = time();
 }
 
 void Cserver::write_db_users()
 {
+	m_write_db_users_time = time();
 	if (!m_use_sql)
 		return;
 	if (!m_files_users_updates_buffer.empty())
@@ -878,7 +879,6 @@ void Cserver::write_db_users()
 		}
 		m_users_updates_buffer.erase();
 	}
-	m_write_db_users_time = time();
 }
 
 void Cserver::read_config()
