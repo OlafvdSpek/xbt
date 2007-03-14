@@ -73,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib_static.lib"
+				AdditionalDependencies="zdll.lib"
 				OutputFile=".\Release/XBT Tracker.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
