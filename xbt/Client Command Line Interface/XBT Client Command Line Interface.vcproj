@@ -166,7 +166,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib_static.lib"
+				AdditionalDependencies="zdll.lib"
 				OutputFile=".\Release/XBT Client Command Line Interface.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
