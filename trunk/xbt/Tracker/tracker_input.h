@@ -22,8 +22,11 @@ public:
 		e_stopped,
 	};
 
+	typedef std::vector<std::string> t_info_hashes;
+
 	t_event m_event;
 	std::string m_info_hash;
+	t_info_hashes m_info_hashes;
 	int m_ipa;
 	std::string m_key;
 	std::string m_peer_id;
