@@ -585,7 +585,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	}
 	Cbvalue v;
 	Cbvalue files(Cbvalue::vt_dictionary);
-	if (ti.m_info_hash.empty())
+	if (ti.m_info_hashes.empty())
 	{
 		m_stats.scraped_full++;
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
@@ -596,11 +596,12 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	}
 	else
 	{
-		t_files::iterator i = m_files.find(ti.m_info_hash);
-		if (i != m_files.end())
+		m_stats.scraped_http++;
+		for (Ctracker_input::t_info_hashes::const_iterator j = ti.m_info_hashes.begin(); j != ti.m_info_hashes.end(); j++)
 		{
-			m_stats.scraped_http++;
-			i->second.dirty = true;
+			t_files::const_iterator i = m_files.find(*j);
+			if (i == m_files.end())
+				continue;
 			files.d(i->first, i->second.scrape());
 		}
 	}

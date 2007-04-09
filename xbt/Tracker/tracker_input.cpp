@@ -46,7 +46,10 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 		break;
 	case 'i':
 		if (name == "info_hash" && value.size() == 20)
+		{
 			m_info_hash = value;
+			m_info_hashes.push_back(value);
+		}
 		else if (name == "ip")
 			m_ipa = inet_addr(value.c_str());
 		break;
