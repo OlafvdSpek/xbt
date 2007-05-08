@@ -380,9 +380,8 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 	t_peers::iterator i = file.peers.find(peer_key);
 	if (i != file.peers.end())
 	{
-		(i->second.left ? file.leechers : file.seeders)--;
-		t_user* old_user = i->second.uid ? find_user_by_uid(i->second.uid) : NULL;
-		if (old_user)
+		(i->second.left ? file.leechers : file.seeders)--;	
+		if (t_user* old_user = find_user_by_uid(i->second.uid))
 			(i->second.left ? old_user->incompletes : old_user->completes)--;
 	}
 	else if (v.m_left && user && user->torrents_limit && user->incompletes >= user->torrents_limit)
@@ -683,9 +682,16 @@ void Cserver::read_db_files_sql()
 			Csql_result result = q.execute();
 			for (Csql_row row; row = result.fetch_row(); )
 			{
-				if (row[0].size() != 20)
-					continue;
-				m_files.erase(row[0].s());
+				t_files::iterator i = m_files.find(row[0].s());
+				if (i != m_files.end())
+				{
+					for (t_peers::iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
+					{
+						if (t_user* user = find_user_by_uid(j->second.uid))
+							(j->second.left ? user->incompletes : user->completes)--;
+					}
+					m_files.erase(i);
+				}
 				q = "delete from ? where ? = ?";
 				q.p_name(table_name(table_files));
 				q.p_name(column_name(column_files_fid));
