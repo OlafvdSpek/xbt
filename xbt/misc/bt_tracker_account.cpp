@@ -5,7 +5,6 @@
 
 Cbt_tracker_account::Cbt_tracker_account()
 {
-
 }
 
 Cbt_tracker_account::Cbt_tracker_account(const std::string& tracker, const std::string& user, const std::string& pass)
@@ -22,9 +21,9 @@ int Cbt_tracker_account::pre_dump() const
 
 void Cbt_tracker_account::dump(Cstream_writer& w) const
 {
-	w.write_string(tracker());
-	w.write_string(user());
-	w.write_string(pass());
+	w.write_data(tracker());
+	w.write_data(user());
+	w.write_data(pass());
 }
 
 Cvirtual_binary Cbt_tracker_accounts::dump() const

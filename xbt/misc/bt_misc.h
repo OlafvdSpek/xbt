@@ -7,7 +7,6 @@
 
 #include <string>
 #include "sha1.h"
-#include "virtual_binary.h"
 
 std::string b2a(long long v, const char* postfix = NULL);
 std::string backward_slashes(std::string);

@@ -6,7 +6,6 @@
 #endif // _MSC_VER > 1000
 
 #include "stream_int.h"
-#include "virtual_binary.h"
 
 class Cstream_writer
 {
@@ -27,16 +26,10 @@ public:
 		m_w = ::write_int(cb, m_w, v);
 	}
 
-	void write_data(const Cvirtual_binary& v)
+	void write_data(const_memory_range v)
 	{
 		write_int(4, v.size());
-		v.read(write(v.size()));
-	}
-
-	void write_string(const std::string& v)
-	{
-		write_int(4, v.length());
-		memcpy(write(v.length()), v.c_str(), v.length());
+		memcpy(write(v.size()), v, v.size());
 	}
 
 	Cstream_writer()

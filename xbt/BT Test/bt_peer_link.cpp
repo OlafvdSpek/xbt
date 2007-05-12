@@ -817,7 +817,7 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 {
 	w.write_int(4, ntohl(m_a.sin_addr.s_addr));
 	w.write_int(4, ntohs(m_a.sin_port));
-	w.write_string(m_remote_peer_id);
+	w.write_data(m_remote_peer_id);
 	w.write_int(8, m_downloaded);
 	w.write_int(8, m_left);
 	w.write_int(8, m_uploaded);
@@ -833,7 +833,7 @@ void Cbt_peer_link::dump(Cstream_writer& w) const
 	w.write_int(4, m_ctime);
 	w.write_int(4, m_rtime);
 	w.write_int(4, m_stime);
-	w.write_string(debug_string());
+	w.write_data(debug_string());
 }
 
 void Cbt_peer_link::alert(Calert::t_level level, const std::string& message)
