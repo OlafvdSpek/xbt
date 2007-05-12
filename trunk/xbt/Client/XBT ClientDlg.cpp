@@ -2993,9 +2993,9 @@ void CXBTClientDlg::OnToolsTrackers()
 	w.write_int(4, dlg.trackers().size());
 	for (Cdlg_trackers::t_trackers::const_iterator i = dlg.trackers().begin(); i != dlg.trackers().end(); i++)
 	{
-		w.write_string(i->second.m_tracker);
-		w.write_string(i->second.m_user);
-		w.write_string(i->second.m_pass);
+		w.write_data(i->second.m_tracker);
+		w.write_data(i->second.m_user);
+		w.write_data(i->second.m_pass);
 	}
 	m_server.set_trackers(d);
 }

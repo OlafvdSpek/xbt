@@ -137,10 +137,10 @@ void Cbt_file::t_sub_file::erase(const std::string& parent_name)
 void Cbt_file::t_sub_file::dump(Cstream_writer& w) const
 {
 	w.write_int(8, left());
-	w.write_string(name());
+	w.write_data(name());
 	w.write_int(4, priority());
 	w.write_int(8, size());
-	w.write_string(merkle_hash());
+	w.write_data(merkle_hash());
 }
 
 bool Cbt_file::t_sub_file::open(const std::string& parent_name, int oflag)
@@ -584,13 +584,13 @@ int Cbt_file::pre_dump(int flags) const
 
 void Cbt_file::dump(Cstream_writer& w, int flags) const
 {
-	w.write_string(m_info_hash);
-	w.write_string(m_name);
+	w.write_data(m_info_hash);
+	w.write_data(m_name);
 	if (flags & Cserver::df_trackers)
 	{
 		w.write_int(4, m_trackers.size());
 		for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
-			w.write_string(*i);
+			w.write_data(*i);
 	}
 	else
 		w.write_int(4, 0);
@@ -791,11 +791,11 @@ void Cbt_file::save_state(Cstream_writer& w, bool intermediate) const
 {
 	w.write_int(4, m_trackers.size());
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
-		w.write_string(*i);
+		w.write_data(*i);
 	w.write_data(m_info);
 	if (!m_info.size())
-		w.write_string(m_info_hash);
-	w.write_string(m_name);
+		w.write_data(m_info_hash);
+	w.write_data(m_name);
 	w.write_int(8, m_total_downloaded);
 	w.write_int(8, m_total_uploaded);
 	w.write_int(4, intermediate && m_left || m_validate);
