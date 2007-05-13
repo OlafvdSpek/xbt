@@ -302,15 +302,13 @@ int merkle_tree_size(int v)
 
 std::string backward_slashes(std::string v)
 {
-	for (size_t i = 0; (i = v.find('/', i)) != std::string::npos; i++)
-		v[i] = '\\';
+	std::replace(v.begin(), v.end(), '/', '\\');
 	return v;
 }
 
 std::string forward_slashes(std::string v)
 {
-	for (size_t i = 0; (i = v.find('\\', i)) != std::string::npos; i++)
-		v[i] = '/';
+	std::replace(v.begin(), v.end(), '\\', '/');
 	return v;
 }
 
