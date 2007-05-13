@@ -1784,7 +1784,9 @@ static int compare(const T& a, const T& b, int c = 0)
 template <class T>
 static int icompare(const T& a, const T& b, int c = 0)
 {
-	return compare(boost::to_lower_copy(a), boost::to_lower_copy(b), c);
+	if (int d = stricmp(a.c_str(), b.c_str()))
+		return d;
+	return c;
 }
 
 int compare_host_names(const std::string& a, const std::string& b)
