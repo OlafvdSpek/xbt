@@ -2,6 +2,7 @@
 #include "bt_misc.h"
 
 #include <sys/stat.h>
+#include <algorithm>
 #include <ctime>
 #include "socket.h"
 

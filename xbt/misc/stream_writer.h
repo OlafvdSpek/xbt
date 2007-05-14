@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "const_memory_range.h"
 #include "stream_int.h"
 
 class Cstream_writer
