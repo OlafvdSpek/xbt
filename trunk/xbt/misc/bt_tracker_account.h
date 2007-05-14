@@ -7,6 +7,7 @@
 
 #include <list>
 #include "stream_writer.h"
+#include "virtual_binary.h"
 
 class Cbt_tracker_account
 {
