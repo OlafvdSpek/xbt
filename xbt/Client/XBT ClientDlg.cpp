@@ -1784,9 +1784,8 @@ static int compare(const T& a, const T& b, int c = 0)
 template <class T>
 static int icompare(const T& a, const T& b, int c = 0)
 {
-	if (int d = stricmp(a.c_str(), b.c_str()))
-		return d;
-	return c;
+	int d = stricmp(a.c_str(), b.c_str());
+	return d ? d : c;
 }
 
 int compare_host_names(const std::string& a, const std::string& b)
