@@ -57,7 +57,7 @@ apt-get install g++ libboost-date-time-dev libboost-dev libboost-program-options
 The following commands can be used to install some of the dependencies on Fedora Core.
 The g++ version should be at least 3.4.
 <pre>
-yum install boost-devel
+yum install boost-devel mysql-devel
 </pre>
 
 Enter the following commands in a terminal.
