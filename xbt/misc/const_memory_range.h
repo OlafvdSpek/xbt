@@ -5,6 +5,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <string>
+
 template <class T>
 class memory_range_base
 {

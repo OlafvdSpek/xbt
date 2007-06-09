@@ -8,7 +8,7 @@
 #include <boost/intrusive_ptr.hpp>
 #include <boost/utility.hpp>
 #ifdef _MSC_VER
-#include <winsock.h>
+#include <winsock2.h>
 #include <mysql.h>
 #else
 #include <mysql/mysql.h>
