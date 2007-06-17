@@ -11,7 +11,7 @@
 #include "const_memory_range.h"
 
 #ifdef WIN32
-#include <windows.h>
+#include <winsock2.h>
 
 typedef int socklen_t;
 #else

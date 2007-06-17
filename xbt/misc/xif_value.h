@@ -5,7 +5,6 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "vartypes.h"
 #include "virtual_binary.h"
 
 enum t_vt {vt_bin32, vt_binary, vt_int32, vt_string, vt_external_binary, vt_float, vt_unknown};
