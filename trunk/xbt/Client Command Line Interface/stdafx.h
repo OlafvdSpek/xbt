@@ -23,7 +23,6 @@
 
 #ifdef WIN32
 #include <io.h>
-#include <windows.h>
 
 #define atoll _atoi64
 #else
@@ -43,8 +42,9 @@
 #endif
 #include "bt_misc.h"
 #include "bvalue.h"
-#include "vartypes.h"
 #include "virtual_binary.h"
+
+typedef unsigned char byte;
 
 //{{AFX_INSERT_LOCATION}}
 

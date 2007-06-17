@@ -25,7 +25,6 @@
 #include <io.h>
 #include <natupnp.h>
 #include <shlobj.h>
-#include <windows.h>
 
 #define atoll _atoi64
 #else
@@ -65,8 +64,9 @@ inline long long min(long long a, long long b)
 #include "bt_misc.h"
 #include "bvalue.h"
 #include "socket.h"
-#include "vartypes.h"
 #include "virtual_binary.h"
+
+typedef unsigned char byte;
 
 //{{AFX_INSERT_LOCATION}}
 

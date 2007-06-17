@@ -20,8 +20,6 @@
 #define FD_SETSIZE 1024
 #define NOMINMAX
 
-#include <windows.h>
-
 #define atoll _atoi64
 #else
 #include <sys/types.h>
@@ -41,7 +39,7 @@
 #endif
 #endif
 
-#include "vartypes.h"
+typedef unsigned char byte;
 
 //{{AFX_INSERT_LOCATION}}
 
