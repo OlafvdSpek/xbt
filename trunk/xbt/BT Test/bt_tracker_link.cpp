@@ -46,13 +46,13 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		{
 		case Cbt_tracker_url::tp_http:
 			f.alert(Calert(Calert::info, "Tracker: URL: http://" + m_url.m_host + ':' + n(m_url.m_port) + m_url.m_path));
-			m_announce_time = f.m_server->time() + (300 << mc_attempts++);
+			m_announce_time = f.m_server->time() + min(300 << mc_attempts++, 3600);
 			if (m_s.open(SOCK_STREAM) == INVALID_SOCKET)
 				return 0;
 			break;
 		case Cbt_tracker_url::tp_udp:
 			f.alert(Calert(Calert::info, "Tracker: URL: udp://" + m_url.m_host + ':' + n(m_url.m_port)));
-			m_announce_time = f.m_server->time() + (60 << mc_attempts++);
+			m_announce_time = f.m_server->time() + min(60 << mc_attempts++, 3600);
 			if (m_s.open(SOCK_DGRAM) == INVALID_SOCKET)
 				return 0;
 			break;
