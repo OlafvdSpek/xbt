@@ -3,10 +3,13 @@
 
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <shellapi.h>
 #include "bt_hasher.h"
 #include "bt_strings.h"
 #include "server.h"
+
+#ifdef WIN32
+#include <shellapi.h>
+#endif
 
 Cbt_file::Cbt_file()
 {
