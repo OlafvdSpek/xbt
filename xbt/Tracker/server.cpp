@@ -542,9 +542,15 @@ void Cserver::t_file::clean_up(time_t t, Cserver& server)
 		if (i->second.mtime < t)
 		{
 			(i->second.left ? leechers : seeders)--;
-			t_user* user = i->second.uid ? server.find_user_by_uid(i->second.uid) : NULL;
-			if (user)
+			if (t_user* user = server.find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
+			if (i->second.uid)
+			{
+				Csql_query q(server.m_database, "(0,0,0,0,-1,0,-1,?,?),");
+				q.p(fid);
+				q.p(i->second.uid);
+				server.m_files_users_updates_buffer += q.read();
+			}
 			peers.erase(i++);
 			dirty = true;
 		}
@@ -862,9 +868,9 @@ void Cserver::write_db_users()
 				+ "  announced = announced + values(announced),"
 				+ "  completed = completed + values(completed),"
 				+ "  downloaded = downloaded + values(downloaded),"
-				+ "  `left` = values(`left`),"
+				+ "  `left` = if(values(`left`) = -1, `left`, values(`left`)),"
 				+ "  uploaded = uploaded + values(uploaded),"
-				+ "  mtime = values(mtime)");
+				+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
 		}
 		catch (Cdatabase::exception&)
 		{
