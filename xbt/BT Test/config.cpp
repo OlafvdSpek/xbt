@@ -42,7 +42,6 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"admin_port", &m_admin_port, 6879,
 			"peer_limit", &m_peer_limit, 0,
 			"peer_port", &m_peer_port, 6881,
-			"public_ipa", &m_public_ipa, 0,
 			"seeding_ratio", &m_seeding_ratio, 0,
 			"torrent_limit", &m_torrent_limit, 0,
 			"torrent_upload_slots_max", &m_torrent_upload_slots_max, 0,
@@ -61,6 +60,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"completes_dir", &m_completes_dir, "Completes",
 			"incompletes_dir", &m_incompletes_dir, "Incompletes",
 			"peer_id_prefix", &m_peer_id_prefix, "",
+			"public_ipa", &m_public_ipa, "",
 			"torrents_dir", &m_torrents_dir, "Torrents",
 			"user_agent", &m_user_agent, "",
 			NULL, NULL, ""

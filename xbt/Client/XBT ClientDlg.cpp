@@ -336,9 +336,6 @@ BOOL CXBTClientDlg::OnInitDialog()
 	m_ask_for_location = GetProfileInt("ask_for_location", false);
 	m_hide_on_deactivate = get_profile_hide_on_deactivate();
 	lower_process_priority(get_profile_lower_process_priority());
-	std::string public_ipa = GetProfileString("public_ipa");
-	if (!public_ipa.empty())
-		m_server.public_ipa(Csocket::get_host(public_ipa));
 	m_show_tray_icon = get_profile_show_tray_icon();
 	m_tab.SetCurSel(m_bottom_view);
 	start_server();
@@ -2892,7 +2889,7 @@ void CXBTClientDlg::OnToolsOptions()
 	data.peer_id = m_server.peer_id_prefix();
 	data.peer_limit = m_server.peer_limit();
 	data.peer_port = m_server.peer_port();
-	data.public_ipa = GetProfileString("public_ipa");
+	data.public_ipa = m_server.public_ipa();
 	data.seeding_ratio = m_server.seeding_ratio();
 	data.send_stop_event = m_server.send_stop_event();
 	data.show_confirm_exit_dialog = get_profile_show_confirm_exit_dialog();
@@ -2923,8 +2920,7 @@ void CXBTClientDlg::OnToolsOptions()
 	m_server.peer_id_prefix(data.peer_id);
 	m_server.peer_limit(data.peer_limit);
 	m_server.peer_port(data.peer_port);
-	if (!data.public_ipa.empty())
-		m_server.public_ipa(Csocket::get_host(data.public_ipa));
+	m_server.public_ipa(data.public_ipa);
 	m_server.seeding_ratio(data.seeding_ratio);
 	m_server.send_stop_event(data.send_stop_event);
 	m_show_tray_icon = data.show_tray_icon;
@@ -2938,7 +2934,6 @@ void CXBTClientDlg::OnToolsOptions()
 	write_profile_hide_on_deactivate(data.hide_on_deactivate);
 	WriteProfileInt("hot_key", data.hot_key);
 	write_profile_lower_process_priority(data.lower_process_priority);
-	WriteProfileString("public_ipa", data.public_ipa);
 	write_profile_show_confirm_exit_dialog(data.show_confirm_exit_dialog);
 	write_profile_show_tray_icon(data.show_tray_icon);
 	write_profile_start_minimized(data.start_minimized);
