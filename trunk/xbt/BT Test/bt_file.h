@@ -45,7 +45,7 @@ public:
 	bool hash();
 	void update_piece_priorities();
 	void sub_file_priority(const std::string& id, int priority);
-	int local_ipa() const;
+	std::string local_ipa() const;
 	int local_port() const;
 	Cbt_peer_link* find_peer(int h);
 	std::string get_url() const;

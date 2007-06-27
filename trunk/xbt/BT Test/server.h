@@ -81,7 +81,7 @@ public:
 	void peer_id_prefix(const std::string&);
 	void peer_port(int);
 	void post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set);
-	void public_ipa(int);
+	void public_ipa(const std::string&);
 	void run_scheduler();
 	void seeding_ratio(int);
 	void send_stop_event(bool);
@@ -197,7 +197,7 @@ public:
 		return m_peer_port;
 	}
 
-	int public_ipa() const
+	std::string public_ipa() const
 	{
 		return m_config.m_public_ipa;
 	}

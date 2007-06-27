@@ -841,9 +841,9 @@ std::string Cbt_file::get_url() const
 	for (t_trackers::const_iterator i = m_trackers.begin(); i != m_trackers.end(); i++)
 		v += uri_encode(*i) + ',';
 	v += '/' + hex_encode(m_info_hash) + '/';
-	if (local_ipa())
+	if (!local_ipa().empty())
 	{
-		v += hex_encode(8, ntohl(local_ipa()))
+		v += hex_encode(8, ntohl(Csocket::get_host(local_ipa())))
 			+ hex_encode(4, local_port());
 	}
 	for (t_peers::const_iterator i = m_peers.begin(); i != m_peers.end(); i++)
@@ -866,7 +866,7 @@ Cbt_peer_link* Cbt_file::find_peer(int h)
 	return NULL;
 }
 
-int Cbt_file::local_ipa() const
+std::string Cbt_file::local_ipa() const
 {
 	return server()->public_ipa();
 }

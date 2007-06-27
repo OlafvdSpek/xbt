@@ -174,7 +174,7 @@ void Cbt_tracker_link::post_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_
 				write_int(8, b + utia_uploaded, f.m_uploaded);
 				write_int(4, b + utia_event, m_event);
 				m_event = e_none;
-				write_int(4, b + utia_ipa, ntohl(f.local_ipa()));
+				write_int(4, b + utia_ipa, ntohl(Csocket::get_host(f.local_ipa())));
 				write_int(4, b + utia_num_want, -1);
 				write_int(2, b + utia_port, f.local_port());
 				char* w = b + utia_size;
@@ -333,12 +333,8 @@ std::string Cbt_tracker_link::http_request(const Cbt_file& f)
 		<< "&left=" << n(f.m_left)
 		<< "&uploaded=" << n(f.m_uploaded)
 		<< "&compact=1";
-	if (f.local_ipa())
-	{
-		in_addr a;
-		a.s_addr = f.local_ipa();
-		os << "&ip=" << inet_ntoa(a);
-	}
+	if (!f.local_ipa().empty())
+		os << "&ip=" << Csocket::inet_ntoa(Csocket::get_host(f.local_ipa()));
 	switch (m_event)
 	{
 	case e_completed:

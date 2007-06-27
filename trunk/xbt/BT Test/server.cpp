@@ -108,9 +108,9 @@ void Cserver::peer_port(int v)
 	m_config.m_peer_port = max(0, v);
 }
 
-void Cserver::public_ipa(int v)
+void Cserver::public_ipa(const std::string& v)
 {
-	m_config.m_public_ipa = v == INADDR_NONE ? 0 : v;
+	m_config.m_public_ipa = v;
 }
 
 void Cserver::seeding_ratio(int v)

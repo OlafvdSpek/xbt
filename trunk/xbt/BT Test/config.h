@@ -26,7 +26,6 @@ public:
 	int m_admin_port;
 	int m_peer_limit;
 	int m_peer_port;
-	int m_public_ipa;
 	int m_seeding_ratio;
 	int m_torrent_limit;
 	int m_torrent_upload_slots_max;
@@ -39,6 +38,7 @@ public:
 	std::string m_incompletes_dir;
 	std::string m_local_app_data_dir;
 	std::string m_peer_id_prefix;
+	std::string m_public_ipa;
 	std::string m_torrents_dir;
 	std::string m_user_agent;
 private:
