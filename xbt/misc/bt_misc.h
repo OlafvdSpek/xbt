@@ -17,7 +17,6 @@ std::string get_env(const std::string&);
 int hms2i(int h, int m, int s);
 bool is_private_ipa(int a);
 int merkle_tree_size(int v);
-int mkpath(const std::string&);
 std::string n(long long);
 std::string native_slashes(const std::string&);
 std::string hex_decode(const std::string&);

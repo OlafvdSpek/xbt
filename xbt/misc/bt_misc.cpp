@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "bt_misc.h"
 
-#include <boost/filesystem.hpp>
 #include <sys/stat.h>
 #include <algorithm>
 #include <ctime>
@@ -321,19 +320,6 @@ std::string native_slashes(const std::string& v)
 #else
 	return forward_slashes(v);
 #endif
-}
-
-int mkpath(const std::string& v)
-{
-	try
-	{
-		boost::filesystem::create_directories(v);
-		return 0;
-	}
-	catch (boost::filesystem::filesystem_error&)
-	{
-		return 1;
-	}
 }
 
 int hms2i(int h, int m, int s)
