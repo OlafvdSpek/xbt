@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <boost/filesystem.hpp>
 #include <sys/stat.h>
 #include <algorithm>
 #include <signal.h>
@@ -267,7 +268,13 @@ int Cserver::run()
 		static_port_mapping_collection = NULL;
 	}
 #endif
-	mkpath(local_app_data_dir());
+	try
+	{
+		boost::filesystem::create_directories(local_app_data_dir());
+	}
+	catch (boost::filesystem::filesystem_error&)
+	{
+	}
 	load_state(Cvirtual_binary().load1(state_fname()));
 	m_profiles.load(Cxif_key(Cvirtual_binary().load1(profiles_fname())));
 	m_scheduler.load(Cxif_key(Cvirtual_binary().load1(scheduler_fname())));
@@ -855,7 +862,13 @@ int Cserver::open(const Cvirtual_binary& info, const std::string& name)
 	f.m_server = this;
 	if (f.torrent(info.range()))
 		return 1;
-	mkpath(torrents_dir());
+	try
+	{
+		boost::filesystem::create_directories(torrents_dir());
+	}
+	catch (boost::filesystem::filesystem_error&)
+	{
+	}
 	info.save(torrents_dir() + '/' + f.m_name + ' ' + hex_encode(f.m_info_hash) + ".torrent");
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{

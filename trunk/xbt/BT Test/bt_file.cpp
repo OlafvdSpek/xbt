@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "bt_file.h"
 
+#include <boost/filesystem.hpp>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "bt_hasher.h"
@@ -423,7 +424,15 @@ int Cbt_file::write_data(long long offset, const_memory_range s, Cbt_peer_link*)
 			std::string path = m_name + i->name();
 			int a = path.find_last_of("/\\");
 			if (a != std::string::npos)
-				mkpath(path.substr(0, a));
+			{
+				try
+				{
+					boost::filesystem::create_directories(path.substr(0, a));
+				}
+				catch (boost::filesystem::filesystem_error&)
+				{
+				}
+			}
 			if (i->open(m_name, O_CREAT | O_RDWR))
 			{
 				char b = 0;
@@ -487,7 +496,13 @@ int Cbt_file::write_data(long long offset, const_memory_range s, Cbt_peer_link*)
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
 			i->close();
 		std::string new_name = server()->completes_dir() + m_name.substr(server()->incompletes_dir().size());
-		mkpath(server()->completes_dir());
+		try
+		{
+			boost::filesystem::create_directories(server()->completes_dir());
+		}
+		catch (boost::filesystem::filesystem_error&)
+		{
+		}
 		if (!rename(m_name.c_str(), new_name.c_str()))
 			m_name = new_name;
 		for (t_sub_files::iterator i = m_sub_files.begin(); i != m_sub_files.end(); i++)
