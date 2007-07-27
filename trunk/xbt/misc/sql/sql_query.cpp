@@ -45,21 +45,23 @@ void Csql_query::operator+=(const std::string& v)
 	m_data += v;
 }
 
-void Csql_query::p_name(const std::string& v)
+Csql_query& Csql_query::p_name(const std::string& v)
 {
 	std::vector<char> r(2 * v.size() + 2);
 	r.resize(mysql_real_escape_string(&m_database.handle(), &r.front() + 1, v.data(), v.size()) + 2);
 	r.front() = '`';
 	r.back() = '`';
 	p_raw(std::string(&r.front(), r.size()));
+	return *this;
 }
 
-void Csql_query::p_raw(const std::string& v)
+Csql_query& Csql_query::p_raw(const std::string& v)
 {
 	m_list.push_back(v);
+	return *this;
 }
 
-void Csql_query::p(long long v)
+Csql_query& Csql_query::p(long long v)
 {
 	char b[21];
 #ifdef WIN32
@@ -68,13 +70,15 @@ void Csql_query::p(long long v)
 	sprintf(b, "%lld", v);
 #endif
 	p_raw(b);
+	return *this;
 }
 
-void Csql_query::p(const_memory_range v)
+Csql_query& Csql_query::p(const_memory_range v)
 {
 	std::vector<char> r(2 * v.size() + 2);
 	r.resize(mysql_real_escape_string(&m_database.handle(), &r.front() + 1, reinterpret_cast<const char*>(v.begin), v.size()) + 2);
 	r.front() = '\'';
 	r.back() = '\'';
 	p_raw(std::string(&r.front(), r.size()));
+	return *this;
 }
