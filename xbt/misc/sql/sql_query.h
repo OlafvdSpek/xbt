@@ -18,10 +18,10 @@ public:
 	std::string read() const;
 	void operator=(const std::string&);
 	void operator+=(const std::string&);
-	void p_name(const std::string&);
-	void p_raw(const std::string&);
-	void p(long long);
-	void p(const_memory_range);
+	Csql_query& p_name(const std::string&);
+	Csql_query& p_raw(const std::string&);
+	Csql_query& p(long long);
+	Csql_query& p(const_memory_range);
 	Csql_query(Cdatabase&, const std::string& = "");
 private:
 	typedef std::list<std::string> t_list;
