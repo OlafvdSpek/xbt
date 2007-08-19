@@ -1,3 +1,5 @@
 include_directories(. ../misc)
+# add_definitions(-DEPOLL)
+add_definitions(-DNDEBUG)
 add_executable(xbt_tracker ../misc/sql/database.cpp ../misc/sql/sql_query.cpp ../misc/sql/sql_result.cpp ../misc/bt_misc.cpp ../misc/bvalue.cpp ../misc/sha1.cpp ../misc/socket.cpp ../misc/virtual_binary.cpp ../misc/xcc_z.cpp client.cpp config.cpp connection.cpp epoll.cpp peer_link.cpp server.cpp stats.cpp stdafx.cpp tcp_listen_socket.cpp tracker_input.cpp transaction.cpp udp_listen_socket.cpp "XBT Tracker.cpp")
 target_link_libraries (xbt_tracker mysqlclient)
