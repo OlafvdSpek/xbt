@@ -1,6 +1,6 @@
+set(CMAKE_BUILD_TYPE release)
 include_directories(. ../misc)
 # add_definitions(-DEPOLL)
-add_definitions(-DNDEBUG)
 add_executable(
 	xbt_tracker
 	../misc/sql/database.cpp

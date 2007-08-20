@@ -1,5 +1,5 @@
+set(CMAKE_BUILD_TYPE release)
 include_directories(. ../misc)
-add_definitions(-DNDEBUG)
 add_executable(
 	xbt_client_backend
 	../misc/alerts.cpp
