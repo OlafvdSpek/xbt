@@ -1,6 +1,11 @@
+set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
 set(CMAKE_BUILD_TYPE release)
 include_directories(. ../misc)
-# add_definitions(-DEPOLL)
+include(CheckIncludeFileCXX)
+check_include_file_cxx(sys/epoll.h HAVE_SYS_EPOLL)
+if(HAVE_SYS_EPOLL)
+       add_definitions(-DEPOLL)
+endif()
 add_executable(
 	xbt_tracker
 	../misc/sql/database.cpp
