@@ -24,7 +24,6 @@ add_executable(
 	peer_link.cpp
 	server.cpp
 	stats.cpp
-	stdafx.cpp
 	tcp_listen_socket.cpp
 	tracker_input.cpp
 	transaction.cpp
