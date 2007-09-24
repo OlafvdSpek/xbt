@@ -30,7 +30,7 @@ Just start the executable. An empty DOS window should appear.
 Enter the following commands in a terminal.
 Be patient while g++ is running, it'll take a few minutes.
 <pre>
-svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt
+svn co https://xbtt.svn.sourceforge.net/svnroot/xbtt/trunk/xbt
 cd xbt/BT\ Test
 ./make.sh
 </pre>
