@@ -13,7 +13,7 @@ XBT Client Command Line Interface is a frontend for XBT Client Backend.<br>
 Enter the following commands in a terminal.
 Be patient while g++ is running, it'll take a few minutes.
 <pre>
-svn co https://svn.sourceforge.net/svnroot/xbtt/trunk/xbt
+svn co https://xbtt.svn.sourceforge.net/svnroot/xbtt/trunk/xbt
 cd Client\ Command\ Line\ Interface
 ./make.sh
 </pre>
