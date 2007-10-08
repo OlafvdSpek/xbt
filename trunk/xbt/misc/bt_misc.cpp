@@ -331,10 +331,3 @@ std::string xbt_version2a(int v)
 {
 	return n(v / 100) + "." + n(v / 10 % 10) + "." + n(v % 10);
 }
-
-#ifdef BSD
-long long xbt_atoll(const char* v)
-{
-	return strtoll(v, NULL, 10);
-}
-#endif

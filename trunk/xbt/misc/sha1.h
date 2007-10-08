@@ -20,7 +20,7 @@
 #include <string>
 #include "const_memory_range.h"
 
-#if defined(BSD) || defined(WIN32)
+#ifdef WIN32
 typedef unsigned int uint32_t;
 typedef int int_least16_t;
 typedef unsigned char uint8_t;

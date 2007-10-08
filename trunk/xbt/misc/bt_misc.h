@@ -27,7 +27,6 @@ std::string peer_id2a(const std::string&);
 std::string time2a(time_t);
 std::string uri_decode(const std::string&);
 std::string uri_encode(const std::string&);
-long long xbt_atoll(const char*);
 std::string xbt_version2a(int);
 
 inline long long htonll(long long v)

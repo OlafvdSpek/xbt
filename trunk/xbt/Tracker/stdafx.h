@@ -31,12 +31,6 @@
 #include <errno.h>
 #include <signal.h>
 #include <unistd.h>
-
-#ifdef BSD
-#include "bt_misc.h"
-
-#define atoll xbt_atoll
-#endif
 #endif
 
 typedef unsigned char byte;
