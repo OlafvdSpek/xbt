@@ -39,9 +39,6 @@
 #include <signal.h>
 #include <unistd.h>
 
-#ifdef BSD
-#define atoll xbt_atoll
-#endif
 #if defined(__APPLE__) && defined(__MACH__)
 #define O_LARGEFILE 0
 #define _lseeki64 lseek
