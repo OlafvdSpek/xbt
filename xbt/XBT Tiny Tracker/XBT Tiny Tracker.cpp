@@ -18,7 +18,7 @@ struct t_peer
 	time_t mtime;
 };
 
-typedef map<int, t_peer> t_peers;
+typedef std::map<int, t_peer> t_peers;
 
 int main()
 {
@@ -28,7 +28,7 @@ int main()
 	a.sin_addr.s_addr = INADDR_ANY;
 	a.sin_port = htons(2710);
 	bind(s, reinterpret_cast<sockaddr*>(&a), sizeof(sockaddr_in));
-	map<string, t_peers> files;
+	std::map<std::string, t_peers> files;
 	while (1)
 	{
 		const int cb_b = 2 << 10;
@@ -37,7 +37,7 @@ int main()
 		int r = recvfrom(s, b, cb_b, 0, reinterpret_cast<sockaddr*>(&a), &cb_a);
 		if (r < 94 || b[8] || b[9] || b[10] || b[11] != 1)
 			continue;
-		t_peers& peers = files[string(b + 16, 20)];
+		t_peers& peers = files[std::string(b + 16, 20)];
 		t_peer& peer = peers[a.sin_addr.s_addr];
 		memcpy(&peer.port, b + 92, 2);
 		peer.mtime = time(NULL);
