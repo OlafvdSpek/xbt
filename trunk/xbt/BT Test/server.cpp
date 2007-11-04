@@ -2,6 +2,7 @@
 #include "server.h"
 
 #include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/exception.hpp>
 #include <sys/stat.h>
 #include <algorithm>
 #include <signal.h>
