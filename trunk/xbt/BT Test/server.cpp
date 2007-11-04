@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "server.h"
 
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/convenience.hpp>
 #include <sys/stat.h>
 #include <algorithm>
 #include <signal.h>
