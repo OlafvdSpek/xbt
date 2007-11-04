@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "bt_file.h"
 
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/convenience.hpp>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "bt_hasher.h"
