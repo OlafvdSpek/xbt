@@ -2,6 +2,7 @@
 #include "bt_file.h"
 
 #include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/exception.hpp>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "bt_hasher.h"
