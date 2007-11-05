@@ -342,9 +342,7 @@ void Cserver::accept(const Csocket& l)
 				std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
 			Cconnection connection(this, s, a, m_config.m_log_access);
-#ifdef TCP_DEFER_ACCEPT
 			connection.process_events(EPOLLIN);
-#endif
 			if (connection.s() != INVALID_SOCKET)
 			{
 				m_connections.push_back(connection);
