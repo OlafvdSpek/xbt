@@ -488,6 +488,8 @@ void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o
 
 	o.complete(seeders);
 	o.incomplete(leechers);
+	if (ti.m_event == Ctracker_input::e_stopped)
+		return;
 	t_candidates candidates;
 	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
 	{
