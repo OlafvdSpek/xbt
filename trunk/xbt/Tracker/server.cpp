@@ -113,7 +113,13 @@ int Cserver::run()
 				std::cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else
 			{
-#ifdef TCP_DEFER_ACCEPT
+#ifdef SO_ACCEPTFILTER
+				accept_filter_arg afa;
+				bzero(&afa, sizeof(afa));
+				strcpy(afa.af_name, "httpready");
+				if (l.setsockopt(SOL_SOCKET, SO_ACCEPTFILTER, &afa, sizeof(afa)))
+					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+#elif TCP_DEFER_ACCEPT
 				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, true))
 					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
