@@ -202,7 +202,7 @@ void Cconnection::read(const std::string& v)
 		{
 			if (0)
 				s = Cbvalue().d(bts_failure_reason, bts_banned_client).read();
-			else if (!ti.m_compact && !ti.m_no_peer_id && ti.m_event != Ctracker_input::e_stopped && ti.m_num_want && !ti.m_info_hash.empty())
+			else if (!ti.m_compact && ti.m_event != Ctracker_input::e_stopped && ti.m_num_want && !ti.m_info_hash.empty())
 				s = Cbvalue().d(bts_failure_reason, bts_unsupported_tracker_protocol).read();
 			else
 			{
@@ -258,7 +258,7 @@ void Cconnection::read(const std::string& v)
 		Cvirtual_binary s2 = xcc_z::gzip(s);
 #ifndef NDEBUG
 		static std::ofstream f("xbt_tracker_gzip.log");
-		f << m_server->time() << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << '\t' << ti.m_compact << '\t' << (!ti.m_compact && ti.m_no_peer_id) << std::endl;
+		f << m_server->time() << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << '\t' << ti.m_compact << '\t' << std::endl;
 #endif
 		if (s2.size() + 24 < s.size())
 		{

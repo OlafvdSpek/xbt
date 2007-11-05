@@ -463,10 +463,6 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 	{
 		m_stats.announced_http_compact++;
 	}
-	else if (v.m_no_peer_id)
-	{
-		m_stats.announced_http_no_peer_id++;
-	}
 	else
 	{
 		m_stats.announced_http++;
@@ -530,7 +526,6 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 	}
 	Cannounce_output_http o;
 	o.interval(m_config.m_announce_interval);
-	o.no_peer_id(ti.m_no_peer_id);
 	i->second.select_peers(ti, o);
 	return o.v();
 }
