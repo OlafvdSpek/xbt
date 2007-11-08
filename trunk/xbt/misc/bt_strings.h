@@ -88,6 +88,7 @@ const std::string bts_peers = "peers";
 const std::string bts_peers_limit_reached = "access denied, peers limit reached";
 const std::string bts_piece_length = "piece length";
 const std::string bts_pieces = "pieces";
+const std::string bts_private = "private";
 const std::string bts_port = "port";
 const std::string bts_priority = "priority";
 const std::string bts_seeding_ratio = "seeding ratio";
