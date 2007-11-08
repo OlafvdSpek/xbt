@@ -234,7 +234,7 @@ int Cserver::run()
 					SysFreeString(bstrDescription);
 					if (FAILED(hr) || !static_port_mapping)
 					{
-						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping_collection->Add failed failed: " + hex_encode(8, hr)));
+						alert(Calert(Calert::warn, "UPnP NAT", "static_port_mapping_collection->Add failed: " + hex_encode(8, hr)));
 						break;
 					}
 					BSTR bstrExternalIPA;
