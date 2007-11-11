@@ -4,6 +4,14 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
+std::string generate_random_string(int l)
+{
+	std::string v;
+	while (l--)
+		v += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"[rand() % 62];
+	return v;
+}
+
 static std::string web_encode(const std::string& v)
 {
 	std::string d;
@@ -130,7 +138,7 @@ std::string trim_field(const std::string& v)
 	bool copy_white = false;
 	for (size_t i = 0; i < v.length(); i++)
 	{
-		if (isspace(v[i]))
+		if (isspace(v[i] & 0xff))
 			copy_white = true;
 		else
 		{
