@@ -71,7 +71,7 @@ std::string encode_field(const std::string& v, const std::string& local_domain_u
 		{
 			size_t p = i;
 			while (p < v.length()
-				&& v[p] != ' '
+				&& !isspace(v[p] & 0xff)
 				&& v[p] != '\"'
 				&& v[p] != '<'
 				&& v[p] != '>')
