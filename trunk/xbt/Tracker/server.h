@@ -116,7 +116,7 @@ public:
 	void update_peer(const std::string& file_id, t_peers::key_type peer_id, bool listening);
 	std::string debug(const Ctracker_input&) const;
 	std::string statistics() const;
-	Cbvalue select_peers(const Ctracker_input&, const t_user*);
+	Cvirtual_binary select_peers(const Ctracker_input&, const t_user*) const;
 	Cbvalue scrape(const Ctracker_input&);
 	int run();
 	static void term();

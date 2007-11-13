@@ -453,20 +453,21 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 	return d;
 }
 
-Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
+Cvirtual_binary Cserver::select_peers(const Ctracker_input& ti, const t_user* user) const
 {
-	t_files::const_iterator i = m_files.find(ti.m_info_hash);
-	if (i == m_files.end())
-		return Cbvalue();
 	Cbvalue v;
-	if (i->second.seeders)
-		v.d(bts_complete, i->second.seeders);
-	if (i->second.leechers)
-		v.d(bts_incomplete, i->second.leechers);
-	v.d(bts_interval, announce_interval());
-	v.d(bts_min_interval, announce_interval());
-	v.d(bts_peers, i->second.select_peers(ti));
-	return v;
+	t_files::const_iterator i = m_files.find(ti.m_info_hash);
+	if (i != m_files.end())
+	{
+		if (i->second.seeders)
+			v.d(bts_complete, i->second.seeders);
+		if (i->second.leechers)
+			v.d(bts_incomplete, i->second.leechers);
+		v.d(bts_interval, announce_interval());
+		v.d(bts_min_interval, announce_interval());
+		v.d(bts_peers, i->second.select_peers(ti));
+	}
+	return v.read();
 }
 
 void Cserver::t_file::clean_up(time_t t, Cserver& server)
