@@ -453,7 +453,7 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 	return d;
 }
 
-Cvirtual_binary Cserver::select_peers(const Ctracker_input& ti, const t_user* user) const
+Cvirtual_binary Cserver::select_peers(const Ctracker_input& ti) const
 {
 	Cbvalue v;
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
@@ -510,7 +510,7 @@ Cbvalue Cserver::t_file::scrape() const
 	return v;
 }
 
-Cbvalue Cserver::scrape(const Ctracker_input& ti)
+Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 {
 	if (m_use_sql && m_config.m_log_scrape)
 	{
@@ -548,7 +548,7 @@ Cbvalue Cserver::scrape(const Ctracker_input& ti)
 	v.d(bts_files, files);
 	if (m_config.m_scrape_interval)
 		v.d(bts_flags, Cbvalue().d(bts_min_request_interval, m_config.m_scrape_interval));
-	return v;
+	return v.read();
 }
 
 void Cserver::read_db_deny_from_hosts()
