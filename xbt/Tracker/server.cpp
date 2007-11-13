@@ -512,6 +512,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 	if (ti.m_info_hashes.empty())
 	{
 		m_stats.scraped_full++;
+		d.reserve(90 * m_files.size());
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			if (i->second.leechers || i->second.seeders)
