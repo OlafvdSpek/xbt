@@ -116,8 +116,8 @@ public:
 	void update_peer(const std::string& file_id, t_peers::key_type peer_id, bool listening);
 	std::string debug(const Ctracker_input&) const;
 	std::string statistics() const;
-	Cvirtual_binary select_peers(const Ctracker_input&, const t_user*) const;
-	Cbvalue scrape(const Ctracker_input&);
+	Cvirtual_binary select_peers(const Ctracker_input&) const;
+	Cvirtual_binary scrape(const Ctracker_input&);
 	int run();
 	static void term();
 	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);

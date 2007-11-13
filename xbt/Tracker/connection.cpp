@@ -212,7 +212,7 @@ void Cconnection::read(const std::string& v)
 				else
 				{
 					std::string error = m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
-					s = error.empty() ? m_server->select_peers(ti, user) : Cbvalue().d(bts_failure_reason, error).read();
+					s = error.empty() ? m_server->select_peers(ti) : Cbvalue().d(bts_failure_reason, error).read();
 				}
 			}
 		}
@@ -237,7 +237,7 @@ void Cconnection::read(const std::string& v)
 		else if (m_server->full_scrape() || !ti.m_info_hash.empty())
 		{
 			gzip = m_server->gzip_scrape() && ti.m_info_hash.empty();
-			s = m_server->scrape(ti).read();
+			s = m_server->scrape(ti);
 		}
 		break;
 	}
