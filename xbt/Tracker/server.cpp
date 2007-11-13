@@ -1001,7 +1001,6 @@ std::string Cserver::statistics() const
 	{
 		page += "<tr><td>announced http <td align=right>" + n(m_stats.announced_http) + "<td align=right>" + n(m_stats.announced_http * 100 / m_stats.announced()) + " %"
 			+ "<tr><td>announced http compact<td align=right>" + n(m_stats.announced_http_compact) + "<td align=right>" + n(m_stats.announced_http_compact * 100 / m_stats.announced()) + " %"
-			+ "<tr><td>announced http no peer id<td align=right>" + n(m_stats.announced_http_no_peer_id) + "<td align=right>" + n(m_stats.announced_http_no_peer_id * 100 / m_stats.announced()) + " %"
 			+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp) + "<td align=right>" + n(m_stats.announced_udp * 100 / m_stats.announced()) + " %";
 	}
 	page += "<tr><td>scraped full<td align=right>" + n(m_stats.scraped_full)
