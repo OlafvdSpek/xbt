@@ -11,31 +11,6 @@
 static volatile bool g_sig_hup = false;
 static volatile bool g_sig_term = false;
 
-class Cannounce_output_http_compact: public Cserver::Cannounce_output
-{
-public:
-	void peer(int h, const Cserver::t_peer& peer)
-	{
-		m_peers.append(reinterpret_cast<const char*>(&h), 4);
-		m_peers.append(reinterpret_cast<const char*>(&peer.port), 2);
-	}
-
-	Cbvalue v() const
-	{
-		Cbvalue v;
-		if (m_complete)
-			v.d(bts_complete, m_complete);
-		if (m_incomplete)
-			v.d(bts_incomplete, m_incomplete);
-		v.d(bts_interval, m_interval);
-		v.d(bts_min_interval, m_interval);
-		v.d(bts_peers, m_peers);
-		return v;
-	}
-private:
-	std::string m_peers;
-};
-
 Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql, const std::string& conf_file):
 	m_database(database)
 {
@@ -346,7 +321,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 	t_peers::iterator i = file.peers.find(peer_key);
 	if (i != file.peers.end())
 	{
-		(i->second.left ? file.leechers : file.seeders)--;	
+		(i->second.left ? file.leechers : file.seeders)--;
 		if (t_user* old_user = find_user_by_uid(i->second.uid))
 			(i->second.left ? old_user->incompletes : old_user->completes)--;
 	}
@@ -440,14 +415,13 @@ void Cserver::update_peer(const std::string& file_id, t_peers::key_type peer_id,
 	j->second.listening = listening;
 }
 
-void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o) const
+std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 {
+	if (ti.m_event == Ctracker_input::e_stopped)
+		return "";
+
 	typedef std::vector<t_peers::const_iterator> t_candidates;
 
-	o.complete(seeders);
-	o.incomplete(leechers);
-	if (ti.m_event == Ctracker_input::e_stopped)
-		return;
 	t_candidates candidates;
 	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
 	{
@@ -455,12 +429,15 @@ void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o
 			candidates.push_back(i);
 	}
 	size_t c = ti.m_num_want < 0 ? 50 : std::min(ti.m_num_want, 50);
+	std::string d;
+	d.reserve(300);
 	if (candidates.size() > c)
 	{
 		while (c--)
 		{
 			int i = rand() % candidates.size();
-			o.peer(candidates[i]->first, candidates[i]->second);
+			d.append(reinterpret_cast<const char*>(&candidates[i]->first), 4);
+			d.append(reinterpret_cast<const char*>(&candidates[i]->second), 2);
 			candidates[i] = candidates.back();
 			candidates.pop_back();
 		}
@@ -468,7 +445,10 @@ void Cserver::t_file::select_peers(const Ctracker_input& ti, Cannounce_output& o
 	else
 	{
 		for (t_candidates::const_iterator i = candidates.begin(); i != candidates.end(); i++)
-			o.peer((*i)->first, (*i)->second);
+		{
+			d.append(reinterpret_cast<const char*>(&(*i)->first), 4);
+			d.append(reinterpret_cast<const char*>(&(*i)->second), 2);
+		}
 	}
 }
 
@@ -477,10 +457,15 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
 	if (i == m_files.end())
 		return Cbvalue();
-	Cannounce_output_http_compact o;
-	o.interval(m_config.m_announce_interval);
-	i->second.select_peers(ti, o);
-	return o.v();
+	Cbvalue v;
+	if (i->second.seeders)
+		v.d(bts_complete, i->second.seeders);
+	if (i->second.leechers)
+		v.d(bts_incomplete, i->second.leechers);
+	v.d(bts_interval, announce_interval());
+	v.d(bts_min_interval, announce_interval());
+	v.d(bts_peers, i->second.select_peers(ti));
+	return v;
 }
 
 void Cserver::t_file::clean_up(time_t t, Cserver& server)

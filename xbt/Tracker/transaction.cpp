@@ -7,30 +7,6 @@
 #include "sha1.h"
 #include "stream_int.h"
 
-class Cannounce_output_udp: public Cserver::Cannounce_output
-{
-public:
-	void peer(int h, const Cserver::t_peer& peer)
-	{
-		memcpy(m_w, &h, 4);
-		m_w += 4;
-		memcpy(m_w, &peer.port, 2);
-		m_w += 2;
-	}
-
-	char* w() const
-	{
-		return m_w;
-	}
-
-	void w(char* v)
-	{
-		m_w = v;
-	}
-private:
-	char* m_w;
-};
-
 Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 	m_server(server)
 {
@@ -147,10 +123,9 @@ void Ctransaction::send_announce(const_memory_range r)
 	write_int(4, d + utoa_interval, m_server.announce_interval());
 	write_int(4, d + utoa_leechers, file->leechers);
 	write_int(4, d + utoa_seeders, file->seeders);
-	Cannounce_output_udp o;
-	o.w(d + utoa_size);
-	file->select_peers(ti, o);
-	send(const_memory_range(d, o.w()));
+	std::string peers = file->select_peers(ti);
+	memcpy(d + utoa_size, peers.data(), peers.size());
+	send(const_memory_range(d, d + utoa_size + peers.size()));
 }
 
 void Ctransaction::send_scrape(const_memory_range r)

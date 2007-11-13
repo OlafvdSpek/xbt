@@ -41,38 +41,6 @@ public:
 
 	typedef std::map<int, t_peer> t_peers;
 
-	class Cannounce_output
-	{
-	public:
-		virtual void peer(int h, const t_peer&) = 0;
-
-		void complete(int v)
-		{
-			m_complete = v;
-		}
-
-		void incomplete(int v)
-		{
-			m_incomplete = v;
-		}
-
-		void interval(int v)
-		{
-			m_interval = v;
-		}
-
-		Cannounce_output()
-		{
-			m_complete = 0;
-			m_incomplete = 0;
-			m_interval = 1800;
-		}
-	protected:
-		int m_complete;
-		int m_incomplete;
-		int m_interval;
-	};
-
 	struct t_deny_from_host
 	{
 		unsigned int end;
@@ -83,7 +51,7 @@ public:
 	{
 		void clean_up(time_t t, Cserver&);
 		std::string debug() const;
-		void select_peers(const Ctracker_input&, Cannounce_output&) const;
+		std::string select_peers(const Ctracker_input& ti) const;
 		Cbvalue scrape() const;
 
 		t_file()
