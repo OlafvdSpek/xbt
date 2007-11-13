@@ -494,15 +494,6 @@ void Cserver::clean_up()
 	m_clean_up_time = time();
 }
 
-Cbvalue Cserver::t_file::scrape() const
-{
-	Cbvalue v;
-	v.d(bts_complete, seeders);
-	v.d(bts_downloaded, completed);
-	v.d(bts_incomplete, leechers);
-	return v;
-}
-
 Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 {
 	if (m_use_sql && m_config.m_log_scrape)
@@ -516,15 +507,15 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 		q.p(time());
 		m_scrape_log_buffer += q.read();
 	}
-	Cbvalue v;
-	Cbvalue files(Cbvalue::vt_dictionary);
+	std::string d;
+	d += "d5:filesd";
 	if (ti.m_info_hashes.empty())
 	{
 		m_stats.scraped_full++;
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			if (i->second.leechers || i->second.seeders)
-				files.d(i->first, i->second.scrape());
+				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.completed).str();
 		}
 	}
 	else
@@ -535,13 +526,14 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 			t_files::const_iterator i = m_files.find(*j);
 			if (i == m_files.end())
 				continue;
-			files.d(i->first, i->second.scrape());
+			d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.completed).str();
 		}
 	}
-	v.d(bts_files, files);
+	d += "e";
 	if (m_config.m_scrape_interval)
-		v.d(bts_flags, Cbvalue().d(bts_min_request_interval, m_config.m_scrape_interval));
-	return v.read();
+		d += (boost::format("5:flagsd20:min_request_intervali%dee") % m_config.m_scrape_interval).str();
+	d += "e";
+	return Cvirtual_binary(d);
 }
 
 void Cserver::read_db_deny_from_hosts()

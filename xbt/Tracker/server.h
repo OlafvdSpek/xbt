@@ -8,7 +8,6 @@
 #include <boost/array.hpp>
 #include <map>
 #include "sql/database.h"
-#include "bvalue.h"
 #include "config.h"
 #include "connection.h"
 #include "epoll.h"
@@ -17,6 +16,7 @@
 #include "tcp_listen_socket.h"
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
+#include "virtual_binary.h"
 
 class Cserver
 {
@@ -52,7 +52,6 @@ public:
 		void clean_up(time_t t, Cserver&);
 		std::string debug() const;
 		std::string select_peers(const Ctracker_input& ti) const;
-		Cbvalue scrape() const;
 
 		t_file()
 		{
