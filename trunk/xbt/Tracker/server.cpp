@@ -450,6 +450,7 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 			d.append(reinterpret_cast<const char*>(&(*i)->second), 2);
 		}
 	}
+	return d;
 }
 
 Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
