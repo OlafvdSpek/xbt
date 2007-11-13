@@ -14,7 +14,7 @@ public:
 
 	long long announced() const
 	{
-		return announced_http + announced_http_compact + announced_http_no_peer_id + announced_udp;
+		return announced_http + announced_http_compact + announced_udp;
 	}
 
 	long long scraped() const
@@ -24,7 +24,6 @@ public:
 
 	long long announced_http;
 	long long announced_http_compact;
-	long long announced_http_no_peer_id;
 	long long announced_udp;
 	long long scraped_full;
 	long long scraped_http;
