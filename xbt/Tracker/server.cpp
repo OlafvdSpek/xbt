@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <boost/format.hpp>
 #include <iostream>
 #include <signal.h>
 #include "sql/sql_query.h"
@@ -457,17 +458,10 @@ Cvirtual_binary Cserver::select_peers(const Ctracker_input& ti) const
 {
 	Cbvalue v;
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
-	if (i != m_files.end())
-	{
-		if (i->second.seeders)
-			v.d(bts_complete, i->second.seeders);
-		if (i->second.leechers)
-			v.d(bts_incomplete, i->second.leechers);
-		v.d(bts_interval, announce_interval());
-		v.d(bts_min_interval, announce_interval());
-		v.d(bts_peers, i->second.select_peers(ti));
-	}
-	return v.read();
+	if (i == m_files.end())
+		return Cvirtual_binary();
+	std::string peers = i->second.select_peers(ti);
+	return (boost::format("d8:completei%de8:intervali%de12:min intervali%de5:peers%d:%se") % i->second.seeders % i->second.leechers % announce_interval() % announce_interval() % peers.size() % peers).str();	
 }
 
 void Cserver::t_file::clean_up(time_t t, Cserver& server)
