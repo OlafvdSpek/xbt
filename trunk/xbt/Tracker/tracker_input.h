@@ -35,7 +35,6 @@ public:
 	int m_port;
 	long long m_uploaded;
 	int m_num_want;
-	bool m_compact;
 };
 
 #endif // !defined(AFX_TRACKER_INPUT_H__E4F9E6ED_97B7_4526_B310_82F149E42EA8__INCLUDED_)

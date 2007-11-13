@@ -13,7 +13,6 @@ Ctracker_input::Ctracker_input()
 	m_port = 0;
 	m_uploaded = 0;
 	m_num_want = -1;
-	m_compact = false;
 }
 
 void Ctracker_input::set(const std::string& name, const std::string& value)
@@ -22,10 +21,6 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 		return;
 	switch (name[0])
 	{
-	case 'c':
-		if (name == "compact")
-			m_compact = atoi(value.c_str());
-		break;
 	case 'd':
 		if (name == "downloaded")
 			m_downloaded = atoll(value.c_str());
