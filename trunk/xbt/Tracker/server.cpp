@@ -437,7 +437,7 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 		{
 			int i = rand() % candidates.size();
 			d.append(reinterpret_cast<const char*>(&candidates[i]->first), 4);
-			d.append(reinterpret_cast<const char*>(&candidates[i]->second), 2);
+			d.append(reinterpret_cast<const char*>(&candidates[i]->second.port), 2);
 			candidates[i] = candidates.back();
 			candidates.pop_back();
 		}
@@ -447,7 +447,7 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 		for (t_candidates::const_iterator i = candidates.begin(); i != candidates.end(); i++)
 		{
 			d.append(reinterpret_cast<const char*>(&(*i)->first), 4);
-			d.append(reinterpret_cast<const char*>(&(*i)->second), 2);
+			d.append(reinterpret_cast<const char*>(&(*i)->second.port), 2);
 		}
 	}
 	return d;
