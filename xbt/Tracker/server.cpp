@@ -36,44 +36,6 @@ private:
 	std::string m_peers;
 };
 
-class Cannounce_output_http: public Cserver::Cannounce_output
-{
-public:
-	void no_peer_id(bool v)
-	{
-		m_no_peer_id = v;
-	}
-
-	void peer(int h, const Cserver::t_peer& p)
-	{
-		Cbvalue peer;
-		peer.d(bts_ipa, Csocket::inet_ntoa(h));
-		peer.d(bts_port, ntohs(p.port));
-		m_peers.l(peer);
-	}
-
-	Cbvalue v() const
-	{
-		Cbvalue v;
-		if (m_complete)
-			v.d(bts_complete, m_complete);
-		if (m_incomplete)
-			v.d(bts_incomplete, m_incomplete);
-		v.d(bts_interval, m_interval);
-		v.d(bts_min_interval, m_interval);
-		v.d(bts_peers, m_peers);
-		return v;
-	}
-
-	Cannounce_output_http():
-		m_peers(Cbvalue::vt_list)
-	{
-	}
-private:
-	bool m_no_peer_id;
-	Cbvalue m_peers;
-};
-
 Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql, const std::string& conf_file):
 	m_database(database)
 {
@@ -460,17 +422,9 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 	if (v.m_event == Ctracker_input::e_completed)
 		file.completed++;
 	if (udp)
-	{
 		m_stats.announced_udp++;
-	}
-	else if (v.m_compact)
-	{
-		m_stats.announced_http_compact++;
-	}
 	else
-	{
 		m_stats.announced_http++;
-	}
 	file.dirty = true;
 	return "";
 }
@@ -523,14 +477,7 @@ Cbvalue Cserver::select_peers(const Ctracker_input& ti, const t_user* user)
 	t_files::const_iterator i = m_files.find(ti.m_info_hash);
 	if (i == m_files.end())
 		return Cbvalue();
-	if (ti.m_compact)
-	{
-		Cannounce_output_http_compact o;
-		o.interval(m_config.m_announce_interval);
-		i->second.select_peers(ti, o);
-		return o.v();
-	}
-	Cannounce_output_http o;
+	Cannounce_output_http_compact o;
 	o.interval(m_config.m_announce_interval);
 	i->second.select_peers(ti, o);
 	return o.v();
@@ -1000,7 +947,6 @@ std::string Cserver::statistics() const
 	if (m_stats.announced())
 	{
 		page += "<tr><td>announced http <td align=right>" + n(m_stats.announced_http) + "<td align=right>" + n(m_stats.announced_http * 100 / m_stats.announced()) + " %"
-			+ "<tr><td>announced http compact<td align=right>" + n(m_stats.announced_http_compact) + "<td align=right>" + n(m_stats.announced_http_compact * 100 / m_stats.announced()) + " %"
 			+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp) + "<td align=right>" + n(m_stats.announced_udp * 100 / m_stats.announced()) + " %";
 	}
 	page += "<tr><td>scraped full<td align=right>" + n(m_stats.scraped_full)
