@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "virtual_binary.h"
 
-#include <cstdio>
 #include <sys/stat.h>
+#include <cstdio>
+#include <string.h>
 
 Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
 {

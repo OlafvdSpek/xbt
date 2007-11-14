@@ -2,6 +2,7 @@
 #include "xcc_z.h"
 
 #include <cstdio>
+#include <string.h>
 #include <zlib.h>
 #include "stream_int.h"
 

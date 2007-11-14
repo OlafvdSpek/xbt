@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "bvalue.h"
 
+#include <string.h>
 #include "bt_misc.h"
 #include "xcc_z.h"
 
