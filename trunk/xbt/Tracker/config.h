@@ -27,7 +27,6 @@ public:
 	bool m_daemon;
 	bool m_debug;
 	bool m_full_scrape;
-	bool m_gzip_announce;
 	bool m_gzip_debug;
 	bool m_gzip_scrape;
 	bool m_listen_check;
