@@ -222,18 +222,16 @@ void Cconnection::read(const std::string& v)
 		if (m_server->debug())
 		{
 			gzip = m_server->gzip_debug();
-			std::string v = m_server->debug(ti);
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = Cvirtual_binary(v);
+			s = Cvirtual_binary(m_server->debug(ti));
 		}
 		break;
 	case 's':
 		if (v.size() >= 7 && v[6] == 't')
 		{
 			gzip = m_server->gzip_debug();
-			std::string v = m_server->statistics();
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = Cvirtual_binary(v);
+			s = Cvirtual_binary(m_server->statistics());
 		}
 		else if (m_server->full_scrape() || !ti.m_info_hash.empty())
 		{
