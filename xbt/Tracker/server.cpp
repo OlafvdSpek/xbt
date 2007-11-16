@@ -516,7 +516,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 		{
 			if (i->second.leechers || i->second.seeders)
-				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.completed).str();
+				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
 		}
 	}
 	else
@@ -527,7 +527,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 			t_files::const_iterator i = m_files.find(*j);
 			if (i == m_files.end())
 				continue;
-			d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.completed).str();
+			d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
 		}
 	}
 	d += "e";
