@@ -21,7 +21,7 @@ Section "Install"
 	File htdocs\*
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	CreateShortCut "$SMPROGRAMS\XBT Client.lnk" "$INSTDIR\XBT Client.exe"
-	WriteRegStr HKCR ".torrent" "" "bittorrent"
+	WriteRegStr HKCR ".torrent" "" "XBT Client"
 	WriteRegStr HKCR ".torrent" "Content Type" "application/x-bittorrent"
 	WriteRegStr HKCR "MIME\Database\Content Type\application/x-bittorrent" "Extension" ".torrent"
 	WriteRegStr HKCR "bittorrent" "" "Torrent"
