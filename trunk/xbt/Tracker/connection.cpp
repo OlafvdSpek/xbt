@@ -44,64 +44,61 @@ int Cconnection::recv()
 {
 	if (!m_read_b.size())
 		m_read_b.resize(4 << 10);
-	bool can_recv = true;
-	for (int r; can_recv && (r = m_s.recv(memory_range(&m_read_b.front() + m_w, m_read_b.size() - m_w))); )
+	int r = m_s.recv(memory_range(&m_read_b.front() + m_w, m_read_b.size() - m_w));
+	if (!r)
 	{
-		if (r == SOCKET_ERROR)
-		{
-			int e = WSAGetLastError();
-			switch (e)
-			{
-			case WSAECONNABORTED:
-			case WSAECONNRESET:
-				return 1;
-			case WSAEWOULDBLOCK:
-				return 0;
-			}
-			std::cerr << "recv failed: " << Csocket::error2a(e) << std::endl;
-			return 1;
-		}
-		if (m_state == 5)
-			return 0;
-		if (r != m_read_b.size() - m_w)
-			can_recv = false;
-		char* a = &m_read_b.front() + m_w;
-		m_w += r;
-		int state;
-		do
-		{
-			state = m_state;
-			while (a < &m_read_b.front() + m_w && *a != '\n' && *a != '\r')
-			{
-				a++;
-				if (m_state)
-					m_state = 1;
-
-			}
-			if (a < &m_read_b.front() + m_w)
-			{
-				switch (m_state)
-				{
-				case 0:
-					read(std::string(&m_read_b.front(), a));
-					m_state = 1;
-				case 1:
-				case 3:
-					m_state += *a == '\n' ? 2 : 1;
-					break;
-				case 2:
-				case 4:
-					m_state++;
-					break;
-				}
-				a++;
-			}
-		}
-		while (state != m_state);
-		if (m_state == 5)
-			return 0;
+		m_state = 5;
+		return 0;
 	}
-	m_state = 5;
+	if (m_state == 5)
+		return 0;
+	if (r == SOCKET_ERROR)
+	{
+		int e = WSAGetLastError();
+		switch (e)
+		{
+		case WSAECONNABORTED:
+		case WSAECONNRESET:
+			return 1;
+		case WSAEWOULDBLOCK:
+			return 0;
+		}
+		std::cerr << "recv failed: " << Csocket::error2a(e) << std::endl;
+		return 1;
+	}
+	char* a = &m_read_b.front() + m_w;
+	m_w += r;
+	int state;
+	do
+	{
+		state = m_state;
+		while (a < &m_read_b.front() + m_w && *a != '\n' && *a != '\r')
+		{
+			a++;
+			if (m_state)
+				m_state = 1;
+
+		}
+		if (a < &m_read_b.front() + m_w)
+		{
+			switch (m_state)
+			{
+			case 0:
+				read(std::string(&m_read_b.front(), a));
+				m_state = 1;
+			case 1:
+			case 3:
+				m_state += *a == '\n' ? 2 : 1;
+				break;
+			case 2:
+			case 4:
+				m_state++;
+				break;
+			}
+			a++;
+		}
+	}
+	while (state != m_state);
 	return 0;
 }
 

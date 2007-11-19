@@ -122,6 +122,14 @@ int main(int argc, char* argv[])
 		&& GetLastError() != ERROR_FAILED_SERVICE_CONTROLLER_CONNECT)
 		return 1;
 #endif
+#else
+	if (argc >= 2)
+	{
+		if (!strcmp(argv[1], "--conf_file") && argc >= 3)
+			g_conf_file = argv[2];
+		else
+			return 1;
+	}
 #endif
 	return main1();
 }
