@@ -75,7 +75,7 @@ void Ctransaction::recv()
 
 void Ctransaction::send_connect(const_memory_range r)
 {
-	if (!m_server.anonymous_connect() && !authenticate(r))
+	if (!m_server.config().m_anonymous_connect && !authenticate(r))
 		return;
 	const int cb_d = 2 << 10;
 	char d[cb_d];
@@ -90,7 +90,7 @@ void Ctransaction::send_announce(const_memory_range r)
 	if (read_int(8, r + uti_connection_id, r.end) != connection_id())
 		return;
 	Cserver::t_user* user = authenticate(r);
-	if (!m_server.anonymous_announce() && !user)
+	if (!m_server.config().m_anonymous_announce && !user)
 	{
 		send_error(r, "access denied");
 		return;
@@ -132,7 +132,7 @@ void Ctransaction::send_scrape(const_memory_range r)
 {
 	if (read_int(8, r + uti_connection_id, r.end) != connection_id())
 		return;
-	if (!m_server.anonymous_scrape() && !authenticate(r))
+	if (!m_server.config().m_anonymous_scrape && !authenticate(r))
 	{
 		send_error(r, "access denied");
 		return;

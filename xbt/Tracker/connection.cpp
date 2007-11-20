@@ -203,7 +203,7 @@ void Cconnection::read(const std::string& v)
 			else
 			{
 				Cserver::t_user* user = m_server->find_user_by_torrent_pass(torrent_pass0);
-				if (!m_server->anonymous_announce() && !user)
+				if (!m_server->config().m_anonymous_announce && !user)
 					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 				else if (user && user->torrent_pass_secret && calculate_torrent_pass1(ti.m_info_hash, user->torrent_pass_secret) != hex_decode(torrent_pass1))
 					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
@@ -216,9 +216,9 @@ void Cconnection::read(const std::string& v)
 		}
 		break;
 	case 'd':
-		if (m_server->debug())
+		if (m_server->config().m_debug)
 		{
-			gzip = m_server->gzip_debug();
+			gzip = m_server->config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(m_server->debug(ti));
 		}
@@ -226,25 +226,25 @@ void Cconnection::read(const std::string& v)
 	case 's':
 		if (v.size() >= 7 && v[6] == 't')
 		{
-			gzip = m_server->gzip_debug();
+			gzip = m_server->config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(m_server->statistics());
 		}
-		else if (m_server->full_scrape() || !ti.m_info_hash.empty())
+		else if (m_server->config().m_full_scrape || !ti.m_info_hash.empty())
 		{
-			gzip = m_server->gzip_scrape() && ti.m_info_hash.empty();
+			gzip = m_server->config().m_gzip_scrape && ti.m_info_hash.empty();
 			s = m_server->scrape(ti);
 		}
 		break;
 	}
 	if (!s.size())
 	{
-		if (m_server->redirect_url().empty())
+		if (m_server->config().m_redirect_url.empty())
 			h = "HTTP/1.0 404 Not Found\r\n";
 		else
 		{
 			h = "HTTP/1.0 302 Found\r\n"
-				"Location: " + m_server->redirect_url() + (ti.m_info_hash.empty() ? "" : "?info_hash=" + uri_encode(ti.m_info_hash)) + "\r\n";
+				"Location: " + m_server->config().m_redirect_url + (ti.m_info_hash.empty() ? "" : "?info_hash=" + uri_encode(ti.m_info_hash)) + "\r\n";
 		}
 	}
 	else if (gzip)
