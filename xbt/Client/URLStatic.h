@@ -1,23 +1,8 @@
-#if !defined(AFX_URLSTATIC_H__52DFA86D_31FD_4ADD_8C81_B4A0848EAAC4__INCLUDED_)
-#define AFX_URLSTATIC_H__52DFA86D_31FD_4ADD_8C81_B4A0848EAAC4__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 class CURLStatic: public CStatic
 {
-public:
-	//{{AFX_VIRTUAL(CURLStatic)
-	//}}AFX_VIRTUAL
 protected:
-	//{{AFX_MSG(CURLStatic)
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
-	//}}AFX_MSG
-
 	DECLARE_MESSAGE_MAP()
 };
-
-//{{AFX_INSERT_LOCATION}}
-
-#endif // !defined(AFX_URLSTATIC_H__52DFA86D_31FD_4ADD_8C81_B4A0848EAAC4__INCLUDED_)

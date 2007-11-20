@@ -1,9 +1,4 @@
-#if !defined(AFX_DNS_WORKER_H__D498D6AB_62D3_495E_9CFF_3E379D5D7B68__INCLUDED_)
-#define AFX_DNS_WORKER_H__D498D6AB_62D3_495E_9CFF_3E379D5D7B68__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif
 
 #include <boost/thread.hpp>
 #include <queue>
@@ -27,5 +22,3 @@ private:
 	bool m_run;
 	boost::thread_group m_threads;
 };
-
-#endif

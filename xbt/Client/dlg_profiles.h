@@ -1,9 +1,4 @@
-#if !defined(AFX_DLG_PROFILES_H__59531AC8_BA48_4E7D_8D35_49CB3F3B9D0F__INCLUDED_)
-#define AFX_DLG_PROFILES_H__59531AC8_BA48_4E7D_8D35_49CB3F3B9D0F__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "ListCtrlEx.h"
 #include "../bt test/profiles.h"
@@ -33,22 +28,14 @@ public:
 		return m_entries.find(m_selected_profile)->second;
 	}
 
-	//{{AFX_DATA(Cdlg_profiles)
 	enum { IDD = IDD_PROFILES };
 	CButton	m_edit;
 	CButton	m_activate;
 	CButton	m_delete;
 	CListCtrlEx	m_list;
-	//}}AFX_DATA
-
-	//{{AFX_VIRTUAL(Cdlg_profiles)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-	//}}AFX_VIRTUAL
 protected:
 	void update_controls();
-
-	//{{AFX_MSG(Cdlg_profiles)
+	virtual void DoDataExchange(CDataExchange* pDX);
 	virtual BOOL OnInitDialog();
 	afx_msg void OnInsert();
 	afx_msg void OnEdit();
@@ -57,13 +44,8 @@ protected:
 	afx_msg void OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnActivate();
 	afx_msg void OnItemchangedList(NMHDR* pNMHDR, LRESULT* pResult);
-	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
 	t_entries m_entries;
 	int m_selected_profile;
 };
-
-//{{AFX_INSERT_LOCATION}}
-
-#endif // !defined(AFX_DLG_PROFILES_H__59531AC8_BA48_4E7D_8D35_49CB3F3B9D0F__INCLUDED_)
