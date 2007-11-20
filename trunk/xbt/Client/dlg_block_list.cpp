@@ -6,27 +6,19 @@
 Cdlg_block_list::Cdlg_block_list(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_block_list::IDD, pParent, "Cdlg_block_list")
 {
-	//{{AFX_DATA_INIT(Cdlg_block_list)
-	//}}AFX_DATA_INIT
 }
-
 
 void Cdlg_block_list::DoDataExchange(CDataExchange* pDX)
 {
 	ETSLayoutDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(Cdlg_block_list)
 	DDX_Control(pDX, IDC_LIST, m_list);
 	DDX_Control(pDX, IDC_DELETE, m_delete);
-	//}}AFX_DATA_MAP
 }
 
-
 BEGIN_MESSAGE_MAP(Cdlg_block_list, ETSLayoutDialog)
-	//{{AFX_MSG_MAP(Cdlg_block_list)
 	ON_BN_CLICKED(IDC_DELETE, OnDelete)
 	ON_NOTIFY(LVN_GETDISPINFO, IDC_LIST, OnGetdispinfoList)
 	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST, OnItemchangedList)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 BOOL Cdlg_block_list::OnInitDialog()

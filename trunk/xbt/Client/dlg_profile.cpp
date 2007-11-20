@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "xbt client.h"
 #include "dlg_profile.h"
 
 Cdlg_profile::Cdlg_profile(CWnd* pParent /*=NULL*/):

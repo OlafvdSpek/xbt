@@ -1,9 +1,4 @@
-#if !defined(AFX_DLG_OPTIONS_H__F88A336D_3B46_4580_8ACF_F796B1E0ED0F__INCLUDED_)
-#define AFX_DLG_OPTIONS_H__F88A336D_3B46_4580_8ACF_F796B1E0ED0F__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "resource.h"
 
@@ -41,7 +36,6 @@ public:
 	void set(const t_data&);
 	Cdlg_options(CWnd* pParent = NULL);
 
-	//{{AFX_DATA(Cdlg_options)
 	enum { IDD = IDD_OPTIONS };
 	CHotKeyCtrl	m_hot_key;
 	int		m_peer_port;
@@ -66,24 +60,13 @@ public:
 	BOOL	m_upnp;
 	CString	m_user_agent;
 	CString	m_peer_id;
-	//}}AFX_DATA
-
-	//{{AFX_VIRTUAL(Cdlg_options)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-	//}}AFX_VIRTUAL
 protected:
-	//{{AFX_MSG(Cdlg_options)
+	virtual void DoDataExchange(CDataExchange* pDX);
 	afx_msg void OnCompletesDirectoryBrowse();
 	afx_msg void OnIncompletesDirectoryBrowse();
 	afx_msg void OnTorrentsDirectoryBrowse();
 	virtual BOOL OnInitDialog();
-	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 private:
 	DWORD m_hot_key_value;
 };
-
-//{{AFX_INSERT_LOCATION}}
-
-#endif // !defined(AFX_DLG_OPTIONS_H__F88A336D_3B46_4580_8ACF_F796B1E0ED0F__INCLUDED_)

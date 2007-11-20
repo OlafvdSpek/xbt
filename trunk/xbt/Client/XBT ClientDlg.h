@@ -1,9 +1,4 @@
-#if !defined(AFX_XBTCLIENTDLG_H__24B01140_CC8B_4862_B4FD_31A9CF22FAF8__INCLUDED_)
-#define AFX_XBTCLIENTDLG_H__24B01140_CC8B_4862_B4FD_31A9CF22FAF8__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "../bt test/server.h"
 #include "ListCtrlEx1.h"
@@ -73,22 +68,14 @@ public:
 	void open(const std::string& name, bool ask_for_location);
 	void open_url(const std::string&);
 	CXBTClientDlg(CWnd* pParent = NULL);
-
-	//{{AFX_DATA(CXBTClientDlg)
-	enum { IDD = IDD_XBTCLIENT_DIALOG };
-	CTabCtrl	m_tab;
-	CListCtrlEx1	m_peers;
-	CListCtrlEx1	m_files;
-	//}}AFX_DATA
-
-	//{{AFX_VIRTUAL(CXBTClientDlg)
-	public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-	//}}AFX_VIRTUAL
 
+	enum { IDD = IDD_XBTCLIENT_DIALOG };
+	CTabCtrl m_tab;
+	CListCtrlEx1 m_peers;
+	CListCtrlEx1 m_files;
 protected:
+	virtual void DoDataExchange(CDataExchange* pDX);
 	afx_msg long OnAreYouMe(WPARAM, LPARAM);
 	afx_msg long OnTaskbarCreated(WPARAM, LPARAM);
 	afx_msg long OnTray(WPARAM, LPARAM);
@@ -98,7 +85,6 @@ protected:
 	HACCEL m_hAccel;
 	HICON m_hIcon;
 
-	//{{AFX_MSG(CXBTClientDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -203,7 +189,6 @@ protected:
 	afx_msg void OnToolsBlockList();
 	afx_msg void OnPopupPaused();
 	afx_msg void OnUpdatePopupPaused(CCmdUI* pCmdUI);
-	//}}AFX_MSG
 	afx_msg void OnGetdispinfoDetails(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoEvents(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnGetdispinfoGlobalDetails(NMHDR* pNMHDR, LRESULT* pResult);
@@ -333,7 +318,3 @@ private:
 	bool m_torrents_sort_reverse;
 	bool m_show_tray_icon;
 };
-
-//{{AFX_INSERT_LOCATION}}
-
-#endif // !defined(AFX_XBTCLIENTDLG_H__24B01140_CC8B_4862_B4FD_31A9CF22FAF8__INCLUDED_)
