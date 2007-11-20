@@ -1,10 +1,5 @@
-#if !defined(AFX_STDAFX_H__65F76B17_AF08_4DB2_B7D8_399776542FE6__INCLUDED_)
-#define AFX_STDAFX_H__65F76B17_AF08_4DB2_B7D8_399776542FE6__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
 #pragma warning(disable: 4244 4554 4800)
-#endif // _MSC_VER > 1000
 
 #define NOMINMAX
 
@@ -45,7 +40,3 @@
 #include "virtual_binary.h"
 
 typedef unsigned char byte;
-
-//{{AFX_INSERT_LOCATION}}
-
-#endif // !defined(AFX_STDAFX_H__65F76B17_AF08_4DB2_B7D8_399776542FE6__INCLUDED_)
