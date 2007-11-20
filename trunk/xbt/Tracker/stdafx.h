@@ -1,5 +1,4 @@
 #pragma once
-#pragma warning(disable: 4800)
 
 #include <cassert>
 #include <ctime>
