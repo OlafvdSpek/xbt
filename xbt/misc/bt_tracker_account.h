@@ -1,9 +1,4 @@
-#if !defined(AFX_BT_TRACKER_ACCOUNT_H__D495C350_CA0C_4582_B420_B73A2BC105CC__INCLUDED_)
-#define AFX_BT_TRACKER_ACCOUNT_H__D495C350_CA0C_4582_B420_B73A2BC105CC__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <list>
 #include "stream_writer.h"
@@ -44,5 +39,3 @@ public:
 	const Cbt_tracker_account* find(const std::string&) const;
 	void load(const Cvirtual_binary&);
 };
-
-#endif // !defined(AFX_BT_TRACKER_ACCOUNT_H__D495C350_CA0C_4582_B420_B73A2BC105CC__INCLUDED_)
