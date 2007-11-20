@@ -1,9 +1,4 @@
-#if !defined(AFX_EPOLL_H__54CD3A68_E8A0_421F_991B_2A387A8893DC__INCLUDED_)
-#define AFX_EPOLL_H__54CD3A68_E8A0_421F_991B_2A387A8893DC__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <boost/utility.hpp>
 
@@ -42,5 +37,3 @@ public:
 private:
 	int m_fd;
 };
-
-#endif // !defined(AFX_EPOLL_H__54CD3A68_E8A0_421F_991B_2A387A8893DC__INCLUDED_)

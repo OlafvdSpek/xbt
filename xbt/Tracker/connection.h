@@ -1,9 +1,4 @@
-#if !defined(AFX_CONNECTION_H__CB2C61F4_A0ED_4996_9CFE_D6694BE24CC9__INCLUDED_)
-#define AFX_CONNECTION_H__CB2C61F4_A0ED_4996_9CFE_D6694BE24CC9__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <vector>
 #include "client.h"
@@ -36,5 +31,3 @@ private:
 	int m_w;
 	bool m_log_access;
 };
-
-#endif // !defined(AFX_CONNECTION_H__CB2C61F4_A0ED_4996_9CFE_D6694BE24CC9__INCLUDED_)

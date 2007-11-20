@@ -1,9 +1,4 @@
-#if !defined(AFX_CONFIG_H__9BC23017_7D28_49AE_BDBC_6B920E27CA97__INCLUDED_)
-#define AFX_CONFIG_H__9BC23017_7D28_49AE_BDBC_6B920E27CA97__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "config_base.h"
 
@@ -64,5 +59,3 @@ public:
 private:
 	void fill_maps(const Cconfig*);
 };
-
-#endif // !defined(AFX_CONFIG_H__9BC23017_7D28_49AE_BDBC_6B920E27CA97__INCLUDED_)
