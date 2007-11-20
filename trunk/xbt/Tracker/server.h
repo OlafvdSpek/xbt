@@ -127,44 +127,9 @@ public:
 		return i == m_files.end() ? NULL : &i->second;
 	}
 
-	bool anonymous_connect() const
+	const Cconfig& config() const
 	{
-		return m_config.m_anonymous_connect;
-	}
-
-	bool anonymous_announce() const
-	{
-		return m_config.m_anonymous_announce;
-	}
-
-	bool anonymous_scrape() const
-	{
-		return m_config.m_anonymous_scrape;
-	}
-
-	bool debug() const
-	{
-		return m_config.m_debug;
-	}
-
-	bool full_scrape() const
-	{
-		return m_config.m_full_scrape;
-	}
-
-	bool gzip_debug() const
-	{
-		return m_config.m_gzip_debug;
-	}
-
-	bool gzip_scrape() const
-	{
-		return m_config.m_gzip_scrape;
-	}
-
-	const std::string& redirect_url() const
-	{
-		return m_config.m_redirect_url;
+		return m_config;
 	}
 
 	long long secret() const
