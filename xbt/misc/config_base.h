@@ -1,9 +1,4 @@
-#if !defined(XBT_CONFIG_BASE_H__INCLUDED)
-#define XBT_CONFIG_BASE_H__INCLUDED
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <boost/algorithm/string.hpp>
 #include <fstream>
@@ -110,5 +105,3 @@ protected:
 		}
 	}
 };
-
-#endif

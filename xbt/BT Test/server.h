@@ -1,9 +1,4 @@
-#if !defined(AFX_SERVER_H__4D905E0B_7206_44A7_B536_848E7E677429__INCLUDED_)
-#define AFX_SERVER_H__4D905E0B_7206_44A7_B536_848E7E677429__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "block_list.h"
 #include "bt_admin_link.h"
@@ -287,5 +282,3 @@ private:
 	int m_cs;
 #endif
 };
-
-#endif // !defined(AFX_SERVER_H__4D905E0B_7206_44A7_B536_848E7E677429__INCLUDED_)

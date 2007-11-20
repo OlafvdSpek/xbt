@@ -1,9 +1,4 @@
-#if !defined(AFX_BT_PEER_LINK_H__50DC0701_DE7E_4A9D_B266_8C3188C24072__INCLUDED_)
-#define AFX_BT_PEER_LINK_H__50DC0701_DE7E_4A9D_B266_8C3188C24072__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <set>
 #include "alerts.h"
@@ -147,5 +142,3 @@ private:
 	void write_choke(bool);
 	void write_interested(bool);
 };
-
-#endif // !defined(AFX_BT_PEER_LINK_H__50DC0701_DE7E_4A9D_B266_8C3188C24072__INCLUDED_)

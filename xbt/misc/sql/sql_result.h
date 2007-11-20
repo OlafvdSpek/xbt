@@ -1,9 +1,4 @@
-#if !defined(AFX_SQL_RESULT_H__EA1254C8_2222_11D5_B606_0000B4936994__INCLUDED_)
-#define AFX_SQL_RESULT_H__EA1254C8_2222_11D5_B606_0000B4936994__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/utility.hpp>
@@ -95,7 +90,7 @@ private:
 	int m_size;
 };
 
-class Csql_row  
+class Csql_row
 {
 public:
 	Csql_row()
@@ -119,7 +114,7 @@ private:
 	boost::intrusive_ptr<Csql_result_source> m_source;
 };
 
-class Csql_result  
+class Csql_result
 {
 public:
 	Csql_row fetch_row() const;
@@ -151,5 +146,3 @@ private:
 
 	boost::intrusive_ptr<Csql_result_source> m_source;
 };
-
-#endif // !defined(AFX_SQL_RESULT_H__EA1254C8_2222_11D5_B606_0000B4936994__INCLUDED_)

@@ -1,9 +1,4 @@
-#if !defined(AFX_BT_FILE_DATA_H__2F382742_37BF_4FA1_9DD5_8973FC283EA5__INCLUDED_)
-#define AFX_BT_FILE_DATA_H__2F382742_37BF_4FA1_9DD5_8973FC283EA5__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 class Cbt_file_data
 {
@@ -52,5 +47,3 @@ public:
 	std::string m_name;
 	t_state m_state;
 };
-
-#endif // !defined(AFX_BT_FILE_DATA_H__2F382742_37BF_4FA1_9DD5_8973FC283EA5__INCLUDED_)

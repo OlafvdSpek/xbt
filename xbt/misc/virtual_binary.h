@@ -1,9 +1,4 @@
-#if !defined(AFX_VIRTUAL_BINARY_H__B59C9DC0_DB25_11D4_A95D_0050042229FC__INCLUDED_)
-#define AFX_VIRTUAL_BINARY_H__B59C9DC0_DB25_11D4_A95D_0050042229FC__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/utility.hpp>
@@ -38,7 +33,7 @@ public:
 		assert(mc_references == 1 && v <= m_range.size());
 		m_range.end = m_range.begin + v;
 	}
-	
+
 	friend void intrusive_ptr_add_ref(Cvirtual_binary_source*);
 	friend void intrusive_ptr_release(Cvirtual_binary_source*);
 private:
@@ -149,5 +144,3 @@ public:
 private:
 	boost::intrusive_ptr<Cvirtual_binary_source> m_source;
 };
-
-#endif // !defined(AFX_VIRTUAL_BINARY_H__B59C9DC0_DB25_11D4_A95D_0050042229FC__INCLUDED_)

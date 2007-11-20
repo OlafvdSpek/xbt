@@ -1,9 +1,4 @@
-#if !defined(AFX_STREAM_READER_H__FC96F4EB_360D_4836_9D31_2C0D0D0377A8__INCLUDED_)
-#define AFX_STREAM_READER_H__FC96F4EB_360D_4836_9D31_2C0D0D0377A8__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "stream_int.h"
 #include "virtual_binary.h"
@@ -62,5 +57,3 @@ private:
 	Cvirtual_binary m_d;
 	const unsigned char* m_r;
 };
-
-#endif // !defined(AFX_STREAM_READER_H__FC96F4EB_360D_4836_9D31_2C0D0D0377A8__INCLUDED_)
