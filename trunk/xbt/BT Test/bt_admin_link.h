@@ -1,9 +1,4 @@
-#if !defined(AFX_BT_ADMIN_LINK_H__C5AA1CA0_8023_42E9_A747_00CF206F5833__INCLUDED_)
-#define AFX_BT_ADMIN_LINK_H__C5AA1CA0_8023_42E9_A747_00CF206F5833__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "alerts.h"
 #include "ring_buffer.h"
@@ -38,5 +33,3 @@ private:
 	time_t m_ctime;
 	time_t m_mtime;
 };
-
-#endif // !defined(AFX_BT_ADMIN_LINK_H__C5AA1CA0_8023_42E9_A747_00CF206F5833__INCLUDED_)

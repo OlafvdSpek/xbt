@@ -1,10 +1,5 @@
-#if !defined(AFX_STDAFX_H__6FD5A396_75BD_4D9F_BD48_029F34D66F2E__INCLUDED_)
-#define AFX_STDAFX_H__6FD5A396_75BD_4D9F_BD48_029F34D66F2E__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
 #pragma warning(disable: 4244 4554 4800)
-#endif // _MSC_VER > 1000
 
 #include <boost/algorithm/string.hpp>
 #include <cassert>
@@ -64,7 +59,3 @@ inline long long min(long long a, long long b)
 #include "virtual_binary.h"
 
 typedef unsigned char byte;
-
-//{{AFX_INSERT_LOCATION}}
-
-#endif // !defined(AFX_STDAFX_H__6FD5A396_75BD_4D9F_BD48_029F34D66F2E__INCLUDED_)

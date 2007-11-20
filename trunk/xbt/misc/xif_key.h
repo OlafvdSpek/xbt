@@ -1,9 +1,4 @@
-#if !defined(AFX_XIF_KEY_H__99A07CE4_FA5D_11D2_B601_8B199B22657D__INCLUDED_)
-#define AFX_XIF_KEY_H__99A07CE4_FA5D_11D2_B601_8B199B22657D__INCLUDED_
-
-#if _MSC_VER >= 1000
 #pragma once
-#endif // _MSC_VER >= 1000
 
 #include <map>
 #include <string>
@@ -255,5 +250,3 @@ private:
 	void save(byte*& data) const;
 	void external_save(byte*& data) const;
 };
-
-#endif // !defined(AFX_XIF_KEY_H__99A07CE4_FA5D_11D2_B601_8B199B22657D__INCLUDED_)

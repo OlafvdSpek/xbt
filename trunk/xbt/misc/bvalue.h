@@ -1,9 +1,4 @@
-#if !defined(AFX_BVALUE_H__AE7DA755_2638_4709_8C54_495AA3840EFB__INCLUDED_)
-#define AFX_BVALUE_H__AE7DA755_2638_4709_8C54_495AA3840EFB__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <map>
 #include <string>
@@ -59,5 +54,3 @@ private:
 
 	int write(const char*& s, const char* s_end);
 };
-
-#endif // !defined(AFX_BVALUE_H__AE7DA755_2638_4709_8C54_495AA3840EFB__INCLUDED_)

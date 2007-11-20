@@ -1,9 +1,4 @@
-#if !defined(AFX_BT_PEER_DATA_H__BB3CD676_063C_4194_B0F6_BE7BCD05EB36__INCLUDED_)
-#define AFX_BT_PEER_DATA_H__BB3CD676_063C_4194_B0F6_BE7BCD05EB36__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 class Cbt_peer_data
 {
@@ -23,5 +18,3 @@ public:
 	bool m_remote_interested;
 	std::string m_remote_peer_id;
 };
-
-#endif // !defined(AFX_BT_PEER_DATA_H__BB3CD676_063C_4194_B0F6_BE7BCD05EB36__INCLUDED_)

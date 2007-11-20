@@ -1,9 +1,4 @@
-#if !defined(AFX_DATABASE_H__EA1254C6_2222_11D5_B606_0000B4936994__INCLUDED_)
-#define AFX_DATABASE_H__EA1254C6_2222_11D5_B606_0000B4936994__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <stdexcept>
 #include "sql_result.h"
@@ -39,5 +34,3 @@ private:
 	MYSQL m_handle;
 	std::string m_query_log;
 };
-
-#endif // !defined(AFX_DATABASE_H__EA1254C6_2222_11D5_B606_0000B4936994__INCLUDED_)

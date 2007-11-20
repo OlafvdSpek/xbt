@@ -1,9 +1,4 @@
-#if !defined(AFX_SOCKET_H__7FCC2721_54CD_4609_8737_92478B4090EA__INCLUDED_)
-#define AFX_SOCKET_H__7FCC2721_54CD_4609_8737_92478B4090EA__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/utility.hpp>
@@ -141,5 +136,3 @@ public:
 private:
 	boost::intrusive_ptr<Csocket_source> m_source;
 };
-
-#endif // !defined(AFX_SOCKET_H__7FCC2721_54CD_4609_8737_92478B4090EA__INCLUDED_)

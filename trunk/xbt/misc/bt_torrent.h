@@ -1,9 +1,4 @@
-#if !defined(AFX_BT_TORRENT_H__AF87B246_788C_42B3_BE1C_08679DFEFBA4__INCLUDED_)
-#define AFX_BT_TORRENT_H__AF87B246_788C_42B3_BE1C_08679DFEFBA4__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "bvalue.h"
 
@@ -78,5 +73,3 @@ private:
 	std::string m_name;
 	int m_piece_size;
 };
-
-#endif // !defined(AFX_BT_TORRENT_H__AF87B246_788C_42B3_BE1C_08679DFEFBA4__INCLUDED_)

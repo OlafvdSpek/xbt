@@ -1,9 +1,4 @@
-#if !defined(AFX_STREAM_INT_H__57F9BAC0_D02F_4067_9891_5C484F35B67F__INCLUDED_)
-#define AFX_STREAM_INT_H__57F9BAC0_D02F_4067_9891_5C484F35B67F__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 inline float read_float(const void* r)
 {
@@ -78,5 +73,3 @@ T write_int_le(int cb, T w0, long long v)
 	}
 	return reinterpret_cast<T>(w);
 }
-
-#endif // !defined(AFX_STREAM_INT_H__57F9BAC0_D02F_4067_9891_5C484F35B67F__INCLUDED_)

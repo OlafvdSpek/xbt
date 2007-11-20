@@ -1,9 +1,4 @@
-#if !defined(AFX_XIF_KEY_R_H__817C3F05_EB76_483D_929B_5547F4EB9B58__INCLUDED_)
-#define AFX_XIF_KEY_R_H__817C3F05_EB76_483D_929B_5547F4EB9B58__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <vector>
 #include "xif_value.h"
@@ -100,5 +95,3 @@ private:
 	t_key_map m_keys;
 	t_value_map m_values;
 };
-
-#endif // !defined(AFX_XIF_KEY_R_H__817C3F05_EB76_483D_929B_5547F4EB9B58__INCLUDED_)

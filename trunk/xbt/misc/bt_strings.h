@@ -1,9 +1,4 @@
-#if !defined(AFX_BT_STRINGS_H__2BC4A814_E7F6_45BF_AEA3_59B270DA3A9A__INCLUDED_)
-#define AFX_BT_STRINGS_H__2BC4A814_E7F6_45BF_AEA3_59B270DA3A9A__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 enum
 {
@@ -116,5 +111,3 @@ const std::string bts_upload_slots = "upload slots";
 const std::string bts_user_agent = "user agent";
 const std::string bts_version = "version";
 const std::string bts_wait_time = "access denied, wait time in effect";
-
-#endif // !defined(AFX_BT_STRINGS_H__2BC4A814_E7F6_45BF_AEA3_59B270DA3A9A__INCLUDED_)

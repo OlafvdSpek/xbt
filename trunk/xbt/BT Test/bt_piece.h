@@ -1,9 +1,4 @@
-#if !defined(AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_)
-#define AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "bt_peer_link.h"
 #include "bt_piece_data.h"
@@ -105,5 +100,3 @@ private:
 	int m_size;
 	t_sub_pieces m_sub_pieces;
 };
-
-#endif // !defined(AFX_BT_PIECE_H__E6E03656_9830_4FFE_8F22_B3BF46E9D3C4__INCLUDED_)
