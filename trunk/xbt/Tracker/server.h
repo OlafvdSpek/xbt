@@ -1,9 +1,4 @@
-#if !defined(AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_)
-#define AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <boost/array.hpp>
 #include <map>
@@ -241,5 +236,3 @@ private:
 	std::string m_table_prefix;
 	std::string m_users_updates_buffer;
 };
-
-#endif // !defined(AFX_SERVER_H__B9726CD5_D101_4193_A555_69102FC058E9__INCLUDED_)

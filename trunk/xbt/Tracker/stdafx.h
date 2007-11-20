@@ -1,10 +1,5 @@
-#if !defined(AFX_STDAFX_H__442CF508_B879_4863_8154_1014EBBD78CA__INCLUDED_)
-#define AFX_STDAFX_H__442CF508_B879_4863_8154_1014EBBD78CA__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
 #pragma warning(disable: 4800)
-#endif // _MSC_VER > 1000
 
 #include <cassert>
 #include <ctime>
@@ -34,7 +29,3 @@
 #endif
 
 typedef unsigned char byte;
-
-//{{AFX_INSERT_LOCATION}}
-
-#endif // !defined(AFX_STDAFX_H__442CF508_B879_4863_8154_1014EBBD78CA__INCLUDED_)
