@@ -1,5 +1,4 @@
 #pragma once
-#pragma warning(disable: 4244 4554 4800)
 
 #include <boost/algorithm/string.hpp>
 #include <cassert>
