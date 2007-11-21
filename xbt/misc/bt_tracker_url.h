@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Cbt_tracker_url
 {
 public:
