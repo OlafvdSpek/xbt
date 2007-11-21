@@ -93,11 +93,11 @@ private:
 class Csql_row
 {
 public:
+	Csql_row(MYSQL_ROW, unsigned long* sizes, boost::intrusive_ptr<Csql_result_source>);
+
 	Csql_row()
 	{
 	}
-
-	Csql_row(MYSQL_ROW, unsigned long* sizes, boost::intrusive_ptr<Csql_result_source>);
 
 	operator bool() const
 	{
@@ -122,6 +122,11 @@ public:
 	Csql_result(MYSQL_RES* h)
 	{
 		m_source = new Csql_result_source(h);
+	}
+
+	operator bool() const
+	{
+		return c_rows();
 	}
 
 	int c_fields() const
