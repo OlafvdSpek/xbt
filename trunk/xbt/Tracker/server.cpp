@@ -62,9 +62,8 @@ int Cserver::run()
 					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
 				lt.push_back(Ctcp_listen_socket(this, l));
-				if (m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
-					return 1;
-				continue;
+				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
+					continue;
 			}
 			return 1;
 		}
@@ -79,9 +78,8 @@ int Cserver::run()
 			else
 			{
 				lu.push_back(Cudp_listen_socket(this, l));
-				if (m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lu.back()))
-					return 1;
-				continue;
+				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lu.back()))
+					continue;
 			}
 			return 1;
 		}
@@ -145,9 +143,7 @@ int Cserver::run()
 			int prev_time = m_time;
 			m_time = ::time(NULL);
 			for (int i = 0; i < r; i++)
-			{
 				reinterpret_cast<Cclient*>(events[i].data.ptr)->process_events(events[i].events);
-			}
 			if (m_time == prev_time)
 				continue;
 			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
@@ -170,19 +166,15 @@ int Cserver::run()
 		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
 		int n = 0;
+		for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); i++)
 		{
-			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); i++)
-			{
-				int z = i->pre_select(&fd_read_set, &fd_write_set);
-				n = std::max(n, z);
-			}
+			int z = i->pre_select(&fd_read_set, &fd_write_set);
+			n = std::max(n, z);
 		}
+		for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); i++)
 		{
-			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); i++)
-			{
-				int z = i->pre_select(&fd_write_set, &fd_except_set);
-				n = std::max(n, z);
-			}
+			int z = i->pre_select(&fd_write_set, &fd_except_set);
+			n = std::max(n, z);
 		}
 		for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 		{
@@ -212,23 +204,19 @@ int Cserver::run()
 				if (FD_ISSET(i->s(), &fd_read_set))
 					Ctransaction(*this, i->s()).recv();
 			}
+			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
 			{
-				for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
-				{
-					if (i->post_select(&fd_read_set, &fd_write_set))
-						i = m_connections.erase(i);
-					else
-						i++;
-				}
+				if (i->post_select(&fd_read_set, &fd_write_set))
+					i = m_connections.erase(i);
+				else
+					i++;
 			}
+			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
 			{
-				for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
-				{
-					if (i->post_select(&fd_write_set, &fd_except_set))
-						i = m_peer_links.erase(i);
-					else
-						i++;
-				}
+				if (i->post_select(&fd_write_set, &fd_except_set))
+					i = m_peer_links.erase(i);
+				else
+					i++;
 			}
 		}
 #endif
@@ -268,24 +256,17 @@ void Cserver::accept(const Csocket& l)
 				std::cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			break;
 		}
-		else
+		t_deny_from_hosts::const_iterator i = m_deny_from_hosts.lower_bound(ntohl(a.sin_addr.s_addr));
+		if (i != m_deny_from_hosts.end() && ntohl(a.sin_addr.s_addr) <= i->second.end)
+			continue;
+		if (s.blocking(false))
+			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+		Cconnection connection(this, s, a, m_config.m_log_access);
+		connection.process_events(EPOLLIN);
+		if (connection.s() != INVALID_SOCKET)
 		{
-			t_deny_from_hosts::const_iterator i = m_deny_from_hosts.lower_bound(ntohl(a.sin_addr.s_addr));
-			if (i != m_deny_from_hosts.end() && ntohl(a.sin_addr.s_addr) <= i->second.end)
-				continue;
-			if (s.blocking(false))
-				std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-#if 0 // def TCP_CORK
-			if (s.setsockopt(IPPROTO_TCP, TCP_CORK, true))
-				std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-#endif
-			Cconnection connection(this, s, a, m_config.m_log_access);
-			connection.process_events(EPOLLIN);
-			if (connection.s() != INVALID_SOCKET)
-			{
-				m_connections.push_back(connection);
-				m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
-			}
+			m_connections.push_back(connection);
+			m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
 	}
 }
@@ -381,10 +362,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 	}
 	if (v.m_event == Ctracker_input::e_completed)
 		file.completed++;
-	if (udp)
-		m_stats.announced_udp++;
-	else
-		m_stats.announced_http++;
+	(udp ? m_stats.announced_udp : m_stats.announced_http)++;
 	file.dirty = true;
 	return "";
 }
@@ -505,9 +483,8 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 		for (Ctracker_input::t_info_hashes::const_iterator j = ti.m_info_hashes.begin(); j != ti.m_info_hashes.end(); j++)
 		{
 			t_files::const_iterator i = m_files.find(*j);
-			if (i == m_files.end())
-				continue;
-			d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
+			if (i != m_files.end())			
+				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
 		}
 	}
 	d += "e";
