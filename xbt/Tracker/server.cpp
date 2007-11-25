@@ -460,7 +460,8 @@ Cvirtual_binary Cserver::select_peers(const Ctracker_input& ti) const
 	if (i == m_files.end())
 		return Cvirtual_binary();
 	std::string peers = i->second.select_peers(ti);
-	return Cvirtual_binary((boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se") % i->second.seeders % i->second.leechers % announce_interval() % announce_interval() % peers.size() % peers).str());	
+	return Cvirtual_binary((boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se") 
+		% i->second.seeders % i->second.leechers % config().m_announce_interval % config().m_announce_interval % peers.size() % peers).str());	
 }
 
 void Cserver::t_file::clean_up(time_t t, Cserver& server)

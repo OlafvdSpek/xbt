@@ -116,11 +116,6 @@ public:
 	static void term();
 	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 
-	int announce_interval() const
-	{
-		return m_config.m_announce_interval;
-	}
-
 	const t_file* file(const std::string& id) const
 	{
 		t_files::const_iterator i = m_files.find(id);
