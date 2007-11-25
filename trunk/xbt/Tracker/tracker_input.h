@@ -23,7 +23,6 @@ public:
 	std::string m_info_hash;
 	t_info_hashes m_info_hashes;
 	int m_ipa;
-	std::string m_key;
 	std::string m_peer_id;
 	long long m_downloaded;
 	long long m_left;

@@ -261,7 +261,7 @@ void Cserver::accept(const Csocket& l)
 			continue;
 		if (s.blocking(false))
 			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-		Cconnection connection(this, s, a, m_config.m_log_access);
+		Cconnection connection(this, s, a);
 		connection.process_events(EPOLLIN);
 		if (connection.s() != INVALID_SOCKET)
 		{

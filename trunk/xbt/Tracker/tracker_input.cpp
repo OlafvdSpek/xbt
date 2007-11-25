@@ -47,10 +47,6 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 		else if (name == "ip")
 			m_ipa = inet_addr(value.c_str());
 		break;
-	case 'k':
-		if (name == "key")
-			m_key = value.substr(0, 8);
-		break;
 	case 'l':
 		if (name == "left")
 			m_left = atoll(value.c_str());
