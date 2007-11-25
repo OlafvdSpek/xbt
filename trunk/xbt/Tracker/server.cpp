@@ -294,18 +294,8 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 {
 	if (m_use_sql && m_config.m_log_announce)
 	{
-		Csql_query q(m_database, "(?,?,?,?,?,?,?,?,?,?),");
-		q.p(ntohl(v.m_ipa));
-		q.p(ntohs(v.m_port));
-		q.p(v.m_event);
-		q.p(v.m_info_hash);
-		q.p(v.m_peer_id);
-		q.p(v.m_downloaded);
-		q.p(v.m_left);
-		q.p(v.m_uploaded);
-		q.p(user ? user->uid : 0);
-		q.p(time());
-		m_announce_log_buffer += q.read();
+		m_announce_log_buffer += Csql_query(m_database, "(?,?,?,?,?,?,?,?,?,?),")
+			.p(ntohl(v.m_ipa)).p(ntohs(v.m_port)).p(v.m_event).p(v.m_info_hash).p(v.m_peer_id).p(v.m_downloaded).p(v.m_left).p(v.m_uploaded).p(user ? user->uid : 0).p(time()).read();
 	}
 	if (!m_config.m_offline_message.empty())
 		return m_config.m_offline_message;
@@ -348,24 +338,18 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 			downloaded = v.m_downloaded - i->second.downloaded;
 			uploaded = v.m_uploaded - i->second.uploaded;
 		}
-		Csql_query q(m_database, "(?,1,?,?,?,?,?,?,?),");
-		q.p(v.m_event != Ctracker_input::e_stopped);
-		q.p(v.m_event == Ctracker_input::e_completed);
-		q.p(downloaded);
-		q.p(v.m_left);
-		q.p(uploaded);
-		q.p(time());
-		q.p(file.fid);
-		q.p(user->uid);
-		m_files_users_updates_buffer += q.read();
+		m_files_users_updates_buffer += Csql_query(m_database, "(?,1,?,?,?,?,?,?,?),")
+			.p(v.m_event != Ctracker_input::e_stopped)
+			.p(v.m_event == Ctracker_input::e_completed)
+			.p(downloaded)
+			.p(v.m_left)
+			.p(uploaded)
+			.p(time())
+			.p(file.fid)
+			.p(user->uid)
+			.read();
 		if (downloaded || uploaded)
-		{
-			Csql_query q(m_database, "(?,?,?),");
-			q.p(downloaded);
-			q.p(uploaded);
-			q.p(user->uid);
-			m_users_updates_buffer += q.read();
-		}
+			m_users_updates_buffer += Csql_query(m_database, "(?,?,?),").p(downloaded).p(uploaded).p(user->uid).read();
 	}
 	if (v.m_event == Ctracker_input::e_stopped)
 		file.peers.erase(peer_key);
@@ -474,12 +458,7 @@ void Cserver::t_file::clean_up(time_t t, Cserver& server)
 			if (t_user* user = server.find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
 			if (i->second.uid)
-			{
-				Csql_query q(server.m_database, "(0,0,0,0,-1,0,-1,?,?),");
-				q.p(fid);
-				q.p(i->second.uid);
-				server.m_files_users_updates_buffer += q.read();
-			}
+				server.m_files_users_updates_buffer += Csql_query(server.m_database, "(0,0,0,0,-1,0,-1,?,?),").p(fid).p(i->second.uid).read();
 			peers.erase(i++);
 			dirty = true;
 		}
@@ -545,9 +524,7 @@ void Cserver::read_db_deny_from_hosts()
 		return;
 	try
 	{
-		Csql_query q(m_database, "select begin, end from ?");
-		q.p_name(table_name(table_deny_from_hosts));
-		Csql_result result = q.execute();
+		Csql_result result = Csql_query(m_database, "select begin, end from ?").p_name(table_name(table_deny_from_hosts)).execute();
 		for (t_deny_from_hosts::iterator i = m_deny_from_hosts.begin(); i != m_deny_from_hosts.end(); i++)
 			i->second.marked = true;
 		for (Csql_row row; row = result.fetch_row(); )
@@ -601,13 +578,9 @@ void Cserver::read_db_files_sql()
 {
 	try
 	{
-		Csql_query q(m_database);
 		if (!m_config.m_auto_register)
 		{
-			q = "select info_hash, ? from ? where flags & 1";
-			q.p_name(column_name(column_files_fid));
-			q.p_name(table_name(table_files));
-			Csql_result result = q.execute();
+			Csql_result result = Csql_query(m_database, "select info_hash, ? from ? where flags & 1").p_name(column_name(column_files_fid)).p_name(table_name(table_files)).execute();
 			for (Csql_row row; row = result.fetch_row(); )
 			{
 				t_files::iterator i = m_files.find(row[0].s());
@@ -620,25 +593,20 @@ void Cserver::read_db_files_sql()
 					}
 					m_files.erase(i);
 				}
-				q = "delete from ? where ? = ?";
-				q.p_name(table_name(table_files));
-				q.p_name(column_name(column_files_fid));
-				q.p(row[1].i());
-				q.execute();
+				Csql_query(m_database, "delete from ? where ? = ?").p_name(table_name(table_files)).p_name(column_name(column_files_fid)).p(row[1].i()).execute();
 			}
 		}
 		if (m_files.empty())
 			m_database.query("update " + table_name(table_files) + " set " + column_name(column_files_leechers) + " = 0, " + column_name(column_files_seeders) + " = 0");
 		else if (m_config.m_auto_register)
 			return;
-		q = "select info_hash, ?, ?, ctime"
-			" from ? where ? >= ?";
-		q.p_name(column_name(column_files_completed));
-		q.p_name(column_name(column_files_fid));
-		q.p_name(table_name(table_files));
-		q.p_name(column_name(column_files_fid));
-		q.p(m_fid_end);
-		Csql_result result = q.execute();
+		Csql_result result = Csql_query(m_database, "select info_hash, ?, ?, ctime from ? where ? >= ?")
+			.p_name(column_name(column_files_completed))
+			.p_name(column_name(column_files_fid))
+			.p_name(table_name(table_files))
+			.p_name(column_name(column_files_fid))
+			.p(m_fid_end)
+			.execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
 			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
@@ -665,10 +633,8 @@ void Cserver::read_db_users()
 		return;
 	try
 	{
-		Csql_query q(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret, can_leech from ?");
-		q.p_name(column_name(column_users_uid));
-		q.p_name(table_name(table_users));
-		Csql_result result = q.execute();
+		Csql_result result = Csql_query(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret, can_leech from ?")
+			.p_name(column_name(column_users_uid)).p_name(table_name(table_users)).execute();
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
 			i->second.marked = true;
 		m_users_names.clear();
@@ -715,21 +681,12 @@ void Cserver::write_db_files()
 			t_file& file = i->second;
 			if (!file.dirty)
 				continue;
-			Csql_query q(m_database);
 			if (!file.fid)
 			{
-				q = "insert into ? (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())";
-				q.p_name(table_name(table_files));
-				q.p(i->first);
-				q.execute();
+				Csql_query(m_database, "insert into ? (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())").p_name(table_name(table_files)).p(i->first).execute();
 				file.fid = m_database.insert_id();
 			}
-			q = "(?,?,?,?),";
-			q.p(file.leechers);
-			q.p(file.seeders);
-			q.p(file.completed);
-			q.p(file.fid);
-			buffer += q.read();
+			buffer += Csql_query(m_database, "(?,?,?,?),").p(file.leechers).p(file.seeders).p(file.completed).p(file.fid).read();
 			file.dirty = false;
 		}
 		if (!buffer.empty())
