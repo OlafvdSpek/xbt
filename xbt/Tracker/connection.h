@@ -17,7 +17,7 @@ public:
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	Cconnection();
-	Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a, bool log_access);
+	Cconnection(Cserver*, const Csocket&, const sockaddr_in&);
 private:
 	typedef std::vector<char> t_read_b;
 	typedef std::vector<char> t_write_b;
@@ -29,5 +29,4 @@ private:
 	t_write_b m_write_b;
 	int m_r;
 	int m_w;
-	bool m_log_access;
 };
