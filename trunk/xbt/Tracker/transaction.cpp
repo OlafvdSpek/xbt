@@ -120,7 +120,7 @@ void Ctransaction::send_announce(const_memory_range r)
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_announce);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r.end));
-	write_int(4, d + utoa_interval, m_server.announce_interval());
+	write_int(4, d + utoa_interval, m_server.config().m_announce_interval);
 	write_int(4, d + utoa_leechers, file->leechers);
 	write_int(4, d + utoa_seeders, file->seeders);
 	std::string peers = file->select_peers(ti);
