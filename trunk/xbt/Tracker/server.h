@@ -46,7 +46,7 @@ public:
 	{
 		void clean_up(time_t t, Cserver&);
 		std::string debug() const;
-		std::string select_peers(const Ctracker_input& ti) const;
+		std::string select_peers(const Ctracker_input&) const;
 
 		t_file()
 		{
@@ -94,7 +94,7 @@ public:
 	typedef std::map<std::string, t_user*> t_users_torrent_passes;
 
 	int test_sql();
-	void accept(const Csocket& l);
+	void accept(const Csocket&);
 	t_user* find_user_by_name(const std::string&);
 	t_user* find_user_by_torrent_pass(const std::string&);
 	t_user* find_user_by_uid(int);
