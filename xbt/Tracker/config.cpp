@@ -30,7 +30,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"anonymous_scrape", &m_anonymous_scrape, true,
 			"daemon", &m_daemon, true,
 			"debug", &m_debug, false,
-			"full_scrape", &m_full_scrape, true,
+			"full_scrape", &m_full_scrape, false,
 			"gzip_debug", &m_gzip_debug, true,
 			"gzip_scrape", &m_gzip_scrape, true,
 			"listen_check", &m_listen_check, false,
