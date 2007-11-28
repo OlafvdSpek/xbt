@@ -33,6 +33,14 @@ std::string escape_string(const std::string& v)
 	return w;
 }
 
+std::string generate_random_string(int l)
+{
+	std::string v;
+	while (l--)
+		v += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"[rand() % 62];
+	return v;
+}
+
 std::string get_env(const std::string& v)
 {
 	const char* p = getenv(v.c_str());
@@ -43,9 +51,9 @@ static int hex_decode(char v)
 {
 	if (v >= '0' && v <= '9')
 		return v - '0';
-	if (v >= 'A' && v <= 'Z')
+	if (v >= 'A' && v <= 'F')
 		return v - 'A' + 10;
-	if (v >= 'a' && v <= 'z')
+	if (v >= 'a' && v <= 'f')
 		return v - 'a' + 10;
 	return -1;
 };
