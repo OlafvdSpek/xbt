@@ -653,8 +653,8 @@ void Cserver::read_db_users()
 				if (row[c].size())
 					m_users_torrent_passes[row[c].s()] = &user;
 				c++;
-				user.torrent_pass_secret = row[c++].i();
 			}
+			user.torrent_pass_secret = m_read_users_torrent_pass ? row[c++].i() : 0;
 			user.torrents_limit = m_read_users_torrents_limit ? row[c++].i() : 0;
 			user.wait_time = m_read_users_wait_time ? row[c++].i() : 0;
 		}
