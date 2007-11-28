@@ -8,6 +8,7 @@ std::string backward_slashes(std::string);
 std::string duration2a(float);
 std::string escape_string(const std::string&);
 std::string forward_slashes(std::string);
+std::string generate_random_string(int);
 std::string get_env(const std::string&);
 int hms2i(int h, int m, int s);
 bool is_private_ipa(int a);

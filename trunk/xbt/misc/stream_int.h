@@ -29,9 +29,14 @@ inline long long read_int(int cb, const void* r0)
 	return v;
 }
 
+inline long long read_int(int cb, const_memory_range s)
+{
+	return s.size() < cb ? 0 : read_int(cb, s.begin);
+}
+
 inline long long read_int(int cb, const void* r, const void* s_end)
 {
-	return read_int(cb, r);
+	return read_int(cb, const_memory_range(r, s_end));
 }
 
 template <class T>

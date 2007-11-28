@@ -4,14 +4,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
-std::string generate_random_string(int l)
-{
-	std::string v;
-	while (l--)
-		v += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"[rand() % 62];
-	return v;
-}
-
 static std::string web_encode(const std::string& v)
 {
 	std::string d;
