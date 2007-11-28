@@ -7,6 +7,7 @@
 #include "sql/sql_query.h"
 #include "bt_misc.h"
 #include "bt_strings.h"
+#include "stream_int.h"
 #include "transaction.h"
 
 static volatile bool g_sig_hup = false;
@@ -610,7 +611,7 @@ void Cserver::read_db_users()
 		return;
 	try
 	{
-		Csql_result result = Csql_query(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret, can_leech from ?")
+		Csql_result result = Csql_query(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret, can_leech, torrent_pass_version from ?")
 			.p_name(column_name(column_users_uid)).p_name(table_name(table_users)).execute();
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
 			i->second.marked = true;
@@ -627,6 +628,7 @@ void Cserver::read_db_users()
 			user.peers_limit = row[6].i();
 			user.torrent_pass_secret = row[7].i();
 			user.can_leech = row[8].i();
+			user.torrent_pass_version = row[9].i();
 			if (row[1].size())
 				m_users_names[row[1].s()] = &user;
 			if (row[3].size())
@@ -762,6 +764,11 @@ void Cserver::read_config()
 			for (Csql_row row; row = result.fetch_row(); )
 				config.set(row[0].s(), row[1].s());
 			config.load(m_conf_file);
+			if (config.m_torrent_pass_private_key.empty())
+			{
+				config.m_torrent_pass_private_key = generate_random_string(27);
+				Csql_query(m_database, "insert into xbt_config (name, value) values ('torrent_pass_private_key', ?)").p(config.m_torrent_pass_private_key).execute();
+			}
 			m_config = config;
 		}
 		catch (Cdatabase::exception&)
@@ -892,8 +899,13 @@ Cserver::t_user* Cserver::find_user_by_name(const std::string& v)
 	return i == m_users_names.end() ? NULL : i->second;
 }
 
-Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v)
+Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, const std::string& info_hash)
 {
+	if (t_user* user = find_user_by_uid(read_int(4, hex_decode(v.substr(0, 8)))))
+	{
+		if (v.size() >= 8 && Csha1((boost::format("%s %d %d %s") % m_config.m_torrent_pass_private_key % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8)))
+			return user;
+	}
 	t_users_torrent_passes::const_iterator i = m_users_torrent_passes.find(v);
 	return i == m_users_torrent_passes.end() ? NULL : i->second;
 }
@@ -979,7 +991,7 @@ int Cserver::test_sql()
 		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
 		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0 = 1");
-		m_database.query("select " + column_name(column_users_uid) + ", name, pass, can_leech, wait_time, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret from " + table_name(table_users) + " where 0 = 1");
+		m_database.query("select " + column_name(column_users_uid) + ", name, pass, can_leech, wait_time, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret, torrent_pass_version from " + table_name(table_users) + " where 0 = 1");
 		return 0;
 	}
 	catch (Cdatabase::exception&)
