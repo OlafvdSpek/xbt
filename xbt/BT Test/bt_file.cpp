@@ -995,6 +995,12 @@ int Cbt_file::upload_slots_min() const
 	return m_upload_slots_min_override ? m_upload_slots_min : server()->torrent_upload_slots_min();
 }
 
+void Cbt_file::add_tracker(const std::string& v)
+{
+	if (std::find(m_trackers.begin(), m_trackers.end(), v) == m_trackers.end())
+		m_trackers.push_back(v);
+}
+
 void Cbt_file::trackers(const std::string& v)
 {
 	m_trackers.clear();

@@ -863,10 +863,11 @@ int Cserver::open(const Cvirtual_binary& info, const std::string& name)
 	{
 	}
 	info.save(torrents_dir() + '/' + f.m_name + ' ' + hex_encode(f.m_info_hash) + ".torrent");
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	if (Cbt_file* i = find_torrent(f.m_info_hash))
 	{
-		if (i->m_info_hash == f.m_info_hash)
-			return 2;
+		for (Cbt_file::t_trackers::const_iterator j = f.m_trackers.begin(); j != f.m_trackers.end(); j++)
+			i->add_tracker(*j);
+		return 2;
 	}
 	if (!name.empty())
 		f.m_name = name;
