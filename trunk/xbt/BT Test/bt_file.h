@@ -24,6 +24,7 @@ public:
 	time_t time() const;
 	void peer_connect(int ipa, int port);
 	void peer_disconnect(int ipa);
+	void add_tracker(const std::string&);
 	void trackers(const std::string&);
 	int c_local_links() const;
 	int c_remote_links() const;
