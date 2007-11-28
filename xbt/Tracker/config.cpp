@@ -77,6 +77,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"table_files_users", &m_table_files_users, "",
 			"table_scrape_log", &m_table_scrape_log, "",
 			"table_users", &m_table_users, "",
+			"torrent_pass_private_key", &m_torrent_pass_private_key, "",
 			NULL, NULL, ""
 		};
 		fill_map(attributes, v ? &v->m_attributes_string : NULL, m_attributes_string);

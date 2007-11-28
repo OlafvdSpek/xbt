@@ -81,6 +81,7 @@ public:
 		int completes;
 		int incompletes;
 		int peers_limit;
+		int torrent_pass_version;
 		int torrents_limit;
 		int wait_time;
 		std::string pass;
@@ -96,7 +97,7 @@ public:
 	int test_sql();
 	void accept(const Csocket&);
 	t_user* find_user_by_name(const std::string&);
-	t_user* find_user_by_torrent_pass(const std::string&);
+	t_user* find_user_by_torrent_pass(const std::string&, const std::string& info_hash);
 	t_user* find_user_by_uid(int);
 	void read_config();
 	void write_db_files();

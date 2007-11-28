@@ -76,6 +76,7 @@ create table if not exists xbt_users
 	torrents_limit int not null,
 	torrent_pass char(32) not null,
 	torrent_pass_secret bigint unsigned not null,
+	torrent_pass_version int not null,
 	downloaded bigint unsigned not null,
 	uploaded bigint unsigned not null,
 	primary key (uid)
