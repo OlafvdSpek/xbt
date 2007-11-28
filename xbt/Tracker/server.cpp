@@ -611,8 +611,23 @@ void Cserver::read_db_users()
 		return;
 	try
 	{
-		Csql_result result = Csql_query(m_database, "select ?, name, pass, torrent_pass, wait_time, torrents_limit, peers_limit, torrent_pass_secret, can_leech, torrent_pass_version from ?")
-			.p_name(column_name(column_users_uid)).p_name(table_name(table_users)).execute();
+		Csql_query q(m_database, "select ?, torrent_pass_version");
+		if (m_read_users_can_leech)
+			q += ", can_leech";
+		if (m_read_users_name_pass)
+			q += ", name, pass";
+		if (m_read_users_peers_limit)
+			q += ", peers_limit";
+		if (m_read_users_torrent_pass)
+			q += ", torrent_pass, torrent_pass_secret";
+		if (m_read_users_torrents_limit)
+			q += ", torrents_limit";
+		if (m_read_users_wait_time)
+			q += ", wait_time";
+		q += " from ?";
+		q.p_name(column_name(column_users_uid));
+		q.p_name(table_name(table_users));
+		Csql_result result = q.execute();
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
 			i->second.marked = true;
 		m_users_names.clear();
@@ -621,18 +636,27 @@ void Cserver::read_db_users()
 		{
 			t_user& user = m_users[row[0].i()];
 			user.marked = false;
-			user.uid = row[0].i();
-			user.wait_time = row[4].i();
-			user.pass.assign(row[2].s());
-			user.torrents_limit = row[5].i();
-			user.peers_limit = row[6].i();
-			user.torrent_pass_secret = row[7].i();
-			user.can_leech = row[8].i();
-			user.torrent_pass_version = row[9].i();
-			if (row[1].size())
-				m_users_names[row[1].s()] = &user;
-			if (row[3].size())
-				m_users_torrent_passes[row[3].s()] = &user;
+			int c = 0;
+			user.uid = row[c++].i();
+			user.torrent_pass_version = row[c++].i();
+			user.can_leech = m_read_users_can_leech ? row[c++].i() : true;
+			if (m_read_users_name_pass)
+			{
+				if (row[c].size() && row[c + 1].size())
+					m_users_names[row[c].s()] = &user;
+				c++;
+				user.pass = row[c++].s();
+			}
+			user.peers_limit = m_read_users_peers_limit ? row[c++].i() : 0;
+			if (m_read_users_torrent_pass)
+			{
+				if (row[c].size())
+					m_users_torrent_passes[row[c].s()] = &user;
+				c++;
+				user.torrent_pass_secret = row[c++].i();
+			}
+			user.torrents_limit = m_read_users_torrents_limit ? row[c++].i() : 0;
+			user.wait_time = m_read_users_wait_time ? row[c++].i() : 0;
 		}
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); )
 		{
@@ -991,7 +1015,13 @@ int Cserver::test_sql()
 		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
 		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
 		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0 = 1");
-		m_database.query("select " + column_name(column_users_uid) + ", name, pass, can_leech, wait_time, peers_limit, torrents_limit, torrent_pass, downloaded, uploaded, torrent_pass_secret, torrent_pass_version from " + table_name(table_users) + " where 0 = 1");
+		m_database.query("select " + column_name(column_users_uid) + ", torrent_pass_version, downloaded, uploaded from " + table_name(table_users) + " where 0 = 1");
+		m_read_users_can_leech = m_database.query("show columns from " + table_name(table_users) + " like 'can_leech'");
+		m_read_users_name_pass = m_database.query("show columns from " + table_name(table_users) + " like 'pass'");
+		m_read_users_peers_limit = m_database.query("show columns from " + table_name(table_users) + " like 'peers_limit'");
+		m_read_users_torrent_pass = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass'");
+		m_read_users_torrents_limit = m_database.query("show columns from " + table_name(table_users) + " like 'torrents_limit'");
+		m_read_users_wait_time = m_database.query("show columns from " + table_name(table_users) + " like 'wait_time'");
 		return 0;
 	}
 	catch (Cdatabase::exception&)

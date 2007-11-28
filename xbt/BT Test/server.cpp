@@ -54,20 +54,12 @@ static std::string new_peer_id(const std::string& prefix)
 	}
 	else
 		v = prefix;
-	size_t i = v.size();
-	v.resize(20);
-	for (; i < v.size(); i++)
-		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
-	return v;
+	return v + generate_random_string(20 - v.size());
 }
 
 static std::string new_peer_key()
 {
-	std::string v;
-	v.resize(8);
-	for (size_t i = 0; i < v.size(); i++)
-		v[i] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWYXZabcdefghijklmnopqrstuvwyxz"[rand() % 62];
-	return v;
+	return generate_random_string(8);
 }
 
 Cserver::Cserver():

@@ -170,6 +170,12 @@ private:
 
 	Cconfig m_config;
 	Cstats m_stats;
+	bool m_read_users_can_leech;
+	bool m_read_users_name_pass;
+	bool m_read_users_peers_limit;
+	bool m_read_users_torrent_pass;
+	bool m_read_users_torrents_limit;
+	bool m_read_users_wait_time;
 	bool m_use_sql;
 	time_t m_clean_up_time;
 	time_t m_read_config_time;
