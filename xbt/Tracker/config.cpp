@@ -68,7 +68,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"mysql_table_prefix", &m_mysql_table_prefix, "xbt_",
 			"mysql_user", &m_mysql_user, "xbt",
 			"offline_message", &m_offline_message, "",
-			"pid_file", &m_pid_file, "xbt_tracker.pid",
+			"pid_file", &m_pid_file, "",
 			"query_log", &m_query_log, "",
 			"redirect_url", &m_redirect_url, "",
 			"table_announce_log", &m_table_announce_log, "",
