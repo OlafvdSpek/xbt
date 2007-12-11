@@ -54,7 +54,7 @@ The g++ version should be at least 3.4.
 apt-get install cmake g++ libboost-date-time-dev libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev libmysqlclient15-dev make subversion zlib1g-dev
 </pre>
 
-The following commands can be used to install some of the dependencies on Fedora Core.
+The following commands can be used to install some of the dependencies on CentOS, Fedora Core and Red Hat.
 The g++ version should be at least 3.4.
 <pre>
 yum install boost-devel gcc-c++ mysql-devel subversion
