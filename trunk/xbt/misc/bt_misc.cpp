@@ -335,6 +335,12 @@ int hms2i(int h, int m, int s)
 	return 60 * (h + 60 * m) + s;
 }
 
+int xbt_atoi(const std::string& a)
+{
+	int i = atoi(a.c_str());
+	return n(i) == a ? i : 0;
+}
+
 std::string xbt_version2a(int v)
 {
 	return n(v / 100) + "." + n(v / 10 % 10) + "." + n(v % 10);
