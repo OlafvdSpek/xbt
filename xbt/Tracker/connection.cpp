@@ -49,8 +49,6 @@ int Cconnection::recv()
 		m_state = 5;
 		return 0;
 	}
-	if (m_state == 5)
-		return 0;
 	if (r == SOCKET_ERROR)
 	{
 		int e = WSAGetLastError();
@@ -65,6 +63,8 @@ int Cconnection::recv()
 		std::cerr << "recv failed: " << Csocket::error2a(e) << std::endl;
 		return 1;
 	}
+	if (m_state == 5)
+		return 0;
 	char* a = &m_read_b.front() + m_w;
 	m_w += r;
 	int state;
@@ -103,29 +103,26 @@ int Cconnection::recv()
 
 int Cconnection::send()
 {
-	for (int r; !m_write_b.empty() && (r = m_s.send(memory_range(&m_write_b.front() + m_r, m_write_b.size() - m_r))); )
+	if (m_write_b.empty())
+		return 0;
+	int r = m_s.send(memory_range(&m_write_b.front() + m_r, m_write_b.size() - m_r));
+	if (r == SOCKET_ERROR)
 	{
-		if (r == SOCKET_ERROR)
+		int e = WSAGetLastError();
+		switch (e)
 		{
-			int e = WSAGetLastError();
-			switch (e)
-			{
-			case WSAECONNABORTED:
-			case WSAECONNRESET:
-				return 1;
-			case WSAEWOULDBLOCK:
-				return 0;
-			}
-			std::cerr << "send failed: " << Csocket::error2a(e) << std::endl;
+		case WSAECONNABORTED:
+		case WSAECONNRESET:
+			return 1;
+		case WSAEWOULDBLOCK:
 			return 0;
 		}
-		m_r += r;
-		if (m_r == m_write_b.size())
-		{
-			m_write_b.clear();
-			break;
-		}
+		std::cerr << "send failed: " << Csocket::error2a(e) << std::endl;
+		return 1;
 	}
+	m_r += r;
+	if (m_r == m_write_b.size())
+		m_write_b.clear();
 	return 0;
 }
 
