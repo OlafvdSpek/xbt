@@ -115,6 +115,11 @@ public:
 		return m_source->range();
 	}
 
+	bool empty() const
+	{
+		return !range().size();
+	}
+
 	size_t size() const
 	{
 		return range().size();

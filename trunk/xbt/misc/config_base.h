@@ -80,10 +80,11 @@ public:
 		return os;
 	}
 
+protected:
 	t_attributes<bool> m_attributes_bool;
 	t_attributes<int> m_attributes_int;
 	t_attributes<std::string> m_attributes_string;
-protected:
+
 	template <class T>
 	void fill_map(t_attribute<T>* attributes, const t_attributes<T>* s, t_attributes<T>& d)
 	{

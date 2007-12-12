@@ -40,10 +40,10 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 
 int Cconnection::recv()
 {
-	if (!m_read_b.size())
+	if (m_read_b.empty())
 	{
 		m_read_b.resize(4 << 10);
-		m_w = memory_range(&*m_read_b.begin(), m_read_b.size());
+		m_w.assign(&*m_read_b.begin(), m_read_b.size());
 	}
 	int r = m_s.recv(m_w);
 	if (!r)
@@ -123,7 +123,7 @@ int Cconnection::send()
 		return 1;
 	}
 	m_r += r;
-	if (!m_r.size())
+	if (m_r.empty())
 		m_write_b.clear();
 	return 0;
 }
@@ -235,7 +235,7 @@ void Cconnection::read(const std::string& v)
 		}
 		break;
 	}
-	if (!s.size())
+	if (s.empty())
 	{
 		if (m_server->config().m_redirect_url.empty())
 			h = "HTTP/1.0 404 Not Found\r\n";

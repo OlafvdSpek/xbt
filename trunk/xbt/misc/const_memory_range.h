@@ -15,20 +15,36 @@ public:
 	template <class U>
 	memory_range_base(U v)
 	{
-		begin = reinterpret_cast<T>(v.begin);
-		end = reinterpret_cast<T>(v.end);
+		assign(v.begin, v.end);
 	}
 
 	memory_range_base(void* begin_, void* end_)
 	{
-		begin = reinterpret_cast<T>(begin_);
-		end = reinterpret_cast<T>(end_);
+		assign(begin_, end_);
 	}
 
 	memory_range_base(void* begin_, size_t size)
 	{
+		assign(begin_, size);
+	}
+
+	memory_range_base assign(void* begin_, void* end_)
+	{
+		begin = reinterpret_cast<T>(begin_);
+		end = reinterpret_cast<T>(end_);
+		return *this;
+	}
+	
+	memory_range_base assign(void* begin_, size_t size)
+	{
 		begin = reinterpret_cast<T>(begin_);
 		end = begin + size;
+		return *this;
+	}
+	
+	bool empty() const
+	{
+		return begin == end;
 	}
 
 	size_t size() const
@@ -83,26 +99,41 @@ public:
 	template <class U>
 	const_memory_range_base(U v)
 	{
-		begin = reinterpret_cast<T>(v.begin);
-		end = reinterpret_cast<T>(v.end);
+		assign(v.begin, v.end);
 	}
 
 	const_memory_range_base(const void* begin_, const void* end_)
 	{
-		begin = reinterpret_cast<T>(begin_);
-		end = reinterpret_cast<T>(end_);
+		assign(begin_, end_);
 	}
 
 	const_memory_range_base(const void* begin_, size_t size)
 	{
-		begin = reinterpret_cast<T>(begin_);
-		end = begin + size;
+		assign(begin_, size);
 	}
 
 	const_memory_range_base(const std::string& v)
 	{
-		begin = reinterpret_cast<T>(v.data());
-		end = reinterpret_cast<T>(v.data() + v.size());
+		assign(v.data(), v.size());
+	}
+
+	const_memory_range_base assign(const void* begin_, const void* end_)
+	{
+		begin = reinterpret_cast<T>(begin_);
+		end = reinterpret_cast<T>(end_);
+		return *this;
+	}
+	
+	const_memory_range_base assign(const void* begin_, size_t size)
+	{
+		begin = reinterpret_cast<T>(begin_);
+		end = begin + size;
+		return *this;
+	}
+	
+	bool empty() const
+	{
+		return begin == end;
 	}
 
 	size_t size() const
