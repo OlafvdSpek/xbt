@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "client.h"
+#include "const_memory_range.h"
 
 class Cserver;
 
@@ -27,6 +28,6 @@ private:
 	int m_state;
 	t_read_b m_read_b;
 	t_write_b m_write_b;
-	int m_r;
-	int m_w;
+	const_memory_range m_r;
+	memory_range m_w;
 };

@@ -20,7 +20,6 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_ctime = server->time();
 
 	m_state = 0;
-	m_w = 0;
 }
 
 int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
@@ -42,8 +41,11 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 int Cconnection::recv()
 {
 	if (!m_read_b.size())
+	{
 		m_read_b.resize(4 << 10);
-	int r = m_s.recv(memory_range(&m_read_b.front() + m_w, m_read_b.size() - m_w));
+		m_w = memory_range(&*m_read_b.begin(), m_read_b.size());
+	}
+	int r = m_s.recv(m_w);
 	if (!r)
 	{
 		m_state = 5;
@@ -65,25 +67,25 @@ int Cconnection::recv()
 	}
 	if (m_state == 5)
 		return 0;
-	char* a = &m_read_b.front() + m_w;
+	unsigned char* a = m_w;
 	m_w += r;
 	int state;
 	do
 	{
 		state = m_state;
-		while (a < &m_read_b.front() + m_w && *a != '\n' && *a != '\r')
+		while (a < m_w && *a != '\n' && *a != '\r')
 		{
 			a++;
 			if (m_state)
 				m_state = 1;
 
 		}
-		if (a < &m_read_b.front() + m_w)
+		if (a < m_w)
 		{
 			switch (m_state)
 			{
 			case 0:
-				read(std::string(&m_read_b.front(), a));
+				read(std::string(&m_read_b.front(), a - m_w));
 				m_state = 1;
 			case 1:
 			case 3:
@@ -105,7 +107,7 @@ int Cconnection::send()
 {
 	if (m_write_b.empty())
 		return 0;
-	int r = m_s.send(memory_range(&m_write_b.front() + m_r, m_write_b.size() - m_r));
+	int r = m_s.send(m_r);
 	if (r == SOCKET_ERROR)
 	{
 		int e = WSAGetLastError();
@@ -121,7 +123,7 @@ int Cconnection::send()
 		return 1;
 	}
 	m_r += r;
-	if (m_r == m_write_b.size())
+	if (!m_r.size())
 		m_write_b.clear();
 	return 0;
 }
@@ -267,7 +269,7 @@ void Cconnection::read(const std::string& v)
 	{
 		m_write_b.resize(d.size() - r);
 		memcpy(&m_write_b.front(), d + r, d.size() - r);
-		m_r = 0;
+		m_r = memory_range(&*m_write_b.begin(), m_write_b.size());
 	}
 }
 
