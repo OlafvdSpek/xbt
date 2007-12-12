@@ -67,7 +67,7 @@ int Cconnection::recv()
 	}
 	if (m_state == 5)
 		return 0;
-	unsigned char* a = m_w;
+	const unsigned char* a = m_w;
 	m_w += r;
 	int state;
 	do
@@ -85,7 +85,7 @@ int Cconnection::recv()
 			switch (m_state)
 			{
 			case 0:
-				read(std::string(&m_read_b.front(), a - m_w));
+				read(std::string(&m_read_b.front(), reinterpret_cast<const char*>(a) - &m_read_b.front()));
 				m_state = 1;
 			case 1:
 			case 3:
