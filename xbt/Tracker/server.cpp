@@ -262,11 +262,11 @@ void Cserver::accept(const Csocket& l)
 			continue;
 		if (s.blocking(false))
 			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-		std::auto_ptr<Cconnection> connection = new Cconnection(this, s, a);
+		std::auto_ptr<Cconnection> connection(new Cconnection(this, s, a));
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{
-			m_connections.push_back(connection);
+			m_connections.push_back(connection.get());
 			m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
 	}

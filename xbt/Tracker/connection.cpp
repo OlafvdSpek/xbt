@@ -20,6 +20,7 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_ctime = server->time();
 
 	m_state = 0;
+	m_w.assign(&*m_read_b.begin(), m_read_b.size());
 }
 
 int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
@@ -40,11 +41,6 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 
 int Cconnection::recv()
 {
-	if (m_read_b.empty())
-	{
-		m_read_b.resize(4 << 10);
-		m_w.assign(&*m_read_b.begin(), m_read_b.size());
-	}
 	int r = m_s.recv(m_w);
 	if (!r)
 	{

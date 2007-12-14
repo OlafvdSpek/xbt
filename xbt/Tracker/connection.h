@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/array.hpp>
 #include <vector>
 #include "client.h"
 #include "const_memory_range.h"
@@ -20,7 +21,7 @@ public:
 	Cconnection();
 	Cconnection(Cserver*, const Csocket&, const sockaddr_in&);
 private:
-	typedef std::vector<char> t_read_b;
+	typedef boost::array<char, 4 << 10> t_read_b;
 	typedef std::vector<char> t_write_b;
 
 	sockaddr_in m_a;
