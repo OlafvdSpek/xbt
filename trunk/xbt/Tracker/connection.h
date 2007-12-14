@@ -6,7 +6,7 @@
 
 class Cserver;
 
-class Cconnection: public Cclient
+class Cconnection: public Cclient, boost::noncopyable
 {
 public:
 	Cclient::s;

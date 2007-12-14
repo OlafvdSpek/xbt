@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/array.hpp>
+#include <boost/ptr_container/ptr_list.hpp>
 #include <map>
 #include "sql/database.h"
 #include "config.h"
@@ -159,7 +160,7 @@ private:
 		table_users,
 	};
 
-	typedef std::list<Cconnection> t_connections;
+	typedef boost::ptr_list<Cconnection> t_connections;
 	typedef std::list<Cpeer_link> t_peer_links;
 	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef std::list<Cudp_listen_socket> t_udp_sockets;
