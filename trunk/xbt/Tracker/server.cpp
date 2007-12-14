@@ -266,7 +266,7 @@ void Cserver::accept(const Csocket& l)
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{
-			m_connections.push_back(connection.get());
+			m_connections.push_back(connection.release());
 			m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
 	}
