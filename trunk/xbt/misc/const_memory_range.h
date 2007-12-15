@@ -1,6 +1,8 @@
 #pragma once
 
+#include <boost/array.hpp>
 #include <string>
+#include <vector>
 
 template <class T>
 class memory_range_base
@@ -12,8 +14,7 @@ public:
 		end = NULL;
 	}
 
-	template <class U>
-	memory_range_base(U v)
+	memory_range_base(memory_range_base& v)
 	{
 		assign(v.begin, v.end);
 	}
@@ -26,6 +27,28 @@ public:
 	memory_range_base(void* begin_, size_t size)
 	{
 		assign(begin_, size);
+	}
+
+	template<size_t U>
+	memory_range_base(boost::array<char, U>& v)
+	{
+		assign(&v.front(), v.size());
+	}
+
+	template<size_t U>
+	memory_range_base(boost::array<unsigned char, U>& v)
+	{
+		assign(&v.front(), v.size());
+	}
+
+	memory_range_base(std::vector<char>& v)
+	{
+		assign(&v.front(), v.size());
+	}
+
+	memory_range_base(std::vector<unsigned char>& v)
+	{
+		assign(&v.front(), v.size());
 	}
 
 	memory_range_base assign(void* begin_, void* end_)
@@ -96,8 +119,13 @@ public:
 		end = NULL;
 	}
 
-	template <class U>
-	const_memory_range_base(U v)
+	const_memory_range_base(const_memory_range_base& v)
+	{
+		assign(v.begin, v.end);
+	}
+
+	template<class U>
+	const_memory_range_base(memory_range_base<U>& v)
 	{
 		assign(v.begin, v.end);
 	}
@@ -115,6 +143,28 @@ public:
 	const_memory_range_base(const std::string& v)
 	{
 		assign(v.data(), v.size());
+	}
+
+	template<size_t U>
+	const_memory_range_base(const boost::array<char, U>& v)
+	{
+		assign(&v.front(), v.size());
+	}
+
+	template<size_t U>
+	const_memory_range_base(const boost::array<unsigned char, U>& v)
+	{
+		assign(&v.front(), v.size());
+	}
+
+	const_memory_range_base(const std::vector<char>& v)
+	{
+		assign(&v.front(), v.size());
+	}
+
+	const_memory_range_base(const std::vector<unsigned char>& v)
+	{
+		assign(&v.front(), v.size());
 	}
 
 	const_memory_range_base assign(const void* begin_, const void* end_)

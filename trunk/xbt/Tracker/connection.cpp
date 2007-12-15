@@ -16,7 +16,7 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_ctime = server->time();
 
 	m_state = 0;
-	m_w.assign(&*m_read_b.begin(), m_read_b.size());
+	m_w = m_read_b;
 }
 
 int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
@@ -261,7 +261,7 @@ void Cconnection::read(const std::string& v)
 	{
 		m_write_b.resize(d.size() - r);
 		memcpy(&m_write_b.front(), d + r, d.size() - r);
-		m_r = memory_range(&*m_write_b.begin(), m_write_b.size());
+		m_r = m_write_b;
 	}
 }
 
