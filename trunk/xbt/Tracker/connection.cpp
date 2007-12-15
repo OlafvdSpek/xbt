@@ -186,23 +186,22 @@ void Cconnection::read(const std::string& v)
 	switch (a < v.size() ? v[a] : 0)
 	{
 	case 'a':
+		if (!ti.valid())
+			break;
 		gzip = false;
-		if (ti.valid())
+		if (0)
+			s = Cbvalue().d(bts_failure_reason, bts_banned_client).read();
+		else
 		{
-			if (0)
-				s = Cbvalue().d(bts_failure_reason, bts_banned_client).read();
+			Cserver::t_user* user = m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash);
+			if (!m_server->config().m_anonymous_announce && !user)
+				s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
+			else if (user && user->torrent_pass_secret && calculate_torrent_pass1(ti.m_info_hash, user->torrent_pass_secret) != hex_decode(torrent_pass1))
+				s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 			else
 			{
-				Cserver::t_user* user = m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash);
-				if (!m_server->config().m_anonymous_announce && !user)
-					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
-				else if (user && user->torrent_pass_secret && calculate_torrent_pass1(ti.m_info_hash, user->torrent_pass_secret) != hex_decode(torrent_pass1))
-					s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
-				else
-				{
-					std::string error = m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
-					s = error.empty() ? m_server->select_peers(ti) : Cbvalue().d(bts_failure_reason, error).read();
-				}
+				std::string error = m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
+				s = error.empty() ? m_server->select_peers(ti) : Cbvalue().d(bts_failure_reason, error).read();
 			}
 		}
 		break;

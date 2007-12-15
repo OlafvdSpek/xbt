@@ -172,11 +172,6 @@ int Cserver::run()
 			int z = i->pre_select(&fd_read_set, &fd_write_set);
 			n = std::max(n, z);
 		}
-		for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); i++)
-		{
-			int z = i->pre_select(&fd_write_set, &fd_except_set);
-			n = std::max(n, z);
-		}
 		for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
 		{
 			FD_SET(i->s(), &fd_read_set);
@@ -209,13 +204,6 @@ int Cserver::run()
 			{
 				if (i->post_select(&fd_read_set, &fd_write_set))
 					i = m_connections.erase(i);
-				else
-					i++;
-			}
-			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
-			{
-				if (i->post_select(&fd_write_set, &fd_except_set))
-					i = m_peer_links.erase(i);
 				else
 					i++;
 			}
@@ -347,18 +335,6 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 		(peer.left ? file.leechers : file.seeders)++;
 		if (user)
 			(peer.left ? user->incompletes : user->completes)++;
-
-		if (!m_config.m_listen_check || !listen_check)
-			peer.listening = true;
-		else if (!peer.listening && time() - peer.mtime > 7200)
-		{
-			Cpeer_link peer_link(v.m_ipa, v.m_port, this, v.m_info_hash, peer_key);
-			if (peer_link.s() != INVALID_SOCKET)
-			{
-				m_peer_links.push_back(peer_link);
-				m_epoll.ctl(EPOLL_CTL_ADD, peer_link.s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_peer_links.back());
-			}
-		}
 		peer.mtime = time();
 	}
 	if (v.m_event == Ctracker_input::e_completed)
@@ -366,17 +342,6 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, boo
 	(udp ? m_stats.announced_udp : m_stats.announced_http)++;
 	file.dirty = true;
 	return "";
-}
-
-void Cserver::update_peer(const std::string& file_id, t_peers::key_type peer_id, bool listening)
-{
-	t_files::iterator i = m_files.find(file_id);
-	if (i == m_files.end())
-		return;
-	t_peers::iterator j = i->second.peers.find(peer_id);
-	if (j == i->second.peers.end())
-		return;
-	j->second.listening = listening;
 }
 
 std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
@@ -389,7 +354,7 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 	t_candidates candidates;
 	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
 	{
-		if ((ti.m_left || i->second.left) && i->second.listening)
+		if (ti.m_left || i->second.left)
 			candidates.push_back(i);
 	}
 	size_t c = ti.m_num_want < 0 ? 50 : std::min(ti.m_num_want, 50);
@@ -819,7 +784,6 @@ std::string Cserver::t_file::debug() const
 	{
 		page += "<tr><td>" + Csocket::inet_ntoa(i->first)
 			+ "<td align=right>" + n(ntohs(i->second.port))
-			+ "<td>" + (i->second.listening ? '*' : ' ')
 			+ "<td align=right>" + n(i->second.left)
 			+ "<td align=right>" + n(::time(NULL) - i->second.mtime)
 			+ "<td>" + hex_encode(const_memory_range(i->second.peer_id.begin(), i->second.peer_id.end()));
@@ -903,7 +867,6 @@ std::string Cserver::statistics() const
 		+ "<tr><td>anonymous scrape<td align=right>" + n(m_config.m_anonymous_scrape)
 		+ "<tr><td>auto register<td align=right>" + n(m_config.m_auto_register)
 		+ "<tr><td>full scrape<td align=right>" + n(m_config.m_full_scrape)
-		+ "<tr><td>listen check<td align=right>" + n(m_config.m_listen_check)
 		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_config.m_read_config_interval)
 		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_config.m_clean_up_interval)
 		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_config.m_read_db_interval);
