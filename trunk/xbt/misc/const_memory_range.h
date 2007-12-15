@@ -14,7 +14,8 @@ public:
 		end = NULL;
 	}
 
-	memory_range_base(memory_range_base& v)
+	template<class U>
+	memory_range_base(const memory_range_base<U>& v)
 	{
 		assign(v.begin, v.end);
 	}
@@ -119,13 +120,14 @@ public:
 		end = NULL;
 	}
 
-	const_memory_range_base(const_memory_range_base& v)
+	template<class U>
+	const_memory_range_base(const const_memory_range_base<U>& v)
 	{
 		assign(v.begin, v.end);
 	}
 
 	template<class U>
-	const_memory_range_base(memory_range_base<U>& v)
+	const_memory_range_base(const memory_range_base<U>& v)
 	{
 		assign(v.begin, v.end);
 	}
