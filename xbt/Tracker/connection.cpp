@@ -8,10 +8,6 @@
 #include "server.h"
 #include "xcc_z.h"
 
-Cconnection::Cconnection()
-{
-}
-
 Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a)
 {
 	m_server = server;
