@@ -107,7 +107,7 @@ void Ctransaction::send_announce(const_memory_range r)
 	ti.m_peer_id.assign(reinterpret_cast<const char*>(r + utia_peer_id), 20);
 	ti.m_port = htons(read_int(2, r + utia_port, r.end));
 	ti.m_uploaded = read_int(8, r + utia_uploaded, r.end);
-	std::string error = m_server.insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, true, user);
+	std::string error = m_server.insert_peer(ti, true, user);
 	if (!error.empty())
 	{
 		send_error(r, error);
