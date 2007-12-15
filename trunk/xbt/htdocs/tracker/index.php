@@ -132,10 +132,6 @@ There is no need to insert default values into this table.
 		<td>
 		<td align=right>1
 	<tr>
-		<td>gzip_announce
-		<td>
-		<td align=right>1
-	<tr>
 		<td>gzip_debug
 		<td>
 		<td align=right>1
@@ -143,10 +139,6 @@ There is no need to insert default values into this table.
 		<td>gzip_scrape
 		<td>
 		<td align=right>1
-	<tr>
-		<td>listen_check
-		<td>
-		<td align=right>0
 	<tr>
 		<td>listen_ipa
 		<td>
