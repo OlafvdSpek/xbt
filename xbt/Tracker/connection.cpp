@@ -200,7 +200,7 @@ void Cconnection::read(const std::string& v)
 				s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 			else
 			{
-				std::string error = m_server->insert_peer(ti, ti.m_ipa == m_a.sin_addr.s_addr, false, user);
+				std::string error = m_server->insert_peer(ti, false, user);
 				s = error.empty() ? m_server->select_peers(ti) : Cbvalue().d(bts_failure_reason, error).read();
 			}
 		}

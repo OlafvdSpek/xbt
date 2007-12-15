@@ -253,7 +253,7 @@ void Cserver::accept(const Csocket& l)
 	}
 }
 
-std::string Cserver::insert_peer(const Ctracker_input& v, bool listen_check, bool udp, t_user* user)
+std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 {
 	if (m_use_sql && m_config.m_log_announce)
 	{

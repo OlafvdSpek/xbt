@@ -105,7 +105,7 @@ public:
 	void read_db_files_sql();
 	void read_db_users();
 	void clean_up();
-	std::string insert_peer(const Ctracker_input&, bool listen_check, bool udp, t_user*);
+	std::string insert_peer(const Ctracker_input&, bool udp, t_user*);
 	std::string debug(const Ctracker_input&) const;
 	std::string statistics() const;
 	Cvirtual_binary select_peers(const Ctracker_input&) const;
