@@ -130,7 +130,7 @@ There is no need to insert default values into this table.
 	<tr>
 		<td>full_scrape
 		<td>
-		<td align=right>1
+		<td align=right>0
 	<tr>
 		<td>gzip_debug
 		<td>
