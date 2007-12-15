@@ -252,14 +252,36 @@ void Cconnection::read(const std::string& v)
 		}
 	}
 	h += "\r\n";
+#ifdef WIN32
 	m_write_b.resize(h.size() + s.size());
 	memcpy(&m_write_b.front(), h.data(), h.size());
 	s.read(&m_write_b.front() + h.size());
 	int r = m_s.send(m_write_b);
+#else
+	boost::array<iovec, 2> d;
+	d[0].iov_base = const_cast<char*>(h.data());
+	d[0].iov_len = h.size();
+	d[1].iov_base = const_cast<unsigned char*>(s.data());
+	d[1].iov_len = s.size();	
+	msghdr m;
+	m.msg_name = NULL;
+	m.msg_namelen = 0;
+	m.msg_iov = d.data();
+	m.msg_iovlen = d.size();
+	m.msg_control = NULL;
+	m.msg_controllen = NULL;
+	m.msg_flags = 0;
+	int r = sendmsg(m_s, &m, MSG_NOSIGNAL);
+#endif
 	if (r == SOCKET_ERROR)
 		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-	else if (r != m_write_b.size())
+	else if (r != h.size() + s.size())
 	{
+#ifndef WIN32
+		m_write_b.resize(h.size() + s.size());
+		memcpy(&m_write_b.front(), h.data(), h.size());
+		s.read(&m_write_b.front() + h.size());
+#endif
 		m_r = m_write_b;
 		m_r += r;
 	}
