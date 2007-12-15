@@ -154,13 +154,6 @@ int Cserver::run()
 				else
 					i++;
 			}
-			for (t_peer_links::iterator i = m_peer_links.begin(); i != m_peer_links.end(); )
-			{
-				if (i->run())
-					i = m_peer_links.erase(i);
-				else
-					i++;
-			}
 		}
 #else
 		FD_ZERO(&fd_read_set);
