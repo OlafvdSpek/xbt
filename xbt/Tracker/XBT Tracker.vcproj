@@ -388,28 +388,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="peer_link.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="server.cpp"
 				>
 				<FileConfiguration
@@ -750,10 +728,6 @@
 			</File>
 			<File
 				RelativePath="..\misc\windows\nt_service.h"
-				>
-			</File>
-			<File
-				RelativePath="peer_link.h"
 				>
 			</File>
 			<File

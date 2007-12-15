@@ -33,7 +33,6 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"full_scrape", &m_full_scrape, false,
 			"gzip_debug", &m_gzip_debug, true,
 			"gzip_scrape", &m_gzip_scrape, true,
-			"listen_check", &m_listen_check, false,
 			"log_access", &m_log_access, false,
 			"log_announce", &m_log_announce, false,
 			"log_scrape", &m_log_scrape, false,

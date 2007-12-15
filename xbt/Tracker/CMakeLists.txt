@@ -21,7 +21,6 @@ add_executable(
 	config.cpp
 	connection.cpp
 	epoll.cpp
-	peer_link.cpp
 	server.cpp
 	stats.cpp
 	tcp_listen_socket.cpp

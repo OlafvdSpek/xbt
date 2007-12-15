@@ -7,7 +7,6 @@
 #include "config.h"
 #include "connection.h"
 #include "epoll.h"
-#include "peer_link.h"
 #include "stats.h"
 #include "tcp_listen_socket.h"
 #include "tracker_input.h"
@@ -21,7 +20,6 @@ public:
 	{
 		t_peer()
 		{
-			listening = false;
 			mtime = 0;
 		}
 
@@ -31,7 +29,6 @@ public:
 		int port;
 		int uid;
 		bool left;
-		bool listening;
 		boost::array<char, 20> peer_id;
 	};
 
@@ -109,7 +106,6 @@ public:
 	void read_db_users();
 	void clean_up();
 	std::string insert_peer(const Ctracker_input&, bool listen_check, bool udp, t_user*);
-	void update_peer(const std::string& file_id, t_peers::key_type peer_id, bool listening);
 	std::string debug(const Ctracker_input&) const;
 	std::string statistics() const;
 	Cvirtual_binary select_peers(const Ctracker_input&) const;
@@ -161,7 +157,6 @@ private:
 	};
 
 	typedef boost::ptr_list<Cconnection> t_connections;
-	typedef std::list<Cpeer_link> t_peer_links;
 	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef std::list<Cudp_listen_socket> t_udp_sockets;
 
@@ -189,7 +184,6 @@ private:
 	int m_fid_end;
 	long long m_secret;
 	t_connections m_connections;
-	t_peer_links m_peer_links;
 	Cdatabase& m_database;
 	Cepoll m_epoll;
 	t_deny_from_hosts m_deny_from_hosts;
