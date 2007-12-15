@@ -66,6 +66,11 @@ public:
 		return *this;
 	}
 	
+	void clear()
+	{
+		begin = end = NULL;
+	}
+	
 	bool empty() const
 	{
 		return begin == end;
@@ -181,6 +186,11 @@ public:
 		begin = reinterpret_cast<T>(begin_);
 		end = begin + size;
 		return *this;
+	}
+	
+	void clear()
+	{
+		begin = end = NULL;
 	}
 	
 	bool empty() const

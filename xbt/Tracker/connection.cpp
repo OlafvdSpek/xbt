@@ -16,13 +16,14 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_ctime = server->time();
 
 	m_state = 0;
+	m_r.clear();
 	m_w = m_read_b;
 }
 
 int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
 	FD_SET(m_s, fd_read_set);
-	if (!m_write_b.empty())
+	if (!m_r.empty())
 		FD_SET(m_s, fd_write_set);
 	return m_s;
 }
@@ -32,7 +33,7 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 	return FD_ISSET(m_s, fd_read_set) && recv()
 		|| FD_ISSET(m_s, fd_write_set) && send()
 		|| m_server->time() - m_ctime > 15
-		|| m_state == 5 && m_write_b.empty();
+		|| m_state == 5 && m_r.empty();
 }
 
 int Cconnection::recv()
@@ -97,7 +98,7 @@ int Cconnection::recv()
 
 int Cconnection::send()
 {
-	if (m_write_b.empty())
+	if (m_r.empty())
 		return 0;
 	int r = m_s.send(m_r);
 	if (r == SOCKET_ERROR)
@@ -251,18 +252,19 @@ void Cconnection::read(const std::string& v)
 		}
 	}
 	h += "\r\n";
-	Cvirtual_binary d;
-	memcpy(d.write_start(h.size() + s.size()), h.data(), h.size());
-	s.read(d.data_edit() + h.size());
-	int r = m_s.send(d);
+	m_write_b.resize(h.size() + s.size());
+	memcpy(&m_write_b.front(), h.data(), h.size());
+	s.read(&m_write_b.front() + h.size());
+	int r = m_s.send(m_write_b);
 	if (r == SOCKET_ERROR)
 		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-	else if (r != d.size())
+	else if (r != m_write_b.size())
 	{
-		m_write_b.resize(d.size() - r);
-		memcpy(&m_write_b.front(), d + r, d.size() - r);
 		m_r = m_write_b;
+		m_r += r;
 	}
+	if (m_r.empty())
+		m_write_b.clear();
 }
 
 void Cconnection::process_events(int events)
