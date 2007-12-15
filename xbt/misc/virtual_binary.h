@@ -127,7 +127,8 @@ public:
 
 	void resize(size_t v)
 	{
-		assert(m_source);
+		if (!m_source)
+			write_start(v);
 		m_source = m_source->pre_edit();
 		m_source->resize(v);
 	}
