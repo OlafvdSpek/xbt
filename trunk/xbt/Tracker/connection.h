@@ -18,7 +18,6 @@ public:
 	virtual void process_events(int);
 	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set);
-	Cconnection();
 	Cconnection(Cserver*, const Csocket&, const sockaddr_in&);
 private:
 	typedef boost::array<char, 4 << 10> t_read_b;
