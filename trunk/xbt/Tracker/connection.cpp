@@ -265,10 +265,10 @@ void Cconnection::read(const std::string& v)
 	msghdr m;
 	m.msg_name = NULL;
 	m.msg_namelen = 0;
-	m.msg_iov = d.data();
+	m.msg_iov = const_cast<iovec*>(d.data());
 	m.msg_iovlen = d.size();
 	m.msg_control = NULL;
-	m.msg_controllen = NULL;
+	m.msg_controllen = 0;
 	m.msg_flags = 0;
 	int r = sendmsg(m_s, &m, MSG_NOSIGNAL);
 #endif
