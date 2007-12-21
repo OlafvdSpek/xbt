@@ -239,7 +239,7 @@ void Cserver::accept(const Csocket& l)
 			break;
 		}
 		t_deny_from_hosts::const_iterator i = m_deny_from_hosts.lower_bound(ntohl(a.sin_addr.s_addr));
-		if (i != m_deny_from_hosts.end() && ntohl(a.sin_addr.s_addr) >= i->first && ntohl(a.sin_addr.s_addr) <= i->second.end)
+		if (i != m_deny_from_hosts.end() && ntohl(a.sin_addr.s_addr) >= i->second.begin)
 			continue;
 		if (s.blocking(false))
 			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
@@ -465,9 +465,9 @@ void Cserver::read_db_deny_from_hosts()
 			i->second.marked = true;
 		for (Csql_row row; row = result.fetch_row(); )
 		{
-			t_deny_from_host& deny_from_host = m_deny_from_hosts[row[0].i()];
+			t_deny_from_host& deny_from_host = m_deny_from_hosts[row[1].i()];
 			deny_from_host.marked = false;
-			deny_from_host.end = row[1].i();
+			deny_from_host.begin = row[0].i();
 		}
 		for (t_deny_from_hosts::iterator i = m_deny_from_hosts.begin(); i != m_deny_from_hosts.end(); )
 		{
