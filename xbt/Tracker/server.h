@@ -36,7 +36,7 @@ public:
 
 	struct t_deny_from_host
 	{
-		unsigned int end;
+		unsigned int begin;
 		bool marked;
 	};
 
