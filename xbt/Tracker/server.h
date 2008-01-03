@@ -69,8 +69,14 @@ public:
 	{
 		t_user()
 		{
+			can_leech = true;
 			completes = 0;
 			incompletes = 0;
+			peers_limit = 0;
+			torrent_pass_secret = 0;
+			torrent_pass_version = 0;
+			torrents_limit = 0;
+			wait_time = 0;
 		}
 
 		bool can_leech;
@@ -170,6 +176,8 @@ private:
 	bool m_read_users_name_pass;
 	bool m_read_users_peers_limit;
 	bool m_read_users_torrent_pass;
+	bool m_read_users_torrent_pass_secret;
+	bool m_read_users_torrent_pass_version;
 	bool m_read_users_torrents_limit;
 	bool m_read_users_wait_time;
 	bool m_use_sql;

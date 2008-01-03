@@ -569,7 +569,7 @@ void Cserver::read_db_users()
 		return;
 	try
 	{
-		Csql_query q(m_database, "select ?, torrent_pass_version");
+		Csql_query q(m_database, "select ?");
 		if (m_read_users_can_leech)
 			q += ", can_leech";
 		if (m_read_users_name_pass)
@@ -577,7 +577,13 @@ void Cserver::read_db_users()
 		if (m_read_users_peers_limit)
 			q += ", peers_limit";
 		if (m_read_users_torrent_pass)
-			q += ", torrent_pass, torrent_pass_secret";
+		{
+			q += ", torrent_pass";
+			if (m_read_users_torrent_pass_secret)
+				q += ", torrent_pass_secret";
+		}
+		if (m_read_users_torrent_pass_version)
+			q += ", torrent_pass_version";
 		if (m_read_users_torrents_limit)
 			q += ", torrents_limit";
 		if (m_read_users_wait_time)
@@ -596,8 +602,8 @@ void Cserver::read_db_users()
 			user.marked = false;
 			int c = 0;
 			user.uid = row[c++].i();
-			user.torrent_pass_version = row[c++].i();
-			user.can_leech = m_read_users_can_leech ? row[c++].i() : true;
+			if (m_read_users_can_leech)
+				user.can_leech = row[c++].i();
 			if (m_read_users_name_pass)
 			{
 				if (row[c].size() && row[c + 1].size())
@@ -605,16 +611,22 @@ void Cserver::read_db_users()
 				c++;
 				user.pass = row[c++].s();
 			}
-			user.peers_limit = m_read_users_peers_limit ? row[c++].i() : 0;
+			if (m_read_users_peers_limit)
+				user.peers_limit = row[c++].i();
 			if (m_read_users_torrent_pass)
 			{
 				if (row[c].size())
 					m_users_torrent_passes[row[c].s()] = &user;
 				c++;
-			}
-			user.torrent_pass_secret = m_read_users_torrent_pass ? row[c++].i() : 0;
-			user.torrents_limit = m_read_users_torrents_limit ? row[c++].i() : 0;
-			user.wait_time = m_read_users_wait_time ? row[c++].i() : 0;
+				if (m_read_users_torrent_pass_secret)
+					user.torrent_pass_secret = row[c++].i();
+			}		
+			if (m_read_users_torrent_pass_version)
+				user.torrent_pass_version = row[c++].i();
+			if (m_read_users_torrents_limit)
+				user.torrents_limit = row[c++].i();
+			if (m_read_users_wait_time)
+				user.wait_time = row[c++].i();
 		}
 		for (t_users::iterator i = m_users.begin(); i != m_users.end(); )
 		{
@@ -965,17 +977,19 @@ int Cserver::test_sql()
 	try
 	{
 		mysql_get_server_version(&m_database.handle());
-		m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from " + table_name(table_announce_log) + " where 0 = 1");
-		m_database.query("select name, value from " + table_name(table_config) + " where 0 = 1");
-		m_database.query("select begin, end from " + table_name(table_deny_from_hosts) + " where 0 = 1");
-		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0 = 1");
-		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0 = 1");
-		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0 = 1");
-		m_database.query("select " + column_name(column_users_uid) + ", torrent_pass_version, downloaded, uploaded from " + table_name(table_users) + " where 0 = 1");
+		m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from " + table_name(table_announce_log) + " where 0");
+		m_database.query("select name, value from " + table_name(table_config) + " where 0");
+		m_database.query("select begin, end from " + table_name(table_deny_from_hosts) + " where 0");
+		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0");
+		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0");
+		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0");
+		m_database.query("select " + column_name(column_users_uid) + ", downloaded, uploaded from " + table_name(table_users) + " where 0");
 		m_read_users_can_leech = m_database.query("show columns from " + table_name(table_users) + " like 'can_leech'");
 		m_read_users_name_pass = m_database.query("show columns from " + table_name(table_users) + " like 'pass'");
 		m_read_users_peers_limit = m_database.query("show columns from " + table_name(table_users) + " like 'peers_limit'");
 		m_read_users_torrent_pass = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass'");
+		m_read_users_torrent_pass_secret = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass_secret'");
+		m_read_users_torrent_pass_version = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass_version'");
 		m_read_users_torrents_limit = m_database.query("show columns from " + table_name(table_users) + " like 'torrents_limit'");
 		m_read_users_wait_time = m_database.query("show columns from " + table_name(table_users) + " like 'wait_time'");
 		return 0;
