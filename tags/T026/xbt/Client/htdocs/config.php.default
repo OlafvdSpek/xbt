@@ -1,0 +1,7 @@
+<?php
+	$config['client_host'] = 'localhost';
+	$config['client_port'] = 6879;
+	$config['client_user'] = 'xbt';
+	$config['client_pass'] = '';
+	$config['users'] = array('user' => 'pass');
+?>
