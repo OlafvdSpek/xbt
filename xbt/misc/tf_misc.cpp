@@ -113,12 +113,8 @@ std::string encode_text(const std::string& v, const std::string& local_domain_ur
 			p = v.length();
 		std::string line = v.substr(i, p - i);
 		line = encode_field(line, local_domain_url);
-		/*
-		r += add_span && boost::istarts_with(line, "> ")
-			? html_span(line, "class=quote")
-			: line;
-		*/
-		r += line + "<br>";
+		r += add_span && boost::istarts_with(line, "> ") ? "<span class=quote>" + line + "</span>" : line;
+		r += "<br>";
 		i = p + 1;
 	}
 	return r;
