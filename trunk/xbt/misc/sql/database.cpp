@@ -7,6 +7,8 @@
 
 #ifdef WIN32
 #pragma comment(lib, "libmysql")
+#else
+#include <syslog.h>
 #endif
 
 Cdatabase::Cdatabase()
@@ -50,6 +52,9 @@ Csql_result Cdatabase::query(const std::string& q)
 		{
 			std::cerr << mysql_error(&m_handle) << std::endl
 				<< q.substr(0, 239) << std::endl;
+#ifndef WIN32
+			syslog(LOG_ERR, "%s", mysql_error(&m_handle));
+#endif
 		}
 		throw exception(mysql_error(&m_handle));
 	}
