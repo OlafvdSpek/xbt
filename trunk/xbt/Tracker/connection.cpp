@@ -141,9 +141,12 @@ void Cconnection::read(const std::string& v)
 		f << m_server->time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << std::endl;
 	}
 	Ctracker_input ti;
-	size_t a = v.find('?');
-	if (a++ != std::string::npos)
+	size_t e = v.find('?');
+	if (e == std::string::npos)
+		e = v.size();
+	else
 	{
+		size_t a = e + 1;
 		size_t b = v.find(' ', a);
 		if (b == std::string::npos)
 			return;
@@ -163,17 +166,17 @@ void Cconnection::read(const std::string& v)
 		ti.m_ipa = m_a.sin_addr.s_addr;
 	std::string torrent_pass0;
 	std::string torrent_pass1;
-	a = 4;
-	if (a < v.size() && v[a] == '/')
+	size_t a = 4;
+	if (a < e && v[a] == '/')
 	{
 		a++;
-		if (a + 1 < v.size() && v[a + 1] == '/')
+		if (a + 1 < e && v[a + 1] == '/')
 			a += 2;
-		if (a + 32 < v.size() && v[a + 32] == '/')
+		if (a + 32 < e && v[a + 32] == '/')
 		{
 			torrent_pass0 = v.substr(a, 32);
 			a += 33;
-			if (a + 40 < v.size() && v[a + 40] == '/')
+			if (a + 40 < e && v[a + 40] == '/')
 			{
 				torrent_pass1 = v.substr(a, 40);
 				a += 41;
