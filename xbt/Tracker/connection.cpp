@@ -71,7 +71,6 @@ int Cconnection::recv()
 			a++;
 			if (m_state)
 				m_state = 1;
-
 		}
 		if (a < m_w)
 		{
