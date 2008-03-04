@@ -26,8 +26,8 @@ public:
 		long long downloaded;
 		long long uploaded;
 		time_t mtime;
-		int port;
 		int uid;
+		short port;
 		bool left;
 		boost::array<char, 20> peer_id;
 	};
