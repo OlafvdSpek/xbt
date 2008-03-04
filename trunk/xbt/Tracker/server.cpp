@@ -342,13 +342,17 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 	if (ti.m_event == Ctracker_input::e_stopped)
 		return "";
 
-	typedef std::vector<t_peers::const_iterator> t_candidates;
+	typedef std::vector<boost::array<char, 6> > t_candidates;
 
 	t_candidates candidates;
 	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
 	{
-		if (ti.m_left || i->second.left)
-			candidates.push_back(i);
+		if (!ti.m_left && !i->second.left)
+			continue;
+		boost::array<char, 6> v;
+		memcpy(&v.front(), &i->first, 4);
+		memcpy(&v.front() + 4, &i->second.port, 2);
+		candidates.push_back(v);
 	}
 	size_t c = ti.m_num_want < 0 ? 50 : std::min(ti.m_num_want, 50);
 	std::string d;
@@ -358,8 +362,7 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 		while (c--)
 		{
 			int i = rand() % candidates.size();
-			d.append(reinterpret_cast<const char*>(&candidates[i]->first), 4);
-			d.append(reinterpret_cast<const char*>(&candidates[i]->second.port), 2);
+			d.append(candidates[i].begin(), candidates[i].end());
 			candidates[i] = candidates.back();
 			candidates.pop_back();
 		}
@@ -367,10 +370,7 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 	else
 	{
 		for (t_candidates::const_iterator i = candidates.begin(); i != candidates.end(); i++)
-		{
-			d.append(reinterpret_cast<const char*>(&(*i)->first), 4);
-			d.append(reinterpret_cast<const char*>(&(*i)->second.port), 2);
-		}
+			d.append(i->begin(), i->end());
 	}
 	return d;
 }
