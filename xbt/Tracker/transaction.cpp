@@ -144,8 +144,7 @@ void Ctransaction::send_scrape(const_memory_range r)
 	char* w = d + utos_size;
 	for (r += utis_size; r + 20 <= r.end && w + 12 <= d + cb_d; r += 20)
 	{
-		const Cserver::t_file* file = m_server.file(std::string(reinterpret_cast<const char*>(r.begin), 20));
-		if (file)
+		if (const Cserver::t_file* file = m_server.file(r.sub_range(0, 20).string()))
 		{
 			w = write_int(4, w, file->seeders);
 			w = write_int(4, w, file->completed);

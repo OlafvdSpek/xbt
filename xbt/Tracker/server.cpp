@@ -262,7 +262,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 	}
 	if (!m_config.m_offline_message.empty())
 		return m_config.m_offline_message;
-	if (!m_config.m_auto_register && m_files.find(v.m_info_hash) == m_files.end())
+	if (!m_config.m_auto_register && !file(v.m_info_hash))
 		return bts_unregistered_torrent;
 	if (v.m_left && user && !user->can_leech)
 		return bts_can_not_leech;
@@ -377,12 +377,12 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 
 Cvirtual_binary Cserver::select_peers(const Ctracker_input& ti) const
 {
-	t_files::const_iterator i = m_files.find(ti.m_info_hash);
-	if (i == m_files.end())
+	const t_file* f = file(ti.m_info_hash);
+	if (!f)
 		return Cvirtual_binary();
-	std::string peers = i->second.select_peers(ti);
-	return Cvirtual_binary((boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se") 
-		% i->second.seeders % i->second.leechers % config().m_announce_interval % config().m_announce_interval % peers.size() % peers).str());	
+	std::string peers = f->select_peers(ti);
+	return Cvirtual_binary((boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
+		% f->seeders % f->leechers % config().m_announce_interval % config().m_announce_interval % peers.size() % peers).str());
 }
 
 void Cserver::t_file::clean_up(time_t t, Cserver& server)
@@ -442,7 +442,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 		for (Ctracker_input::t_info_hashes::const_iterator j = ti.m_info_hashes.begin(); j != ti.m_info_hashes.end(); j++)
 		{
 			t_files::const_iterator i = m_files.find(*j);
-			if (i != m_files.end())			
+			if (i != m_files.end())
 				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
 		}
 	}
@@ -620,7 +620,7 @@ void Cserver::read_db_users()
 				c++;
 				if (m_read_users_torrent_pass_secret)
 					user.torrent_pass_secret = row[c++].i();
-			}		
+			}
 			if (m_read_users_torrent_pass_version)
 				user.torrent_pass_version = row[c++].i();
 			if (m_read_users_torrents_limit)
