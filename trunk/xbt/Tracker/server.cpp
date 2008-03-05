@@ -546,7 +546,7 @@ void Cserver::read_db_files_sql()
 		for (Csql_row row; row = result.fetch_row(); )
 		{
 			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
-			if (row[0].size() != 20 || m_files.find(row[0].s()) != m_files.end())
+			if (row[0].size() != 20 || file(row[0].s()))
 				continue;
 			t_file& file = m_files[row[0].s()];
 			if (file.fid)
