@@ -22,7 +22,6 @@ add_executable(
 	connection.cpp
 	epoll.cpp
 	server.cpp
-	stats.cpp
 	tcp_listen_socket.cpp
 	tracker_input.cpp
 	transaction.cpp
