@@ -10,7 +10,6 @@
 #include "stream_int.h"
 #include "transaction.h"
 
-static volatile bool g_sig_hup = false;
 static volatile bool g_sig_term = false;
 
 Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql, const std::string& conf_file):
@@ -912,11 +911,6 @@ void Cserver::sig_handler(int v)
 {
 	switch (v)
 	{
-#ifndef WIN32
-	case SIGHUP:
-		g_sig_hup = true;
-		break;
-#endif
 	case SIGTERM:
 		g_sig_term = true;
 		break;
