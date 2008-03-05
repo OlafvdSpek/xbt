@@ -56,11 +56,11 @@ void Cconfig::fill_maps(const Cconfig* v)
 	{
 		t_attribute<std::string> attributes[] =
 		{
-			"column_files_completed", &m_column_files_completed, "",
-			"column_files_fid", &m_column_files_fid, "",
-			"column_files_leechers", &m_column_files_leechers, "",
-			"column_files_seeders", &m_column_files_seeders, "",
-			"column_users_uid", &m_column_users_uid, "",
+			"column_files_completed", &m_column_files_completed, "completed",
+			"column_files_fid", &m_column_files_fid, "fid",
+			"column_files_leechers", &m_column_files_leechers, "leechers",
+			"column_files_seeders", &m_column_files_seeders, "seeders",
+			"column_users_uid", &m_column_users_uid, "uid",
 			"mysql_database", &m_mysql_database, "xbt",
 			"mysql_host", &m_mysql_host, "localhost",
 			"mysql_password", &m_mysql_password, "",
