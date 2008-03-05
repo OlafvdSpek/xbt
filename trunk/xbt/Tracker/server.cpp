@@ -838,11 +838,9 @@ std::string Cserver::statistics() const
 	int torrents = 0;
 	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
 	{
-		if (!i->second.leechers && !i->second.seeders)
-			continue;
 		leechers += i->second.leechers;
 		seeders += i->second.seeders;
-		torrents++;
+		torrents += i->second.leechers || i->second.seeders;
 	}
 	time_t t = time();
 	page += "<table><tr><td>leechers<td align=right>" + n(leechers)
