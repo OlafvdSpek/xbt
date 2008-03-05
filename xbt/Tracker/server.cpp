@@ -933,15 +933,15 @@ std::string Cserver::column_name(int v) const
 	switch (v)
 	{
 	case column_files_completed:
-		return m_config.m_column_files_completed.empty() ? "completed" : m_config.m_column_files_completed;
+		return m_config.m_column_files_completed;
 	case column_files_leechers:
-		return m_config.m_column_files_leechers.empty() ? "leechers" : m_config.m_column_files_leechers;
+		return m_config.m_column_files_leechers;
 	case column_files_seeders:
-		return m_config.m_column_files_seeders.empty() ? "seeders" : m_config.m_column_files_seeders;
+		return m_config.m_column_files_seeders;
 	case column_files_fid:
-		return m_config.m_column_files_fid.empty() ? "fid" : m_config.m_column_files_fid;
+		return m_config.m_column_files_fid;
 	case column_users_uid:
-		return m_config.m_column_users_uid.empty() ? "uid" : m_config.m_column_users_uid;
+		return m_config.m_column_users_uid;
 	}
 	assert(false);
 	return "";
