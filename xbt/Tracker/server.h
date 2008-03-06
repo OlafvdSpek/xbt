@@ -56,12 +56,12 @@ public:
 		}
 
 		t_peers peers;
+		time_t ctime;
 		int completed;
-		bool dirty;
 		int fid;
 		int leechers;
 		int seeders;
-		time_t ctime;
+		bool dirty;
 	};
 
 
