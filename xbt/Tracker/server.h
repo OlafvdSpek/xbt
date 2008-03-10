@@ -32,7 +32,7 @@ public:
 		boost::array<char, 20> peer_id;
 	};
 
-#if PEERS_KEY == HOST_UID
+#ifdef PEERS_KEY
 	typedef std::map<std::pair<int, int>, t_peer> t_peers;
 #else
 	typedef std::map<int, t_peer> t_peers;
