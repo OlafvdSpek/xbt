@@ -16,6 +16,37 @@
 class Cserver
 {
 public:
+	class peer_key_c
+	{
+	public:
+		peer_key_c()
+		{
+		}
+
+		peer_key_c(int host, int uid)
+		{
+			host_ = host;
+#ifdef PEERS_KEY
+			uid_ = uid;
+#endif
+		}
+
+		bool operator<(peer_key_c v) const
+		{
+#ifdef PEERS_KEY
+			return host_ < v.host_ || host_ == v.host_ && uid_ < v.uid_;
+#else
+			return host_ < v.host_;
+#endif
+		}
+
+		int host_;
+#ifdef PEERS_KEY
+		int uid_;
+#endif
+	};
+
+
 	struct t_peer
 	{
 		t_peer()
@@ -32,11 +63,7 @@ public:
 		boost::array<char, 20> peer_id;
 	};
 
-#ifdef PEERS_KEY
-	typedef std::map<std::pair<int, int>, t_peer> t_peers;
-#else
-	typedef std::map<int, t_peer> t_peers;
-#endif
+	typedef std::map<peer_key_c, t_peer> t_peers;
 
 	struct t_deny_from_host
 	{
