@@ -270,7 +270,11 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 		file.ctime = time();
 	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > time())
 		return bts_wait_time;
+#if PEERS_KEY == HOST_UID
+	t_peers::key_type peer_key = std::make_pair(v.m_ipa, user ? user->uid : 0);
+#else
 	t_peers::key_type peer_key = v.m_ipa;
+#endif
 	t_peers::iterator i = file.peers.find(peer_key);
 	if (i != file.peers.end())
 	{
@@ -349,7 +353,11 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 		if (!ti.m_left && !i->second.left)
 			continue;
 		boost::array<char, 6> v;
+#if PEERS_KEY == HOST_UID
+		memcpy(&v.front(), &i->first.first, 4);
+#else
 		memcpy(&v.front(), &i->first, 4);
+#endif
 		memcpy(&v.front() + 4, &i->second.port, 2);
 		candidates.push_back(v);
 	}
@@ -786,7 +794,11 @@ std::string Cserver::t_file::debug() const
 	std::string page;
 	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
 	{
+#if PEERS_KEY == HOST_UID
+		page += "<tr><td>" + Csocket::inet_ntoa(i->first.first)
+#else
 		page += "<tr><td>" + Csocket::inet_ntoa(i->first)
+#endif
 			+ "<td align=right>" + n(ntohs(i->second.port))
 			+ "<td align=right>" + n(i->second.left)
 			+ "<td align=right>" + n(::time(NULL) - i->second.mtime)
