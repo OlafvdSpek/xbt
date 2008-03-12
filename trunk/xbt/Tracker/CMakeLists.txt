@@ -28,4 +28,4 @@ add_executable(
 	udp_listen_socket.cpp
 	"XBT Tracker.cpp"
 )
-target_link_libraries (xbt_tracker mysqlclient)
+target_link_libraries(xbt_tracker mysqlclient)
