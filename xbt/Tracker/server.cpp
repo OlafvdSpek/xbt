@@ -755,7 +755,10 @@ void Cserver::read_config()
 			Csql_result result = m_database.query("select name, value from " + table_name(table_config) + " where value is not null");
 			Cconfig config;
 			for (Csql_row row; row = result.fetch_row(); )
-				config.set(row[0].s(), row[1].s());
+			{
+				if (config.set(row[0].s(), row[1].s()))
+					std::cerr << "unknown config name: " << row[0].s() << std::endl;
+			}
 			config.load(m_conf_file);
 			if (config.m_torrent_pass_private_key.empty())
 			{
