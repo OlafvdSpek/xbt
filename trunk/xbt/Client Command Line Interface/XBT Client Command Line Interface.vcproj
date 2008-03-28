@@ -16,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -37,7 +37,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Debug/XBT Client Command Line Interface.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -50,12 +49,7 @@
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Debug/XBT Client Command Line Interface.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="0"
-				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -72,12 +66,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="zlib.lib"
-				OutputFile=".\Debug/XBT Client Command Line Interface.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libcmt"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/XBT Client Command Line Interface.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -92,8 +83,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Debug/XBT Client Command Line Interface.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -110,8 +99,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -131,7 +120,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Release/XBT Client Command Line Interface.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -145,12 +133,7 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Release/XBT Client Command Line Interface.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -166,10 +149,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="zlib.lib"
-				OutputFile=".\Release/XBT Client Command Line Interface.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="true"
-				ProgramDatabaseFile=".\Release/XBT Client Command Line Interface.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -184,8 +164,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Release/XBT Client Command Line Interface.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
