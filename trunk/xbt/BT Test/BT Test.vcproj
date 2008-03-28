@@ -16,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -37,7 +37,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Release/BT Test.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -51,12 +50,7 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Release/BT Test.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -74,8 +68,6 @@
 				AdditionalDependencies="zlib.lib"
 				OutputFile="Release/XBT Client Backend.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="true"
-				ProgramDatabaseFile=".\Release/XBT Client Backend.pdb"
 				SubSystem="1"
 				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
@@ -91,8 +83,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Release/BT Test.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -109,8 +99,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
@@ -130,7 +120,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Debug/BT Test.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -143,12 +132,7 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Debug/BT Test.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="0"
-				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -167,10 +151,8 @@
 				AdditionalDependencies="zlib.lib"
 				OutputFile="Debug/XBT Client Backend.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libcmt"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/XBT Client Backend.pdb"
 				SubSystem="1"
 				TargetMachine="1"
 			/>
@@ -185,8 +167,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Debug/BT Test.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
