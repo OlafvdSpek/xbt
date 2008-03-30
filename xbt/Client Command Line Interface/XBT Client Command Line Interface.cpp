@@ -80,19 +80,19 @@ std::ostream& show_options(std::ostream& os, const Cbvalue& v)
 
 std::ostream& show_status(std::ostream& os, const Cbvalue& v)
 {
-	os << "    left     size downloaded  uploaded down_rate   up_rate leechers     seeders" << std::endl;
+	os << "    left     size downloaded  uploaded down_rate   up_rate   leechers      seeders  info_hash                                 name" << std::endl;
 	const Cbvalue& files = v.d(bts_files);
 	for (Cbvalue::t_map::const_iterator i = files.d().begin(); i != files.d().end(); i++)
 	{
-		os << strip_name(i->second.d(bts_name).s())
-			<< std::endl
+		os 
 			<< std::setw(8) << b2a(i->second.d(bts_left).i())
 			<< std::setw(10) << b2a(i->second.d(bts_size).i())
 			<< std::setw(10) << b2a(i->second.d(bts_total_downloaded).i())
 			<< std::setw(10) << b2a(i->second.d(bts_total_uploaded).i())
 			<< std::setw(10) << b2a(i->second.d(bts_down_rate).i())
 			<< std::setw(10) << b2a(i->second.d(bts_up_rate).i())
-			<< std::setw(7) << i->second.d(bts_incomplete).i();
+			<< std::setw(5) << i->second.d(bts_incomplete).i()
+			;
 		if (i->second.d(bts_incomplete_total).i())
 			os << " / " << std::setw(3) << i->second.d(bts_incomplete_total).i();
 		else
@@ -102,7 +102,9 @@ std::ostream& show_status(std::ostream& os, const Cbvalue& v)
 			os << " / " << std::setw(3) << i->second.d(bts_complete_total).i();
 		else
 			os << "      ";
-		os << "    " << hex_encode(i->first)
+		os 
+			<< "  " << hex_encode(i->first)
+			<< "  " << strip_name(i->second.d(bts_name).s())
 			<< std::endl;
 	}
 	return os;
