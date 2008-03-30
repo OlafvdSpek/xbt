@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 		std::ifstream is(vm["conf_file"].as<std::string>().c_str());
 		po::store(po::parse_config_file(is, desc), vm);
 		po::notify(vm);
-		if (vm.count("help") || argc < 2)
+		if (vm.count("help"))
 		{
 			std::cerr << desc;
 			return 1;
@@ -248,7 +248,7 @@ int main(int argc, char* argv[])
 			v.d(bts_admin_pass, backend_pass);
 			show_options(std::cout, send_recv(s, v));
 		}
-		if (vm.count("status"))
+		if (vm.count("status") || argc < 2)
 		{
 			Cbvalue v;
 			v.d(bts_action, bts_get_status);
