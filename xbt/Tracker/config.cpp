@@ -48,7 +48,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"read_config_interval", &m_read_config_interval, 60,
 			"read_db_interval", &m_read_db_interval, 60,
 			"scrape_interval", &m_scrape_interval, 0,
-			"write_db_interval", &m_write_db_interval, 30,
+			"write_db_interval", &m_write_db_interval, 15,
 			NULL
 		};
 		fill_map(attributes, v ? &v->m_attributes_int : NULL, m_attributes_int);
