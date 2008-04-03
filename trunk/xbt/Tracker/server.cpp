@@ -791,6 +791,7 @@ std::string Cserver::t_file::debug() const
 	{
 		page += "<tr><td>" + Csocket::inet_ntoa(i->first.host_)
 			+ "<td align=right>" + n(ntohs(i->second.port))
+			+ "<td align=right>" + n(i->second.uid)
 			+ "<td align=right>" + n(i->second.left)
 			+ "<td align=right>" + n(::time(NULL) - i->second.mtime)
 			+ "<td>" + hex_encode(const_memory_range(i->second.peer_id.begin(), i->second.peer_id.end()));
