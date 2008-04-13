@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "config.h"
 
-#include "socket.h"
+#include <socket.h>
 
 Cconfig::Cconfig()
 {

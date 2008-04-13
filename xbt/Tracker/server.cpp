@@ -2,12 +2,12 @@
 #include "server.h"
 
 #include <boost/format.hpp>
+#include <sql/sql_query.h>
 #include <iostream>
 #include <signal.h>
-#include "sql/sql_query.h"
-#include "bt_misc.h"
-#include "bt_strings.h"
-#include "stream_int.h"
+#include <bt_misc.h>
+#include <bt_strings.h>
+#include <stream_int.h>
 #include "transaction.h"
 
 static volatile bool g_sig_term = false;

@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "connection.h"
 
+#include <bt_misc.h>
+#include <bt_strings.h>
+#include <bvalue.h>
 #include <iostream>
-#include "bt_misc.h"
-#include "bt_strings.h"
-#include "bvalue.h"
+#include <xcc_z.h>
 #include "server.h"
-#include "xcc_z.h"
 
 Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a)
 {
@@ -263,7 +263,7 @@ void Cconnection::read(const std::string& v)
 	d[0].iov_base = const_cast<char*>(h.data());
 	d[0].iov_len = h.size();
 	d[1].iov_base = const_cast<unsigned char*>(s.data());
-	d[1].iov_len = s.size();	
+	d[1].iov_len = s.size();
 	msghdr m;
 	m.msg_name = NULL;
 	m.msg_namelen = 0;
