@@ -19,7 +19,7 @@ Cvirtual_binary_source* Cvirtual_binary_source::pre_edit()
 	if (mc_references == 1)
 		return this;
 	return new Cvirtual_binary_source(range());
-}	
+}
 
 Cvirtual_binary::Cvirtual_binary(size_t v)
 {

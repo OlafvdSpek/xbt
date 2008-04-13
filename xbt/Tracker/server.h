@@ -1,9 +1,5 @@
 #pragma once
 
-#include <boost/array.hpp>
-#include <boost/ptr_container/ptr_list.hpp>
-#include <map>
-#include "sql/database.h"
 #include "config.h"
 #include "connection.h"
 #include "epoll.h"
@@ -11,7 +7,11 @@
 #include "tcp_listen_socket.h"
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
-#include "virtual_binary.h"
+#include <boost/array.hpp>
+#include <boost/ptr_container/ptr_list.hpp>
+#include <map>
+#include <sql/database.h>
+#include <virtual_binary.h>
 
 class Cserver
 {

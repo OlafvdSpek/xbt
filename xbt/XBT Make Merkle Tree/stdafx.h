@@ -12,14 +12,12 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <socket.h>
 #include <vector>
+#include <virtual_binary.h>
 
 #ifndef WIN32
 #include <stdint.h>
 #endif
-#include "socket.h"
-#include "virtual_binary.h"
-
-//{{AFX_INSERT_LOCATION}}
 
 #endif // !defined(AFX_STDAFX_H__934FECC7_0914_4243_9D96_05910F2591B5__INCLUDED_)

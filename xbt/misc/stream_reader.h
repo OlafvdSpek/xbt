@@ -1,7 +1,7 @@
 #pragma once
 
-#include "stream_int.h"
-#include "virtual_binary.h"
+#include <stream_int.h>
+#include <virtual_binary.h>
 
 class Cstream_reader
 {

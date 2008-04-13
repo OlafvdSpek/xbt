@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "bt_file.h"
 
+#include "bt_hasher.h"
+#include "server.h"
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/exception.hpp>
-#include <sys/stat.h>
+#include <bt_strings.h>
 #include <fcntl.h>
-#include "bt_hasher.h"
-#include "bt_strings.h"
-#include "server.h"
+#include <sys/stat.h>
 
 #ifdef WIN32
 #include <shellapi.h>
