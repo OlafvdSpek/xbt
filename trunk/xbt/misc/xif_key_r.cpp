@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "xif_key_r.h"
 
+#include <stream_int.h>
+#include <virtual_binary.h>
+#include <xif_key.h>
 #include <zlib.h>
-#include "stream_int.h"
-#include "virtual_binary.h"
-#include "xif_key.h"
 
 static int read_int(const byte*& r)
 {
@@ -18,7 +18,7 @@ int Cxif_key_r::import(const_memory_range s)
 	const t_xif_header_fast& h = *reinterpret_cast<const t_xif_header_fast*>(s.begin);
 	if (s.size() < sizeof(t_xif_header_fast) + 8
 		|| h.id != file_id
-		|| h.version != file_version_fast)		
+		|| h.version != file_version_fast)
 		return 1;
 	unsigned long cb_d = h.size_uncompressed;
 	if (cb_d)

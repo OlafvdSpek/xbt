@@ -1,8 +1,8 @@
 #include "stdafx.h"
+#include "server.h"
 #include <boost/program_options.hpp>
 #include <iostream>
-#include "windows/nt_service.h"
-#include "server.h"
+#include <windows/nt_service.h>
 
 std::string g_conf_file;
 const char* g_service_name = "XBT Client";

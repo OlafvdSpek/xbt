@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "bt_admin_link.h"
 
-#include "bt_strings.h"
 #include "server.h"
-#include "stream_writer.h"
+#include <bt_strings.h>
+#include <stream_writer.h>
 
 Cbt_admin_link::Cbt_admin_link()
 {

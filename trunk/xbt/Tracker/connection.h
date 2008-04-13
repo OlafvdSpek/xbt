@@ -1,9 +1,9 @@
 #pragma once
 
+#include "client.h"
 #include <boost/array.hpp>
 #include <vector>
-#include "client.h"
-#include "virtual_binary.h"
+#include <virtual_binary.h>
 
 class Cserver;
 

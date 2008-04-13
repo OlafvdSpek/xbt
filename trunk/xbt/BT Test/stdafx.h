@@ -52,9 +52,9 @@ inline long long min(long long a, long long b)
 	return a < b ? a : b;
 }
 
-#include "bt_misc.h"
-#include "bvalue.h"
-#include "socket.h"
-#include "virtual_binary.h"
+#include <bt_misc.h>
+#include <bvalue.h>
+#include <socket.h>
+#include <virtual_binary.h>
 
 typedef unsigned char byte;

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <list>
-#include "stream_writer.h"
-#include "virtual_binary.h"
+#include <stream_writer.h>
+#include <virtual_binary.h>
 
 class Cbt_tracker_account
 {
@@ -16,16 +16,16 @@ public:
 	{
 		return m_tracker;
 	}
-	
+
 	const std::string& user() const
 	{
 		return m_user;
 	}
-	
+
 	const std::string& pass() const
 	{
 		return m_pass;
-	}	
+	}
 private:
 	std::string m_tracker;
 	std::string m_user;

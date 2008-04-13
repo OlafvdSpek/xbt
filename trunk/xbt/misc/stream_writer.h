@@ -1,7 +1,7 @@
 #pragma once
 
-#include "const_memory_range.h"
-#include "stream_int.h"
+#include <const_memory_range.h>
+#include <stream_int.h>
 
 class Cstream_writer
 {

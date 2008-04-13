@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <algorithm>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/exception.hpp>
-#include <sys/stat.h>
-#include <algorithm>
+#include <bt_strings.h>
 #include <signal.h>
-#include "bt_strings.h"
-#include "stream_reader.h"
+#include <stream_reader.h>
+#include <sys/stat.h>
 
 const char* g_pid_fname = "xbt_client_backend.pid";
 static volatile bool g_sig_term = false;

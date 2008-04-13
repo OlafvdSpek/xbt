@@ -10,8 +10,8 @@
 #include "http_link.h"
 #include "profiles.h"
 #include "scheduler.h"
-#include "stream_writer.h"
 #include "version_check_handler.h"
+#include <stream_writer.h>
 
 class Cserver
 {
@@ -186,7 +186,7 @@ public:
 	{
 		m_config.m_peer_limit = v;
 	}
-	
+
 	int peer_port() const
 	{
 		return m_peer_port;
@@ -231,7 +231,7 @@ public:
 	{
 		return m_config.m_torrent_upload_slots_min;
 	}
-	
+
 	const Cbt_tracker_accounts& tracker_accounts()
 	{
 		return m_tracker_accounts;

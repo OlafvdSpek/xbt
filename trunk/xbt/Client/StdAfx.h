@@ -14,9 +14,9 @@
 #include <afxcmn.h>
 #endif
 
-#include <boost/algorithm/string.hpp>
-#include <sys/stat.h>
 #include <afxsock.h>
+#include <boost/algorithm/string.hpp>
+#include <bt_misc.h>
 #include <cassert>
 #include <fstream>
 #include <io.h>
@@ -24,14 +24,14 @@
 #include <map>
 #include <natupnp.h>
 #include <set>
+#include <sha1.h>
 #include <shlwapi.h>
 #include <sstream>
 #include <string>
+#include <sys/stat.h>
 #include <vector>
-#include "windows/ETSLayout.h"
-#include "bt_misc.h"
-#include "sha1.h"
-#include "virtual_binary.h"
+#include <virtual_binary.h>
+#include <windows/ETSLayout.h>
 
 inline long long max(long long a, long long b)
 {

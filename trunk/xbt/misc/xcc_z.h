@@ -1,6 +1,6 @@
 #pragma once
 
-#include "virtual_binary.h"
+#include <virtual_binary.h>
 
 namespace xcc_z
 {
