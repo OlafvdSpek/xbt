@@ -8,7 +8,7 @@
 #else
 #include <mysql/mysql.h>
 #endif
-#include "const_memory_range.h"
+#include <const_memory_range.h>
 
 class Csql_result_source: boost::noncopyable
 {
