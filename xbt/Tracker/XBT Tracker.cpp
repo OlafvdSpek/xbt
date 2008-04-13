@@ -1,6 +1,6 @@
 #include "stdafx.h"
+#include <windows/nt_service.h>
 #include <iostream>
-#include "windows/nt_service.h"
 #include "config.h"
 #include "server.h"
 
