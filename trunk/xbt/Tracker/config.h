@@ -1,6 +1,6 @@
 #pragma once
 
-#include "config_base.h"
+#include <config_base.h>
 
 class Cconfig: public Cconfig_base
 {
