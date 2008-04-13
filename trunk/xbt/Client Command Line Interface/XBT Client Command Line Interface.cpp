@@ -1,11 +1,11 @@
 #include "stdafx.h"
+#include "../BT Test/bt_file.h"
 #include <boost/program_options.hpp>
+#include <bt_misc.h>
+#include <bt_strings.h>
+#include <bvalue.h>
 #include <iomanip>
 #include <iostream>
-#include "../BT Test/bt_file.h"
-#include "bt_misc.h"
-#include "bt_strings.h"
-#include "bvalue.h"
 
 namespace po = boost::program_options;
 using asio::ip::tcp;
@@ -84,7 +84,7 @@ std::ostream& show_status(std::ostream& os, const Cbvalue& v)
 	const Cbvalue& files = v.d(bts_files);
 	for (Cbvalue::t_map::const_iterator i = files.d().begin(); i != files.d().end(); i++)
 	{
-		os 
+		os
 			<< std::setw(8) << b2a(i->second.d(bts_left).i())
 			<< std::setw(10) << b2a(i->second.d(bts_size).i())
 			<< std::setw(10) << b2a(i->second.d(bts_total_downloaded).i())
@@ -102,7 +102,7 @@ std::ostream& show_status(std::ostream& os, const Cbvalue& v)
 			os << " / " << std::setw(3) << i->second.d(bts_complete_total).i();
 		else
 			os << "      ";
-		os 
+		os
 			<< "  " << hex_encode(i->first)
 			<< "  " << strip_name(i->second.d(bts_name).s())
 			<< std::endl;
@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
 			s.connect(*endpoint_iterator++, error);
 		}
 		if (error)
-			throw error;		
+			throw error;
 		Cbvalue v;
 		if (vm.count("close"))
 		{
