@@ -2,13 +2,11 @@
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/utility.hpp>
+#include <const_memory_range.h>
 #ifdef _MSC_VER
 #include <winsock2.h>
-#include <mysql.h>
-#else
-#include <mysql/mysql.h>
 #endif
-#include <const_memory_range.h>
+#include <mysql/mysql.h>
 
 class Csql_result_source: boost::noncopyable
 {
