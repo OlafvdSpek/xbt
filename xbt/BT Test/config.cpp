@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "config.h"
 
-#include "bvalue.h"
+#include <bvalue.h>
 
 Cconfig::Cconfig()
 {

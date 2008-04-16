@@ -2,7 +2,7 @@
 
 #include "alerts.h"
 #include "ring_buffer.h"
-#include "socket.h"
+#include <socket.h>
 
 class Cserver;
 
@@ -20,7 +20,7 @@ public:
 	{
 		return m_s != INVALID_SOCKET;
 	}
-private:	
+private:
 	Cring_buffer m_read_b;
 	sockaddr_in m_a;
 	Csocket m_s;

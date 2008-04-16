@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 #include <algorithm>
 #include <ctime>
-#include "socket.h"
+#include <socket.h>
 
 #ifdef WIN32
 #pragma comment(lib, "ws2_32")

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dlg_block_list.h"
 
-#include "socket.h"
+#include <socket.h>
 
 Cdlg_block_list::Cdlg_block_list(CWnd* pParent /*=NULL*/)
 	: ETSLayoutDialog(Cdlg_block_list::IDD, pParent, "Cdlg_block_list")

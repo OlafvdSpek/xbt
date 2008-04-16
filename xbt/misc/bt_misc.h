@@ -1,7 +1,7 @@
 #pragma once
 
+#include <sha1.h>
 #include <string>
-#include "sha1.h"
 
 std::string b2a(long long v, const char* postfix = NULL);
 std::string backward_slashes(std::string);
