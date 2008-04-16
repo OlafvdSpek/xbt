@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "xif_key.h"
+#include <xif_key.h>
 
 class Cscheduler_entry
 {
@@ -14,7 +14,7 @@ public:
 	int profile;
 };
 
-class Cscheduler: public std::map<int, Cscheduler_entry>  
+class Cscheduler: public std::map<int, Cscheduler_entry>
 {
 public:
 	int find_active_profile(int time) const;

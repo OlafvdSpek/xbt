@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "version_check_handler.h"
 
-#include "bt_misc.h"
 #include "server.h"
+#include <bt_misc.h>
 
 Cversion_check_handler::Cversion_check_handler(Cserver& server):
 	m_server(server)
