@@ -261,6 +261,8 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 	}
 	if (!m_config.m_offline_message.empty())
 		return m_config.m_offline_message;
+	if (!m_config.m_anonymous_announce && !user)
+		return bts_unregistered_torrent_pass;
 	if (!m_config.m_auto_register && !file(v.m_info_hash))
 		return bts_unregistered_torrent;
 	if (v.m_left && user && !user->can_leech)

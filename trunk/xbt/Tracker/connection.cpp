@@ -196,9 +196,7 @@ void Cconnection::read(const std::string& v)
 		else
 		{
 			Cserver::t_user* user = m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash);
-			if (!m_server->config().m_anonymous_announce && !user)
-				s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
-			else if (user && user->torrent_pass_secret && calculate_torrent_pass1(ti.m_info_hash, user->torrent_pass_secret) != hex_decode(torrent_pass1))
+			if (user && user->torrent_pass_secret && calculate_torrent_pass1(ti.m_info_hash, user->torrent_pass_secret) != hex_decode(torrent_pass1))
 				s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 			else
 			{
