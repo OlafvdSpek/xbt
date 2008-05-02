@@ -195,14 +195,8 @@ void Cconnection::read(const std::string& v)
 			s = Cbvalue().d(bts_failure_reason, bts_banned_client).read();
 		else
 		{
-			Cserver::t_user* user = m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash);
-			if (user && user->torrent_pass_secret && calculate_torrent_pass1(ti.m_info_hash, user->torrent_pass_secret) != hex_decode(torrent_pass1))
-				s = Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
-			else
-			{
-				std::string error = m_server->insert_peer(ti, false, user);
-				s = error.empty() ? m_server->select_peers(ti) : Cbvalue().d(bts_failure_reason, error).read();
-			}
+			std::string error = m_server->insert_peer(ti, false, m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash));
+			s = error.empty() ? m_server->select_peers(ti) : Cbvalue().d(bts_failure_reason, error).read();
 		}
 		break;
 	case 'd':

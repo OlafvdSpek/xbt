@@ -75,7 +75,6 @@ create table if not exists xbt_users
 	-- peers_limit int not null default 0,
 	-- torrents_limit int not null default 0,
 	-- torrent_pass char(32) not null,
-	-- torrent_pass_secret bigint unsigned not null,
 	torrent_pass_version int not null default 0,
 	downloaded bigint unsigned not null default 0,
 	uploaded bigint unsigned not null default 0,

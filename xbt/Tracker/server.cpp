@@ -578,11 +578,7 @@ void Cserver::read_db_users()
 		if (m_read_users_peers_limit)
 			q += ", peers_limit";
 		if (m_read_users_torrent_pass)
-		{
 			q += ", torrent_pass";
-			if (m_read_users_torrent_pass_secret)
-				q += ", torrent_pass_secret";
-		}
 		if (m_read_users_torrent_pass_version)
 			q += ", torrent_pass_version";
 		if (m_read_users_torrents_limit)
@@ -619,8 +615,6 @@ void Cserver::read_db_users()
 				if (row[c].size())
 					m_users_torrent_passes[row[c].s()] = &user;
 				c++;
-				if (m_read_users_torrent_pass_secret)
-					user.torrent_pass_secret = row[c++].i();
 			}
 			if (m_read_users_torrent_pass_version)
 				user.torrent_pass_version = row[c++].i();
@@ -986,7 +980,6 @@ int Cserver::test_sql()
 		m_read_users_name_pass = m_database.query("show columns from " + table_name(table_users) + " like 'pass'");
 		m_read_users_peers_limit = m_database.query("show columns from " + table_name(table_users) + " like 'peers_limit'");
 		m_read_users_torrent_pass = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass'");
-		m_read_users_torrent_pass_secret = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass_secret'");
 		m_read_users_torrent_pass_version = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass_version'");
 		m_read_users_torrents_limit = m_database.query("show columns from " + table_name(table_users) + " like 'torrents_limit'");
 		m_read_users_wait_time = m_database.query("show columns from " + table_name(table_users) + " like 'wait_time'");
