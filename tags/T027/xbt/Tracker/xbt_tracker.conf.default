@@ -1,0 +1,4 @@
+mysql_host = localhost
+mysql_user = xbt
+mysql_password =
+mysql_database = xbt

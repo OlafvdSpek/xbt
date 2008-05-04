@@ -1,0 +1,698 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_XBTCLIENT_DIALOG DIALOGEX 0, 0, 128, 122
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
+CAPTION "XBT Client"
+MENU IDR_MAINFRAME
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "List1",IDC_FILES,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,114,50
+    CONTROL         "List1",IDC_PEERS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,65,114,50
+    CONTROL         "Tab1",IDC_TAB,"SysTabControl32",0x0,35,44,50,30
+END
+
+IDD_OPTIONS DIALOGEX 0, 0, 363, 318
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_UPLOAD_RATE,7,61,37,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_UPLOAD_SLOTS,7,79,37,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_PEER_LIMIT,7,187,37,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_TORRENT_LIMIT,7,205,37,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_COMPLETES_DIRECTORY,7,115,37,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_COMPLETES_DIRECTORY_BROWSE,273,115,11,14
+    EDITTEXT        IDC_INCOMPLETES_DIRECTORY,7,133,37,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_INCOMPLETES_DIRECTORY_BROWSE,273,133,11,14
+    EDITTEXT        IDC_TORRENTS_DIRECTORY,7,151,37,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_TORRENTS_DIRECTORY_BROWSE,273,151,11,14
+    EDITTEXT        IDC_PUBLIC_IPA,7,43,37,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_ADMIN_PORT,7,7,37,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_PEER_PORT,7,25,37,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "HotKey1",IDC_HOT_KEY,"msctls_hotkey32",WS_BORDER | WS_TABSTOP,7,223,37,14
+    COMBOBOX        IDC_PEER_ID,182,188,48,164,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_USER_AGENT,183,205,48,164,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Ask for location",IDC_ASK_FOR_LOCATION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,241,65,10
+    CONTROL         "Bind before connect",IDC_BIND_BEFORE_CONNECT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,253,80,10
+    CONTROL         "Hide on deactivate",IDC_HIDE_ON_DEACTIVATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,253,76,10
+    CONTROL         "Lower process priority",IDC_LOWER_PROCESS_PRIORITY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,265,84,10
+    CONTROL         "Send stop event",IDC_SEND_STOP_EVENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,270,68,10
+    CONTROL         "Show confirm exit dialog",IDC_SHOW_CONFIRM_EXIT_DIALOG,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,241,92,10
+    CONTROL         "Show tray icon",IDC_SHOW_TRAY_ICON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,277,63,10
+    CONTROL         "Start minimzed",IDC_START_MINIMIZED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,301,61,10
+    CONTROL         "UPnP",IDC_UPNP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,131,286,35,10
+    DEFPUSHBUTTON   "OK",IDOK,250,297,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,306,297,50,14
+    EDITTEXT        IDC_SEEDING_RATIO,7,97,37,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Admin Port (TCP):",IDC_ADMIN_PORT_STATIC,288,7,56,14
+    LTEXT           "Peer Port (TCP):",IDC_PEER_PORT_STATIC,288,25,52,14
+    LTEXT           "Public IP Address:",IDC_PUBLIC_IPA_STATIC,288,43,58,14
+    LTEXT           "Upload Rate (kbyte/s):",IDC_UPLOAD_RATE_STATIC,283,61,73,14
+    LTEXT           "Upload Slots:",IDC_UPLOAD_SLOTS_STATIC,288,79,42,14
+    LTEXT           "Seeding Ratio (%):",IDC_SEEDING_RATIO_STATIC,288,97,59,14
+    LTEXT           "Completes Directory:",IDC_COMPLETES_DIRECTORY_STATIC,288,115,66,14
+    LTEXT           "Incompletes Directory:",IDC_INCOMPLETES_DIRECTORY_STATIC,286,133,70,14
+    LTEXT           "Torrents Directory:",IDC_TORRENTS_DIRECTORY_STATIC,288,151,58,14
+    LTEXT           "Peer Limit:",IDC_PEER_LIMIT_STATIC,288,187,34,14
+    LTEXT           "Torrent Limit:",IDC_TORRENT_LIMIT_STATIC,288,205,42,14
+    LTEXT           "Hot Key:",IDC_HOT_KEY_STATIC,288,223,28,14
+    LTEXT           "Peer ID:",IDC_PEER_ID_STATIC,240,228,38,14
+    LTEXT           "User Agent:",IDC_USER_AGENT_STATIC,281,243,38,14
+END
+
+IDD_TRACKERS DIALOG  0, 0, 282, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Trackers"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,268,63
+    PUSHBUTTON      "&Insert...",IDC_INSERT,9,75,50,14
+    PUSHBUTTON      "&Edit...",IDC_EDIT,65,74,50,14
+    PUSHBUTTON      "&Delete",IDC_DELETE,120,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,173,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,225,74,50,14
+END
+
+IDD_TRACKER DIALOG  0, 0, 119, 82
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Tracker"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_TRACKER,48,7,64,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_USER,48,23,64,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PASS,48,41,64,14,ES_PASSWORD | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,7,61,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,62,61,50,14
+    LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,7,37,8
+    LTEXT           "User name:",IDC_USER_STATIC,7,23,37,8
+    LTEXT           "Password:",IDC_PASS_STATIC,7,41,37,8
+END
+
+IDD_ABOUT DIALOG  0, 0, 118, 62
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About XBT Client"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Version: ?",IDC_VERSION,7,7,104,8
+    LTEXT           "Site: http://xbtt.sourceforge.net/",IDC_SITE,7,20,104,8
+    LTEXT           "Author: Olaf van der Spek",IDC_STATIC,7,33,83,8
+    LTEXT           "License: GPL",IDC_LICENSE,7,46,44,8
+END
+
+IDD_MAKE_TORRENT DIALOGEX 0, 0, 186, 175
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "Make torrent"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_NAME,42,7,137,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TRACKER,42,26,137,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TRACKERS,42,45,137,55,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,103,172,50
+    CONTROL         "Seed after Making",IDC_SEED_AFTER_MAKING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,158,74,10
+    CONTROL         "Use &Merkle Tree",IDC_USE_MERKLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,55,158,69,10
+    PUSHBUTTON      "&Load Trackers...",IDC_LOAD_TRACKERS,7,52,57,14
+    DEFPUSHBUTTON   "&Save...",IDC_SAVE,129,154,50,14,WS_DISABLED
+    LTEXT           "Trackers:",IDC_TRACKERS_STATIC,7,38,31,8
+    LTEXT           "Name:",IDC_NAME_STATIC,7,7,31,8
+    LTEXT           "Tracker:",IDC_TRACKER_STATIC,7,23,31,8
+END
+
+IDD_TORRENT_OPTIONS DIALOG  0, 0, 217, 96
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Torrent Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Seeding Ratio (%):",IDC_SEEDING_RATIO_OVERRIDE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,74,14
+    EDITTEXT        IDC_SEEDING_RATIO,82,7,34,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Upload Slots Min:",IDC_UPLOAD_SLOTS_MIN_OVERRIDE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,25,71,14
+    EDITTEXT        IDC_UPLOAD_SLOTS_MIN,82,25,34,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Upload Slots Max:",IDC_UPLOAD_SLOTS_MAX_OVERRIDE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,43,73,14
+    EDITTEXT        IDC_UPLOAD_SLOTS_MAX,82,43,34,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "&End Mode",IDC_END_MODE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,59,49,10
+    DEFPUSHBUTTON   "OK",IDOK,105,75,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,160,75,50,14
+    LTEXT           "Trackers:",IDC_TRACKERS_STATIC,7,77,74,8
+    EDITTEXT        IDC_TRACKERS,127,7,6,12,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Priority:",IDC_PRIORITY_STATIC,125,25,24,14
+    EDITTEXT        IDC_PRIORITY,161,22,40,14,ES_RIGHT | ES_AUTOHSCROLL
+END
+
+IDD_SCHEDULER DIALOG  0, 0, 282, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Scheduler"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,268,63
+    PUSHBUTTON      "&Insert...",IDC_INSERT,9,75,50,14
+    PUSHBUTTON      "&Edit...",IDC_EDIT,65,74,50,14
+    PUSHBUTTON      "&Delete",IDC_DELETE,120,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,173,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,225,74,50,14
+END
+
+IDD_PROFILES DIALOG  0, 0, 282, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Profiles"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,268,63
+    PUSHBUTTON      "&Activate",IDC_ACTIVATE,7,74,50,14
+    PUSHBUTTON      "&Insert...",IDC_INSERT,51,74,50,14
+    PUSHBUTTON      "&Edit...",IDC_EDIT,95,74,50,14
+    PUSHBUTTON      "&Delete",IDC_DELETE,139,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,183,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,227,74,50,14
+END
+
+IDD_PROFILE DIALOG  0, 0, 141, 124
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Profile"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Name:",IDC_NAME_STATIC,7,7,57,10
+    EDITTEXT        IDC_NAME,94,7,40,14,ES_AUTOHSCROLL
+    CONTROL         "Seeding Ratio (%):",IDC_SEEDING_RATIO_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,23,57,14
+    EDITTEXT        IDC_SEEDING_RATIO,94,23,40,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Upload Rate (kb/s):",IDC_UPLOAD_RATE_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,39,79,14
+    EDITTEXT        IDC_UPLOAD_RATE,94,39,40,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Upload Slots:",IDC_UPLOAD_SLOTS_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,55,57,14
+    EDITTEXT        IDC_UPLOAD_SLOTS,94,55,40,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Peer Limit:",IDC_PEER_LIMIT_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,71,57,14
+    EDITTEXT        IDC_PEER_LIMIT,94,71,40,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Torrent Limit:",IDC_TORRENT_LIMIT_ENABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,87,57,14
+    EDITTEXT        IDC_TORRENT_LIMIT,94,87,40,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    DEFPUSHBUTTON   "OK",IDOK,7,103,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,84,103,50,14
+END
+
+IDD_SCHEDULER_ENTRY DIALOG  0, 0, 118, 62
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Scheduler Entry"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Time (h:m:s):",IDC_TIME_STATIC,7,7,41,8
+    EDITTEXT        IDC_HOURS,63,7,13,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_MINUTES,80,7,13,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_SECONDS,98,7,13,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Profile:",IDC_PROFILE_STATIC,7,26,22,12
+    COMBOBOX        IDC_PROFILE,63,25,48,289,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,7,41,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,61,41,50,14
+END
+
+IDD_PEER_CONNECT DIALOG  0, 0, 186, 65
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Peer Connect"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_HOST,35,7,144,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PORT,35,27,144,14,ES_AUTOHSCROLL | ES_NUMBER
+    DEFPUSHBUTTON   "OK",IDOK,73,44,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,44,50,14
+    LTEXT           "Host:",IDC_HOST_STATIC,7,7,18,14
+    LTEXT           "Port:",IDC_PORT_STATIC,7,25,18,14
+END
+
+IDD_BLOCK_LIST DIALOG  0, 0, 282, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Block List"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,268,63
+    PUSHBUTTON      "&Delete",IDC_DELETE,120,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,173,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,225,74,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_XBTCLIENT_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 121
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 115
+    END
+
+    IDD_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 356
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 311
+    END
+
+    IDD_TRACKERS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 275
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_TRACKER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 112
+        VERTGUIDE, 48
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 75
+        HORZGUIDE, 23
+        HORZGUIDE, 41
+    END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 111
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_MAKE_TORRENT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        VERTGUIDE, 42
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 168
+    END
+
+    IDD_TORRENT_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 210
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 89
+    END
+
+    IDD_SCHEDULER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_PROFILES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_PROFILE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 134
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 117
+    END
+
+    IDD_SCHEDULER_ENTRY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 111
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_PEER_CONNECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_BLOCK_LIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 275
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\XBT Client B.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+CG_IDR_POPUP_XBTCLIENT_DLG MENU 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        POPUP "Clipboard"
+        BEGIN
+            MENUITEM "Copy Announce URL",           ID_EDIT_COPY_ANNOUNCE_URL
+            MENUITEM "Copy Hash",                   ID_EDIT_COPY_HASH
+            MENUITEM "Copy Rows",                   ID_EDIT_COPY_ROWS
+            MENUITEM "Copy URL\tCtrl+C",            ID_EDIT_COPY_URL
+            MENUITEM "Paste URL\tCtrl+V",           ID_EDIT_PASTE_URL
+        END
+        POPUP "&Priority"
+        BEGIN
+            MENUITEM "High",                        ID_POPUP_TORRENT_PRIORITY_HIGH
+            MENUITEM "Normal",                      ID_POPUP_TORRENT_PRIORITY_NORMAL
+            MENUITEM "Low",                         ID_POPUP_TORRENT_PRIORITY_LOW
+        END
+        POPUP "State"
+        BEGIN
+            MENUITEM "Queued",                      ID_POPUP_STATE_QUEUED
+            MENUITEM "Started",                     ID_POPUP_STATE_STARTED
+            MENUITEM "Paused",                      ID_POPUP_STATE_PAUSED
+            MENUITEM "Stopped",                     ID_POPUP_STATE_STOPPED
+        END
+        POPUP "&Torrent"
+        BEGIN
+            MENUITEM "Explore\tEnter",              ID_POPUP_EXPLORE
+            MENUITEM "Explore Tracker",             ID_POPUP_EXPLORE_TRACKER
+            MENUITEM "&Announce",                   ID_POPUP_ANNOUNCE
+            MENUITEM "&Close\tDelete",              ID_FILE_CLOSE
+            MENUITEM "&Delete",                     ID_FILE_DELETE
+            MENUITEM "Options...\tAlt+Enter",       ID_POPUP_TORRENT_OPTIONS
+        END
+        POPUP "&View"
+        BEGIN
+            MENUITEM "&Details\t1",                 ID_POPUP_VIEW_DETAILS
+            MENUITEM "&Events\t2",                  ID_POPUP_VIEW_EVENTS
+            MENUITEM "&Files\t3",                   ID_POPUP_VIEW_FILES
+            MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
+            MENUITEM "Pieces\t5",                   ID_POPUP_VIEW_PIECES
+            MENUITEM "&Trackers\t6",                ID_POPUP_VIEW_TRACKERS
+            MENUITEM "Global Details\t7",           ID_POPUP_VIEW_GLOBAL_DETAILS
+            MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
+            MENUITEM SEPARATOR
+            MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Options...\tCtrl+O",          ID_TOOLS_OPTIONS
+        MENUITEM "Profiles...\tCtrl+P",         ID_TOOLS_PROFILES
+        MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
+    END
+END
+
+IDR_POPUP_BOTTOM_FILES MENU 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        POPUP "Clipboard"
+        BEGIN
+            MENUITEM "Copy Rows",                   ID_EDIT_COPY_ROWS
+        END
+        POPUP "&Priority"
+        BEGIN
+            MENUITEM "High",                        ID_POPUP_PRIORITY_HIGH
+            MENUITEM "Normal",                      ID_POPUP_PRIORITY_NORMAL
+            MENUITEM "Low",                         ID_POPUP_PRIORITY_LOW
+            MENUITEM "Exclude",                     ID_POPUP_PRIORITY_EXCLUDE
+        END
+        POPUP "&View"
+        BEGIN
+            MENUITEM "&Details\t1",                 ID_POPUP_VIEW_DETAILS
+            MENUITEM "&Events\t2",                  ID_POPUP_VIEW_EVENTS
+            MENUITEM "&Files\t3",                   ID_POPUP_VIEW_FILES
+            MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
+            MENUITEM "Pieces\t5",                   ID_POPUP_VIEW_PIECES
+            MENUITEM "&Trackers\t6",                ID_POPUP_VIEW_TRACKERS
+            MENUITEM "Global Details\t7",           ID_POPUP_VIEW_GLOBAL_DETAILS
+            MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
+            MENUITEM SEPARATOR
+            MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Options...\tCtrl+O",          ID_TOOLS_OPTIONS
+        MENUITEM "Profiles...\tCtrl+P",         ID_TOOLS_PROFILES
+        MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
+    END
+END
+
+IDR_POPUP_BOTTOM MENU 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        POPUP "Clipboard"
+        BEGIN
+            MENUITEM "Copy Host",                   ID_EDIT_COPY_HOST
+            MENUITEM "Copy Rows",                   ID_EDIT_COPY_ROWS
+        END
+        POPUP "&View"
+        BEGIN
+            MENUITEM "&Details\t1",                 ID_POPUP_VIEW_DETAILS
+            MENUITEM "&Events\t2",                  ID_POPUP_VIEW_EVENTS
+            MENUITEM "&Files\t3",                   ID_POPUP_VIEW_FILES
+            MENUITEM "&Peers\t4",                   ID_POPUP_VIEW_PEERS
+            MENUITEM "Pieces\t5",                   ID_POPUP_VIEW_PIECES
+            MENUITEM "&Trackers\t6",                ID_POPUP_VIEW_TRACKERS
+            MENUITEM "Global Details\t7",           ID_POPUP_VIEW_GLOBAL_DETAILS
+            MENUITEM "Global Events\t8",            ID_POPUP_VIEW_GLOBAL_EVENTS
+            MENUITEM SEPARATOR
+            MENUITEM "Tray Icon",                   ID_POPUP_VIEW_TRAY_ICON
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Connect...",                  ID_POPUP_CONNECT
+        MENUITEM "Disconnect",                  ID_POPUP_DISCONNECT
+        MENUITEM "Block",                       ID_POPUP_BLOCK
+        MENUITEM "Options...\tCtrl+O",          ID_TOOLS_OPTIONS
+        MENUITEM "Profiles...\tCtrl+P",         ID_TOOLS_PROFILES
+        MENUITEM "Upload Rate Limit",           ID_POPUP_UPLOAD_RATE_LIMIT
+    END
+END
+
+IDR_MAINFRAME MENU 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New...\tCtrl+N",             ID_FILE_NEW
+        MENUITEM "&Open...\tInsert",            ID_FILE_OPEN
+        MENUITEM "&Close\tDelete",              ID_FILE_CLOSE
+        MENUITEM "&Delete",                     ID_FILE_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        POPUP "&Copy"
+        BEGIN
+            MENUITEM "Announce URL",                ID_EDIT_COPY_ANNOUNCE_URL
+            MENUITEM "Hash",                        ID_EDIT_COPY_HASH
+            MENUITEM "Host",                        ID_EDIT_COPY_HOST
+            MENUITEM "Rows",                        ID_EDIT_COPY_ROWS
+            MENUITEM "URL\tCtrl+C",                 ID_EDIT_COPY_URL
+        END
+        MENUITEM "&Paste URL\tCtrl+V",          ID_EDIT_PASTE_URL
+        MENUITEM SEPARATOR
+        MENUITEM "Select &All\tCtrl+A",         ID_EDIT_SELECT_ALL
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "Block List",                  ID_TOOLS_BLOCK_LIST
+        MENUITEM "&Options\tCtrl+O",            ID_TOOLS_OPTIONS
+        MENUITEM "&Profiles\tCtrl+P",           ID_TOOLS_PROFILES
+        MENUITEM "&Scheduler",                  ID_TOOLS_SCHEDULER
+        MENUITEM "&Trackers",                   ID_TOOLS_TRACKERS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Home Page",                  ID_HELP_HOME_PAGE
+        MENUITEM "&About",                      ID_HELP_ABOUT
+    END
+END
+
+IDR_TRAY MENU 
+BEGIN
+    POPUP "_POPUP_"
+    BEGIN
+        MENUITEM "&Options",                    ID_TOOLS_OPTIONS
+        MENUITEM "&Paused",                     ID_POPUP_PAUSED
+        MENUITEM "&Upload Rate Limit",          ID_POPUP_UPLOAD_RATE_LIMIT
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS 
+BEGIN
+    "1",            ID_POPUP_VIEW_DETAILS,  VIRTKEY, NOINVERT
+    "2",            ID_POPUP_VIEW_EVENTS,   VIRTKEY, NOINVERT
+    "3",            ID_POPUP_VIEW_FILES,    VIRTKEY, NOINVERT
+    "4",            ID_POPUP_VIEW_PEERS,    VIRTKEY, NOINVERT
+    "5",            ID_POPUP_VIEW_PIECES,   VIRTKEY, NOINVERT
+    "6",            ID_POPUP_VIEW_TRACKERS, VIRTKEY, NOINVERT
+    "7",            ID_POPUP_VIEW_GLOBAL_DETAILS, VIRTKEY, NOINVERT
+    "8",            ID_POPUP_VIEW_GLOBAL_EVENTS, VIRTKEY, NOINVERT
+    "C",            ID_EDIT_COPY_URL,       VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_TOOLS_OPTIONS,       VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_TOOLS_OPTIONS,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "P",            ID_TOOLS_PROFILES,      VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_TOOLS_PROFILES,      VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE_URL,      VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_FILE_CLOSE,          VIRTKEY, NOINVERT
+    VK_INSERT,      ID_FILE_OPEN,           VIRTKEY, NOINVERT
+    VK_RETURN,      ID_POPUP_EXPLORE,       VIRTKEY, NOINVERT
+    VK_RETURN,      ID_POPUP_TORRENT_OPTIONS, VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_OPTIONS DLGINIT
+BEGIN
+    IDC_PEER_ID, 0x403, 1, 0
+"\000" 
+    IDC_PEER_ID, 0x403, 9, 0
+0x4258, 0x2d54, 0x2d2d, 0x2d2d, "\000" 
+    IDC_USER_AGENT, 0x403, 1, 0
+"\000" 
+    IDC_USER_AGENT, 0x403, 11, 0
+0x4258, 0x2054, 0x6c43, 0x6569, 0x746e, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDP_SOCKETS_INIT_FAILED "Windows sockets initialization failed."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Dutch (Netherlands) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NLD)
+#ifdef _WIN32
+LANGUAGE LANG_DUTCH, SUBLANG_DUTCH
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\XBT Client.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Dutch (Netherlands) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\XBT Client.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
