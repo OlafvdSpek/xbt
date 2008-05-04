@@ -1,4 +1,4 @@
-!define VERSION "0.2.7"
+!define VERSION "0.2.8"
 
 Name "XBT Tracker ${VERSION}"
 Outfile "XBT_Tracker-${VERSION}.exe"
