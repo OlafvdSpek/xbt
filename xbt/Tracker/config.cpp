@@ -93,8 +93,11 @@ int Cconfig::set(const std::string& name, const std::string& value)
 	t_attributes<std::string>::iterator i = m_attributes_string.find(name);
 	if (i != m_attributes_string.end())
 		*i->second.value = value;
-	else if (name == "listen_ipa" && value != "*")
-		m_listen_ipas.insert(inet_addr(value.c_str()));
+	else if (name == "listen_ipa")
+	{
+		if (value != "*")
+			m_listen_ipas.insert(inet_addr(value.c_str()));
+	}
 	else
 		return set(name, atoi(value.c_str()));
 	return 0;
