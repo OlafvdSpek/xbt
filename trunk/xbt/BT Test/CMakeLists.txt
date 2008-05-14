@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 2.4)
 set(CMAKE_BUILD_TYPE release)
 include_directories(. ../misc)
 add_executable(
