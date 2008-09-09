@@ -239,7 +239,11 @@ void Cserver::accept(const Csocket& l)
 		}
 		t_deny_from_hosts::const_iterator i = m_deny_from_hosts.lower_bound(ntohl(a.sin_addr.s_addr));
 		if (i != m_deny_from_hosts.end() && ntohl(a.sin_addr.s_addr) >= i->second.begin)
+		{
+			m_stats.rejected_tcp++;
 			continue;
+		}
+		m_stats.accepted_tcp++;
 		if (s.blocking(false))
 			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 		std::auto_ptr<Cconnection> connection(new Cconnection(this, s, a));
@@ -848,6 +852,8 @@ std::string Cserver::statistics() const
 		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
 		+ "<tr><td>torrents<td align=right>" + n(torrents)
 		+ "<tr><td>"
+		+ "<tr><td>accepted tcp<td align=right>" + n(m_stats.accepted_tcp)
+		+ "<tr><td>rejected tcp<td align=right>" + n(m_stats.rejected_tcp)
 		+ "<tr><td>announced<td align=right>" + n(m_stats.announced());
 	if (m_stats.announced())
 	{
