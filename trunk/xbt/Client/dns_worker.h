@@ -15,7 +15,7 @@ private:
 
 	void run();
 
-	boost::condition m_condition;
+	boost::condition_variable m_condition;
 	boost::mutex m_mutex;
 	t_reverse_map m_reverse_map;
 	t_reverse_map_queue m_reverse_map_queue;
