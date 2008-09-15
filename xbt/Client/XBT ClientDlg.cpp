@@ -1815,7 +1815,7 @@ int compare_host_names(const std::string& a, const std::string& b)
 			b3 = b.substr(b2 + 1, b1 - b2);
 			b1 = b2 - 1;
 		}
-		if (int c = compare(a3, b3))
+		if (int c = icompare(a3, b3))
 			return c;
 	}
 	return a1 == -1 ? b1 == -1 ? 0 : -1 : 1;

@@ -77,6 +77,8 @@ void Ctransaction::send_connect(const_memory_range r)
 {
 	if (!m_server.config().m_anonymous_connect && !authenticate(r))
 		return;
+	if (read_int(8, r + uti_connection_id, r.end) != 0x41727101980ll)
+		return;
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_connect);
