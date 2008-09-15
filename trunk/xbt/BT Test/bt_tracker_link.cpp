@@ -74,11 +74,7 @@ int Cbt_tracker_link::pre_select(Cbt_file& f, fd_set* fd_read_set, fd_set* fd_wr
 		if (m_url.m_protocol == Cbt_tracker_url::tp_udp)
 		{
 			char d[utic_size];
-#ifdef WIN32
-			write_int(8, d + uti_connection_id, 0x41727101980);
-#else
 			write_int(8, d + uti_connection_id, 0x41727101980ll);
-#endif
 			write_int(4, d + uti_action, uta_connect);
 			write_int(4, d + uti_transaction_id, m_transaction_id = rand());
 			if (m_s.send(const_memory_range(d, utic_size)) != utic_size)
