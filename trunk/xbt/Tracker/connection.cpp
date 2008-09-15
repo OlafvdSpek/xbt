@@ -32,7 +32,7 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
 	return FD_ISSET(m_s, fd_read_set) && recv()
 		|| FD_ISSET(m_s, fd_write_set) && send()
-		|| m_server->time() - m_ctime > 15
+		|| m_server->time() - m_ctime > 10
 		|| m_state == 5 && m_r.empty();
 }
 
