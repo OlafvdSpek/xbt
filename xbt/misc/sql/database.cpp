@@ -57,7 +57,7 @@ Csql_result Cdatabase::query(const std::string& q)
 		throw exception(mysql_error(&m_handle));
 	}
 	MYSQL_RES* result = mysql_store_result(&m_handle);
-	if (!result)
+	if (!result && mysql_errno(&m_handle))
 		throw exception(mysql_error(&m_handle));
 	return Csql_result(result);
 }
