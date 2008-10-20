@@ -17,7 +17,7 @@ An experimental UDP tracker extension is also supported via announce URL udp://.
 <h2>MySQL</h2>
 
 The tracker stores stats in a MySQL database/table.
-Version >= 4.1 is required, >= 5 is recommended.
+Version >= 5 is required.
 Create a database (xbt) and a user (xbt) with password for the tracker and use these in the next step.
 Create the tables defined in xbt_tracker.sql.
 
