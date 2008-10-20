@@ -303,5 +303,5 @@ void Cconnection::process_events(int events)
 
 int Cconnection::run()
 {
-	return s() == INVALID_SOCKET || m_server->time() - m_ctime > 15;
+	return s() == INVALID_SOCKET || m_server->time() - m_ctime > 10;
 }
