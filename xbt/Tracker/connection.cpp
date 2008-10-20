@@ -267,7 +267,10 @@ void Cconnection::read(const std::string& v)
 	int r = sendmsg(m_s, &m, MSG_NOSIGNAL);
 #endif
 	if (r == SOCKET_ERROR)
-		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+	{
+		if (WSAGetLastError() != WSAECONNRESET)
+			std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+	}
 	else if (r != h.size() + s.size())
 	{
 #ifndef WIN32
