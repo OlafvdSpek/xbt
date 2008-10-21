@@ -142,6 +142,11 @@ int Cserver::run()
 		{
 			int prev_time = m_time;
 			m_time = ::time(NULL);
+			if (!r)
+			{
+				for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
+					i->process_events(EPOLLIN);
+			}
 			for (int i = 0; i < r; i++)
 				reinterpret_cast<Cclient*>(events[i].data.ptr)->process_events(events[i].events);
 			if (m_time == prev_time)
