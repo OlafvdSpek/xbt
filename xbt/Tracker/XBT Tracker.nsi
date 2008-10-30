@@ -19,7 +19,6 @@ Section "Install"
 	File "release\XBT Tracker.exe"
 	File xbt_tracker.conf.default
 	File xbt_tracker.sql
-	File zlib1.dll
 	SetOverwrite off
 	File /oname=xbt_tracker.conf xbt_tracker.conf.default
 	SetOutPath "$INSTDIR\htdocs"
