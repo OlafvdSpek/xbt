@@ -81,7 +81,7 @@ Enter the following commands in a terminal.
 
 Enter the following commands in a terminal.
 <pre>
-kill `cat xbt_tracker.pid`
+killall xbt_tracker
 </pre>
 <hr>
 <h2>Configuration</h2>
