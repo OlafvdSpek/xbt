@@ -40,6 +40,6 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client"
 	DeleteRegKey HKLM "Software\XBT\Client"
 	DeleteRegKey /ifempty HKLM "Software\XBT"
-	RMDir /r "$INSTDIR"
+	RMDir /r "$PROGRAMFILES\XBT\Client"
 	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
