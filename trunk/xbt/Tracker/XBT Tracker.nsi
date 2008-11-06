@@ -40,6 +40,6 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker"
 	DeleteRegKey HKLM "Software\XBT\Tracker"
 	DeleteRegKey /ifempty HKLM "Software\XBT"
-	RMDir "$INSTDIR"
+	RMDir /r "$PROGRAMFILES\XBT\Tracker"
 	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
