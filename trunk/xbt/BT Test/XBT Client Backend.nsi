@@ -34,6 +34,6 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Client Backend"
 	DeleteRegKey HKLM "Software\XBT\Client Backend"
 	DeleteRegKey /ifempty HKLM "Software\XBT"
-	RMDir /r "$INSTDIR"
+	RMDir /r "$PROGRAMFILES\XBT\Client Backend"
 	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
