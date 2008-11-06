@@ -1,4 +1,4 @@
-!define VERSION "0.2.8"
+!define VERSION "0.2.9"
 
 Name "XBT Tracker ${VERSION}"
 Outfile "XBT_Tracker-${VERSION}.exe"
@@ -40,6 +40,6 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\XBT Tracker"
 	DeleteRegKey HKLM "Software\XBT\Tracker"
 	DeleteRegKey /ifempty HKLM "Software\XBT"
-	RMDir /r "$INSTDIR"
+	RMDir "$INSTDIR"
 	RMDir "$PROGRAMFILES\XBT"
 SectionEnd
