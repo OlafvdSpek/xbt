@@ -16,6 +16,7 @@
 
 #include <afxsock.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/foreach.hpp>
 #include <bt_misc.h>
 #include <cassert>
 #include <fstream>
