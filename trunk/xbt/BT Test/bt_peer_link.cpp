@@ -633,10 +633,10 @@ void Cbt_peer_link::write_peers()
 	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_peers;
 	w = write_int(2, w, m_f->local_port());
-	for (Cbt_file::t_peers::const_iterator i = m_f->m_peers.begin(); i != m_f->m_peers.end(); i++)
+	BOOST_FOREACH(Cbt_file::t_peers::const_reference i, m_f->m_peers)
 	{
-		w = write_int(4, w, ntohl(i->m_a.sin_addr.s_addr));
-		w = write_int(2, w, ntohs(i->m_a.sin_port));
+		w = write_int(4, w, ntohl(i.m_a.sin_addr.s_addr));
+		w = write_int(2, w, ntohs(i.m_a.sin_port));
 	}
 	write(d);
 	m_peers_stime = time();
