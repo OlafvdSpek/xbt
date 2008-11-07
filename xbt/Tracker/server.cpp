@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "server.h"
 
+#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <sql/sql_query.h>
 #include <iostream>
@@ -37,15 +38,15 @@ int Cserver::run()
 	}
 	t_tcp_sockets lt;
 	t_udp_sockets lu;
-	for (Cconfig::t_listen_ipas::const_iterator j = m_config.m_listen_ipas.begin(); j != m_config.m_listen_ipas.end(); j++)
+	BOOST_FOREACH(Cconfig::t_listen_ipas::reference j, m_config.m_listen_ipas)
 	{
-		for (Cconfig::t_listen_ports::const_iterator i = m_config.m_listen_ports.begin(); i != m_config.m_listen_ports.end(); i++)
+		BOOST_FOREACH(Cconfig::t_listen_ports::reference i, m_config.m_listen_ports)
 		{
 			Csocket l;
 			if (l.open(SOCK_STREAM) == INVALID_SOCKET)
 				std::cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-				l.bind(*j, htons(*i)))
+				l.bind(j, htons(i)))
 				std::cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else if (l.listen())
 				std::cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
@@ -67,13 +68,13 @@ int Cserver::run()
 			}
 			return 1;
 		}
-		for (Cconfig::t_listen_ports::const_iterator i = m_config.m_listen_ports.begin(); i != m_config.m_listen_ports.end(); i++)
+		BOOST_FOREACH(Cconfig::t_listen_ports::reference i, m_config.m_listen_ports)
 		{
 			Csocket l;
 			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
 				std::cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-				l.bind(*j, htons(*i)))
+				l.bind(j, htons(i)))
 				std::cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else
 			{
@@ -144,8 +145,8 @@ int Cserver::run()
 			m_time = ::time(NULL);
 			if (!r)
 			{
-				for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
-					i->process_events(EPOLLIN);
+				BOOST_FOREACH(t_tcp_sockets::reference i, lt)
+					i.process_events(EPOLLIN);
 			}
 			for (int i = 0; i < r; i++)
 				reinterpret_cast<Cclient*>(events[i].data.ptr)->process_events(events[i].events);
@@ -164,20 +165,20 @@ int Cserver::run()
 		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
 		int n = 0;
-		for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); i++)
+		BOOST_FOREACH(t_connections::reference i, m_connections)
 		{
-			int z = i->pre_select(&fd_read_set, &fd_write_set);
+			int z = i.pre_select(&fd_read_set, &fd_write_set);
 			n = std::max(n, z);
 		}
-		for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
+		BOOST_FOREACH(t_tcp_sockets::reference i, lt)
 		{
-			FD_SET(i->s(), &fd_read_set);
-			n = std::max<int>(n, i->s());
+			FD_SET(i.s(), &fd_read_set);
+			n = std::max<int>(n, i.s());
 		}
-		for (t_udp_sockets::iterator i = lu.begin(); i != lu.end(); i++)
+		BOOST_FOREACH(t_udp_sockets::reference i, lu)
 		{
-			FD_SET(i->s(), &fd_read_set);
-			n = std::max<int>(n, i->s());
+			FD_SET(i.s(), &fd_read_set);
+			n = std::max<int>(n, i.s());
 		}
 		timeval tv;
 		tv.tv_sec = 5;
@@ -187,15 +188,15 @@ int Cserver::run()
 		else
 		{
 			m_time = ::time(NULL);
-			for (t_tcp_sockets::iterator i = lt.begin(); i != lt.end(); i++)
+			BOOST_FOREACH(t_tcp_sockets::reference i, lt)
 			{
-				if (FD_ISSET(i->s(), &fd_read_set))
-					accept(i->s());
+				if (FD_ISSET(i.s(), &fd_read_set))
+					accept(i.s());
 			}
-			for (t_udp_sockets::iterator i = lu.begin(); i != lu.end(); i++)
+			BOOST_FOREACH(t_udp_sockets::reference i, lu)
 			{
-				if (FD_ISSET(i->s(), &fd_read_set))
-					Ctransaction(*this, i->s()).recv();
+				if (FD_ISSET(i.s(), &fd_read_set))
+					Ctransaction(*this, i.s()).recv();
 			}
 			for (t_connections::iterator i = m_connections.begin(); i != m_connections.end(); )
 			{
@@ -294,8 +295,8 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 	else if (v.m_left && user && user->peers_limit)
 	{
 		int c = 0;
-		for (t_peers::const_iterator j = file.peers.begin(); j != file.peers.end(); j++)
-			c += j->second.left && j->second.uid == user->uid;
+		BOOST_FOREACH(t_peers::reference j, file.peers)
+			c += j.second.left && j.second.uid == user->uid;
 		if (c >= user->peers_limit)
 			return bts_peers_limit_reached;
 	}
@@ -379,8 +380,8 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 	}
 	else
 	{
-		for (t_candidates::const_iterator i = candidates.begin(); i != candidates.end(); i++)
-			d.append(i->begin(), i->end());
+		BOOST_FOREACH(t_candidates::reference i, candidates)
+			d.append(i.begin(), i.end());
 	}
 	return d;
 }
@@ -449,9 +450,9 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 	else
 	{
 		m_stats.scraped_http++;
-		for (Ctracker_input::t_info_hashes::const_iterator j = ti.m_info_hashes.begin(); j != ti.m_info_hashes.end(); j++)
+		BOOST_FOREACH(Ctracker_input::t_info_hashes::const_reference j, ti.m_info_hashes)
 		{
-			t_files::const_iterator i = m_files.find(*j);
+			t_files::const_iterator i = m_files.find(j);
 			if (i != m_files.end())
 				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
 		}

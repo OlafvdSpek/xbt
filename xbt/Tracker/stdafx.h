@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/foreach.hpp>
 #include <cassert>
 #include <ctime>
 #include <fstream>
