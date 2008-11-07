@@ -282,15 +282,15 @@ int Cbvalue::pre_read() const
 	case vt_list:
 		{
 			int v = 2;
-			for (t_list::const_iterator i = m_list->begin(); i != m_list->end(); i++)
-				v += i->pre_read();
+			BOOST_FOREACH(t_list::const_reference i, *m_list)
+				v += i.pre_read();
 			return v;
 		}
 	case vt_dictionary:
 		{
 			int v = 2;
-			for (t_map::const_iterator i = m_map->begin(); i != m_map->end(); i++)
-				v += n(i->first.size()).size() + i->first.size() + i->second.pre_read() + 1;
+			BOOST_FOREACH(t_map::const_reference i, *m_map)
+				v += n(i.first.size()).size() + i.first.size() + i.second.pre_read() + 1;
 			return v;
 		}
 	}

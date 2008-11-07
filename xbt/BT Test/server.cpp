@@ -333,9 +333,9 @@ int Cserver::run()
 		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
 		bool hash = true;
-		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		BOOST_FOREACH(t_files::reference i, m_files)
 		{
-			if (hash && i->hash())
+			if (hash && i.hash())
 				hash = false;
 		}
 		int n = pre_select(&fd_read_set, &fd_write_set, &fd_except_set);
@@ -431,8 +431,8 @@ int Cserver::run()
 			std::ofstream os(conf_fname().c_str());
 			os << m_config;
 			save_state(false).save(state_fname());
-			for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-				i->close();
+			BOOST_FOREACH(t_files::reference i, m_files)
+				i.close();
 		}
 		if (time() - m_update_chokes_time > 10)
 			update_chokes();
@@ -457,34 +457,28 @@ int Cserver::run()
 int Cserver::pre_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_except_set)
 {
 	int n = 0;
+	BOOST_FOREACH(t_admins::reference i, m_admins)
 	{
-		for (t_admins::iterator i = m_admins.begin(); i != m_admins.end(); i++)
-		{
-			int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
-			n = max(n, z);
-		}
-	}
-	{
-		bool hash = true;
-		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		{
-			if (hash && i->hash())
-				hash = false;
-			int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
-			n = max(n, z);
-		}
-	}
-	for (t_http_links::iterator i = m_http_links.begin(); i != m_http_links.end(); i++)
-	{
-		int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
+		int z = i.pre_select(fd_read_set, fd_write_set, fd_except_set);
 		n = max(n, z);
 	}
+	bool hash = true;
+	BOOST_FOREACH(t_files::reference  i, m_files)
 	{
-		for (t_links::iterator i = m_links.begin(); i != m_links.end(); i++)
-		{
-			int z = i->pre_select(fd_read_set, fd_write_set, fd_except_set);
-			n = max(n, z);
-		}
+		if (hash && i.hash())
+			hash = false;
+		int z = i.pre_select(fd_read_set, fd_write_set, fd_except_set);
+		n = max(n, z);
+	}
+	BOOST_FOREACH(t_http_links::reference i, m_http_links)
+	{
+		int z = i.pre_select(fd_read_set, fd_write_set, fd_except_set);
+		n = max(n, z);
+	}
+	BOOST_FOREACH(t_links::reference i, m_links)
+	{
+		int z = i.pre_select(fd_read_set, fd_write_set, fd_except_set);
+		n = max(n, z);
 	}
 	return n;
 }
@@ -512,8 +506,8 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 		else
 			i = m_links.erase(i);
 	}
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->post_select(fd_read_set, fd_write_set, fd_except_set);
+	BOOST_FOREACH(t_files::reference i, m_files)
+		i.post_select(fd_read_set, fd_write_set, fd_except_set);
 	if (m_update_send_quotas_time != time())
 		m_send_quota = m_config.m_upload_rate;
 	m_update_send_quotas_time = time();
@@ -521,11 +515,11 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 		return;
 	typedef std::multimap<int, Cbt_peer_link*> t_links;
 	t_links links;
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::reference i, m_files)
 	{
-		if (i->m_hasher)
+		if (i.m_hasher)
 			continue;
-		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); )
+		for (Cbt_file::t_peers::iterator j = i.m_peers.begin(); j != i.m_peers.end(); )
 		{
 			int q = INT_MAX;
 			if (m_config.m_upload_rate && m_upload_rate_enabled)
@@ -537,7 +531,7 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 			else if (j->send(q))
 			{
 				j->close();
-				j = i->m_peers.erase(j);
+				j = i.m_peers.erase(j);
 			}
 			else
 				j++;
@@ -563,12 +557,12 @@ void Cserver::post_select(fd_set* fd_read_set, fd_set* fd_write_set, fd_set* fd_
 		}
 		m_send_quota += send_quota_left;
 	}
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::reference i, m_files)
 	{
-		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); )
+		for (Cbt_file::t_peers::iterator j = i.m_peers.begin(); j != i.m_peers.end(); )
 		{
 			if (j->m_s == INVALID_SOCKET)
-				j = i->m_peers.erase(j);
+				j = i.m_peers.erase(j);
 			else
 				j++;
 		}
@@ -582,21 +576,21 @@ void Cserver::stop()
 
 int Cserver::pre_file_dump(const std::string& id, int flags) const
 {
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::const_reference i, m_files)
 	{
-		if (i->m_info_hash == id)
-			return i->pre_dump(flags);
+		if (i.m_info_hash == id)
+			return i.pre_dump(flags);
 	};
 	return 0;
 }
 
 void Cserver::file_dump(Cstream_writer& w, const std::string& id, int flags) const
 {
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::const_reference i, m_files)
 	{
-		if (i->m_info_hash == id)
+		if (i.m_info_hash == id)
 		{
-			i->dump(w, flags);
+			i.dump(w, flags);
 			return;
 		}
 	}
@@ -605,30 +599,30 @@ void Cserver::file_dump(Cstream_writer& w, const std::string& id, int flags) con
 int Cserver::pre_dump(int flags) const
 {
 	int size = 12;
-	for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
-		size += i->pre_dump();
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-		size += i->pre_dump(flags);
+	BOOST_FOREACH(Calerts::const_reference i, m_alerts)
+		size += i.pre_dump();
+	BOOST_FOREACH(t_files::const_reference i, m_files)
+		size += i.pre_dump(flags);
 	return size;
 }
 
 void Cserver::dump(Cstream_writer& w, int flags) const
 {
 	w.write_int(4, m_alerts.size());
-	for (Calerts::const_iterator i = m_alerts.begin(); i != m_alerts.end(); i++)
-		i->dump(w);
+	BOOST_FOREACH(Calerts::const_reference i, m_alerts)
+		i.dump(w);
 	w.write_int(4, m_files.size());
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->dump(w, flags);
+	BOOST_FOREACH(t_files::const_reference i, m_files)
+		i.dump(w, flags);
 	w.write_int(4, m_start_time);
 }
 
 void Cserver::insert_peer(const_memory_range r, const sockaddr_in& a, const Csocket& s)
 {
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::reference i, m_files)
 	{
-		if (i->m_info_hash == r.sub_range(hs_info_hash, 20).string())
-			i->insert_peer(r, a, s);
+		if (i.m_info_hash == r.sub_range(hs_info_hash, 20).string())
+			i.insert_peer(r, a, s);
 	}
 }
 
@@ -865,8 +859,8 @@ int Cserver::open(const Cvirtual_binary& info, const std::string& name)
 	info.save(torrents_dir() + '/' + f.m_name + ' ' + hex_encode(f.m_info_hash) + ".torrent");
 	if (Cbt_file* i = find_torrent(f.m_info_hash))
 	{
-		for (Cbt_file::t_trackers::const_iterator j = f.m_trackers.begin(); j != f.m_trackers.end(); j++)
-			i->add_tracker(*j);
+		BOOST_FOREACH(Cbt_file::t_trackers::const_reference j, f.m_trackers)
+			i->add_tracker(j);
 		return 2;
 	}
 	if (!name.empty())
@@ -958,15 +952,13 @@ Cvirtual_binary Cserver::save_state(bool intermediate)
 	Clock l(m_cs);
 	Cvirtual_binary d;
 	int cb_d = 8;
-	{
-		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-			cb_d += i->pre_save_state(intermediate);
-	}
+	BOOST_FOREACH(t_files::const_reference i, m_files)
+		cb_d += i.pre_save_state(intermediate);
 	Cstream_writer w(d.write_start(cb_d));
 	w.write_int(4, g_state_version);
 	w.write_int(4, m_files.size());
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->save_state(w, intermediate);
+	BOOST_FOREACH(t_files::const_reference i, m_files)
+		i.save_state(w, intermediate);
 	assert(w.w() == d.end());
 	m_save_state_time = time();
 	return d;
@@ -1011,23 +1003,23 @@ void Cserver::update_chokes()
 	t_links0 links0;
 	t_links1 links1;
 	t_links1 links2;
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::reference i, m_files)
 	{
-		for (Cbt_file::t_peers::iterator j = i->m_peers.begin(); j != i->m_peers.end(); j++)
+		BOOST_FOREACH(Cbt_file::t_peers::reference j, i.m_peers)
 		{
-			if (j->m_state != 3)
+			if (j.m_state != 3)
 				continue;
-			j->choked(true);
-			if (i->state() != Cbt_file::s_running || !j->m_left)
+			j.choked(true);
+			if (i.state() != Cbt_file::s_running || !j.m_left)
 				;
 			else if (!m_config.m_upload_slots)
-				j->choked(false);
-			else if (j->m_down_counter.rate(time()) > 256)
-				links0.insert(t_links0::value_type(j->m_down_counter.rate(time()), &*j));
-			else if (j->m_remote_interested)
-				(j->m_local_interested ? links1 : links2).push_back(&*j);
+				j.choked(false);
+			else if (j.m_down_counter.rate(time()) > 256)
+				links0.insert(t_links0::value_type(j.m_down_counter.rate(time()), &j));
+			else if (j.m_remote_interested)
+				(j.m_local_interested ? links1 : links2).push_back(&j);
 		}
-		files_limits[&*i] = std::make_pair(i->upload_slots_min(), i->upload_slots_max() ? i->upload_slots_max() : INT_MAX);
+		files_limits[&i] = std::make_pair(i.upload_slots_min(), i.upload_slots_max() ? i.upload_slots_max() : INT_MAX);
 	}
 	random_shuffle(links1.begin(), links1.end());
 	random_shuffle(links2.begin(), links2.end());
@@ -1081,13 +1073,13 @@ void Cserver::update_states()
 {
 	while (below_torrent_limit())
 	{
-		t_files::iterator best = m_files.end();
-		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		Cbt_file* best = NULL;
+		BOOST_FOREACH(t_files::reference i, m_files)
 		{
-			if (i->state() == Cbt_file::s_queued && (best == m_files.end() || i->priority() > best->priority() || i->priority() == best->priority() && i->size() < best->size()))
-				best = i;
+			if (i.state() == Cbt_file::s_queued && (!best || i.priority() > best->priority() || i.priority() == best->priority() && i.size() < best->size()))
+				best = &i;
 		}
-		if (best == m_files.end())
+		if (!best)
 			break;
 		best->open();
 	}
@@ -1139,8 +1131,8 @@ bool Cserver::below_peer_limit() const
 	if (!m_config.m_peer_limit)
 		return true;
 	int c = 0;
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-		c += i->m_peers.size();
+	BOOST_FOREACH(t_files::const_reference i, m_files)
+		c += i.m_peers.size();
 	return c < m_config.m_peer_limit;
 }
 
@@ -1149,8 +1141,8 @@ bool Cserver::below_torrent_limit() const
 	if (!m_config.m_torrent_limit)
 		return true;
 	int c = 0;
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
-		c += i->is_open();
+	BOOST_FOREACH(t_files::const_reference i, m_files)
+		c += i.is_open();
 	return c < m_config.m_torrent_limit;
 }
 
@@ -1202,29 +1194,29 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	else if (action == bts_get_status)
 	{
 		Cbvalue files(Cbvalue::vt_dictionary);
-		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		BOOST_FOREACH(t_files::const_reference i, m_files)
 		{
 			Cbvalue events;
-			for (Calerts::const_reverse_iterator j = i->m_alerts.rbegin(); j != i->m_alerts.rend(); j++)
+			for (Calerts::const_reverse_iterator j = i.m_alerts.rbegin(); j != i.m_alerts.rend(); j++)
 				events.l(Cbvalue().d(bts_time, j->time()).d(bts_message, j->message()));
 			Cbvalue file;
-			file.d(bts_complete, i->c_seeders());
-			file.d(bts_complete_total, i->mc_seeders_total);
+			file.d(bts_complete, i.c_seeders());
+			file.d(bts_complete_total, i.mc_seeders_total);
 			file.d(bts_events, events);
-			file.d(bts_incomplete, i->c_leechers());
-			file.d(bts_incomplete_total, i->mc_leechers_total);
-			file.d(bts_left, i->m_left);
-			file.d(bts_priority, i->priority());
-			file.d(bts_size, i->m_size);
-			file.d(bts_state, i->state());
-			file.d(bts_total_downloaded, i->m_total_downloaded);
-			file.d(bts_total_uploaded, i->m_total_uploaded);
-			file.d(bts_down_rate, i->m_down_counter.rate(time()));
-			file.d(bts_up_rate, i->m_up_counter.rate(time()));
-			file.d(bts_name, i->m_name);
-			file.d(bts_completed_at, i->m_completed_at);
-			file.d(bts_started_at, i->m_started_at);
-			files.d(i->m_info_hash, file);
+			file.d(bts_incomplete, i.c_leechers());
+			file.d(bts_incomplete_total, i.mc_leechers_total);
+			file.d(bts_left, i.m_left);
+			file.d(bts_priority, i.priority());
+			file.d(bts_size, i.m_size);
+			file.d(bts_state, i.state());
+			file.d(bts_total_downloaded, i.m_total_downloaded);
+			file.d(bts_total_uploaded, i.m_total_uploaded);
+			file.d(bts_down_rate, i.m_down_counter.rate(time()));
+			file.d(bts_up_rate, i.m_up_counter.rate(time()));
+			file.d(bts_name, i.m_name);
+			file.d(bts_completed_at, i.m_completed_at);
+			file.d(bts_started_at, i.m_started_at);
+			files.d(i.m_info_hash, file);
 		}
 		d.d(bts_files, files);
 		d.d(bts_version, xbt_version2a(version()));
@@ -1295,10 +1287,10 @@ void Cserver::check_remote_links()
 	m_check_remote_links_time = time();
 	int c_local_links = 0;
 	int c_remote_links = 0;
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::const_reference i, m_files)
 	{
-		c_local_links += i->c_local_links();
-		c_remote_links += i->c_remote_links();
+		c_local_links += i.c_local_links();
+		c_remote_links += i.c_remote_links();
 	}
 	if (c_remote_links || c_local_links < 10)
 		return;
@@ -1349,18 +1341,18 @@ int Cserver::peer_disconnect(const std::string& id, int ipa)
 int Cserver::peer_block(int ipa)
 {
 	Clock l(m_cs);
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->peer_disconnect(ipa);
+	BOOST_FOREACH(t_files::reference i, m_files)
+		i.peer_disconnect(ipa);
 	m_block_list.insert(ipa);
 	return 0;
 }
 
 Cbt_file* Cserver::find_torrent(const std::string& id)
 {
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::reference i, m_files)
 	{
-		if (i->m_info_hash == id)
-			return &*i;
+		if (i.m_info_hash == id)
+			return &i;
 	}
 	return NULL;
 }

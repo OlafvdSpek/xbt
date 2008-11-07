@@ -76,13 +76,13 @@ int Cbt_piece::write(int offset, const_memory_range s)
 bool Cbt_piece::check_peer(Cbt_peer_link* peer, int time_out)
 {
 	bool found = false;
-	for (t_sub_pieces::iterator i = m_sub_pieces.begin(); i != m_sub_pieces.end(); i++)
+	BOOST_FOREACH(t_sub_pieces::reference i, m_sub_pieces)
 	{
-		Cbt_sub_piece::t_peers::const_iterator j = i->m_peers.find(peer);
-		if (j != i->m_peers.end() && time(NULL) - j->second > time_out)
+		Cbt_sub_piece::t_peers::const_iterator j = i.m_peers.find(peer);
+		if (j != i.m_peers.end() && time(NULL) - j->second > time_out)
 		{
-			i->m_peers.erase(peer);
-			if (i->m_peers.empty())
+			i.m_peers.erase(peer);
+			if (i.m_peers.empty())
 				mc_unrequested_sub_pieces++;
 			continue;
 		}
