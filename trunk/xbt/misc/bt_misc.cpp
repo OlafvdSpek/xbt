@@ -14,19 +14,19 @@ std::string escape_string(const std::string& v)
 {
 	std::string w;
 	w.reserve(v.length());
-	for (size_t i = 0; i < v.length(); i++)
+	BOOST_FOREACH(char i, v)
 	{
-		if (isgraph(v[i]))
-			w += v[i];
+		if (isgraph(i & 0xff))
+			w += i;
 		else
 		{
-			switch (v[i])
+			switch (i)
 			{
 			case '\0':
 				w += "\\0";
 				break;
 			default:
-				w += "\\x" + hex_encode(2, v[i]);
+				w += "\\x" + hex_encode(2, i);
 			}
 		}
 	}
@@ -105,16 +105,16 @@ std::string hex_encode(const_memory_range v)
 std::string js_encode(const std::string& v)
 {
 	std::string r;
-	for (size_t i = 0; i < v.length(); i++)
+	BOOST_FOREACH(int i, v)
 	{
-		switch (v[i])
+		switch (i)
 		{
 		case '\"':
 		case '\'':
 		case '\\':
 			r += '\\';
 		default:
-			r += v[i];
+			r += i;
 		}
 	}
 	return r;
@@ -151,9 +151,8 @@ std::string uri_encode(const std::string& v)
 {
 	std::string r;
 	r.reserve(v.length());
-	for (size_t i = 0; i < v.length(); i++)
+	BOOST_FOREACH(char c, v)
 	{
-		char c = v[i];
 		if (isalpha(c & 0xff) || isdigit(c & 0xff))
 			r += c;
 		else

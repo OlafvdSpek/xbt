@@ -38,9 +38,9 @@ int Cserver::run()
 	}
 	t_tcp_sockets lt;
 	t_udp_sockets lu;
-	BOOST_FOREACH(Cconfig::t_listen_ipas::reference j, m_config.m_listen_ipas)
+	BOOST_FOREACH(Cconfig::t_listen_ipas::const_reference j, m_config.m_listen_ipas)
 	{
-		BOOST_FOREACH(Cconfig::t_listen_ports::reference i, m_config.m_listen_ports)
+		BOOST_FOREACH(Cconfig::t_listen_ports::const_reference i, m_config.m_listen_ports)
 		{
 			Csocket l;
 			if (l.open(SOCK_STREAM) == INVALID_SOCKET)
@@ -68,7 +68,7 @@ int Cserver::run()
 			}
 			return 1;
 		}
-		BOOST_FOREACH(Cconfig::t_listen_ports::reference i, m_config.m_listen_ports)
+		BOOST_FOREACH(Cconfig::t_listen_ports::const_reference i, m_config.m_listen_ports)
 		{
 			Csocket l;
 			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
@@ -356,13 +356,13 @@ std::string Cserver::t_file::select_peers(const Ctracker_input& ti) const
 	typedef std::vector<boost::array<char, 6> > t_candidates;
 
 	t_candidates candidates;
-	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
+	BOOST_FOREACH(t_peers::const_reference i, peers)
 	{
-		if (!ti.m_left && !i->second.left)
+		if (!ti.m_left && !i.second.left)
 			continue;
 		boost::array<char, 6> v;
-		memcpy(&v.front(), &i->first.host_, 4);
-		memcpy(&v.front() + 4, &i->second.port, 2);
+		memcpy(&v.front(), &i.first.host_, 4);
+		memcpy(&v.front() + 4, &i.second.port, 2);
 		candidates.push_back(v);
 	}
 	size_t c = ti.m_num_want < 0 ? 50 : std::min(ti.m_num_want, 50);
@@ -417,8 +417,8 @@ void Cserver::t_file::clean_up(time_t t, Cserver& server)
 
 void Cserver::clean_up()
 {
-	for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
-		i->second.clean_up(time() - static_cast<int>(1.5 * m_config.m_announce_interval), *this);
+	BOOST_FOREACH(t_files::reference i, m_files)
+		i.second.clean_up(time() - static_cast<int>(1.5 * m_config.m_announce_interval), *this);
 	m_clean_up_time = time();
 }
 
@@ -441,10 +441,10 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 	{
 		m_stats.scraped_full++;
 		d.reserve(90 * m_files.size());
-		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		BOOST_FOREACH(t_files::reference i, m_files)
 		{
-			if (i->second.leechers || i->second.seeders)
-				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
+			if (i.second.leechers || i.second.seeders)
+				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i.first % i.second.seeders % i.second.completed % i.second.leechers).str();
 		}
 	}
 	else
@@ -472,8 +472,8 @@ void Cserver::read_db_deny_from_hosts()
 	try
 	{
 		Csql_result result = Csql_query(m_database, "select begin, end from ?").p_name(table_name(table_deny_from_hosts)).execute();
-		for (t_deny_from_hosts::iterator i = m_deny_from_hosts.begin(); i != m_deny_from_hosts.end(); i++)
-			i->second.marked = true;
+		BOOST_FOREACH(t_deny_from_hosts::reference i, m_deny_from_hosts)
+			i.second.marked = true;
 		for (Csql_row row; row = result.fetch_row(); )
 		{
 			t_deny_from_host& deny_from_host = m_deny_from_hosts[row[1].i()];
@@ -533,10 +533,10 @@ void Cserver::read_db_files_sql()
 				t_files::iterator i = m_files.find(row[0].s());
 				if (i != m_files.end())
 				{
-					for (t_peers::iterator j = i->second.peers.begin(); j != i->second.peers.end(); j++)
+					BOOST_FOREACH(t_peers::reference j, i->second.peers)
 					{
-						if (t_user* user = find_user_by_uid(j->second.uid))
-							(j->second.left ? user->incompletes : user->completes)--;
+						if (t_user* user = find_user_by_uid(j.second.uid))
+							(j.second.left ? user->incompletes : user->completes)--;
 					}
 					m_files.erase(i);
 				}
@@ -599,8 +599,8 @@ void Cserver::read_db_users()
 		q.p_name(column_name(column_users_uid));
 		q.p_name(table_name(table_users));
 		Csql_result result = q.execute();
-		for (t_users::iterator i = m_users.begin(); i != m_users.end(); i++)
-			i->second.marked = true;
+		BOOST_FOREACH(t_users::reference i, m_users)
+			i.second.marked = true;
 		m_users_names.clear();
 		m_users_torrent_passes.clear();
 		for (Csql_row row; row = result.fetch_row(); )
@@ -654,14 +654,14 @@ void Cserver::write_db_files()
 	try
 	{
 		std::string buffer;
-		for (t_files::iterator i = m_files.begin(); i != m_files.end(); i++)
+		BOOST_FOREACH(t_files::reference i, m_files)
 		{
-			t_file& file = i->second;
+			t_file& file = i.second;
 			if (!file.dirty)
 				continue;
 			if (!file.fid)
 			{
-				Csql_query(m_database, "insert into ? (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())").p_name(table_name(table_files)).p(i->first).execute();
+				Csql_query(m_database, "insert into ? (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())").p_name(table_name(table_files)).p(i.first).execute();
 				file.fid = m_database.insert_id();
 			}
 			buffer += Csql_query(m_database, "(?,?,?,?),").p(file.leechers).p(file.seeders).p(file.completed).p(file.fid).read();
@@ -793,14 +793,14 @@ void Cserver::read_config()
 std::string Cserver::t_file::debug() const
 {
 	std::string page;
-	for (t_peers::const_iterator i = peers.begin(); i != peers.end(); i++)
+	BOOST_FOREACH(t_peers::const_reference i, peers)
 	{
-		page += "<tr><td>" + Csocket::inet_ntoa(i->first.host_)
-			+ "<td align=right>" + n(ntohs(i->second.port))
-			+ "<td align=right>" + n(i->second.uid)
-			+ "<td align=right>" + n(i->second.left)
-			+ "<td align=right>" + n(::time(NULL) - i->second.mtime)
-			+ "<td>" + hex_encode(const_memory_range(i->second.peer_id.begin(), i->second.peer_id.end()));
+		page += "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
+			+ "<td align=right>" + n(ntohs(i.second.port))
+			+ "<td align=right>" + n(i.second.uid)
+			+ "<td align=right>" + n(i.second.left)
+			+ "<td align=right>" + n(::time(NULL) - i.second.mtime)
+			+ "<td>" + hex_encode(const_memory_range(i.second.peer_id.begin(), i.second.peer_id.end()));
 	}
 	return page;
 }
@@ -815,18 +815,18 @@ std::string Cserver::debug(const Ctracker_input& ti) const
 	page += "<table>";
 	if (ti.m_info_hash.empty())
 	{
-		for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+		BOOST_FOREACH(t_files::const_reference i, m_files)
 		{
-			if (!i->second.leechers && !i->second.seeders)
+			if (!i.second.leechers && !i.second.seeders)
 				continue;
-			leechers += i->second.leechers;
-			seeders += i->second.seeders;
+			leechers += i.second.leechers;
+			seeders += i.second.seeders;
 			torrents++;
-			page += "<tr><td align=right>" + n(i->second.fid)
-				+ "<td><a href=\"?info_hash=" + uri_encode(i->first) + "\">" + hex_encode(i->first) + "</a>"
-				+ "<td>" + (i->second.dirty ? '*' : ' ')
-				+ "<td align=right>" + n(i->second.leechers)
-				+ "<td align=right>" + n(i->second.seeders);
+			page += "<tr><td align=right>" + n(i.second.fid)
+				+ "<td><a href=\"?info_hash=" + uri_encode(i.first) + "\">" + hex_encode(i.first) + "</a>"
+				+ "<td>" + (i.second.dirty ? '*' : ' ')
+				+ "<td align=right>" + n(i.second.leechers)
+				+ "<td align=right>" + n(i.second.seeders);
 		}
 	}
 	else
@@ -846,11 +846,11 @@ std::string Cserver::statistics() const
 	int leechers = 0;
 	int seeders = 0;
 	int torrents = 0;
-	for (t_files::const_iterator i = m_files.begin(); i != m_files.end(); i++)
+	BOOST_FOREACH(t_files::const_reference i, m_files)
 	{
-		leechers += i->second.leechers;
-		seeders += i->second.seeders;
-		torrents += i->second.leechers || i->second.seeders;
+		leechers += i.second.leechers;
+		seeders += i.second.seeders;
+		torrents += i.second.leechers || i.second.seeders;
 	}
 	time_t t = time();
 	page += "<table><tr><td>leechers<td align=right>" + n(leechers)
