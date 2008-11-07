@@ -209,12 +209,12 @@ void Cbt_peer_link::write(const Cvirtual_binary& s, bool user_data)
 int Cbt_peer_link::cb_write_buffer() const
 {
 	int cb = 0;
-	for (t_write_buffer::const_iterator i = m_write_b.begin(); i != m_write_b.end(); i++)
-		cb += i->m_s.size();
+	BOOST_FOREACH(t_write_buffer::const_reference i, m_write_b)
+		cb += i.m_s.size();
 	if (!m_local_choked)
 	{
-		for (t_remote_requests::const_iterator i = m_remote_requests.begin(); i != m_remote_requests.end(); i++)
-			cb += i->size + (m_f->m_merkle ? 10 : 13);
+		BOOST_FOREACH(t_remote_requests::const_reference i, m_remote_requests)
+			cb += i.size + (m_f->m_merkle ? 10 : 13);
 	}
 	if (cb)
 		cb += 9 * m_have_queue.size();
@@ -442,8 +442,8 @@ void Cbt_peer_link::write_have(int a)
 
 void Cbt_peer_link::write_haves()
 {
-	for (t_have_queue::const_iterator i = m_have_queue.begin(); i != m_have_queue.end(); i++)
-		write_have(*i);
+	BOOST_FOREACH(t_have_queue::const_reference i, m_have_queue)
+		write_have(i);
 	m_have_queue.clear();
 }
 
@@ -456,17 +456,18 @@ void Cbt_peer_link::write_bitfield()
 	w = write_int(4, w, d.size() - 4);
 	*w++ = bti_bitfield;
 	int j = 0;
-	for (Cbt_file::t_pieces::const_iterator i = m_f->m_pieces.begin(); i != m_f->m_pieces.end(); i++, j++)
+	BOOST_FOREACH(Cbt_file::t_pieces::const_reference i, m_f->m_pieces)
 	{
 		if (!j)
 			*w = 0;
-		if (i->valid())
+		if (i.valid())
 			*w |= 0x80 >> j;
 		if (j == 7)
 		{
 			j = -1;
 			w++;
 		}
+		j++;
 	}
 	write(d);
 }
@@ -843,16 +844,16 @@ void Cbt_peer_link::alert(Calert::t_level level, const std::string& message)
 
 void Cbt_peer_link::clear_local_requests()
 {
-	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
-		m_f->m_pieces[i->offset / m_f->mcb_piece].erase_peer(this, i->offset % m_f->mcb_piece);
+	BOOST_FOREACH(t_local_requests::const_reference i, m_local_requests)
+		m_f->m_pieces[i.offset / m_f->mcb_piece].erase_peer(this, i.offset % m_f->mcb_piece);
 	m_local_requests.clear();
 	mc_local_requests_pending = 0;
 }
 
 void Cbt_peer_link::check_pieces()
 {
-	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
-		m_f->m_pieces[i->offset / m_f->mcb_piece].check_peer(this, m_f->m_allow_end_mode && m_f->end_mode() ? 15 : 600);
+	BOOST_FOREACH(t_local_requests::const_reference i, m_local_requests)
+		m_f->m_pieces[i.offset / m_f->mcb_piece].check_peer(this, m_f->m_allow_end_mode && m_f->end_mode() ? 15 : 600);
 	m_check_pieces_time = time();
 }
 
@@ -864,8 +865,8 @@ int Cbt_peer_link::c_max_requests_pending() const
 std::string Cbt_peer_link::debug_string() const
 {
 	std::string d;
-	for (t_local_requests::const_iterator i = m_local_requests.begin(); i != m_local_requests.end(); i++)
-		d += "lr: " + n(i->offset / m_f->mcb_piece) + "; ";
+	BOOST_FOREACH(t_local_requests::const_reference i, m_local_requests)
+		d += "lr: " + n(i.offset / m_f->mcb_piece) + "; ";
 	if (m_read_b.cb_read())
 		d += "rb: " + n(m_read_b.cb_read()) + "; ";
 	if (cb_write_buffer())
