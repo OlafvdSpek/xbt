@@ -74,7 +74,7 @@ public:
 	struct t_file
 	{
 		void clean_up(time_t t, Cserver&);
-		std::string debug() const;
+		void debug(std::ostream&) const;
 		std::string select_peers(const Ctracker_input&) const;
 
 		t_file()

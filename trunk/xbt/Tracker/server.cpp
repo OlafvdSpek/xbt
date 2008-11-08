@@ -5,6 +5,7 @@
 #include <boost/format.hpp>
 #include <sql/sql_query.h>
 #include <iostream>
+#include <sstream>
 #include <signal.h>
 #include <bt_misc.h>
 #include <bt_strings.h>
@@ -790,29 +791,27 @@ void Cserver::read_config()
 	m_read_config_time = time();
 }
 
-std::string Cserver::t_file::debug() const
+void Cserver::t_file::debug(std::ostream& os) const
 {
-	std::string page;
 	BOOST_FOREACH(t_peers::const_reference i, peers)
 	{
-		page += "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
-			+ "<td align=right>" + n(ntohs(i.second.port))
-			+ "<td align=right>" + n(i.second.uid)
-			+ "<td align=right>" + n(i.second.left)
-			+ "<td align=right>" + n(::time(NULL) - i.second.mtime)
-			+ "<td>" + hex_encode(const_memory_range(i.second.peer_id.begin(), i.second.peer_id.end()));
+		os << "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
+			<< "<td align=right>" << ntohs(i.second.port)
+			<< "<td align=right>" << i.second.uid
+			<< "<td align=right>" << i.second.left
+			<< "<td align=right>" << ::time(NULL) - i.second.mtime
+			<< "<td>" << hex_encode(const_memory_range(i.second.peer_id.begin(), i.second.peer_id.end()));
 	}
-	return page;
 }
 
 std::string Cserver::debug(const Ctracker_input& ti) const
 {
-	std::string page;
-	page += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
+	std::ostringstream os;
+	os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	int leechers = 0;
 	int seeders = 0;
 	int torrents = 0;
-	page += "<table>";
+	os << "<table>";
 	if (ti.m_info_hash.empty())
 	{
 		BOOST_FOREACH(t_files::const_reference i, m_files)
@@ -822,27 +821,27 @@ std::string Cserver::debug(const Ctracker_input& ti) const
 			leechers += i.second.leechers;
 			seeders += i.second.seeders;
 			torrents++;
-			page += "<tr><td align=right>" + n(i.second.fid)
-				+ "<td><a href=\"?info_hash=" + uri_encode(i.first) + "\">" + hex_encode(i.first) + "</a>"
-				+ "<td>" + (i.second.dirty ? '*' : ' ')
-				+ "<td align=right>" + n(i.second.leechers)
-				+ "<td align=right>" + n(i.second.seeders);
+			os << "<tr><td align=right>" << i.second.fid
+				<< "<td><a href=\"?info_hash=" << uri_encode(i.first) << "\">" << hex_encode(i.first) << "</a>"
+				<< "<td>" << (i.second.dirty ? '*' : ' ')
+				<< "<td align=right>" << i.second.leechers
+				<< "<td align=right>" << i.second.seeders;
 		}
 	}
 	else
 	{
 		t_files::const_iterator i = m_files.find(ti.m_info_hash);
 		if (i != m_files.end())
-			page += i->second.debug();
+			i->second.debug(os);
 	}
-	page += "</table>";
-	return page;
+	os << "</table>";
+	return os.str();
 }
 
 std::string Cserver::statistics() const
 {
-	std::string page;
-	page += "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
+	std::ostringstream os;
+	os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	int leechers = 0;
 	int seeders = 0;
 	int torrents = 0;
@@ -853,45 +852,45 @@ std::string Cserver::statistics() const
 		torrents += i.second.leechers || i.second.seeders;
 	}
 	time_t t = time();
-	page += "<table><tr><td>leechers<td align=right>" + n(leechers)
-		+ "<tr><td>seeders<td align=right>" + n(seeders)
-		+ "<tr><td>peers<td align=right>" + n(leechers + seeders)
-		+ "<tr><td>torrents<td align=right>" + n(torrents)
-		+ "<tr><td>"
-		+ "<tr><td>accepted tcp<td align=right>" + n(m_stats.accepted_tcp)
-		+ "<tr><td>rejected tcp<td align=right>" + n(m_stats.rejected_tcp)
-		+ "<tr><td>announced<td align=right>" + n(m_stats.announced());
+	os << "<table><tr><td>leechers<td align=right>" << leechers
+		<< "<tr><td>seeders<td align=right>" << seeders
+		<< "<tr><td>peers<td align=right>" << leechers + seeders
+		<< "<tr><td>torrents<td align=right>" << torrents
+		<< "<tr><td>"
+		<< "<tr><td>accepted tcp<td align=right>" << m_stats.accepted_tcp
+		<< "<tr><td>rejected tcp<td align=right>" << m_stats.rejected_tcp
+		<< "<tr><td>announced<td align=right>" << m_stats.announced();
 	if (m_stats.announced())
 	{
-		page += "<tr><td>announced http <td align=right>" + n(m_stats.announced_http) + "<td align=right>" + n(m_stats.announced_http * 100 / m_stats.announced()) + " %"
-			+ "<tr><td>announced udp<td align=right>" + n(m_stats.announced_udp) + "<td align=right>" + n(m_stats.announced_udp * 100 / m_stats.announced()) + " %";
+		os << "<tr><td>announced http <td align=right>" << m_stats.announced_http << "<td align=right>" << m_stats.announced_http * 100 / m_stats.announced() << " %"
+			<< "<tr><td>announced udp<td align=right>" << m_stats.announced_udp << "<td align=right>" << m_stats.announced_udp * 100 / m_stats.announced() << " %";
 	}
-	page += "<tr><td>scraped full<td align=right>" + n(m_stats.scraped_full)
-		+ "<tr><td>scraped<td align=right>" + n(m_stats.scraped());
+	os << "<tr><td>scraped full<td align=right>" << m_stats.scraped_full
+		<< "<tr><td>scraped<td align=right>" << m_stats.scraped();
 	if (m_stats.scraped())
 	{
-		page += "<tr><td>scraped http<td align=right>" + n(m_stats.scraped_http) + "<td align=right>" + n(m_stats.scraped_http * 100 / m_stats.scraped()) + " %"
-			+ "<tr><td>scraped udp<td align=right>" + n(m_stats.scraped_udp) + "<td align=right>" + n(m_stats.scraped_udp * 100 / m_stats.scraped()) + " %";
+		os << "<tr><td>scraped http<td align=right>" << m_stats.scraped_http << "<td align=right>" << m_stats.scraped_http * 100 / m_stats.scraped() << " %"
+			<< "<tr><td>scraped udp<td align=right>" << m_stats.scraped_udp << "<td align=right>" << m_stats.scraped_udp * 100 / m_stats.scraped() << " %";
 	}
-	page += std::string("<tr><td>")
-		+ "<tr><td>up time<td align=right>" + duration2a(time() - m_stats.start_time)
-		+ "<tr><td>"
-		+ "<tr><td>anonymous connect<td align=right>" + n(m_config.m_anonymous_connect)
-		+ "<tr><td>anonymous announce<td align=right>" + n(m_config.m_anonymous_announce)
-		+ "<tr><td>anonymous scrape<td align=right>" + n(m_config.m_anonymous_scrape)
-		+ "<tr><td>auto register<td align=right>" + n(m_config.m_auto_register)
-		+ "<tr><td>full scrape<td align=right>" + n(m_config.m_full_scrape)
-		+ "<tr><td>read config time<td align=right>" + n(t - m_read_config_time) + " / " + n(m_config.m_read_config_interval)
-		+ "<tr><td>clean up time<td align=right>" + n(t - m_clean_up_time) + " / " + n(m_config.m_clean_up_interval)
-		+ "<tr><td>read db files time<td align=right>" + n(t - m_read_db_files_time) + " / " + n(m_config.m_read_db_interval);
+	os << "<tr><td>"
+		<< "<tr><td>up time<td align=right>" << duration2a(time() - m_stats.start_time)
+		<< "<tr><td>"
+		<< "<tr><td>anonymous connect<td align=right>" << m_config.m_anonymous_connect
+		<< "<tr><td>anonymous announce<td align=right>" << m_config.m_anonymous_announce
+		<< "<tr><td>anonymous scrape<td align=right>" << m_config.m_anonymous_scrape
+		<< "<tr><td>auto register<td align=right>" << m_config.m_auto_register
+		<< "<tr><td>full scrape<td align=right>" << m_config.m_full_scrape
+		<< "<tr><td>read config time<td align=right>" << t - m_read_config_time << " / " << m_config.m_read_config_interval
+		<< "<tr><td>clean up time<td align=right>" << t - m_clean_up_time << " / " << m_config.m_clean_up_interval
+		<< "<tr><td>read db files time<td align=right>" << t - m_read_db_files_time << " / " << m_config.m_read_db_interval;
 	if (m_use_sql)
 	{
-		page += "<tr><td>read db users time<td align=right>" + n(t - m_read_db_users_time) + " / " + n(m_config.m_read_db_interval)
-			+ "<tr><td>write db files time<td align=right>" + n(t - m_write_db_files_time) + " / " + n(m_config.m_write_db_interval)
-			+ "<tr><td>write db users time<td align=right>" + n(t - m_write_db_users_time) + " / " + n(m_config.m_write_db_interval);
+		os << "<tr><td>read db users time<td align=right>" << t - m_read_db_users_time << " / " << m_config.m_read_db_interval
+			<< "<tr><td>write db files time<td align=right>" << t - m_write_db_files_time << " / " << m_config.m_write_db_interval
+			<< "<tr><td>write db users time<td align=right>" << t - m_write_db_users_time << " / " << m_config.m_write_db_interval;
 	}
-	page += "</table>";
-	return page;
+	os << "</table>";
+	return os.str();
 }
 
 Cserver::t_user* Cserver::find_user_by_name(const std::string& v)
