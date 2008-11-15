@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "bt_misc.h"
 
+#include <boost/foreach.hpp>
 #include <sys/stat.h>
 #include <algorithm>
 #include <ctime>
