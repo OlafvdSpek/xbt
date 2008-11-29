@@ -4,8 +4,8 @@ create table if not exists xbt_announce_log
 	ipa int unsigned not null,
 	port int not null,
 	event int not null,
-	info_hash blob not null,
-	peer_id blob not null,
+	info_hash binary(20) not null,
+	peer_id binary(20) not null,
 	downloaded bigint unsigned not null,
 	left0 bigint unsigned not null,
 	uploaded bigint unsigned not null,
@@ -29,7 +29,7 @@ create table if not exists xbt_deny_from_hosts
 create table if not exists xbt_files
 (
 	fid int not null auto_increment,
-	info_hash blob not null,
+	info_hash binary(20) not null,
 	leechers int not null default 0,
 	seeders int not null default 0,
 	completed int not null default 0,
@@ -37,7 +37,7 @@ create table if not exists xbt_files
 	mtime int not null,
 	ctime int not null,
 	primary key (fid),
-	unique key (info_hash(20))
+	unique key (info_hash)
 );
 
 create table if not exists xbt_files_users
@@ -59,7 +59,7 @@ create table if not exists xbt_scrape_log
 (
 	id int not null auto_increment,
 	ipa int not null,
-	info_hash blob,
+	info_hash binary(20),
 	uid int not null,
 	mtime int not null,
 	primary key (id)
@@ -69,7 +69,7 @@ create table if not exists xbt_users
 (
 	uid int not null auto_increment,
 	-- name char(8) not null,
-	-- pass blob not null,
+	-- pass binary(20) not null,
 	-- can_leech tinyint not null default 1,
 	-- wait_time int not null default 0,
 	-- peers_limit int not null default 0,
