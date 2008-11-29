@@ -34,7 +34,7 @@ void Cdatabase::open(const std::string& host, const std::string& user, const std
 		)
 		throw exception(mysql_error(&m_handle));
 	bool a0 = true;
-	mysql_options(&m_handle, MYSQL_OPT_RECONNECT, reinterpret_cast<const char*>(&a0));
+	mysql_options(&m_handle, MYSQL_OPT_RECONNECT, &a0);
 }
 
 Csql_result Cdatabase::query(const std::string& q)
