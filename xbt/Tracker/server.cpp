@@ -86,6 +86,12 @@ int Cserver::run()
 			return 1;
 		}
 	}
+	clean_up();
+	read_db_deny_from_hosts();
+	read_db_files();
+	read_db_users();
+	write_db_files();
+	write_db_users();
 #ifndef WIN32
 	if (m_config.m_daemon)
 	{
@@ -111,20 +117,13 @@ int Cserver::run()
 		act.sa_handler = sig_handler;
 		sigemptyset(&act.sa_mask);
 		act.sa_flags = 0;
-		if (sigaction(SIGHUP, &act, NULL)
-			|| sigaction(SIGTERM, &act, NULL))
+		if (sigaction(SIGTERM, &act, NULL))
 			std::cerr << "sigaction failed" << std::endl;
 		act.sa_handler = SIG_IGN;
 		if (sigaction(SIGPIPE, &act, NULL))
 			std::cerr << "sigaction failed" << std::endl;
 	}
 #endif
-	clean_up();
-	read_db_deny_from_hosts();
-	read_db_files();
-	read_db_users();
-	write_db_files();
-	write_db_users();
 #ifdef EPOLL
 	const int c_events = 64;
 
