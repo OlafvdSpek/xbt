@@ -3,7 +3,7 @@
 
 #define NOMINMAX
 
-#include <asio.hpp>
+#include <boost/asio.hpp>
 #include <boost/foreach.hpp>
 #include <cassert>
 #include <ctime>

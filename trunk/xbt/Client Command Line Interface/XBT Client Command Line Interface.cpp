@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 
+namespace asio = boost::asio;
 namespace po = boost::program_options;
 using asio::ip::tcp;
 
@@ -153,7 +154,7 @@ int main(int argc, char* argv[])
 		tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 		tcp::resolver::iterator end;
 		tcp::socket s(io_service);
-		asio::error_code error = asio::error::host_not_found;
+		boost::system::error_code error = asio::error::host_not_found;
 		while (error && endpoint_iterator != end)
 		{
 			s.close();
@@ -263,7 +264,7 @@ int main(int argc, char* argv[])
 		std::cerr << e.what() << std::endl;
 		return 1;
 	}
-	catch (asio::error_code& e)
+	catch (boost::system::error_code& e)
 	{
 		std::cerr << e.message() << std::endl;
 		return 1;
