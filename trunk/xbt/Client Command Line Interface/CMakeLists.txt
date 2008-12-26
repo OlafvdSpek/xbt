@@ -10,4 +10,4 @@ add_executable(
 	../misc/xcc_z.cpp
 	"XBT Client Command Line Interface.cpp"
 )
-target_link_libraries(xbt_client_cli boost_program_options-mt z)
+target_link_libraries(xbt_client_cli boost_program_options-mt boost_system-mt z)
