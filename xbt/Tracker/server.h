@@ -118,18 +118,15 @@ public:
 		int torrent_pass_version;
 		int torrents_limit;
 		int wait_time;
-		std::string pass;
 	};
 
 	typedef std::map<std::string, t_file> t_files;
 	typedef std::map<unsigned int, t_deny_from_host> t_deny_from_hosts;
 	typedef std::map<int, t_user> t_users;
-	typedef std::map<std::string, t_user*> t_users_names;
 	typedef std::map<std::string, t_user*> t_users_torrent_passes;
 
 	int test_sql();
 	void accept(const Csocket&);
-	t_user* find_user_by_name(const std::string&);
 	t_user* find_user_by_torrent_pass(const std::string&, const std::string& info_hash);
 	t_user* find_user_by_uid(int);
 	void read_config();
@@ -202,7 +199,6 @@ private:
 	Cconfig m_config;
 	Cstats m_stats;
 	bool m_read_users_can_leech;
-	bool m_read_users_name_pass;
 	bool m_read_users_peers_limit;
 	bool m_read_users_torrent_pass;
 	bool m_read_users_torrent_pass_version;
@@ -225,7 +221,6 @@ private:
 	t_deny_from_hosts m_deny_from_hosts;
 	t_files m_files;
 	t_users m_users;
-	t_users_names m_users_names;
 	t_users_torrent_passes m_users_torrent_passes;
 	std::string m_announce_log_buffer;
 	std::string m_conf_file;
