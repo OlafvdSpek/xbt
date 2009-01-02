@@ -13,21 +13,6 @@ Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 	m_s = s;
 }
 
-Cserver::t_user* Ctransaction::authenticate(const_memory_range s) const
-{
-	if (s.size() < 16)
-		return NULL;
-	std::string name(reinterpret_cast<const char*>(s.end - 16), 8);
-	size_t i = name.find('\0');
-	Cserver::t_user* user = m_server.find_user_by_name(i == std::string::npos ? name : name.substr(0, i));
-	if (!user)
-		return NULL;
-	Csha1 sha1;
-	sha1.write(const_memory_range(s, s.end - 8));
-	sha1.write(user->pass);
-	return memcmp(s.end - 8, sha1.read().data(), 8) ? NULL : user;
-}
-
 long long Ctransaction::connection_id() const
 {
 	const int cb_s = 12;
@@ -75,7 +60,7 @@ void Ctransaction::recv()
 
 void Ctransaction::send_connect(const_memory_range r)
 {
-	if (!m_server.config().m_anonymous_connect && !authenticate(r))
+	if (!m_server.config().m_anonymous_connect)
 		return;
 	if (read_int(8, r + uti_connection_id, r.end) != 0x41727101980ll)
 		return;
@@ -91,8 +76,7 @@ void Ctransaction::send_announce(const_memory_range r)
 {
 	if (read_int(8, r + uti_connection_id, r.end) != connection_id())
 		return;
-	Cserver::t_user* user = authenticate(r);
-	if (!m_server.config().m_anonymous_announce && !user)
+	if (!m_server.config().m_anonymous_announce)
 	{
 		send_error(r, "access denied");
 		return;
@@ -109,7 +93,7 @@ void Ctransaction::send_announce(const_memory_range r)
 	ti.m_peer_id.assign(reinterpret_cast<const char*>(r + utia_peer_id), 20);
 	ti.m_port = htons(read_int(2, r + utia_port, r.end));
 	ti.m_uploaded = read_int(8, r + utia_uploaded, r.end);
-	std::string error = m_server.insert_peer(ti, true, user);
+	std::string error = m_server.insert_peer(ti, true, NULL);
 	if (!error.empty())
 	{
 		send_error(r, error);
@@ -134,7 +118,7 @@ void Ctransaction::send_scrape(const_memory_range r)
 {
 	if (read_int(8, r + uti_connection_id, r.end) != connection_id())
 		return;
-	if (!m_server.config().m_anonymous_scrape && !authenticate(r))
+	if (!m_server.config().m_anonymous_scrape)
 	{
 		send_error(r, "access denied");
 		return;

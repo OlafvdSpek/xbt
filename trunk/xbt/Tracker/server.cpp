@@ -583,8 +583,6 @@ void Cserver::read_db_users()
 		Csql_query q(m_database, "select ?");
 		if (m_read_users_can_leech)
 			q += ", can_leech";
-		if (m_read_users_name_pass)
-			q += ", name, pass";
 		if (m_read_users_peers_limit)
 			q += ", peers_limit";
 		if (m_read_users_torrent_pass)
@@ -601,7 +599,6 @@ void Cserver::read_db_users()
 		Csql_result result = q.execute();
 		BOOST_FOREACH(t_users::reference i, m_users)
 			i.second.marked = true;
-		m_users_names.clear();
 		m_users_torrent_passes.clear();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
@@ -611,13 +608,6 @@ void Cserver::read_db_users()
 			user.uid = row[c++].i();
 			if (m_read_users_can_leech)
 				user.can_leech = row[c++].i();
-			if (m_read_users_name_pass)
-			{
-				if (row[c].size() && row[c + 1].size())
-					m_users_names[row[c].s()] = &user;
-				c++;
-				user.pass = row[c++].s();
-			}
 			if (m_read_users_peers_limit)
 				user.peers_limit = row[c++].i();
 			if (m_read_users_torrent_pass)
@@ -892,12 +882,6 @@ std::string Cserver::statistics() const
 	return os.str();
 }
 
-Cserver::t_user* Cserver::find_user_by_name(const std::string& v)
-{
-	t_users_names::const_iterator i = m_users_names.find(v);
-	return i == m_users_names.end() ? NULL : i->second;
-}
-
 Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, const std::string& info_hash)
 {
 	if (t_user* user = find_user_by_uid(read_int(4, hex_decode(v.substr(0, 8)))))
@@ -987,7 +971,6 @@ int Cserver::test_sql()
 		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0");
 		m_database.query("select " + column_name(column_users_uid) + ", downloaded, uploaded from " + table_name(table_users) + " where 0");
 		m_read_users_can_leech = m_database.query("show columns from " + table_name(table_users) + " like 'can_leech'");
-		m_read_users_name_pass = m_database.query("show columns from " + table_name(table_users) + " like 'pass'");
 		m_read_users_peers_limit = m_database.query("show columns from " + table_name(table_users) + " like 'peers_limit'");
 		m_read_users_torrent_pass = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass'");
 		m_read_users_torrent_pass_version = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass_version'");

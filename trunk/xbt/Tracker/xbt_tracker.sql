@@ -68,8 +68,6 @@ create table if not exists xbt_scrape_log
 create table if not exists xbt_users
 (
 	uid int not null auto_increment,
-	-- name char(8) not null,
-	-- pass binary(20) not null,
 	-- can_leech tinyint not null default 1,
 	-- wait_time int not null default 0,
 	-- peers_limit int not null default 0,

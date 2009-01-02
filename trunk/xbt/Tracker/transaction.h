@@ -5,7 +5,6 @@
 class Ctransaction
 {
 public:
-	Cserver::t_user* authenticate(const_memory_range) const;
 	long long connection_id() const;
 	void recv();
 	void send(const_memory_range);
