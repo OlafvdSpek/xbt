@@ -34,24 +34,21 @@ public:
 		m_range.end = m_range.begin + v;
 	}
 
-	friend void intrusive_ptr_add_ref(Cvirtual_binary_source*);
-	friend void intrusive_ptr_release(Cvirtual_binary_source*);
+	friend void intrusive_ptr_add_ref(Cvirtual_binary_source* v)
+	{
+		v->mc_references++;
+	}
+
+	friend void intrusive_ptr_release(Cvirtual_binary_source* v)
+	{
+		v->mc_references--;
+		if (!v->mc_references)
+			delete v;
+	}
 private:
 	memory_range m_range;
 	int mc_references;
 };
-
-inline void intrusive_ptr_add_ref(Cvirtual_binary_source* v)
-{
-	v->mc_references++;
-}
-
-inline void intrusive_ptr_release(Cvirtual_binary_source* v)
-{
-	v->mc_references--;
-	if (!v->mc_references)
-		delete v;
-}
 
 class Cvirtual_binary
 {
