@@ -86,24 +86,21 @@ public:
 		return m_s;
 	}
 
-	friend void intrusive_ptr_add_ref(Csocket_source*);
-	friend void intrusive_ptr_release(Csocket_source*);
+	friend void intrusive_ptr_add_ref(Csocket_source* v)
+	{
+		v->mc_references++;
+	}
+
+	friend void intrusive_ptr_release(Csocket_source* v)
+	{
+		v->mc_references--;
+		if (!v->mc_references)
+			delete v;
+	}
 private:
 	SOCKET m_s;
 	int mc_references;
 };
-
-inline void intrusive_ptr_add_ref(Csocket_source* v)
-{
-	v->mc_references++;
-}
-
-inline void intrusive_ptr_release(Csocket_source* v)
-{
-	v->mc_references--;
-	if (!v->mc_references)
-		delete v;
-}
 
 class Csocket
 {
