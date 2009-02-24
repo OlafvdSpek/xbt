@@ -143,11 +143,6 @@ int Cserver::run()
 		{
 			int prev_time = m_time;
 			m_time = ::time(NULL);
-			if (!r)
-			{
-				BOOST_FOREACH(t_tcp_sockets::reference i, lt)
-					i.process_events(EPOLLIN);
-			}
 			for (int i = 0; i < r; i++)
 				reinterpret_cast<Cclient*>(events[i].data.ptr)->process_events(events[i].events);
 			if (m_time == prev_time)
@@ -208,7 +203,11 @@ int Cserver::run()
 		}
 #endif
 		if (time() - m_read_config_time > m_config.m_read_config_interval)
+		{
 			read_config();
+			BOOST_FOREACH(t_tcp_sockets::reference i, lt)
+				i.process_events(EPOLLIN);
+		}
 		else if (time() - m_clean_up_time > m_config.m_clean_up_interval)
 			clean_up();
 		else if (time() - m_read_db_deny_from_hosts_time > m_config.m_read_db_interval)
