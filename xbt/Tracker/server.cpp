@@ -64,7 +64,7 @@ int Cserver::run()
 					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
 				lt.push_back(Ctcp_listen_socket(this, l));
-				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lt.back()))
+				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
 					continue;
 			}
 			return 1;
@@ -80,7 +80,7 @@ int Cserver::run()
 			else
 			{
 				lu.push_back(Cudp_listen_socket(this, l));
-				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &lu.back()))
+				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lu.back()))
 					continue;
 			}
 			return 1;
@@ -203,11 +203,7 @@ int Cserver::run()
 		}
 #endif
 		if (time() - m_read_config_time > m_config.m_read_config_interval)
-		{
 			read_config();
-			BOOST_FOREACH(t_tcp_sockets::reference i, lt)
-				i.process_events(EPOLLIN);
-		}
 		else if (time() - m_clean_up_time > m_config.m_clean_up_interval)
 			clean_up();
 		else if (time() - m_read_db_deny_from_hosts_time > m_config.m_read_db_interval)
