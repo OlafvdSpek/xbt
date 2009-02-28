@@ -80,7 +80,7 @@ int Cserver::run()
 			else
 			{
 				lu.push_back(Cudp_listen_socket(this, l));
-				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lu.back()))
+				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP, &lu.back()))
 					continue;
 			}
 			return 1;
