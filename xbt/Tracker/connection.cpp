@@ -120,15 +120,6 @@ int Cconnection::send()
 	return 0;
 }
 
-static std::string calculate_torrent_pass1(const std::string& info_hash, long long torrent_pass_secret)
-{
-	Csha1 sha1;
-	sha1.write(info_hash);
-	torrent_pass_secret = htonll(torrent_pass_secret);
-	sha1.write(const_memory_range(&torrent_pass_secret, sizeof(torrent_pass_secret)));
-	return sha1.read();
-}
-
 void Cconnection::read(const std::string& v)
 {
 #ifndef NDEBUG
