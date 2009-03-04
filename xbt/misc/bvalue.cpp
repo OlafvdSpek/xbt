@@ -327,7 +327,7 @@ int Cbvalue::read(char* d) const
 		*w++ = 'e';
 		return w - d;
 	case vt_string:
-		sprintf(w, "%d:", m_string->size());
+		sprintf(w, "%zu:", m_string->size());
 		w += n(m_string->size()).size() + 1;
 		memcpy(w, m_string->data(), m_string->size());
 		w += m_string->size();
@@ -345,7 +345,7 @@ int Cbvalue::read(char* d) const
 			*w++ = 'd';
 			for (t_map::const_iterator i = m_map->begin(); i != m_map->end(); i++)
 			{
-				sprintf(w, "%d:", i->first.size());
+				sprintf(w, "%zu:", i->first.size());
 				w += n(i->first.size()).size() + 1;
 				memcpy(w, i->first.data(), i->first.size());
 				w += i->first.size();
