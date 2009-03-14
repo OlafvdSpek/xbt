@@ -3,6 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <cassert>
+#include <climits>
 #include <ctime>
 #include <fstream>
 #include <iostream>
