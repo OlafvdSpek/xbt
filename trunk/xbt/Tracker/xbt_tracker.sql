@@ -22,8 +22,8 @@ create table if not exists xbt_config
 
 create table if not exists xbt_deny_from_hosts
 (
-	begin int not null,
-	end int not null
+	begin int unsigned not null,
+	end int unsigned not null
 );
 
 create table if not exists xbt_files
