@@ -155,7 +155,6 @@ void Cconnection::read(const std::string& v)
 	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
 		ti.m_ipa = m_a.sin_addr.s_addr;
 	std::string torrent_pass0;
-	std::string torrent_pass1;
 	size_t a = 4;
 	if (a < e && v[a] == '/')
 	{
@@ -167,10 +166,7 @@ void Cconnection::read(const std::string& v)
 			torrent_pass0 = v.substr(a, 32);
 			a += 33;
 			if (a + 40 < e && v[a + 40] == '/')
-			{
-				torrent_pass1 = v.substr(a, 40);
 				a += 41;
-			}
 		}
 	}
 	std::string h = "HTTP/1.0 200 OK\r\n";
