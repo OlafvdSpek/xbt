@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include "sql_result.h"
 
-class Cdatabase
+class Cdatabase: boost::noncopyable
 {
 public:
 	class exception: public std::runtime_error
@@ -28,8 +28,6 @@ public:
 		return m_handle;
 	}
 private:
-	Cdatabase(const Cdatabase&);
-
 	bool m_echo_errors;
 	MYSQL m_handle;
 	std::string m_query_log;
