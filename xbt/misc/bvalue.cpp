@@ -327,7 +327,11 @@ int Cbvalue::read(char* d) const
 		*w++ = 'e';
 		return w - d;
 	case vt_string:
+#ifdef WIN32
+		sprintf(w, "%d:", m_string->size());
+#else
 		sprintf(w, "%zu:", m_string->size());
+#endif
 		w += n(m_string->size()).size() + 1;
 		memcpy(w, m_string->data(), m_string->size());
 		w += m_string->size();
@@ -345,7 +349,11 @@ int Cbvalue::read(char* d) const
 			*w++ = 'd';
 			for (t_map::const_iterator i = m_map->begin(); i != m_map->end(); i++)
 			{
+#ifdef WIN32
+				sprintf(w, "%d:", i->first.size());
+#else
 				sprintf(w, "%zu:", i->first.size());
+#endif
 				w += n(i->first.size()).size() + 1;
 				memcpy(w, i->first.data(), i->first.size());
 				w += i->first.size();
