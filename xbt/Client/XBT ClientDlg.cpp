@@ -2024,7 +2024,7 @@ int CXBTClientDlg::sub_files_compare(int id_a, int id_b) const
 	case sfc_extension:
 		return icompare(get_extension(a.m_name), get_extension(b.m_name), icompare(a.m_name, b.m_name));
 	case sfc_done:
-		return compare(b.m_left * 1000 / b.m_size, a.m_left * 1000 / a.m_size);
+		return compare(static_cast<float>(a.m_size) * b.m_left, static_cast<float>(b.m_size) * a.m_left);
 	case sfc_left:
 		return compare(a.m_left, b.m_left);
 	case sfc_size:
