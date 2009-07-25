@@ -256,28 +256,28 @@ int Cbt_tracker_link::read(Cbt_file& f, const_memory_range d)
 				f.alert(Calert(Calert::error, "Tracker: bdecode failed"));
 				return 1;
 			}
-			if (v.d(bts_failure_reason).s().empty())
+			if (v[bts_failure_reason].s().empty())
 			{
-				m_announce_time = f.m_server->time() + max(300, v.d(bts_interval).i());
-				f.mc_leechers_total = v.d(bts_incomplete).i();
-				f.mc_seeders_total = v.d(bts_complete).i();
+				m_announce_time = f.m_server->time() + max(300, v[bts_interval].i());
+				f.mc_leechers_total = v[bts_incomplete].i();
+				f.mc_seeders_total = v[bts_complete].i();
 				mc_attempts = 0;
-				if (v.d(bts_peers).s().empty())
+				if (v[bts_peers].s().empty())
 				{
-					const Cbvalue::t_list& peers = v.d(bts_peers).l();
+					const Cbvalue::t_list& peers = v[bts_peers].l();
 					f.alert(Calert(Calert::info, "Tracker: " + n(peers.size()) + " peers (" + n(d.size()) + " bytes)"));
 					for (Cbvalue::t_list::const_iterator i = peers.begin(); i != peers.end(); i++)
-						f.insert_peer(inet_addr(i->d(bts_ipa).s().c_str()), htons(i->d(bts_port).i()));
+						f.insert_peer(inet_addr((*i)[bts_ipa].s().c_str()), htons((*i)[bts_port].i()));
 				}
 				else
 				{
-					std::string peers = v.d(bts_peers).s();
+					std::string peers = v[bts_peers].s();
 					f.alert(Calert(Calert::info, "Tracker: " + n(peers.size() / 6) + " peers (" + n(d.size()) + " bytes)"));
 					f.insert_peers(peers);
 				}
 				return 0;
 			}
-			f.alert(Calert(Calert::error, "Tracker: failure reason: " + v.d(bts_failure_reason).s()));
+			f.alert(Calert(Calert::error, "Tracker: failure reason: " + v[bts_failure_reason].s()));
 			return 1;
 		}
 		break;
