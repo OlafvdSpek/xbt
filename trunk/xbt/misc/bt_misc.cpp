@@ -4,6 +4,7 @@
 #include <boost/foreach.hpp>
 #include <sys/stat.h>
 #include <algorithm>
+#include <ctime>
 #include <socket.h>
 
 #ifdef WIN32

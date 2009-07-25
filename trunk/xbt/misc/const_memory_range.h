@@ -198,6 +198,20 @@ public:
 		return begin == end;
 	}
 
+	template<class U>
+	const_memory_range_base find(U v) const
+	{
+		const_memory_range_base t = *this;
+		while (!t.empty() && *t != v)
+			t++;
+		return t;
+	}
+
+	long long i() const
+	{
+		return atoll(reinterpret_cast<const char*>(begin));
+	}
+
 	size_t size() const
 	{
 		return end - begin;
@@ -230,6 +244,13 @@ public:
 		begin += v;
 		return *this;
 	}
+
+	/*
+	const_memory_range_base operator+(size_t v) const
+	{
+		return const_memory_range_base(*this) += v;
+	}
+	*/
 
 	T begin;
 	T end;
