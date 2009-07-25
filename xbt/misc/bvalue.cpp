@@ -231,6 +231,11 @@ const Cbvalue& Cbvalue::d(const std::string& v) const
 	return z;
 }
 
+const Cbvalue& Cbvalue::operator[](const std::string& v) const
+{
+	return d(v);
+}
+
 long long Cbvalue::i() const
 {
 	return m_value_type == vt_int ? m_int : 0;

@@ -21,7 +21,6 @@ public:
 
 	void clear();
 	const t_map& d() const;
-	const Cbvalue& d(const std::string&) const;
 	const t_list& l() const;
 	long long i() const;
 	const std::string& s() const;
@@ -40,8 +39,11 @@ public:
 	Cbvalue(const Cbvalue&);
 	Cbvalue(const_memory_range);
 	const Cbvalue& operator=(const Cbvalue&);
+	const Cbvalue& operator[](const std::string&) const;
 	~Cbvalue();
 private:
+	const Cbvalue& d(const std::string&) const;
+
 	t_value_type m_value_type;
 
 	union
