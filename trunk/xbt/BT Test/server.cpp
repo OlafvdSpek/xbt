@@ -1164,17 +1164,17 @@ bool Cserver::admin_authenticate(const std::string& user, const std::string& pas
 Cbvalue Cserver::admin_request(const Cbvalue& s)
 {
 	Cbvalue d;
-	std::string action = s.d(bts_action).s();
-	if (!admin_authenticate(s.d(bts_admin_user).s(), s.d(bts_admin_pass).s()))
+	std::string action = s[bts_action].s();
+	if (!admin_authenticate(s[bts_admin_user].s(), s[bts_admin_pass].s()))
 		d.d(bts_failure_reason, std::string("access denied"));
 	else if (action == bts_close_torrent)
 	{
-		if (close(s.d(bts_hash).s(), false))
+		if (close(s[bts_hash].s(), false))
 			d.d(bts_failure_reason, std::string("unable to close torrent"));
 	}
 	else if (action == bts_erase_torrent)
 	{
-		if (close(s.d(bts_hash).s(), true))
+		if (close(s[bts_hash].s(), true))
 			d.d(bts_failure_reason, std::string("unable to erase torrent"));
 	}
 	else if (action == bts_get_options)
@@ -1223,40 +1223,40 @@ Cbvalue Cserver::admin_request(const Cbvalue& s)
 	}
 	else if (action == bts_open_torrent)
 	{
-		if (open(Cvirtual_binary(s.d(bts_torrent).s()), ""))
+		if (open(Cvirtual_binary(s[bts_torrent].s()), ""))
 			d.d(bts_failure_reason, std::string("unable to open torrent"));
 	}
 	else if (action == bts_set_options)
 	{
 		if (s.d_has(bts_peer_port))
-			peer_port(s.d(bts_peer_port).i());
+			peer_port(s[bts_peer_port].i());
 		if (s.d_has(bts_upload_rate))
-			upload_rate(s.d(bts_upload_rate).i());
+			upload_rate(s[bts_upload_rate].i());
 		if (s.d_has(bts_upload_slots))
-			upload_slots(s.d(bts_upload_slots).i());
+			upload_slots(s[bts_upload_slots].i());
 		if (s.d_has(bts_seeding_ratio))
-			seeding_ratio(s.d(bts_seeding_ratio).i());
+			seeding_ratio(s[bts_seeding_ratio].i());
 		if (s.d_has(bts_peer_limit))
-			peer_limit(s.d(bts_peer_limit).i());
+			peer_limit(s[bts_peer_limit].i());
 		if (s.d_has(bts_torrent_limit))
-			torrent_limit(s.d(bts_torrent_limit).i());
+			torrent_limit(s[bts_torrent_limit].i());
 		if (s.d_has(bts_user_agent))
-			user_agent(s.d(bts_user_agent).s());
+			user_agent(s[bts_user_agent].s());
 		if (s.d_has(bts_completes_dir))
-			completes_dir(s.d(bts_completes_dir).s());
+			completes_dir(s[bts_completes_dir].s());
 		if (s.d_has(bts_incompletes_dir))
-			incompletes_dir(s.d(bts_incompletes_dir).s());
+			incompletes_dir(s[bts_incompletes_dir].s());
 		if (s.d_has(bts_torrents_dir))
-			torrents_dir(s.d(bts_torrents_dir).s());
+			torrents_dir(s[bts_torrents_dir].s());
 	}
 	else if (action == bts_set_priority)
 	{
-		if (file_priority(s.d(bts_hash).s(), s.d(bts_priority).i()))
+		if (file_priority(s[bts_hash].s(), s[bts_priority].i()))
 			d.d(bts_failure_reason, std::string("unable to set torrent priority"));
 	}
 	else if (action == bts_set_state)
 	{
-		if (file_state(s.d(bts_hash).s(), static_cast<Cbt_file::t_state>(s.d(bts_state).i())))
+		if (file_state(s[bts_hash].s(), static_cast<Cbt_file::t_state>(s[bts_state].i())))
 			d.d(bts_failure_reason, std::string("unable to set torrent state"));
 	}
 	return d;

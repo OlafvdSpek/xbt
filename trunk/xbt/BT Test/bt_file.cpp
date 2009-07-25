@@ -43,50 +43,50 @@ Cbt_file::~Cbt_file()
 
 int Cbt_file::torrent(const Cbvalue& v)
 {
-	const Cbvalue::t_list& trackers = v.d(bts_announce_list).l();
+	const Cbvalue::t_list& trackers = v[bts_announce_list].l();
 	BOOST_FOREACH(Cbvalue::t_list::const_reference i, trackers)
 	{
 		BOOST_FOREACH(Cbvalue::t_list::const_reference j, i.l())
 			m_trackers.push_back(j.s());
 	}
 	if (m_trackers.empty())
-		m_trackers.push_back(v.d(bts_announce).s());
-	return info(v.d(bts_info));
+		m_trackers.push_back(v[bts_announce].s());
+	return info(v[bts_info]);
 }
 
 int Cbt_file::info(const Cbvalue& info)
 {
-	m_name = info.d(bts_name).s();
+	m_name = info[bts_name].s();
 	if (m_name.empty())
 		return 1;
 	m_info = info.read();
 	m_info_hash = Csha1(m_info).read();
-	m_merkle = info.d(bts_pieces).s().empty();
-	mcb_piece = info.d(bts_piece_length).i();
+	m_merkle = info[bts_pieces].s().empty();
+	mcb_piece = info[bts_piece_length].i();
 	{
 		m_size = 0;
 		long long offset = 0;
-		const Cbvalue::t_list& files = info.d(bts_files).l();
+		const Cbvalue::t_list& files = info[bts_files].l();
 		BOOST_FOREACH(Cbvalue::t_list::const_reference i, files)
 		{
 			std::string name;
 			{
-				const Cbvalue::t_list& path = i.d(bts_path).l();
+				const Cbvalue::t_list& path = i[bts_path].l();
 				BOOST_FOREACH(Cbvalue::t_list::const_reference i, path)
 					name += '/' + i.s();
 			}
-			long long size = i.d(bts_length).i();
+			long long size = i[bts_length].i();
 			if (name.empty() || size < 0)
 				return 1;
 			m_size += size;
-			m_sub_files.push_back(t_sub_file(i.d(bts_merkle_hash).s(), name, offset, 0, size));
+			m_sub_files.push_back(t_sub_file(i[bts_merkle_hash].s(), name, offset, 0, size));
 			offset += size;
 			if (m_merkle)
 				offset += - offset & (mcb_piece - 1);
 		}
 	}
 	if (m_sub_files.empty())
-		m_sub_files.push_back(t_sub_file(info.d(bts_merkle_hash).s(), "", 0, 0, m_size = info.d(bts_length).i()));
+		m_sub_files.push_back(t_sub_file(info[bts_merkle_hash].s(), "", 0, 0, m_size = info[bts_length].i()));
 	if (m_size < 1
 		|| mcb_piece < 16 << 10
 		|| mcb_piece > 16 << 20)
@@ -112,7 +112,7 @@ int Cbt_file::info(const Cbvalue& info)
 		return 0;
 	}
 	m_pieces.resize((m_size + mcb_piece - 1) / mcb_piece);
-	std::string piece_hashes = info.d(bts_pieces).s();
+	std::string piece_hashes = info[bts_pieces].s();
 	if (piece_hashes.length() != 20 * m_pieces.size())
 		return 1;
 	for (size_t i = 0; i < m_pieces.size(); i++)

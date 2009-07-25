@@ -791,14 +791,14 @@ int Cbt_peer_link::read_message(const_memory_range s)
 			case bti_extended_handshake:
 				{
 					Cbvalue v(s);
-					const Cbvalue& m = v.d("m");
-					m_ut_pex_extension = m.d("ut_pex").i();
+					const Cbvalue& m = v["m"];
+					m_ut_pex_extension = m["ut_pex"].i();
 				}
 				break;
 			case bti_extended_ut_pex:
 				{
 					Cbvalue v(s);
-					m_f->insert_peers(v.d("added").s());
+					m_f->insert_peers(v["added"].s());
 				}
 				break;
 			}
