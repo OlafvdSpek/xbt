@@ -314,9 +314,9 @@ void Cdlg_make_torrent::OnSave()
 	if (m_map.size() == 1)
 	{
 		if (m_use_merkle)
-			info.d(bts_merkle_hash, files.l().front().d(bts_merkle_hash));
-		info.d(bts_length, files.l().front().d(bts_length));
-		info.d(bts_name, files.l().front().d(bts_path).l().front());
+			info.d(bts_merkle_hash, files.l().front()[bts_merkle_hash]);
+		info.d(bts_length, files.l().front()[bts_length]);
+		info.d(bts_name, files.l().front()[bts_path].l().front());
 	}
 	else
 	{

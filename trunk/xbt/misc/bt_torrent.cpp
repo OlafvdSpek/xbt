@@ -14,27 +14,27 @@ Cbt_torrent::Cbt_torrent(const Cbvalue& v)
 
 int Cbt_torrent::write(const Cbvalue& v)
 {
-	m_announce = v.d(bts_announce).s();
+	m_announce = v[bts_announce].s();
 	m_announces.clear();
-	const Cbvalue::t_list& announces = v.d(bts_announce_list).l();
+	const Cbvalue::t_list& announces = v[bts_announce_list].l();
 	for (Cbvalue::t_list::const_iterator i = announces.begin(); i != announces.end(); i++)
 	{
 		for (Cbvalue::t_list::const_iterator j = i->l().begin(); j != i->l().end(); j++)
 			m_announces.push_back(j->s());
 	}
-	return write_info(v.d(bts_info));
+	return write_info(v[bts_info]);
 }
 
 int Cbt_torrent::write_info(const Cbvalue& v)
 {
 	m_files.clear();
-	const Cbvalue::t_list& files = v.d(bts_files).l();
+	const Cbvalue::t_list& files = v[bts_files].l();
 	for (Cbvalue::t_list::const_iterator i = files.begin(); i != files.end(); i++)
 	{
 		std::string name;
-		long long size = i->d(bts_length).i();
+		long long size = (*i)[bts_length].i();
 		{
-			const Cbvalue::t_list& path = i->d(bts_path).l();
+			const Cbvalue::t_list& path = (*i)[bts_path].l();
 			for (Cbvalue::t_list::const_iterator i = path.begin(); i != path.end(); i++)
 			{
 				if (i->s().empty() || i->s()[0] == '.' || i->s().find_first_of("\"*/:<>?\\|") != std::string::npos)
@@ -47,9 +47,9 @@ int Cbt_torrent::write_info(const Cbvalue& v)
 		m_files.push_back(Cfile(name, size));
 	}
 	if (m_files.empty())
-		m_files.push_back(Cfile("", v.d(bts_length).i()));
-	m_name = v.d(bts_name).s();
-	m_piece_size = v.d(bts_piece_length).i();
+		m_files.push_back(Cfile("", v[bts_length].i()));
+	m_name = v[bts_name].s();
+	m_piece_size = v[bts_piece_length].i();
 	return 0;
 }
 
