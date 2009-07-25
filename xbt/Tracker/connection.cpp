@@ -201,9 +201,9 @@ void Cconnection::read(const std::string& v)
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = Cvirtual_binary(m_server->statistics());
 		}
-		else if (m_server->config().m_full_scrape || !ti.m_info_hash.empty())
+		else if (m_server->config().m_full_scrape || ti.m_compact || !ti.m_info_hash.empty())
 		{
-			gzip = m_server->config().m_gzip_scrape && ti.m_info_hash.empty();
+			gzip = m_server->config().m_gzip_scrape && !ti.m_compact && ti.m_info_hash.empty();
 			s = m_server->scrape(ti);
 		}
 		break;

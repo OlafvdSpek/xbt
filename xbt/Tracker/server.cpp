@@ -417,6 +417,25 @@ void Cserver::clean_up()
 	m_clean_up_time = time();
 }
 
+static byte* write_compact_int(byte* w, unsigned int v)
+{
+	if (v >= 0x200000)
+	{
+		*w++ = 0xe0 | (v >> 24);
+		*w++ = v >> 16;
+		*w++ = v >> 8;
+	}
+	else if (v >= 0x4000)
+	{
+		*w++ = 0xc0 | (v >> 16);
+		*w++ = v >> 8;
+	}
+	else if (v >= 0x80)
+		*w++ = 0x80 | (v >> 8);
+	*w++ = v;
+	return w;
+}
+
 Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 {
 	if (m_use_sql && m_config.m_log_scrape)
@@ -435,6 +454,24 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 	if (ti.m_info_hashes.empty())
 	{
 		m_stats.scraped_full++;
+		if (ti.m_compact)
+		{
+			Cvirtual_binary d;
+			byte* w = d.write_start(32 * m_files.size() + 1);
+			*w++ = 'x';
+			BOOST_FOREACH(t_files::reference i, m_files)
+			{
+				if (!i.second.leechers && !i.second.seeders)
+					continue;
+				memcpy(w, i.first.data(), i.first.size());
+				w += i.first.size();
+				w = write_compact_int(w, i.second.seeders);
+				w = write_compact_int(w, i.second.leechers);
+				w = write_compact_int(w, i.second.completed);
+			}
+			d.resize(w - d);
+			return d;
+		}
 		d.reserve(90 * m_files.size());
 		BOOST_FOREACH(t_files::reference i, m_files)
 		{

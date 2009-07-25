@@ -6,6 +6,7 @@
 
 Ctracker_input::Ctracker_input()
 {
+	m_compact = false;
 	m_downloaded = 0;
 	m_event = e_none;
 	m_ipa = 0;
@@ -21,6 +22,10 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 		return;
 	switch (name[0])
 	{
+	case 'c':
+		if (name == "compact")
+			m_compact = atoi(value.c_str());
+		break;
 	case 'd':
 		if (name == "downloaded")
 			m_downloaded = atoll(value.c_str());

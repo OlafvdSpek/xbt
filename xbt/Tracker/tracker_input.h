@@ -29,4 +29,5 @@ public:
 	int m_port;
 	long long m_uploaded;
 	int m_num_want;
+	bool m_compact;
 };
