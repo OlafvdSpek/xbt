@@ -52,7 +52,7 @@ Cbvalue send_recv(tcp::socket& s, const Cbvalue& v)
 	if (int r = recv(s, &w))
 		throw std::runtime_error(("Csocket::recv failed: " + Csocket::error2a(WSAGetLastError())));
 	if (w.d_has(bts_failure_reason))
-		throw std::runtime_error(("admin request failed: " + w.d(bts_failure_reason).s()));
+		throw std::runtime_error(("admin request failed: " + w[bts_failure_reason].s()));
 	return w;
 }
 
@@ -65,16 +65,16 @@ std::string strip_name(const std::string& v)
 std::ostream& show_options(std::ostream& os, const Cbvalue& v)
 {
 	os
-		<< "admin port:      " << v.d(bts_admin_port).i() << std::endl
-		<< "peer port:       " << v.d(bts_peer_port).i() << std::endl
-		<< "tracker port:    " << v.d(bts_tracker_port).i() << std::endl
-		<< "upload rate:     " << v.d(bts_upload_rate).i() << std::endl
-		<< "upload slots:    " << v.d(bts_upload_slots).i() << std::endl
-		<< "seeding ratio:   " << v.d(bts_seeding_ratio).i() << std::endl
-		<< "completes dir:   " << v.d(bts_completes_dir).s() << std::endl
-		<< "incompletes dir: " << v.d(bts_incompletes_dir).s() << std::endl
-		<< "torrents dir:    " << v.d(bts_torrents_dir).s() << std::endl
-		<< "user agent:      " << v.d(bts_user_agent).s() << std::endl
+		<< "admin port:      " << v[bts_admin_port].i() << std::endl
+		<< "peer port:       " << v[bts_peer_port].i() << std::endl
+		<< "tracker port:    " << v[bts_tracker_port].i() << std::endl
+		<< "upload rate:     " << v[bts_upload_rate].i() << std::endl
+		<< "upload slots:    " << v[bts_upload_slots].i() << std::endl
+		<< "seeding ratio:   " << v[bts_seeding_ratio].i() << std::endl
+		<< "completes dir:   " << v[bts_completes_dir].s() << std::endl
+		<< "incompletes dir: " << v[bts_incompletes_dir].s() << std::endl
+		<< "torrents dir:    " << v[bts_torrents_dir].s() << std::endl
+		<< "user agent:      " << v[bts_user_agent].s() << std::endl
 		;
 	return os;
 }
@@ -82,30 +82,30 @@ std::ostream& show_options(std::ostream& os, const Cbvalue& v)
 std::ostream& show_status(std::ostream& os, const Cbvalue& v)
 {
 	os << "    left     size downloaded  uploaded down_rate   up_rate   leechers      seeders  info_hash                                 name" << std::endl;
-	const Cbvalue& files = v.d(bts_files);
+	const Cbvalue& files = v[bts_files];
 	for (Cbvalue::t_map::const_iterator i = files.d().begin(); i != files.d().end(); i++)
 	{
 		os
-			<< std::setw(8) << b2a(i->second.d(bts_left).i())
-			<< std::setw(10) << b2a(i->second.d(bts_size).i())
-			<< std::setw(10) << b2a(i->second.d(bts_total_downloaded).i())
-			<< std::setw(10) << b2a(i->second.d(bts_total_uploaded).i())
-			<< std::setw(10) << b2a(i->second.d(bts_down_rate).i())
-			<< std::setw(10) << b2a(i->second.d(bts_up_rate).i())
-			<< std::setw(5) << i->second.d(bts_incomplete).i()
+			<< std::setw(8) << b2a(i->second[bts_left].i())
+			<< std::setw(10) << b2a(i->second[bts_size].i())
+			<< std::setw(10) << b2a(i->second[bts_total_downloaded].i())
+			<< std::setw(10) << b2a(i->second[bts_total_uploaded].i())
+			<< std::setw(10) << b2a(i->second[bts_down_rate].i())
+			<< std::setw(10) << b2a(i->second[bts_up_rate].i())
+			<< std::setw(5) << i->second[bts_incomplete].i()
 			;
-		if (i->second.d(bts_incomplete_total).i())
-			os << " / " << std::setw(3) << i->second.d(bts_incomplete_total).i();
+		if (i->second[bts_incomplete_total].i())
+			os << " / " << std::setw(3) << i->second[bts_incomplete_total].i();
 		else
 			os << "      ";
-		os << "    " << std::setw(3) << i->second.d(bts_complete).i();
-		if (i->second.d(bts_complete_total).i())
-			os << " / " << std::setw(3) << i->second.d(bts_complete_total).i();
+		os << "    " << std::setw(3) << i->second[bts_complete].i();
+		if (i->second[bts_complete_total].i())
+			os << " / " << std::setw(3) << i->second[bts_complete_total].i();
 		else
 			os << "      ";
 		os
 			<< "  " << hex_encode(i->first)
-			<< "  " << strip_name(i->second.d(bts_name).s())
+			<< "  " << strip_name(i->second[bts_name].s())
 			<< std::endl;
 	}
 	return os;
