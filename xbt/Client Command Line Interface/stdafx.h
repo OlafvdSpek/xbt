@@ -38,6 +38,6 @@
 #endif
 #include <bt_misc.h>
 #include <bvalue.h>
-#include <virtual_binary.h>
+#include <xbt/virtual_binary.h>
 
 typedef unsigned char byte;

@@ -5,7 +5,6 @@
 #include "bt_pl_write_data.h"
 #include "data_counter.h"
 #include "ring_buffer.h"
-#include <set>
 #include <socket.h>
 #include <stream_writer.h>
 

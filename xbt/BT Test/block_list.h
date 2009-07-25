@@ -1,6 +1,5 @@
 #pragma once
 
-#include <set>
 #include <xif_key.h>
 
 class Cblock_list: public std::set<int>

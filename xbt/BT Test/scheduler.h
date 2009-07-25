@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include <xif_key.h>
 
 class Cscheduler_entry

@@ -11,7 +11,7 @@
 #include <boost/ptr_container/ptr_list.hpp>
 #include <map>
 #include <sql/database.h>
-#include <virtual_binary.h>
+#include <xbt/virtual_binary.h>
 
 class Cserver
 {

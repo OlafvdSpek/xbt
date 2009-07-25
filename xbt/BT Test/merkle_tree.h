@@ -1,7 +1,5 @@
 #pragma once
 
-#include <virtual_binary.h>
-
 class Cmerkle_tree
 {
 public:

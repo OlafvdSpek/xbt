@@ -31,8 +31,8 @@
 #include <string>
 #include <sys/stat.h>
 #include <vector>
-#include <virtual_binary.h>
 #include <windows/ETSLayout.h>
+#include <xbt/virtual_binary.h>
 
 inline long long max(long long a, long long b)
 {

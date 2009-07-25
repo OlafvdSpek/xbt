@@ -2,7 +2,7 @@
 
 #include <map>
 #include <string>
-#include <virtual_binary.h>
+#include <xbt/virtual_binary.h>
 #include <xif_value.h>
 
 const static int file_id = 0x1a464958; // *reinterpret_cast<const int*>("XIF\x1a");

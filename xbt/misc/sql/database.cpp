@@ -29,9 +29,7 @@ Cdatabase::~Cdatabase()
 void Cdatabase::open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors)
 {
 	m_echo_errors = echo_errors;
-	if (!mysql_init(&m_handle)
-		|| !mysql_real_connect(&m_handle, host.c_str(), user.c_str(), password.c_str(), database.c_str(), MYSQL_PORT, NULL, 0)
-		)
+	if (!mysql_init(&m_handle) || !mysql_real_connect(&m_handle, host.c_str(), user.c_str(), password.c_str(), database.c_str(), MYSQL_PORT, NULL, 0))
 		throw exception(mysql_error(&m_handle));
 	char a0 = true;
 	mysql_options(&m_handle, MYSQL_OPT_RECONNECT, &a0);
@@ -42,7 +40,7 @@ Csql_result Cdatabase::query(const std::string& q)
 	if (!m_query_log.empty())
 	{
 		static std::ofstream f(m_query_log.c_str());
-		f << q << std::endl;
+		f << q.substr(0, 239) << std::endl;
 	}
 	if (mysql_real_query(&m_handle, q.data(), q.size()))
 	{
