@@ -13,7 +13,7 @@ Cxif_key Cblock_list::save() const
 {
 	Cxif_key v;
 	int j = 0;
-	for (const_iterator i = begin(); i != end(); i++)
-		v.set_value_int(j++, *i);
+	BOOST_FOREACH(const_reference i, *this)
+		v.set_value_int(j++, i);
 	return v;
 }
