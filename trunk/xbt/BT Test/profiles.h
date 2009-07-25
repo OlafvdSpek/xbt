@@ -1,7 +1,5 @@
 #pragma once
 
-#include <map>
-#include <string>
 #include <xif_key.h>
 
 class Cprofile

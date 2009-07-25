@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <virtual_binary.h>
+#include <xbt/virtual_binary.h>
 
 class Cbvalue
 {

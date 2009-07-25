@@ -2,7 +2,7 @@
 #include "xif_key_r.h"
 
 #include <stream_int.h>
-#include <virtual_binary.h>
+#include <xbt/virtual_binary.h>
 #include <xif_key.h>
 #include <zlib.h>
 

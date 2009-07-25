@@ -3,7 +3,7 @@
 #include "client.h"
 #include <boost/array.hpp>
 #include <vector>
-#include <virtual_binary.h>
+#include <xbt/virtual_binary.h>
 
 class Cserver;
 
