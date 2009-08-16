@@ -4,6 +4,7 @@ Name "XBT Client ${VERSION}"
 Outfile "XBT_Client-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT\Client"
 InstallDirRegKey HKLM "Software\XBT\Client" "InstallDir"
+XPStyle on
 Page directory
 Page instfiles
 UninstPage uninstConfirm
