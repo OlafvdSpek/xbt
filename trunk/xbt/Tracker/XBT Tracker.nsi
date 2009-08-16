@@ -4,6 +4,7 @@ Name "XBT Tracker ${VERSION}"
 Outfile "XBT_Tracker-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT\Tracker"
 InstallDirRegKey HKLM "Software\XBT\Tracker" "InstallDir"
+XPStyle on
 Page directory
 Page instfiles
 UninstPage uninstConfirm

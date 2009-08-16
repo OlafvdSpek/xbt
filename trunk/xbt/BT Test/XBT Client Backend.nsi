@@ -4,6 +4,7 @@ Name "XBT Client Backend ${VERSION}"
 Outfile "XBT_Client_Backend-${VERSION}.exe"
 InstallDir "$PROGRAMFILES\XBT\Client Backend"
 InstallDirRegKey HKLM "Software\XBT\Client Backend" "InstallDir"
+XPStyle on
 Page directory
 Page instfiles
 UninstPage uninstConfirm
