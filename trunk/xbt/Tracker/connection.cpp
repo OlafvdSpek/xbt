@@ -210,7 +210,7 @@ void Cconnection::read(const std::string& v)
 	}
 	if (s.empty())
 	{
-		if (m_server->config().m_redirect_url.empty())
+		if (!ti.m_peer_id.empty() || m_server->config().m_redirect_url.empty())
 			h = "HTTP/1.0 404 Not Found\r\n";
 		else
 		{
