@@ -153,12 +153,12 @@ int main(int argc, char* argv[])
 		else
 		{
 			// calculate piece hashes
-			while (cb_d = read(f, w, d.data_end() - w))
+			while (cb_d = read(f, w, d.end() - w))
 			{
 				if (cb_d < 0)
 					break;
 				w += cb_d;
-				if (w == d.data_end())
+				if (w == d.end())
 				{
 					pieces += Csha1(const_memory_range(d, w - d)).read();
 					w = d.data_edit();
@@ -182,9 +182,9 @@ int main(int argc, char* argv[])
 	{
 		// single-file torrent
 		if (use_merkle)
-			info.d(bts_merkle_hash, files.l().front().d(bts_merkle_hash));
-		info.d(bts_length, files.l().front().d(bts_length));
-		info.d(bts_name, files.l().front().d(bts_path).l().front());
+			info.d(bts_merkle_hash, files.l().front()[bts_merkle_hash]);
+		info.d(bts_length, files.l().front()[bts_length]);
+		info.d(bts_name, files.l().front()[bts_path].l().front());
 	}
 	else
 	{
