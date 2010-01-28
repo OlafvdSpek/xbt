@@ -11,7 +11,7 @@
 #include <sha1.h>
 #include <socket.h>
 #include <vector>
-#include <virtual_binary.h>
+#include <xbt/virtual_binary.h>
 #include <xcc_z.h>
 
 #ifdef WIN32
