@@ -995,12 +995,14 @@ int Cserver::test_sql()
 	try
 	{
 		mysql_get_server_version(&m_database.handle());
-		m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from " + table_name(table_announce_log) + " where 0");
+		if (m_config.m_log_announce)
+			m_database.query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from " + table_name(table_announce_log) + " where 0");
 		m_database.query("select name, value from " + table_name(table_config) + " where 0");
 		m_database.query("select begin, end from " + table_name(table_deny_from_hosts) + " where 0");
 		m_database.query("select " + column_name(column_files_fid) + ", info_hash, " + column_name(column_files_leechers) + ", " + column_name(column_files_seeders) + ", flags, mtime, ctime from " + table_name(table_files) + " where 0");
 		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0");
-		m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0");
+		if (m_config.m_log_scrape)
+			m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0");
 		m_database.query("select " + column_name(column_users_uid) + ", downloaded, uploaded from " + table_name(table_users) + " where 0");
 		m_read_users_can_leech = m_database.query("show columns from " + table_name(table_users) + " like 'can_leech'");
 		m_read_users_peers_limit = m_database.query("show columns from " + table_name(table_users) + " like 'peers_limit'");
