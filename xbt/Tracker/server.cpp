@@ -1007,7 +1007,7 @@ int Cserver::test_sql()
 		m_read_users_can_leech = m_database.query("show columns from " + table_name(table_users) + " like 'can_leech'");
 		m_read_users_peers_limit = m_database.query("show columns from " + table_name(table_users) + " like 'peers_limit'");
 		m_read_users_torrent_pass = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass'");
-		m_read_users_torrent_pass_version = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass_version'");
+		m_read_users_torrent_pass_version = true; // m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass_version'");
 		m_read_users_torrents_limit = m_database.query("show columns from " + table_name(table_users) + " like 'torrents_limit'");
 		m_read_users_wait_time = m_database.query("show columns from " + table_name(table_users) + " like 'wait_time'");
 		return 0;
