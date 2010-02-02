@@ -8,7 +8,7 @@
 #include <map>
 #include <socket.h>
 #include <vector>
-#include <virtual_binary.h>
+#include <xbt/virtual_binary.h>
 
 #ifndef WIN32
 #include <stdint.h>
