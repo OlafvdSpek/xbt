@@ -1,6 +1,7 @@
 #pragma once
 #pragma warning(disable: 4786)
 
+#include <cstring>
 #include <ctime>
 #include <fstream>
 #include <iostream>
