@@ -4,7 +4,6 @@
 #include <boost/foreach.hpp>
 #include <string.h>
 #include "bt_misc.h"
-#include "xcc_z.h"
 
 Cbvalue::Cbvalue(long long v)
 {
@@ -102,9 +101,7 @@ int Cbvalue::write(const_memory_range s)
 
 int Cbvalue::write(const char* s, int cb_s)
 {
-	return cb_s >= 10 && s[0] == 0x1f && s[1] == -0x75 && s[2] == 8
-		? write(xcc_z::gunzip(const_memory_range(s, cb_s)))
-		: write(s, s + cb_s);
+	return write(s, s + cb_s);
 }
 
 int Cbvalue::write(const char*& s, const char* s_end)
