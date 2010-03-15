@@ -22,4 +22,11 @@
                 return mysql_fetch_assoc(db_query($query));
         }
 
+        function db_query_first_field($query)
+        {
+                $row = mysql_fetch_array(db_query($query));
+		return $row[0];
+        }
+
+
 	db_connect();
