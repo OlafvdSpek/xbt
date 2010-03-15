@@ -1,14 +1,11 @@
 <?php
-	require_once('xbt_config.php');
+	require_once('xbt_common.php');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <link rel=stylesheet href="xbt.css">
 <title>XBT Files</title>
 <?php
-	mysql_connect($mysql_host, $mysql_user, $mysql_pass);
-	mysql_select_db($mysql_db);
-	$results = mysql_query("select sum(completed) completed, sum(leechers) leechers, sum(seeders) seeders, sum(leechers or seeders) torrents from xbt_files");
-	$result = mysql_fetch_assoc($results);
+	$result = db_query_first("select sum(completed) completed, sum(leechers) leechers, sum(seeders) seeders, sum(leechers or seeders) torrents from xbt_files");
 	$result['peers'] = $result['leechers'] + $result['seeders'];
 	echo('<table>');
 	printf('<tr><th align=right>completed<td align=right>%d<td>', $result['completed']);
@@ -22,7 +19,7 @@
 	printf('<tr><th align=right>time<td align=right colspan=2>%s', gmdate('Y-m-d H:i:s'));
 	echo('</table>');
 	echo('<hr>');
-	$results = mysql_query("select * from xbt_files where leechers or seeders order by ctime desc");
+	$results = db_query("select * from xbt_files where leechers or seeders order by ctime desc");
 	echo('<table>');
 	echo('<tr>');
 	echo('<th>fid');
