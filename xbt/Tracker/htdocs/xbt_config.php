@@ -1,6 +1,5 @@
 <?php
-	$mysql_host = 'localhost';
-	$mysql_user = 'xbt';
-	$mysql_pass = '';
-	$mysql_db = 'xbt';
-?>
+	$mysql['host'] = 'localhost';
+	$mysql['user'] = 'root';
+	$mysql['password'] = 'HASjtcle2hkf';
+	$mysql['db'] = 'xbt';
