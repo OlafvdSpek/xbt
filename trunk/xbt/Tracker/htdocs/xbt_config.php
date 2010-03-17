@@ -1,5 +1,5 @@
 <?php
 	$mysql['host'] = 'localhost';
-	$mysql['user'] = 'root';
-	$mysql['password'] = 'HASjtcle2hkf';
+	$mysql['user'] = 'xbt';
+	$mysql['password'] = '';
 	$mysql['db'] = 'xbt';
