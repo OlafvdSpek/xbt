@@ -16,11 +16,6 @@ Cdatabase::Cdatabase()
 	mysql_init(&m_handle);
 }
 
-Cdatabase::Cdatabase(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors)
-{
-	open(host, user, password, database, echo_errors);
-}
-
 Cdatabase::~Cdatabase()
 {
 	close();

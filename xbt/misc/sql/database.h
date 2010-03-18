@@ -20,12 +20,11 @@ public:
 	int insert_id();
 	void close();
 	Cdatabase();
-	Cdatabase(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors = false);
 	~Cdatabase();
 
-	MYSQL& handle()
+	MYSQL* handle()
 	{
-		return m_handle;
+		return &m_handle;
 	}
 private:
 	bool m_echo_errors;
