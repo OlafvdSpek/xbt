@@ -62,7 +62,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"column_files_seeders", &m_column_files_seeders, "seeders",
 			"column_users_uid", &m_column_users_uid, "uid",
 			"mysql_database", &m_mysql_database, "xbt",
-			"mysql_host", &m_mysql_host, "localhost",
+			"mysql_host", &m_mysql_host, "",
 			"mysql_password", &m_mysql_password, "",
 			"mysql_table_prefix", &m_mysql_table_prefix, "xbt_",
 			"mysql_user", &m_mysql_user, "",
