@@ -13,8 +13,7 @@
 
 Cdatabase::Cdatabase()
 {
-	if (mysql_init(&m_handle))
-		mysql_options(&m_handle, MYSQL_READ_DEFAULT_GROUP, "");
+	mysql_init(&m_handle);
 }
 
 Cdatabase::~Cdatabase()
