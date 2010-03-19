@@ -65,7 +65,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"mysql_host", &m_mysql_host, "localhost",
 			"mysql_password", &m_mysql_password, "",
 			"mysql_table_prefix", &m_mysql_table_prefix, "xbt_",
-			"mysql_user", &m_mysql_user, "xbt",
+			"mysql_user", &m_mysql_user, "",
 			"offline_message", &m_offline_message, "",
 			"pid_file", &m_pid_file, "",
 			"query_log", &m_query_log, "",
