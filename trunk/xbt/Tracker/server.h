@@ -201,7 +201,6 @@ private:
 	bool m_read_users_can_leech;
 	bool m_read_users_peers_limit;
 	bool m_read_users_torrent_pass;
-	bool m_read_users_torrent_pass_version;
 	bool m_read_users_torrents_limit;
 	bool m_read_users_wait_time;
 	bool m_use_sql;
