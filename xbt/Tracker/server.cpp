@@ -619,8 +619,7 @@ void Cserver::read_db_users()
 			q += ", peers_limit";
 		if (m_read_users_torrent_pass)
 			q += ", torrent_pass";
-		if (m_read_users_torrent_pass_version)
-			q += ", torrent_pass_version";
+		q += ", torrent_pass_version";
 		if (m_read_users_torrents_limit)
 			q += ", torrents_limit";
 		if (m_read_users_wait_time)
@@ -648,8 +647,7 @@ void Cserver::read_db_users()
 					m_users_torrent_passes[row[c].s()] = &user;
 				c++;
 			}
-			if (m_read_users_torrent_pass_version)
-				user.torrent_pass_version = row[c++].i();
+			user.torrent_pass_version = row[c++].i();
 			if (m_read_users_torrents_limit)
 				user.torrents_limit = row[c++].i();
 			if (m_read_users_wait_time)
@@ -1003,11 +1001,10 @@ int Cserver::test_sql()
 		m_database.query("select fid, uid, active, announced, completed, downloaded, `left`, uploaded from " + table_name(table_files_users) + " where 0");
 		if (m_config.m_log_scrape)
 			m_database.query("select id, ipa, info_hash, uid, mtime from " + table_name(table_scrape_log) + " where 0");
-		m_database.query("select " + column_name(column_users_uid) + ", downloaded, uploaded from " + table_name(table_users) + " where 0");
+		m_database.query("select " + column_name(column_users_uid) + ", torrent_pass_version, downloaded, uploaded from " + table_name(table_users) + " where 0");
 		m_read_users_can_leech = m_database.query("show columns from " + table_name(table_users) + " like 'can_leech'");
 		m_read_users_peers_limit = m_database.query("show columns from " + table_name(table_users) + " like 'peers_limit'");
 		m_read_users_torrent_pass = m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass'");
-		m_read_users_torrent_pass_version = true; // m_database.query("show columns from " + table_name(table_users) + " like 'torrent_pass_version'");
 		m_read_users_torrents_limit = m_database.query("show columns from " + table_name(table_users) + " like 'torrents_limit'");
 		m_read_users_wait_time = m_database.query("show columns from " + table_name(table_users) + " like 'wait_time'");
 		return 0;
