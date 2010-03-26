@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "server.h"
 
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <sql/sql_query.h>
 #include <iostream>

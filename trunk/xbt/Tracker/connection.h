@@ -1,7 +1,6 @@
 #pragma once
 
 #include "client.h"
-#include <boost/array.hpp>
 #include <vector>
 #include <xbt/virtual_binary.h>
 
