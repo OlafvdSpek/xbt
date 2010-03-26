@@ -7,7 +7,6 @@
 #include "tcp_listen_socket.h"
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
-#include <boost/array.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
 #include <map>
 #include <sql/database.h>
