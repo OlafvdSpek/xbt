@@ -1,3 +1,5 @@
+#pragma once
+
 template <class T, class U>
 typename T::pointer find_ptr(T& c, U v)
 {

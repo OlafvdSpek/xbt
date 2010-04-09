@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "config.h"
 
+#include <find_ptr.h>
 #include <socket.h>
 
 Cconfig::Cconfig()
@@ -90,8 +91,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 
 int Cconfig::set(const std::string& name, const std::string& value)
 {
-	t_attributes<std::string>::iterator i = m_attributes_string.find(name);
-	if (i != m_attributes_string.end())
+	if (t_attributes<std::string>::pointer i = find_ptr(m_attributes_string, name))
 		*i->second.value = value;
 	else if (name == "listen_ipa")
 	{
@@ -105,8 +105,7 @@ int Cconfig::set(const std::string& name, const std::string& value)
 
 int Cconfig::set(const std::string& name, int value)
 {
-	t_attributes<int>::iterator i = m_attributes_int.find(name);
-	if (i != m_attributes_int.end())
+	if (t_attributes<int>::pointer i = find_ptr(m_attributes_int, name))
 		*i->second.value = value;
 	else if (name == "listen_port")
 		m_listen_ports.insert(value);
@@ -117,8 +116,7 @@ int Cconfig::set(const std::string& name, int value)
 
 int Cconfig::set(const std::string& name, bool value)
 {
-	t_attributes<bool>::iterator i = m_attributes_bool.find(name);
-	if (i != m_attributes_bool.end())
+	if (t_attributes<bool>::pointer i = find_ptr(m_attributes_bool, name))
 		*i->second.value = value;
 	else
 		return 1;
