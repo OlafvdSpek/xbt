@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <bt_misc.h>
 #include <bt_strings.h>
+#include <find_ptr.h>
 #include <stream_int.h>
 #include "transaction.h"
 
@@ -277,8 +278,8 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > time())
 		return bts_wait_time;
 	t_peers::key_type peer_key(v.m_ipa, user ? user->uid : 0);
-	t_peers::iterator i = file.peers.find(peer_key);
-	if (i != file.peers.end())
+	t_peers::pointer i = find_ptr(file.peers, peer_key);
+	if (i)
 	{
 		(i->second.left ? file.leechers : file.seeders)--;
 		if (t_user* old_user = find_user_by_uid(i->second.uid))
@@ -298,7 +299,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 	{
 		long long downloaded = 0;
 		long long uploaded = 0;
-		if (i != file.peers.end()
+		if (i
 			&& boost::equals(i->second.peer_id, v.m_peer_id)
 			&& v.m_downloaded >= i->second.downloaded
 			&& v.m_uploaded >= i->second.uploaded)
@@ -483,8 +484,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 		m_stats.scraped_http++;
 		BOOST_FOREACH(Ctracker_input::t_info_hashes::const_reference j, ti.m_info_hashes)
 		{
-			t_files::const_iterator i = m_files.find(j);
-			if (i != m_files.end())
+			if (t_files::pointer i = find_ptr(m_files, j))
 				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
 		}
 	}
@@ -544,7 +544,7 @@ void Cserver::read_db_files()
 		}
 		for (t_files::iterator i = m_files.begin(); i != m_files.end(); )
 		{
-			if (new_files.find(i->first) == new_files.end())
+			if (!new_files.count(i->first))
 				m_files.erase(i++);
 			else
 				i++;
