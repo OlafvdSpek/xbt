@@ -848,8 +848,7 @@ std::string Cserver::debug(const Ctracker_input& ti) const
 	}
 	else
 	{
-		t_files::const_iterator i = m_files.find(ti.m_info_hash);
-		if (i != m_files.end())
+		if (t_files::const_pointer i = find_ptr(m_files, ti.m_info_hash))
 			i->second.debug(os);
 	}
 	os << "</table>";
@@ -918,14 +917,14 @@ Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, const 
 		if (v.size() >= 8 && Csha1((boost::format("%s %d %d %s") % m_config.m_torrent_pass_private_key % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8)))
 			return user;
 	}
-	t_users_torrent_passes::const_iterator i = m_users_torrent_passes.find(v);
-	return i == m_users_torrent_passes.end() ? NULL : i->second;
+	t_users_torrent_passes::pointer i = find_ptr(m_users_torrent_passes, v);
+	return i ? i->second : NULL;
 }
 
 Cserver::t_user* Cserver::find_user_by_uid(int v)
 {
-	t_users::iterator i = m_users.find(v);
-	return i == m_users.end() ? NULL : &i->second;
+	t_users::pointer i = find_ptr(m_users, v);
+	return i ? &i->second : NULL;
 }
 
 void Cserver::sig_handler(int v)
