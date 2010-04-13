@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBT Tracker", "XBT Tracker.vcproj", "{73C570AC-E7C3-451D-A5C6-7A2532F0121B}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBT Tracker", "XBT Tracker.vcxproj", "{73C570AC-E7C3-451D-A5C6-7A2532F0121B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
