@@ -8,6 +8,7 @@
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
 #include <boost/ptr_container/ptr_list.hpp>
+#include <find_ptr.h>
 #include <map>
 #include <sql/database.h>
 #include <xbt/virtual_binary.h>
@@ -146,9 +147,9 @@ public:
 	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 
 	const t_file* file(const std::string& id) const
-	{
-		t_files::const_iterator i = m_files.find(id);
-		return i == m_files.end() ? NULL : &i->second;
+	{	
+		t_files::const_pointer i = find_ptr(m_files, id);
+		return i ? &i->second : NULL;
 	}
 
 	const Cconfig& config() const
