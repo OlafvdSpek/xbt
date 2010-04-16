@@ -95,23 +95,8 @@ int Cserver::run()
 #ifndef WIN32
 	if (m_config.m_daemon)
 	{
-#if 1
 		if (daemon(true, false))
 			std::cerr << "daemon failed" << std::endl;
-#else
-		switch (fork())
-		{
-		case -1:
-			std::cerr << "fork failed" << std::endl;
-			break;
-		case 0:
-			break;
-		default:
-			exit(0);
-		}
-		if (setsid() == -1)
-			std::cerr << "setsid failed" << std::endl;
-#endif
 		std::ofstream(m_config.m_pid_file.c_str()) << getpid() << std::endl;
 		struct sigaction act;
 		act.sa_handler = sig_handler;

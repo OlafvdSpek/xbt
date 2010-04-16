@@ -8,6 +8,7 @@
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
 #include <boost/ptr_container/ptr_list.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 #include <find_ptr.h>
 #include <map>
 #include <sql/database.h>
@@ -120,11 +121,6 @@ public:
 		int wait_time;
 	};
 
-	typedef std::map<std::string, t_file> t_files;
-	typedef std::map<unsigned int, t_deny_from_host> t_deny_from_hosts;
-	typedef std::map<int, t_user> t_users;
-	typedef std::map<std::string, t_user*> t_users_torrent_passes;
-
 	int test_sql();
 	void accept(const Csocket&);
 	t_user* find_user_by_torrent_pass(const std::string&, const std::string& info_hash);
@@ -190,6 +186,10 @@ private:
 	typedef boost::ptr_list<Cconnection> t_connections;
 	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef std::list<Cudp_listen_socket> t_udp_sockets;
+	typedef std::map<std::string, t_file> t_files;
+	typedef std::map<unsigned int, t_deny_from_host> t_deny_from_hosts;
+	typedef std::map<int, t_user> t_users;
+	typedef std::map<std::string, t_user*> t_users_torrent_passes;
 
 	static void sig_handler(int v);
 	std::string column_name(int v) const;
