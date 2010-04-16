@@ -110,9 +110,7 @@ int Cserver::run()
 	}
 #endif
 #ifdef EPOLL
-	const int c_events = 64;
-
-	epoll_event events[c_events];
+	boost::array<epoll_event, 64> events;
 #else
 	fd_set fd_read_set;
 	fd_set fd_write_set;
@@ -121,7 +119,7 @@ int Cserver::run()
 	while (!g_sig_term)
 	{
 #ifdef EPOLL
-		int r = m_epoll.wait(events, c_events, 5000);
+		int r = m_epoll.wait(events.data(), events.size(), 5000);
 		if (r == -1)
 			std::cerr << "epoll_wait failed: " << errno << std::endl;
 		else
