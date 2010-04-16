@@ -148,8 +148,7 @@ public:
 
 	const t_file* file(const std::string& id) const
 	{	
-		t_files::const_pointer i = find_ptr(m_files, id);
-		return i ? &i->second : NULL;
+		return find_ptr(m_files, id);
 	}
 
 	const Cconfig& config() const

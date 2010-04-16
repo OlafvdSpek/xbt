@@ -278,12 +278,12 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > time())
 		return bts_wait_time;
 	t_peers::key_type peer_key(v.m_ipa, user ? user->uid : 0);
-	t_peers::pointer i = find_ptr(file.peers, peer_key);
+	t_peer* i = find_ptr(file.peers, peer_key);
 	if (i)
 	{
-		(i->second.left ? file.leechers : file.seeders)--;
-		if (t_user* old_user = find_user_by_uid(i->second.uid))
-			(i->second.left ? old_user->incompletes : old_user->completes)--;
+		(i->left ? file.leechers : file.seeders)--;
+		if (t_user* old_user = find_user_by_uid(i->uid))
+			(i->left ? old_user->incompletes : old_user->completes)--;
 	}
 	else if (v.m_left && user && user->torrents_limit && user->incompletes >= user->torrents_limit)
 		return bts_torrents_limit_reached;
@@ -300,12 +300,12 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 		long long downloaded = 0;
 		long long uploaded = 0;
 		if (i
-			&& boost::equals(i->second.peer_id, v.m_peer_id)
-			&& v.m_downloaded >= i->second.downloaded
-			&& v.m_uploaded >= i->second.uploaded)
+			&& boost::equals(i->peer_id, v.m_peer_id)
+			&& v.m_downloaded >= i->downloaded
+			&& v.m_uploaded >= i->uploaded)
 		{
-			downloaded = v.m_downloaded - i->second.downloaded;
-			uploaded = v.m_uploaded - i->second.uploaded;
+			downloaded = v.m_downloaded - i->downloaded;
+			uploaded = v.m_uploaded - i->uploaded;
 		}
 		m_files_users_updates_buffer += Csql_query(m_database, "(?,1,?,?,?,?,?,?,?),")
 			.p(v.m_event != Ctracker_input::e_stopped)
@@ -484,8 +484,8 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
 		m_stats.scraped_http++;
 		BOOST_FOREACH(Ctracker_input::t_info_hashes::const_reference j, ti.m_info_hashes)
 		{
-			if (t_files::pointer i = find_ptr(m_files, j))
-				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i->first % i->second.seeders % i->second.completed % i->second.leechers).str();
+			if (t_file* i = find_ptr(m_files, j))
+				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % j % i->seeders % i->completed % i->leechers).str();
 		}
 	}
 	d += "e";
@@ -848,8 +848,8 @@ std::string Cserver::debug(const Ctracker_input& ti) const
 	}
 	else
 	{
-		if (t_files::const_pointer i = find_ptr(m_files, ti.m_info_hash))
-			i->second.debug(os);
+		if (const t_file* i = find_ptr(m_files, ti.m_info_hash))
+			i->debug(os);
 	}
 	os << "</table>";
 	return os.str();
@@ -917,14 +917,13 @@ Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, const 
 		if (v.size() >= 8 && Csha1((boost::format("%s %d %d %s") % m_config.m_torrent_pass_private_key % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8)))
 			return user;
 	}
-	t_users_torrent_passes::pointer i = find_ptr(m_users_torrent_passes, v);
-	return i ? i->second : NULL;
+	t_user** i = find_ptr(m_users_torrent_passes, v);
+	return i ? *i : NULL;
 }
 
 Cserver::t_user* Cserver::find_user_by_uid(int v)
 {
-	t_users::pointer i = find_ptr(m_users, v);
-	return i ? &i->second : NULL;
+	return find_ptr(m_users, v);
 }
 
 void Cserver::sig_handler(int v)
