@@ -19,9 +19,7 @@ public:
 	Csql_query& p(const_memory_range);
 	Csql_query(Cdatabase&, const std::string& = "");
 private:
-	typedef std::list<std::string> t_list;
-
-	std::string m_data;
+	std::string m_in;
+	std::string m_out;
 	Cdatabase& m_database;
-	t_list m_list;
 };
