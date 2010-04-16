@@ -1,7 +1,6 @@
 #pragma once
 
 #include <const_memory_range.h>
-#include <list>
 
 class Cdatabase;
 class Csql_result;
