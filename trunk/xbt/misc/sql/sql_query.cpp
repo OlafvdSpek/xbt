@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "sql_query.h"
 
+#include <boost/array.hpp>
 #include <cstdio>
 #include <vector>
 #include "database.h"
@@ -34,8 +35,7 @@ void Csql_query::operator+=(const std::string& v)
 
 Csql_query& Csql_query::p_name(const std::string& v)
 {
-	std::string r;
-	r.resize(2 * v.size() + 2);
+	std::vector<char> r(2 * v.size() + 2);
 	r.resize(mysql_real_escape_string(m_database.handle(), &r.front() + 1, v.data(), v.size()) + 2);
 	r.front() = '`';
 	r.back() = '`';
@@ -43,7 +43,7 @@ Csql_query& Csql_query::p_name(const std::string& v)
 	return *this;
 }
 
-Csql_query& Csql_query::p_raw(const std::string& v)
+Csql_query& Csql_query::p_raw(const_memory_range v)
 {
 	size_t i = m_in.find('?');
 	m_out.append(m_in.data(), i);
@@ -51,17 +51,17 @@ Csql_query& Csql_query::p_raw(const std::string& v)
 		m_in.clear();
 	else
 		m_in.erase(0, i + 1);
-	m_out += v;
+	m_out.append(v.begin, v.end);
 	return *this;
 }
 
 Csql_query& Csql_query::p(long long v)
 {
-	char b[21];
+	boost::array<char, 21> b;
 #ifdef WIN32
-	sprintf(b, "%I64d", v);
+	sprintf(b.data(), "%I64d", v);
 #else
-	sprintf(b, "%lld", v);
+	sprintf(b.data(), "%lld", v);
 #endif
 	p_raw(b);
 	return *this;
@@ -69,8 +69,7 @@ Csql_query& Csql_query::p(long long v)
 
 Csql_query& Csql_query::p(const_memory_range v)
 {
-	std::string r;
-	r.resize(2 * v.size() + 2);
+	std::vector<char> r(2 * v.size() + 2);
 	r.resize(mysql_real_escape_string(m_database.handle(), &r.front() + 1, reinterpret_cast<const char*>(v.begin), v.size()) + 2);
 	r.front() = '\'';
 	r.back() = '\'';
