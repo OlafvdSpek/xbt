@@ -245,13 +245,6 @@ public:
 		return *this;
 	}
 
-	/*
-	const_memory_range_base operator+(size_t v) const
-	{
-		return const_memory_range_base(*this) += v;
-	}
-	*/
-
 	T begin;
 	T end;
 };
