@@ -91,8 +91,8 @@ void Cconfig::fill_maps(const Cconfig* v)
 
 int Cconfig::set(const std::string& name, const std::string& value)
 {
-	if (t_attributes<std::string>::pointer i = find_ptr(m_attributes_string, name))
-		*i->second.value = value;
+	if (t_attribute<std::string>* i = find_ptr(m_attributes_string, name))
+		*i->value = value;
 	else if (name == "listen_ipa")
 	{
 		if (value != "*")
@@ -105,8 +105,8 @@ int Cconfig::set(const std::string& name, const std::string& value)
 
 int Cconfig::set(const std::string& name, int value)
 {
-	if (t_attributes<int>::pointer i = find_ptr(m_attributes_int, name))
-		*i->second.value = value;
+	if (t_attribute<int>* i = find_ptr(m_attributes_int, name))
+		*i->value = value;
 	else if (name == "listen_port")
 		m_listen_ports.insert(value);
 	else
@@ -116,8 +116,8 @@ int Cconfig::set(const std::string& name, int value)
 
 int Cconfig::set(const std::string& name, bool value)
 {
-	if (t_attributes<bool>::pointer i = find_ptr(m_attributes_bool, name))
-		*i->second.value = value;
+	if (t_attribute<bool>* i = find_ptr(m_attributes_bool, name))
+		*i->value = value;
 	else
 		return 1;
 	return 0;
