@@ -8,7 +8,10 @@ class Cclient
 {
 public:
 	virtual void process_events(int) = 0;
-	virtual ~Cclient();
+
+	virtual ~Cclient()
+	{
+	}
 protected:
 	const Csocket& s() const
 	{

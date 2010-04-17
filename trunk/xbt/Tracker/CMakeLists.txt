@@ -18,7 +18,6 @@ add_executable(
 	../misc/socket.cpp
 	../misc/virtual_binary.cpp
 	../misc/xcc_z.cpp
-	client.cpp
 	config.cpp
 	connection.cpp
 	epoll.cpp
