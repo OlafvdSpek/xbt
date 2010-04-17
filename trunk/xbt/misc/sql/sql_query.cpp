@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "sql_query.h"
 
-#include <boost/array.hpp>
 #include <cstdio>
 #include <vector>
 #include "database.h"
@@ -57,13 +56,13 @@ Csql_query& Csql_query::p_raw(const_memory_range v)
 
 Csql_query& Csql_query::p(long long v)
 {
-	boost::array<char, 21> b;
+	char b[21];
 #ifdef WIN32
-	sprintf(b.data(), "%I64d", v);
+	sprintf(b, "%I64d", v);
 #else
-	sprintf(b.data(), "%lld", v);
+	sprintf(b, "%lld", v);
 #endif
-	p_raw(b);
+	p_raw(const_memory_range(b));
 	return *this;
 }
 
