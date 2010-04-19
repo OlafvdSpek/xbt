@@ -72,7 +72,11 @@ public:
 
 	long long i(long long d = 0) const
 	{
+#ifdef WIN32
+		return raw() ? _atoi64(raw()) : d;
+#else
 		return raw() ? atoll(raw()) : d;
+#endif
 	}
 
 	const std::string s(const std::string& d = "") const
