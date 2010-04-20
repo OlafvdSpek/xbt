@@ -1,6 +1,7 @@
 #pragma once
 
-#include <boost/intrusive_ptr.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <const_memory_range.h>
 #ifdef _MSC_VER
@@ -14,7 +15,6 @@ public:
 	Csql_result_source(MYSQL_RES* h)
 	{
 		m_h = h;
-		mc_references = 0;
 	}
 
 	~Csql_result_source()
@@ -26,25 +26,9 @@ public:
 	{
 		return m_h;
 	}
-
-	friend void intrusive_ptr_add_ref(Csql_result_source*);
-	friend void intrusive_ptr_release(Csql_result_source*);
 private:
 	MYSQL_RES* m_h;
-	int mc_references;
 };
-
-inline void intrusive_ptr_add_ref(Csql_result_source* v)
-{
-	v->mc_references++;
-}
-
-inline void intrusive_ptr_release(Csql_result_source* v)
-{
-	v->mc_references--;
-	if (!v->mc_references)
-		delete v;
-}
 
 class Csql_field
 {
@@ -96,7 +80,7 @@ private:
 class Csql_row
 {
 public:
-	Csql_row(MYSQL_ROW, unsigned long* sizes, boost::intrusive_ptr<Csql_result_source>);
+	Csql_row(MYSQL_ROW, unsigned long* sizes, const boost::shared_ptr<Csql_result_source>&);
 
 	Csql_row()
 	{
@@ -114,7 +98,7 @@ public:
 private:
 	MYSQL_ROW m_data;
 	unsigned long* m_sizes;
-	boost::intrusive_ptr<Csql_result_source> m_source;
+	boost::shared_ptr<Csql_result_source> m_source;
 };
 
 class Csql_result
@@ -124,7 +108,7 @@ public:
 
 	Csql_result(MYSQL_RES* h)
 	{
-		m_source = new Csql_result_source(h);
+		m_source = boost::make_shared<Csql_result_source>(h);
 	}
 
 	operator bool() const
@@ -152,5 +136,5 @@ private:
 		return m_source->h();
 	}
 
-	boost::intrusive_ptr<Csql_result_source> m_source;
+	boost::shared_ptr<Csql_result_source> m_source;
 };

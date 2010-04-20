@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "sql_result.h"
 
-Csql_row::Csql_row(MYSQL_ROW data, unsigned long* sizes, boost::intrusive_ptr<Csql_result_source> source)
+Csql_row::Csql_row(MYSQL_ROW data, unsigned long* sizes, const boost::shared_ptr<Csql_result_source>& source)
 {
 	m_data = data;
 	m_sizes = sizes;
