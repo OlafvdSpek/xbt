@@ -11,24 +11,16 @@ Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
 	m_range.end = m_range.begin + d.size();
 	if (d)
 		memcpy(m_range, d, d.size());
-	mc_references = 0;
-}
-
-Cvirtual_binary_source* Cvirtual_binary_source::pre_edit()
-{
-	if (mc_references == 1)
-		return this;
-	return new Cvirtual_binary_source(range());
 }
 
 Cvirtual_binary::Cvirtual_binary(size_t v)
 {
-	m_source = new Cvirtual_binary_source(const_memory_range(NULL, v));
+	m_source = boost::make_shared<Cvirtual_binary_source>(const_memory_range(NULL, v));
 }
 
 Cvirtual_binary::Cvirtual_binary(const_memory_range d)
 {
-	m_source = new Cvirtual_binary_source(d);
+	m_source = boost::make_shared<Cvirtual_binary_source>(d);
 }
 
 int Cvirtual_binary::save(const std::string& fname) const
@@ -60,7 +52,7 @@ Cvirtual_binary& Cvirtual_binary::load1(const std::string& fname)
 
 void Cvirtual_binary::clear()
 {
-	m_source = NULL;
+	m_source.reset();
 }
 
 size_t Cvirtual_binary::read(void* d) const
@@ -73,7 +65,7 @@ unsigned char* Cvirtual_binary::write_start(size_t cb_d)
 {
 	if (data() && size() == cb_d)
 		return data_edit();
-	m_source = new Cvirtual_binary_source(const_memory_range(NULL, cb_d));
+	m_source = boost::make_shared<Cvirtual_binary_source>(const_memory_range(NULL, cb_d));
 	return data_edit();
 }
 
