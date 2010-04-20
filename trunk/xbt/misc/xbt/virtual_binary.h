@@ -17,11 +17,6 @@ public:
 		delete[] m_range.begin;
 	}
 
-	unsigned char* data_edit()
-	{
-		return m_range;
-	}
-
 	memory_range range()
 	{
 		return m_range;
@@ -99,7 +94,7 @@ public:
 
 	bool empty() const
 	{
-		return !range().size();
+		return range().empty();
 	}
 
 	size_t size() const
@@ -127,7 +122,7 @@ public:
 
 	operator memory_range()
 	{
-		return memory_range(data_edit(), size());
+		return mutable_range();
 	}
 private:
 	boost::shared_ptr<Cvirtual_binary_source> m_source;
