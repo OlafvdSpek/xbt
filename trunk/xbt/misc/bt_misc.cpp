@@ -275,7 +275,13 @@ std::string peer_id2a(const std::string& v)
 std::string duration2a(float v)
 {
 	char d[32];
-	if (v > 86400)
+	if (v > 31557600)
+		sprintf(d, "%.1f years", v / 31557600);
+	else if (v > 2629800)
+		sprintf(d, "%.1f months", v / 2629800);
+	else if (v > 604800)
+		sprintf(d, "%.1f weeks", v / 604800);
+	else if (v > 86400)
 		sprintf(d, "%.1f days", v / 86400);
 	else if (v > 3600)
 		sprintf(d, "%.1f hours", v / 3600);
