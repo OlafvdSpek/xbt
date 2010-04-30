@@ -10,7 +10,7 @@
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 #include <map>
-#include <sql/database.h>
+#include <xbt/database.h>
 #include <xbt/find_ptr.h>
 #include <xbt/virtual_binary.h>
 

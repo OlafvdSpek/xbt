@@ -2,7 +2,7 @@
 #include "server.h"
 
 #include <boost/format.hpp>
-#include <sql/sql_query.h>
+#include <xbt/sql_query.h>
 #include <iostream>
 #include <sstream>
 #include <signal.h>

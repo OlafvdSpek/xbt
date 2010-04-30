@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "sql_query.h"
+#include "xbt/sql_query.h"
 
 #include <cstdio>
 #include <vector>
-#include "database.h"
+#include "xbt/database.h"
 
 Csql_query::Csql_query(Cdatabase& database, const std::string& v):
 	m_database(database)

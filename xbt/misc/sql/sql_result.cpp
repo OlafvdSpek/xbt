@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "sql_result.h"
+#include "xbt/sql_result.h"
 
 Csql_row::Csql_row(MYSQL_ROW data, unsigned long* sizes, const boost::shared_ptr<Csql_result_source>& source)
 {
