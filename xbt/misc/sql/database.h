@@ -17,6 +17,7 @@ public:
 	void open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors = false);
 	Csql_result query(const std::string&);
 	void set_query_log(const std::string&);
+	int affected_rows();
 	int insert_id();
 	void close();
 	Cdatabase();

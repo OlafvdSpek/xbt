@@ -60,6 +60,11 @@ void Cdatabase::close()
 	mysql_close(&m_handle);
 }
 
+int Cdatabase::affected_rows()
+{
+	return mysql_affected_rows(&m_handle);
+}
+
 int Cdatabase::insert_id()
 {
 	return mysql_insert_id(&m_handle);
