@@ -45,11 +45,11 @@ Csql_query& Csql_query::p_name(const std::string& v)
 Csql_query& Csql_query::p_raw(const_memory_range v)
 {
 	size_t i = m_in.find('?');
-	m_out.append(m_in.data(), i);
+	assert(i != std::string::npos);
 	if (i == std::string::npos)
-		m_in.clear();
-	else
-		m_in.erase(0, i + 1);
+		return *this;
+	m_out.append(m_in.data(), i);
+	m_in.erase(0, i + 1);
 	m_out.append(v.begin, v.end);
 	return *this;
 }
