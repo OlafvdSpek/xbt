@@ -8,7 +8,6 @@
 #include <signal.h>
 #include <bt_misc.h>
 #include <bt_strings.h>
-#include <find_ptr.h>
 #include <stream_int.h>
 #include "transaction.h"
 

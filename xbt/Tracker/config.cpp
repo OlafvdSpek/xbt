@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "config.h"
 
-#include <find_ptr.h>
 #include <socket.h>
+#include <xbt/find_ptr.h>
 
 Cconfig::Cconfig()
 {
