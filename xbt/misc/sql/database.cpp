@@ -70,6 +70,11 @@ int Cdatabase::insert_id()
 	return mysql_insert_id(&m_handle);
 }
 
+int Cdatabase::select_db(const std::string& v)
+{
+	return mysql_select_db(&m_handle, v.c_str());
+}
+
 void Cdatabase::set_query_log(const std::string& v)
 {
 	m_query_log = v;

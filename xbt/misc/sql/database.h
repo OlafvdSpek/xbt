@@ -19,6 +19,7 @@ public:
 	void set_query_log(const std::string&);
 	int affected_rows();
 	int insert_id();
+	int select_db(const std::string&);
 	void close();
 	Cdatabase();
 	~Cdatabase();
