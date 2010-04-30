@@ -1,13 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BT Test", "BT Test\BT Test.vcproj", "{1F7DAC81-04AA-4CC9-B162-77BDE0CFC597}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BT Test", "BT Test\BT Test.vcxproj", "{1F7DAC81-04AA-4CC9-B162-77BDE0CFC597}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBT Client Command Line Interface", "Client Command Line Interface\XBT Client Command Line Interface.vcproj", "{29C8B22E-1698-4105-AA74-D884D94F4137}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBT Client Command Line Interface", "Client Command Line Interface\XBT Client Command Line Interface.vcxproj", "{29C8B22E-1698-4105-AA74-D884D94F4137}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBT Client", "Client\XBT Client.vcproj", "{273481B8-9E47-480A-943E-AD252C44488B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBT Client", "Client\XBT Client.vcxproj", "{273481B8-9E47-480A-943E-AD252C44488B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBT Tracker", "Tracker\XBT Tracker.vcproj", "{73C570AC-E7C3-451D-A5C6-7A2532F0121B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBT Tracker", "Tracker\XBT Tracker.vcxproj", "{73C570AC-E7C3-451D-A5C6-7A2532F0121B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
