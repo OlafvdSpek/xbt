@@ -3,7 +3,7 @@
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
-#include <const_memory_range.h>
+#include <xbt/const_memory_range.h>
 #ifdef _MSC_VER
 #include <winsock2.h>
 #endif

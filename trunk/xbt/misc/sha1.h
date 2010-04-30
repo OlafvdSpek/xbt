@@ -17,8 +17,8 @@
 #ifndef _SHA1_H_
 #define _SHA1_H_
 
-#include <const_memory_range.h>
 #include <string>
+#include <xbt/const_memory_range.h>
 
 #ifdef WIN32
 typedef unsigned int uint32_t;

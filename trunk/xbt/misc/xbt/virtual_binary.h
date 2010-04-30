@@ -4,8 +4,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <cassert>
-#include <const_memory_range.h>
 #include <string>
+#include <xbt/const_memory_range.h>
 
 class Cvirtual_binary_source: boost::noncopyable
 {

@@ -2,8 +2,8 @@
 
 #include <boost/intrusive_ptr.hpp>
 #include <boost/utility.hpp>
-#include <const_memory_range.h>
 #include <string>
+#include <xbt/const_memory_range.h>
 
 #ifdef WIN32
 #include <winsock2.h>
