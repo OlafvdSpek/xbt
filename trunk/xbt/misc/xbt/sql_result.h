@@ -1,6 +1,9 @@
 #pragma once
 
+#include <boost/version.hpp>
+#if BOOST_VERSION >= 104200
 #include <boost/make_shared.hpp>
+#endif
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <xbt/const_memory_range.h>
@@ -108,7 +111,11 @@ public:
 
 	Csql_result(MYSQL_RES* h)
 	{
+#if BOOST_VERSION >= 104200
 		m_source = boost::make_shared<Csql_result_source>(h);
+#else
+		m_source.reset(new Csql_result_source(h));
+#endif
 	}
 
 	operator bool() const

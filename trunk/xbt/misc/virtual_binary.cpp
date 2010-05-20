@@ -15,12 +15,20 @@ Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
 
 Cvirtual_binary::Cvirtual_binary(size_t v)
 {
+#if BOOST_VERSION >= 104200
 	m_source = boost::make_shared<Cvirtual_binary_source>(const_memory_range(NULL, v));
+#else
+	m_source.reset(new Cvirtual_binary_source(const_memory_range(NULL, v)));
+#endif
 }
 
 Cvirtual_binary::Cvirtual_binary(const_memory_range d)
 {
+#if BOOST_VERSION >= 104200
 	m_source = boost::make_shared<Cvirtual_binary_source>(d);
+#else
+	m_source.reset(new Cvirtual_binary_source(d));
+#endif
 }
 
 int Cvirtual_binary::save(const std::string& fname) const
@@ -65,7 +73,11 @@ unsigned char* Cvirtual_binary::write_start(size_t cb_d)
 {
 	if (data() && size() == cb_d)
 		return data_edit();
+#if BOOST_VERSION >= 104200
 	m_source = boost::make_shared<Cvirtual_binary_source>(const_memory_range(NULL, cb_d));
+#else
+	m_source.reset(new Cvirtual_binary_source(const_memory_range(NULL, cb_d)));
+#endif
 	return data_edit();
 }
 
