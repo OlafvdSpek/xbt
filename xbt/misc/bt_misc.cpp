@@ -133,7 +133,7 @@ std::string uri_decode(const std::string& v)
 		{
 		case '%':
 			{
-				if (i + 1 > v.length())
+				if (i + 2 >= v.length())
 					return "";
 				int l = v[++i];
 				r += hex_decode(l) << 4 | hex_decode(v[++i]);
