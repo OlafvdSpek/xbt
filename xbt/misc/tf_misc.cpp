@@ -54,12 +54,10 @@ std::string encode_field(const std::string& v, const std::string& local_domain_u
 	r.reserve(v.length() << 1);
 	for (size_t i = 0; i < v.length(); )
 	{
-		if (boost::istarts_with(v.c_str() + i, "ftp.")
-			|| boost::istarts_with(v.c_str() + i, "ftp://")
+		if (boost::istarts_with(v.c_str() + i, "ftp://")
 			|| boost::istarts_with(v.c_str() + i, "http://")
 			|| boost::istarts_with(v.c_str() + i, "https://")
-			|| boost::istarts_with(v.c_str() + i, "mailto:")
-			|| boost::istarts_with(v.c_str() + i, "www."))
+			|| boost::istarts_with(v.c_str() + i, "mailto:"))
 		{
 			size_t p = i;
 			while (p < v.length()
