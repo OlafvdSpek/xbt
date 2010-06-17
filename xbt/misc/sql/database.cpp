@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <xbt/find_ptr.h>
 
 #ifdef WIN32
 #pragma comment(lib, "libmysql")
@@ -83,4 +84,10 @@ void Cdatabase::set_query_log(const std::string& v)
 void Cdatabase::set_name(const std::string& a, const std::string& b)
 {
 	m_names[a] = b;
+}
+
+const std::string& Cdatabase::name(const std::string& v) const
+{
+	const std::string* i = find_ptr(m_names, v);
+	return i ? *i : v;	
 }
