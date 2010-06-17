@@ -21,7 +21,7 @@ Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_
 	for (int i = 0; i < 8; i++)
 		m_secret = m_secret << 8 ^ rand();
 	m_conf_file = conf_file;
-	m_database.set_name("t_config", table_prefix + "config");
+	m_database.set_name("config", table_prefix + "config");
 	m_table_prefix = table_prefix;
 	m_time = ::time(NULL);
 	m_use_sql = use_sql;
@@ -757,7 +757,7 @@ void Cserver::read_config()
 	{
 		try
 		{
-			Csql_result result = Csql_query(m_database, "select name, value from @t_config where value is not null").execute();
+			Csql_result result = Csql_query(m_database, "select name, value from @config where value is not null").execute();
 			Cconfig config;
 			for (Csql_row row; row = result.fetch_row(); )
 			{
@@ -768,7 +768,7 @@ void Cserver::read_config()
 			if (config.m_torrent_pass_private_key.empty())
 			{
 				config.m_torrent_pass_private_key = generate_random_string(27);
-				Csql_query(m_database, "insert into @t_config (name, value) values ('torrent_pass_private_key', ?)").p(config.m_torrent_pass_private_key).execute();
+				Csql_query(m_database, "insert into @config (name, value) values ('torrent_pass_private_key', ?)").p(config.m_torrent_pass_private_key).execute();
 			}
 			m_config = config;
 			m_database.set_name("completed", m_config.m_column_files_completed);
@@ -941,7 +941,7 @@ int Cserver::test_sql()
 		mysql_get_server_version(m_database.handle());
 		if (m_config.m_log_announce)
 			Csql_query(m_database, "select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0").execute();
-		Csql_query(m_database, "select name, value from @t_config where 0").execute();
+		Csql_query(m_database, "select name, value from @config where 0").execute();
 		Csql_query(m_database, "select begin, end from @deny_from_hosts where 0").execute();
 		Csql_query(m_database, "select @fid, info_hash, @leechers, @seeders, flags, mtime, ctime from @files where 0").execute();
 		Csql_query(m_database, "select fid, uid, active, announced, completed, downloaded, `left`, uploaded from @files_users where 0").execute();
