@@ -79,3 +79,8 @@ void Cdatabase::set_query_log(const std::string& v)
 {
 	m_query_log = v;
 }
+
+void Cdatabase::set_name(const std::string& a, const std::string& b)
+{
+	m_names[a] = b;
+}
