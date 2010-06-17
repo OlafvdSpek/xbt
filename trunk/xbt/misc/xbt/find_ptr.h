@@ -10,6 +10,6 @@ typename T::mapped_type* find_ptr(T& c, U v)
 template <class T, class U>
 const typename T::mapped_type* find_ptr(const T& c, U v)
 {
-        typename T::const_iterator i = c.find(v);
-        return i == c.end() ? NULL : &i->second;
+	typename T::const_iterator i = c.find(v);
+	return i == c.end() ? NULL : &i->second;
 }
