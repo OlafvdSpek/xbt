@@ -18,6 +18,8 @@ public:
 	Csql_query& p(const_memory_range);
 	Csql_query(Cdatabase&, const std::string& = "");
 private:
+	std::string replace_names(const std::string&) const;
+
 	std::string m_in;
 	std::string m_out;
 	Cdatabase& m_database;

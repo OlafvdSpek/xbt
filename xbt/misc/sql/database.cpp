@@ -89,5 +89,6 @@ void Cdatabase::set_name(const std::string& a, const std::string& b)
 const std::string& Cdatabase::name(const std::string& v) const
 {
 	const std::string* i = find_ptr(m_names, v);
+	assert(i);
 	return i ? *i : v;	
 }
