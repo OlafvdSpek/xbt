@@ -17,9 +17,30 @@ Csql_result Csql_query::execute() const
 	return m_database.query(read());
 }
 
+std::string Csql_query::replace_names(const std::string& v) const
+{
+	std::string r;
+	for (size_t i = 0, j; j = v.find('@', i); )
+	{
+		if (j == std::string::npos)
+		{
+			r.append(v.data() + i, v.size() - i);
+			break;
+		}
+		r.append(v.data() + i, j - i);
+		i = j + 1;
+		j = v.find_first_of(" ,", i);
+		if (j == std::string::npos)
+			j = v.size();
+		r.append(m_database.name(v.substr(i, j - i)));
+		i = j;
+	}
+	return r;
+}
+
 std::string Csql_query::read() const
 {
-	return m_out + m_in;
+	return m_out + replace_names(m_in);
 }
 
 void Csql_query::operator=(const std::string& v)
@@ -50,7 +71,7 @@ Csql_query& Csql_query::p_raw(const_memory_range v)
 	assert(i != std::string::npos);
 	if (i == std::string::npos)
 		return *this;
-	m_out.append(m_in.data(), i);
+	m_out.append(replace_names(m_in.substr(0, i)));
 	m_in.erase(0, i + 1);
 	m_out.append(v.begin, v.end);
 	return *this;
