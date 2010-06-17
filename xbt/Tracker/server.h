@@ -167,22 +167,6 @@ public:
 		return m_time;
 	}
 private:
-	enum
-	{
-		column_files_completed,
-		column_files_fid,
-		column_files_leechers,
-		column_files_seeders,
-		column_users_uid,
-		table_announce_log,
-		table_config,
-		table_deny_from_hosts,
-		table_files,
-		table_files_users,
-		table_scrape_log,
-		table_users,
-	};
-
 	typedef boost::ptr_list<Cconnection> t_connections;
 	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef std::list<Cudp_listen_socket> t_udp_sockets;
@@ -191,9 +175,8 @@ private:
 	typedef std::map<int, t_user> t_users;
 	typedef std::map<std::string, t_user*> t_users_torrent_passes;
 
+	const std::string& db_name(const std::string& v) const;
 	static void sig_handler(int v);
-	std::string column_name(int v) const;
-	std::string table_name(int) const;
 
 	Cconfig m_config;
 	Cstats m_stats;
