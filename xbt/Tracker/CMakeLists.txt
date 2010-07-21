@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 2.4)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS true)
 set(CMAKE_BUILD_TYPE release)
+set(CPACK_GENERATOR DEB)
+set(CPACK_PACKAGE_CONTACT "olafvdspek@gmail.com")
 include_directories(. ../misc)
 include(CheckIncludeFileCXX)
 check_include_file_cxx(sys/epoll.h HAVE_SYS_EPOLL)
 if(HAVE_SYS_EPOLL)
-       add_definitions(-DEPOLL)
+	add_definitions(-DEPOLL)
 endif()
 add_executable(
 	xbt_tracker
@@ -29,3 +31,5 @@ add_executable(
 	"XBT Tracker.cpp"
 )
 target_link_libraries(xbt_tracker mysqlclient)
+install(TARGETS xbt_tracker DESTINATION bin)
+include(CPack)
