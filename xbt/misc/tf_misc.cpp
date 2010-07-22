@@ -120,24 +120,7 @@ std::string encode_text(const std::string& v, const std::string& local_domain_ur
 
 std::string trim_field(const std::string& v)
 {
-	std::string r;
-	bool copy_white = false;
-	for (size_t i = 0; i < v.length(); i++)
-	{
-		if (isspace(v[i] & 0xff))
-			copy_white = true;
-		else
-		{
-			if (copy_white)
-			{
-				if (!r.empty())
-					r += ' ';
-				copy_white = false;
-			}
-			r += v[i];
-		}
-	}
-	return r;
+	return boost::find_format_all_copy(boost::trim_copy(v), boost::token_finder(boost::is_space(), boost::token_compress_on), boost::const_formatter(" "));
 }
 
 std::string trim_text(const std::string& v)
