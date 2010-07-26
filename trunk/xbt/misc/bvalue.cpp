@@ -2,6 +2,7 @@
 #include "bvalue.h"
 
 #include <boost/foreach.hpp>
+#include <cstdio>
 #include <string.h>
 #include "bt_misc.h"
 
