@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "socket.h"
 
+#include <cstdio>
+
 #ifdef WIN32
 #pragma comment(lib, "ws2_32.lib")
 #else
