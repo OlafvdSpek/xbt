@@ -12,12 +12,12 @@ public:
 	std::string read() const;
 	void operator=(const std::string&);
 	void operator+=(const std::string&);
-	Csql_query& p_name(const std::string&);
 	Csql_query& p_raw(const_memory_range);
 	Csql_query& p(long long);
 	Csql_query& p(const_memory_range);
 	Csql_query(Cdatabase&, const std::string& = "");
 private:
+	Csql_query& p_name(const std::string&);
 	std::string replace_names(const std::string&) const;
 
 	std::string m_in;
