@@ -1,4 +1,4 @@
-g++ $@ -DNDEBUG -I ../misc -I . -O3 -o xbt_tracker \
+g++ $@ -DEPOLL -DNDEBUG -I ../misc -I . -O3 -o xbt_tracker \
 	../misc/sql/database.cpp \
 	../misc/sql/sql_query.cpp \
 	../misc/sql/sql_result.cpp \
