@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/intrusive_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <string>
 #include <xbt/const_memory_range.h>
@@ -73,7 +73,6 @@ public:
 	Csocket_source(SOCKET s)
 	{
 		m_s = s;
-		mc_references = 0;
 	}
 
 	~Csocket_source()
@@ -85,21 +84,8 @@ public:
 	{
 		return m_s;
 	}
-
-	friend void intrusive_ptr_add_ref(Csocket_source* v)
-	{
-		v->mc_references++;
-	}
-
-	friend void intrusive_ptr_release(Csocket_source* v)
-	{
-		v->mc_references--;
-		if (!v->mc_references)
-			delete v;
-	}
 private:
 	SOCKET m_s;
-	int mc_references;
 };
 
 class Csocket
@@ -131,5 +117,5 @@ public:
 		return m_source ? static_cast<SOCKET>(*m_source) : INVALID_SOCKET;
 	}
 private:
-	boost::intrusive_ptr<Csocket_source> m_source;
+	boost::shared_ptr<Csocket_source> m_source;
 };
