@@ -228,6 +228,10 @@ If it's off, the tracker will only serve users (identified by torrent_pass) that
 
 <p>
 The torrent_pass field in xbt_users contains the 32 char torrent_pass. The announce URL contains the same torrent_pass: /&lt;torrent_pass>/announce
+
+<h2>Tables</h2>
+
+<a href="http://visigod.com/xbt-tracker/table-documentation">Table Documentation</a>
+
 <?php
 	include('../bottom.php');
-?>
