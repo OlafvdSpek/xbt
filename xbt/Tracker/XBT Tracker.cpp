@@ -128,7 +128,10 @@ int main(int argc, char* argv[])
 		if (!strcmp(argv[1], "--conf_file") && argc >= 3)
 			g_conf_file = argv[2];
 		else
+		{
+			std::cerr << "  --conf_file arg (=xbt_tracker.conf)" << std::endl;
 			return 1;
+		}
 	}
 #endif
 	return main1();
