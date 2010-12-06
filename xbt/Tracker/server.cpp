@@ -419,7 +419,7 @@ static byte* write_compact_int(byte* w, unsigned int v)
 	return w;
 }
 
-Cvirtual_binary Cserver::scrape(const Ctracker_input& ti)
+Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user*)
 {
 	if (m_use_sql && m_config.m_log_scrape)
 	{

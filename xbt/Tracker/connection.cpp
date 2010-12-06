@@ -204,7 +204,7 @@ void Cconnection::read(const std::string& v)
 		else if (m_server->config().m_full_scrape || ti.m_compact || !ti.m_info_hash.empty())
 		{
 			gzip = m_server->config().m_gzip_scrape && !ti.m_compact && ti.m_info_hash.empty();
-			s = m_server->scrape(ti);
+ 			s = m_server->scrape(ti, m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash));
 		}
 		break;
 	}
