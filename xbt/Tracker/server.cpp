@@ -419,16 +419,17 @@ static byte* write_compact_int(byte* w, unsigned int v)
 	return w;
 }
 
-Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user*)
+Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 {
 	if (m_use_sql && m_config.m_log_scrape)
 	{
-		Csql_query q(m_database, "(?,?,?),");
+		Csql_query q(m_database, "(?,?,?,?),");
 		q.p(ntohl(ti.m_ipa));
 		if (ti.m_info_hash.empty())
 			q.p_raw(const_memory_range("null"));
 		else
 			q.p(ti.m_info_hash);
+		q.p(user ? user->uid : 0);
 		q.p(time());
 		m_scrape_log_buffer += q.read();
 	}
@@ -698,7 +699,7 @@ void Cserver::write_db_files()
 		try
 		{
 			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
-			m_database.query("insert delayed into " + db_name("scrape_log") + " (ipa, info_hash, mtime) values " + m_scrape_log_buffer);
+			m_database.query("insert delayed into " + db_name("scrape_log") + " (ipa, info_hash, uid, mtime) values " + m_scrape_log_buffer);
 		}
 		catch (Cdatabase::exception&)
 		{
