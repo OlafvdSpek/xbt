@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <bt_misc.h>
 #include <bt_strings.h>
+#include <bvalue.h>
 #include <stream_int.h>
 #include "transaction.h"
 
@@ -433,6 +434,8 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 		q.p(time());
 		m_scrape_log_buffer += q.read();
 	}
+	if (!m_config.m_anonymous_scrape && !user) 
+		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 	std::string d;
 	d += "d5:filesd";
 	if (ti.m_info_hashes.empty())
