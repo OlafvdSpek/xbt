@@ -385,7 +385,7 @@ void Cserver::t_file::clean_up(time_t t, Cserver& server)
 			if (t_user* user = server.find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
 			if (i->second.uid)
-				server.m_files_users_updates_buffer += Csql_query(server.m_database, "(0,0,0,0,-1,0,-1,?,?),").p(fid).p(i->second.uid).read();
+				server.m_files_users_updates_buffer += Csql_query(server.m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),").p(fid).p(i->second.uid).read();
 			peers.erase(i++);
 			dirty = true;
 		}
@@ -728,7 +728,7 @@ void Cserver::write_db_users()
 				+ "  announced = announced + values(announced),"
 				+ "  completed = completed + values(completed),"
 				+ "  downloaded = downloaded + values(downloaded),"
-				+ "  `left` = if(values(`left`) = -1, `left`, values(`left`)),"
+				+ "  `left` = if(values(`left`) = 18446744073709551615, `left`, values(`left`)),"
 				+ "  uploaded = uploaded + values(uploaded),"
 				+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
 		}
