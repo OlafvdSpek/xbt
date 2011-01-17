@@ -61,7 +61,7 @@ int Cserver::run()
 				if (l.setsockopt(SOL_SOCKET, SO_ACCEPTFILTER, &afa, sizeof(afa)))
 					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #elif TCP_DEFER_ACCEPT
-				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, true))
+				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, 90))
 					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
 				lt.push_back(Ctcp_listen_socket(this, l));
