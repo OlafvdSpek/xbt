@@ -96,7 +96,7 @@ public:
 
 	Csql_field operator[](size_t i) const
 	{
-		return Csql_field(m_data[i], m_sizes[i]);
+		return m_data ? Csql_field(m_data[i], m_sizes[i]) : Csql_field(NULL, 0);
 	}
 private:
 	MYSQL_ROW m_data;
