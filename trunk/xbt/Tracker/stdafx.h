@@ -2,10 +2,11 @@
 
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
-#include <boost/ptr_container/ptr_list.hpp>
-#include <boost/ptr_container/ptr_map.hpp>
+#include <boost/ptr_container/ptr_container.hpp>
+#include <boost/smart_ptr.hpp>
 #include <boost/utility.hpp>
 #include <cassert>
+#include <cstdio>
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -15,6 +16,8 @@
 #include <signal.h>
 #include <sstream>
 #include <string>
+#include <string.h>
+#include <sys/stat.h>
 #include <vector>
 #include <xbt/find_ptr.h>
 
