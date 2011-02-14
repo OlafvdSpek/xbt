@@ -1,5 +1,8 @@
 #pragma once
 
+#define FD_SETSIZE 1024
+#define NOMINMAX
+
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
@@ -19,12 +22,11 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <vector>
+#include <xbt/database.h>
 #include <xbt/find_ptr.h>
+#include <xbt/virtual_binary.h>
 
 #ifdef WIN32
-#define FD_SETSIZE 1024
-#define NOMINMAX
-
 #define atoll _atoi64
 #else
 #include <sys/types.h>
