@@ -1,7 +1,6 @@
 #pragma once
 
 #include "client.h"
-#include <vector>
 #include <xbt/virtual_binary.h>
 
 class Cserver;

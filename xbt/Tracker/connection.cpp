@@ -4,7 +4,6 @@
 #include <bt_misc.h>
 #include <bt_strings.h>
 #include <bvalue.h>
-#include <iostream>
 #include <xcc_z.h>
 #include "server.h"
 

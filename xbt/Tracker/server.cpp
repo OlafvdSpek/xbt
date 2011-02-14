@@ -1,11 +1,7 @@
 #include "stdafx.h"
 #include "server.h"
 
-#include <boost/format.hpp>
 #include <xbt/sql_query.h>
-#include <iostream>
-#include <sstream>
-#include <signal.h>
 #include <bt_misc.h>
 #include <bt_strings.h>
 #include <bvalue.h>

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ctime>
-
 class Cstats
 {
 public:

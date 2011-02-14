@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 #include <boost/utility.hpp>
@@ -11,6 +12,8 @@
 #include <list>
 #include <map>
 #include <set>
+#include <signal.h>
+#include <sstream>
 #include <string>
 #include <vector>
 
