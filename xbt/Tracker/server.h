@@ -8,7 +8,6 @@
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
 #include <xbt/database.h>
-#include <xbt/find_ptr.h>
 #include <xbt/virtual_binary.h>
 
 class Cserver

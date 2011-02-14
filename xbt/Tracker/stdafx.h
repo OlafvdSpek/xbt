@@ -16,6 +16,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <xbt/find_ptr.h>
 
 #ifdef WIN32
 #define FD_SETSIZE 1024

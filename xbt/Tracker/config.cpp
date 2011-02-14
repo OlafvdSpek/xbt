@@ -2,7 +2,6 @@
 #include "config.h"
 
 #include <socket.h>
-#include <xbt/find_ptr.h>
 
 Cconfig::Cconfig()
 {
