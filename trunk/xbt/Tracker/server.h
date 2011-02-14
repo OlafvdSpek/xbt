@@ -7,9 +7,6 @@
 #include "tcp_listen_socket.h"
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
-#include <boost/ptr_container/ptr_list.hpp>
-#include <boost/ptr_container/ptr_map.hpp>
-#include <map>
 #include <xbt/database.h>
 #include <xbt/find_ptr.h>
 #include <xbt/virtual_binary.h>

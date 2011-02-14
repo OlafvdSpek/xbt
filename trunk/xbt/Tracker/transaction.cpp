@@ -3,7 +3,6 @@
 
 #include <bt_misc.h>
 #include <bt_strings.h>
-#include <iostream>
 #include <sha1.h>
 #include <stream_int.h>
 
