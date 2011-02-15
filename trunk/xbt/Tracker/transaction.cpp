@@ -4,7 +4,6 @@
 #include <bt_misc.h>
 #include <bt_strings.h>
 #include <sha1.h>
-#include <stream_int.h>
 
 Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
 	m_server(server)
