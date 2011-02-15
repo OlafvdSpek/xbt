@@ -1,7 +1,5 @@
 #pragma once
 
-#include <boost/utility.hpp>
-
 #ifdef EPOLL
 #include <sys/epoll.h>
 #else

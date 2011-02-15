@@ -2,7 +2,6 @@
 #include "tracker_input.h"
 
 #include <bt_misc.h>
-#include <socket.h>
 
 Ctracker_input::Ctracker_input()
 {

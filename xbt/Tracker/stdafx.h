@@ -10,20 +10,24 @@
 #include <boost/utility.hpp>
 #include <cassert>
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 #include <fstream>
 #include <iostream>
 #include <list>
 #include <map>
 #include <set>
+#include <sha1.h>
 #include <signal.h>
+#include <socket.h>
 #include <sstream>
+#include <stream_int.h>
 #include <string>
-#include <string.h>
 #include <sys/stat.h>
 #include <vector>
 #include <xbt/database.h>
 #include <xbt/find_ptr.h>
+#include <xbt/sql_query.h>
 #include <xbt/virtual_binary.h>
 
 #ifdef WIN32

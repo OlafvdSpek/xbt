@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "server.h"
 
-#include <xbt/sql_query.h>
 #include <bt_misc.h>
 #include <bt_strings.h>
 #include <bvalue.h>
-#include <stream_int.h>
 #include "transaction.h"
 
 static volatile bool g_sig_term = false;
