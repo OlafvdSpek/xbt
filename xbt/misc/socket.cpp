@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <stdafx.h>
 #include "socket.h"
 
 #include <boost/version.hpp>
