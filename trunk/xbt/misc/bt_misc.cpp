@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <stdafx.h>
 #include "bt_misc.h"
 
 #include <boost/foreach.hpp>
