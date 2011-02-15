@@ -89,7 +89,7 @@ public:
 	{
 	}
 
-	operator bool() const
+	operator const void*() const
 	{
 		return m_data;
 	}
