@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include <stdafx.h>
 #include "xbt/sql_query.h"
 
 #include <cstdio>
