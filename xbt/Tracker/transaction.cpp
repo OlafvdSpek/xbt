@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "transaction.h"
 
-#include <bt_misc.h>
 #include <bt_strings.h>
 #include <sha1.h>
 

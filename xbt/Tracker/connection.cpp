@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "connection.h"
 
-#include <bt_misc.h>
 #include <bt_strings.h>
 #include <bvalue.h>
-#include <xbt/xcc_z.h>
 #include "server.h"
 
 Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a)

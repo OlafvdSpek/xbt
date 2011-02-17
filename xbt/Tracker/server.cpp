@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "server.h"
 
-#include <bt_misc.h>
 #include <bt_strings.h>
 #include <bvalue.h>
 #include "transaction.h"
