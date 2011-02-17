@@ -1,6 +1,5 @@
 #pragma once
 
-#include <sha1.h>
 #include <string>
 
 std::string b2a(long long v, const char* postfix = NULL);
