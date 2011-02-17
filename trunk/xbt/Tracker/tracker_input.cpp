@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "tracker_input.h"
 
-#include <bt_misc.h>
-
 Ctracker_input::Ctracker_input()
 {
 	m_compact = false;

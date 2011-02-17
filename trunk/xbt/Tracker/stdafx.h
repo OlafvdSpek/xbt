@@ -25,10 +25,12 @@
 #include <string>
 #include <sys/stat.h>
 #include <vector>
+#include <xbt/bt_misc.h>
 #include <xbt/database.h>
 #include <xbt/find_ptr.h>
 #include <xbt/sql_query.h>
 #include <xbt/virtual_binary.h>
+#include <xbt/xcc_z.h>
 
 #ifdef WIN32
 #define atoll _atoi64
