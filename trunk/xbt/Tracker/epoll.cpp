@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "epoll.h"
 
 Cepoll::Cepoll()
