@@ -1,4 +1,3 @@
-#include <stdafx.h>
 #include "xbt/virtual_binary.h"
 
 #include <sys/stat.h>

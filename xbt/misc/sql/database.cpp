@@ -1,4 +1,3 @@
-#include <stdafx.h>
 #include <xbt/database.h>
 
 #include <fstream>
