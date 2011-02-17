@@ -1,4 +1,3 @@
-#include <stdafx.h>
 #include "xcc_z.h"
 
 #include <cstdio>
