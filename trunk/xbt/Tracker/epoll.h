@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/noncopyable.hpp>
+
 #ifdef EPOLL
 #include <sys/epoll.h>
 #else
