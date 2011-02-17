@@ -91,7 +91,7 @@ public:
 		if (!m_source)
 			return memory_range();
 		if (!m_source.unique())
-#if 0 // BOOST_VERSION >= 104200
+#if BOOST_VERSION >= 104200
 			m_source = boost::make_shared<Cvirtual_binary_source>(range());
 #else
 			m_source.reset(new Cvirtual_binary_source(range()));
