@@ -1,5 +1,6 @@
 #pragma once
 
+#include <xbt/const_memory_range.h>
 #include <string>
 
 std::string b2a(long long v, const char* postfix = NULL);
