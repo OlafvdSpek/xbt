@@ -1,4 +1,5 @@
 #include "epoll.h"
+#include <unistd.h>
 
 Cepoll::Cepoll()
 {
