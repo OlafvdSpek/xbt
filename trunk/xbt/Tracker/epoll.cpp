@@ -1,5 +1,8 @@
 #include "epoll.h"
+
+#ifndef WIN32
 #include <unistd.h>
+#endif
 
 Cepoll::Cepoll()
 {
