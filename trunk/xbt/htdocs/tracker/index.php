@@ -63,8 +63,8 @@ yum install boost-devel gcc-c++ mysql-devel subversion
 Enter the following commands in a terminal.
 Be patient while g++ is running, it'll take a few minutes.
 <pre>
-svn co https://xbtt.svn.sourceforge.net/svnroot/xbtt/trunk/xbt/misc xbt/misc
-svn co https://xbtt.svn.sourceforge.net/svnroot/xbtt/trunk/xbt/Tracker xbt/Tracker
+svn co http://xbt.googlecode.com/svn/trunk/xbt/misc xbt/misc
+svn co http://xbt.googlecode.com/svn/trunk/xbt/Tracker xbt/Tracker
 cd xbt/Tracker
 ./make.sh
 cp xbt_tracker.conf.default xbt_tracker.conf
