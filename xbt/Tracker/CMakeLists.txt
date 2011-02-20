@@ -31,6 +31,6 @@ add_executable(
 	udp_listen_socket.cpp
 	"XBT Tracker.cpp"
 )
-target_link_libraries(xbt_tracker mysqlclient)
+target_link_libraries(xbt_tracker mysqlclient z)
 install(TARGETS xbt_tracker DESTINATION bin)
 include(CPack)
