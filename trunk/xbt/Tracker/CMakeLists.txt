@@ -10,6 +10,7 @@ check_include_file_cxx(sys/epoll.h HAVE_SYS_EPOLL)
 if(HAVE_SYS_EPOLL)
 	add_definitions(-DEPOLL)
 endif()
+# set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -Wno-missing-braces -Wno-missing-field-initializers -Wno-parentheses -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable")
 add_executable(
 	xbt_tracker
 	../misc/sql/database.cpp
