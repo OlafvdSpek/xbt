@@ -33,12 +33,13 @@ private:
 	MYSQL_RES* m_h;
 };
 
-
 class Csql_row;
 
 class Csql_result
 {
 public:
+	typedef boost::shared_ptr<Csql_result_source> ptr_t;
+
 	Csql_row fetch_row() const;
 
 	Csql_result(MYSQL_RES* h)
@@ -75,7 +76,7 @@ private:
 		return m_source->h();
 	}
 
-	boost::shared_ptr<Csql_result_source> m_source;
+	ptr_t m_source;
 };
 
 class Csql_field
@@ -128,7 +129,7 @@ private:
 class Csql_row
 {
 public:
-	Csql_row(MYSQL_ROW, unsigned long* sizes, const boost::shared_ptr<Csql_result_source>&);
+	Csql_row(MYSQL_ROW, unsigned long* sizes, const Csql_result::ptr_t&);
 
 	Csql_row()
 	{
@@ -146,5 +147,5 @@ public:
 private:
 	MYSQL_ROW m_data;
 	unsigned long* m_sizes;
-	boost::shared_ptr<Csql_result_source> m_source;
+	Csql_result::ptr_t m_source;
 };
