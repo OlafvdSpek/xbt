@@ -239,7 +239,17 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 	if (m_use_sql && m_config.m_log_announce)
 	{
 		m_announce_log_buffer += Csql_query(m_database, "(?,?,?,?,?,?,?,?,?,?),")
-			.p(ntohl(v.m_ipa)).p(ntohs(v.m_port)).p(v.m_event).p(v.m_info_hash).p(v.m_peer_id).p(v.m_downloaded).p(v.m_left).p(v.m_uploaded).p(user ? user->uid : 0).p(time()).read();
+			(ntohl(v.m_ipa))
+			(ntohs(v.m_port))
+			(v.m_event)
+			(v.m_info_hash)
+			(v.m_peer_id)
+			(v.m_downloaded)
+			(v.m_left)
+			(v.m_uploaded)
+			(user ? user->uid : 0)
+			(time())
+			.read();
 	}
 	if (!m_config.m_offline_message.empty())
 		return m_config.m_offline_message;
@@ -285,17 +295,17 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 			uploaded = v.m_uploaded - i->uploaded;
 		}
 		m_files_users_updates_buffer += Csql_query(m_database, "(?,1,?,?,?,?,?,?,?),")
-			.p(v.m_event != Ctracker_input::e_stopped)
-			.p(v.m_event == Ctracker_input::e_completed)
-			.p(downloaded)
-			.p(v.m_left)
-			.p(uploaded)
-			.p(time())
-			.p(file.fid)
-			.p(user->uid)
+			(v.m_event != Ctracker_input::e_stopped)
+			(v.m_event == Ctracker_input::e_completed)
+			(downloaded)
+			(v.m_left)
+			(uploaded)
+			(time())
+			(file.fid)
+			(user->uid)
 			.read();
 		if (downloaded || uploaded)
-			m_users_updates_buffer += Csql_query(m_database, "(?,?,?),").p(downloaded).p(uploaded).p(user->uid).read();
+			m_users_updates_buffer += Csql_query(m_database, "(?,?,?),")(downloaded)(uploaded)(user->uid).read();
 	}
 	if (v.m_event == Ctracker_input::e_stopped)
 		file.peers.erase(peer_key);
@@ -378,7 +388,7 @@ void Cserver::t_file::clean_up(time_t t, Cserver& server)
 			if (t_user* user = server.find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
 			if (i->second.uid)
-				server.m_files_users_updates_buffer += Csql_query(server.m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),").p(fid).p(i->second.uid).read();
+				server.m_files_users_updates_buffer += Csql_query(server.m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(fid)(i->second.uid).read();
 			peers.erase(i++);
 			dirty = true;
 		}
@@ -418,13 +428,13 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 	if (m_use_sql && m_config.m_log_scrape)
 	{
 		Csql_query q(m_database, "(?,?,?,?),");
-		q.p(ntohl(ti.m_ipa));
+		q(ntohl(ti.m_ipa));
 		if (ti.m_info_hash.empty())
 			q.p_raw(const_memory_range("null"));
 		else
-			q.p(ti.m_info_hash);
-		q.p(user ? user->uid : 0);
-		q.p(time());
+			q(ti.m_info_hash);
+		q(user ? user->uid : 0);
+		q(time());
 		m_scrape_log_buffer += q.read();
 	}
 	if (!m_config.m_anonymous_scrape && !user) 
@@ -556,14 +566,14 @@ void Cserver::read_db_files_sql()
 					}
 					m_files.erase(i);
 				}
-				Csql_query(m_database, "delete from @files where @fid = ?").p(row[1].i()).execute();
+				Csql_query(m_database, "delete from @files where @fid = ?")(row[1].i()).execute();
 			}
 		}
 		if (m_files.empty())
 			Csql_query(m_database, "update @files set @leechers = 0, @seeders = 0").execute();
 		else if (m_config.m_auto_register)
 			return;
-		Csql_result result = Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?").p(m_fid_end).execute();
+		Csql_result result = Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute();
 		for (Csql_row row; row = result.fetch_row(); )
 		{
 			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
@@ -657,10 +667,10 @@ void Cserver::write_db_files()
 				continue;
 			if (!file.fid)
 			{
-				Csql_query(m_database, "insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())").p(i.first).execute();
+				Csql_query(m_database, "insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())")(i.first).execute();
 				file.fid = m_database.insert_id();
 			}
-			buffer += Csql_query(m_database, "(?,?,?,?),").p(file.leechers).p(file.seeders).p(file.completed).p(file.fid).read();
+			buffer += Csql_query(m_database, "(?,?,?,?),")(file.leechers)(file.seeders)(file.completed)(file.fid).read();
 			file.dirty = false;
 		}
 		if (!buffer.empty())
@@ -765,7 +775,7 @@ void Cserver::read_config()
 			if (config.m_torrent_pass_private_key.empty())
 			{
 				config.m_torrent_pass_private_key = generate_random_string(27);
-				Csql_query(m_database, "insert into @config (name, value) values ('torrent_pass_private_key', ?)").p(config.m_torrent_pass_private_key).execute();
+				Csql_query(m_database, "insert into @config (name, value) values ('torrent_pass_private_key', ?)")(config.m_torrent_pass_private_key).execute();
 			}
 			m_config = config;
 			m_database.set_name("completed", m_config.m_column_files_completed);
