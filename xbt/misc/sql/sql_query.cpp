@@ -76,7 +76,7 @@ Csql_query& Csql_query::p_raw(const_memory_range v)
 	return *this;
 }
 
-Csql_query& Csql_query::p(long long v)
+Csql_query& Csql_query::operator()(long long v)
 {
 	char b[21];
 #ifdef WIN32
@@ -88,7 +88,7 @@ Csql_query& Csql_query::p(long long v)
 	return *this;
 }
 
-Csql_query& Csql_query::p(const_memory_range v)
+Csql_query& Csql_query::operator()(const_memory_range v)
 {
 	std::vector<char> r(2 * v.size() + 2);
 	r.resize(mysql_real_escape_string(m_database.handle(), &r.front() + 1, reinterpret_cast<const char*>(v.begin), v.size()) + 2);
