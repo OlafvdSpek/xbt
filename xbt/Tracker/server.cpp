@@ -500,7 +500,7 @@ void Cserver::read_db_deny_from_hosts()
 		Csql_result result = Csql_query(m_database, "select begin, end from @deny_from_hosts").execute();
 		BOOST_FOREACH(t_deny_from_hosts::reference i, m_deny_from_hosts)
 			i.second.marked = true;
-		for (Csql_row row; row = result.fetch_row(); )
+		while (Csql_row row = result.fetch_row())
 		{
 			t_deny_from_host& deny_from_host = m_deny_from_hosts[row[1].i()];
 			deny_from_host.marked = false;
@@ -554,7 +554,7 @@ void Cserver::read_db_files_sql()
 		if (!m_config.m_auto_register)
 		{
 			Csql_result result = Csql_query(m_database, "select info_hash, @fid from @files where flags & 1").execute();
-			for (Csql_row row; row = result.fetch_row(); )
+			while (Csql_row row = result.fetch_row())
 			{
 				t_files::iterator i = m_files.find(row[0].s());
 				if (i != m_files.end())
@@ -574,7 +574,7 @@ void Cserver::read_db_files_sql()
 		else if (m_config.m_auto_register)
 			return;
 		Csql_result result = Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute();
-		for (Csql_row row; row = result.fetch_row(); )
+		while (Csql_row row = result.fetch_row())
 		{
 			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
 			if (row[0].size() != 20 || file(row[0].s()))
@@ -617,7 +617,7 @@ void Cserver::read_db_users()
 		BOOST_FOREACH(t_users::reference i, m_users)
 			i.second.marked = true;
 		m_users_torrent_passes.clear();
-		for (Csql_row row; row = result.fetch_row(); )
+		while (Csql_row row = result.fetch_row())
 		{
 			t_user& user = m_users[row[0].i()];
 			user.marked = false;
@@ -766,7 +766,7 @@ void Cserver::read_config()
 		{
 			Csql_result result = Csql_query(m_database, "select name, value from @config where value is not null").execute();
 			Cconfig config;
-			for (Csql_row row; row = result.fetch_row(); )
+			while (Csql_row row = result.fetch_row())
 			{
 				if (config.set(row[0].s(), row[1].s()))
 					std::cerr << "unknown config name: " << row[0].s() << std::endl;
