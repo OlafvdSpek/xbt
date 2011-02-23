@@ -13,8 +13,8 @@ public:
 	void operator=(const std::string&);
 	void operator+=(const std::string&);
 	Csql_query& p_raw(const_memory_range);
-	Csql_query& p(long long);
-	Csql_query& p(const_memory_range);
+	Csql_query& operator()(long long);
+	Csql_query& operator()(const_memory_range);
 	Csql_query(Cdatabase&, const std::string& = "");
 private:
 	Csql_query& p_name(const std::string&);
