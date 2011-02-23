@@ -129,10 +129,15 @@ private:
 class Csql_row
 {
 public:
-	Csql_row(MYSQL_ROW, unsigned long* sizes, const Csql_result::ptr_t&);
-
 	Csql_row()
 	{
+	}
+
+	Csql_row(MYSQL_ROW data, unsigned long* sizes, const Csql_result::ptr_t& source)
+	{
+		m_data = data;
+		m_sizes = sizes;
+		m_source = source;
 	}
 
 	operator const void*() const
