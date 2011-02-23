@@ -1,9 +1,5 @@
 #pragma once
 
-#include <boost/version.hpp>
-#if BOOST_VERSION >= 104200
-#include <boost/make_shared.hpp>
-#endif
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <xbt/const_memory_range.h>
@@ -12,43 +8,18 @@
 #endif
 #include <mysql/mysql.h>
 
-class Csql_result_source: boost::noncopyable
-{
-public:
-	Csql_result_source(MYSQL_RES* h)
-	{
-		m_h = h;
-	}
-
-	~Csql_result_source()
-	{
-		mysql_free_result(m_h);
-	}
-
-	MYSQL_RES* h() const
-	{
-		return m_h;
-	}
-private:
-	MYSQL_RES* m_h;
-};
-
 class Csql_row;
 
 class Csql_result
 {
 public:
-	typedef boost::shared_ptr<Csql_result_source> ptr_t;
+	typedef boost::shared_ptr<MYSQL_RES> ptr_t;
 
 	Csql_row fetch_row() const;
 
 	Csql_result(MYSQL_RES* h)
 	{
-#if BOOST_VERSION >= 104200
-		m_source = boost::make_shared<Csql_result_source>(h);
-#else
-		m_source.reset(new Csql_result_source(h));
-#endif
+		m_source.reset(h, mysql_free_result);
 	}
 
 	operator const void*() const
@@ -73,7 +44,7 @@ public:
 private:
 	MYSQL_RES* h() const
 	{
-		return m_source->h();
+		return m_source.get();
 	}
 
 	ptr_t m_source;
