@@ -33,6 +33,51 @@ private:
 	MYSQL_RES* m_h;
 };
 
+
+class Csql_row;
+
+class Csql_result
+{
+public:
+	Csql_row fetch_row() const;
+
+	Csql_result(MYSQL_RES* h)
+	{
+#if BOOST_VERSION >= 104200
+		m_source = boost::make_shared<Csql_result_source>(h);
+#else
+		m_source.reset(new Csql_result_source(h));
+#endif
+	}
+
+	operator const void*() const
+	{
+		return c_rows() ? this : NULL;
+	}
+
+	int c_fields() const
+	{
+		return mysql_num_fields(h());
+	}
+
+	int c_rows() const
+	{
+		return mysql_num_rows(h());
+	}
+
+	void data_seek(int i)
+	{
+		mysql_data_seek(h(), i);
+	}
+private:
+	MYSQL_RES* h() const
+	{
+		return m_source->h();
+	}
+
+	boost::shared_ptr<Csql_result_source> m_source;
+};
+
 class Csql_field
 {
 public:
@@ -101,47 +146,5 @@ public:
 private:
 	MYSQL_ROW m_data;
 	unsigned long* m_sizes;
-	boost::shared_ptr<Csql_result_source> m_source;
-};
-
-class Csql_result
-{
-public:
-	Csql_row fetch_row() const;
-
-	Csql_result(MYSQL_RES* h)
-	{
-#if BOOST_VERSION >= 104200
-		m_source = boost::make_shared<Csql_result_source>(h);
-#else
-		m_source.reset(new Csql_result_source(h));
-#endif
-	}
-
-	operator const void*() const
-	{
-		return c_rows() ? this : NULL;
-	}
-
-	int c_fields() const
-	{
-		return mysql_num_fields(h());
-	}
-
-	int c_rows() const
-	{
-		return mysql_num_rows(h());
-	}
-
-	void data_seek(int i)
-	{
-		mysql_data_seek(h(), i);
-	}
-private:
-	MYSQL_RES* h() const
-	{
-		return m_source->h();
-	}
-
 	boost::shared_ptr<Csql_result_source> m_source;
 };
