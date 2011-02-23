@@ -118,9 +118,9 @@ public:
 #endif
 	}
 
-	operator bool() const
+	operator const void*() const
 	{
-		return c_rows();
+		return c_rows() ? this : NULL;
 	}
 
 	int c_fields() const
