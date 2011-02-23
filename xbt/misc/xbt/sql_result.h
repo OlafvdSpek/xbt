@@ -17,9 +17,8 @@ public:
 
 	Csql_row fetch_row() const;
 
-	Csql_result(MYSQL_RES* h)
+	Csql_result(MYSQL_RES* h) : m_source(h, mysql_free_result)
 	{
-		m_source.reset(h, mysql_free_result);
 	}
 
 	operator const void*() const
