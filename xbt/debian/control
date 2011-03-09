@@ -1,0 +1,14 @@
+Source: xbt-tracker
+Section: web
+Priority: extra
+Maintainer: Olaf van der Spek <olafvdspek@gmail.com>
+Build-Depends: debhelper (>= 7.0.50~), cmake
+Standards-Version: 3.9.1
+Homepage: http://code.google.com/p/xbt/
+Vcs-Svn: http://xbt.googlecode.com/svn/trunk/xbt/
+Vcs-Browser: http://code.google.com/p/xbt/source/browse/
+
+Package: xbt-tracker
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: High-performance BitTorrent Tracker
