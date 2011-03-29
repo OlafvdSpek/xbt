@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <string>
-#include <xbt/const_memory_range.h>
+#include <xbt/data_ref.h>
 
 #ifndef _SHA_enum_
 #define _SHA_enum_
@@ -68,9 +68,9 @@ class Csha1
 public:
 	void read(void*);
 	std::string read();
-	void write(const_memory_range);
+	void write(data_ref);
 	Csha1();
-	Csha1(const_memory_range);
+	Csha1(data_ref);
 private:
 	SHA1Context m_context;
 };

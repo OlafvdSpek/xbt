@@ -13,14 +13,14 @@
 class Cvirtual_binary_source: boost::noncopyable
 {
 public:
-	Cvirtual_binary_source(const_memory_range);
+	Cvirtual_binary_source(data_ref);
 
 	~Cvirtual_binary_source()
 	{
 		delete[] m_range.begin;
 	}
 
-	memory_range range()
+	mutable_data_ref range()
 	{
 		return m_range;
 	}
@@ -31,7 +31,7 @@ public:
 		m_range.end = m_range.begin + v;
 	}
 private:
-	memory_range m_range;
+	mutable_data_ref m_range;
 };
 
 class Cvirtual_binary
@@ -43,9 +43,9 @@ public:
 	void clear();
 	size_t read(void* d) const;
 	unsigned char* write_start(size_t cb_d);
-	void write(const_memory_range);
+	void write(data_ref);
 	Cvirtual_binary(size_t);
-	Cvirtual_binary(const_memory_range);
+	Cvirtual_binary(data_ref);
 
 	Cvirtual_binary()
 	{
@@ -81,15 +81,15 @@ public:
 		return mutable_range().end;
 	}
 
-	const_memory_range range() const
+	data_ref range() const
 	{
-		return m_source ? m_source->range() : memory_range();
+		return m_source ? m_source->range() : mutable_data_ref();
 	}
 
-	memory_range mutable_range()
+	mutable_data_ref mutable_range()
 	{
 		if (!m_source)
-			return memory_range();
+			return mutable_data_ref();
 		if (!m_source.unique())
 #if BOOST_VERSION >= 104200
 			m_source = boost::make_shared<Cvirtual_binary_source>(range());
@@ -122,12 +122,12 @@ public:
 		return data();
 	}
 
-	operator const_memory_range() const
+	operator data_ref() const
 	{
 		return range();
 	}
 
-	operator memory_range()
+	operator mutable_data_ref()
 	{
 		return mutable_range();
 	}

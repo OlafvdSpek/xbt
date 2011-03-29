@@ -5,7 +5,7 @@
 #include <zlib.h>
 #include "stream_int.h"
 
-Cvirtual_binary xcc_z::gunzip(const_memory_range s)
+Cvirtual_binary xcc_z::gunzip(data_ref s)
 {
 	if (s.size() < 18)
 		return Cvirtual_binary();
@@ -26,7 +26,7 @@ Cvirtual_binary xcc_z::gunzip(const_memory_range s)
 		: Cvirtual_binary();
 }
 
-Cvirtual_binary xcc_z::gzip(const_memory_range s)
+Cvirtual_binary xcc_z::gzip(data_ref s)
 {
 	Cvirtual_binary d;
 	unsigned long cb_d = s.size() + (s.size() + 999) / 1000 + 12;
@@ -61,7 +61,7 @@ Cvirtual_binary xcc_z::gzip(const_memory_range s)
 	return d;
 }
 
-void xcc_z::gzip_out(const_memory_range s)
+void xcc_z::gzip_out(data_ref s)
 {
 	gzFile f = gzdopen(fileno(stdout), "wb");
 	gzwrite(f, const_cast<unsigned char*>(s.begin), s.size());

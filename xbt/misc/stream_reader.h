@@ -36,7 +36,7 @@ public:
 	Cvirtual_binary read_data()
 	{
 		int l = read_int(4);
-		return Cvirtual_binary(const_memory_range(read(l), l));
+		return Cvirtual_binary(data_ref(read(l), l));
 	}
 
 	std::string read_string()

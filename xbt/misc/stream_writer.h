@@ -21,7 +21,7 @@ public:
 		m_w = ::write_int(cb, m_w, v);
 	}
 
-	void write_data(const_memory_range v)
+	void write_data(data_ref v)
 	{
 		write_int(4, v.size());
 		memcpy(write(v.size()), v, v.size());

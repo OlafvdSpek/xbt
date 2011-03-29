@@ -96,22 +96,22 @@ const Csocket& Csocket::open(int t, bool _blocking)
 	return *this;
 }
 
-int Csocket::recv(memory_range d) const
+int Csocket::recv(mutable_data_ref d) const
 {
 	return ::recv(*this, reinterpret_cast<char*>(d.begin), d.size(), MSG_NOSIGNAL);
 }
 
-int Csocket::recvfrom(memory_range d, sockaddr* a, socklen_t* cb_a) const
+int Csocket::recvfrom(mutable_data_ref d, sockaddr* a, socklen_t* cb_a) const
 {
 	return ::recvfrom(*this, reinterpret_cast<char*>(d.begin), d.size(), MSG_NOSIGNAL, a, cb_a);
 }
 
-int Csocket::send(const_memory_range s) const
+int Csocket::send(data_ref s) const
 {
 	return ::send(*this, reinterpret_cast<const char*>(s.begin), s.size(), MSG_NOSIGNAL);
 }
 
-int Csocket::sendto(const_memory_range s, const sockaddr* a, socklen_t cb_a) const
+int Csocket::sendto(data_ref s, const sockaddr* a, socklen_t cb_a) const
 {
 	return ::sendto(*this, reinterpret_cast<const char*>(s.begin), s.size(), MSG_NOSIGNAL, a, cb_a);
 }

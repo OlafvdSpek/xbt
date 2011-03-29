@@ -32,12 +32,12 @@ public:
 	int read(void* d) const;
 	Cvirtual_binary read() const;
 	int write(const char* s, int cb_s);
-	int write(const_memory_range);
+	int write(data_ref);
 	Cbvalue(long long v = 0);
 	Cbvalue(t_value_type t);
 	Cbvalue(const std::string& v);
 	Cbvalue(const Cbvalue&);
-	Cbvalue(const_memory_range);
+	Cbvalue(data_ref);
 	const Cbvalue& operator=(const Cbvalue&);
 	const Cbvalue& operator[](const std::string&) const;
 	~Cbvalue();

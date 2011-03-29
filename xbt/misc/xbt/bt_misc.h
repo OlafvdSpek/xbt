@@ -1,6 +1,6 @@
 #pragma once
 
-#include <xbt/const_memory_range.h>
+#include <xbt/data_ref.h>
 #include <string>
 
 std::string b2a(long long v, const char* postfix = NULL);
@@ -17,7 +17,7 @@ std::string n(long long);
 std::string native_slashes(const std::string&);
 std::string hex_decode(const std::string&);
 std::string hex_encode(int l, int v);
-std::string hex_encode(const_memory_range);
+std::string hex_encode(data_ref);
 std::string js_encode(const std::string&);
 std::string peer_id2a(const std::string&);
 std::string time2a(time_t);

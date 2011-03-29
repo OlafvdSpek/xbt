@@ -59,7 +59,7 @@ Cbvalue::Cbvalue(const Cbvalue& v)
 	}
 }
 
-Cbvalue::Cbvalue(const_memory_range s)
+Cbvalue::Cbvalue(data_ref s)
 {
 	m_value_type = vt_int;
 	if (write(s))
@@ -95,7 +95,7 @@ const Cbvalue& Cbvalue::operator=(const Cbvalue& v)
 	return *this;
 }
 
-int Cbvalue::write(const_memory_range s)
+int Cbvalue::write(data_ref s)
 {
 	return write(reinterpret_cast<const char*>(s.begin), s.size());
 }

@@ -2,7 +2,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
-#include <xbt/const_memory_range.h>
+#include <xbt/data_ref.h>
 #ifdef _MSC_VER
 #include <winsock2.h>
 #endif
@@ -87,9 +87,9 @@ public:
 		return raw() ? std::string(raw(), size()) : d;
 	}
 
-	const_memory_range vdata() const
+	data_ref vdata() const
 	{
-		return const_memory_range(raw(), size());
+		return data_ref(raw(), size());
 	}
 private:
 	const char* m_begin;

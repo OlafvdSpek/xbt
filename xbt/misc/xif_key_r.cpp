@@ -12,7 +12,7 @@ static int read_int(const byte*& r)
 	return read_int_le(4, r - 4);
 }
 
-int Cxif_key_r::import(const_memory_range s)
+int Cxif_key_r::import(data_ref s)
 {
 	Cvirtual_binary d;
 	const t_xif_header_fast& h = *reinterpret_cast<const t_xif_header_fast*>(s.begin);

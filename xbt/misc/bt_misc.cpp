@@ -94,7 +94,7 @@ std::string n(long long v)
 	return b;
 }
 
-std::string hex_encode(const_memory_range v)
+std::string hex_encode(data_ref v)
 {
 	std::string r;
 	r.reserve(v.size() << 1);
