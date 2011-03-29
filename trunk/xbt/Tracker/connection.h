@@ -22,6 +22,6 @@ private:
 	int m_state;
 	boost::array<char, 4 << 10> m_read_b;
 	Cvirtual_binary m_write_b;
-	const_memory_range m_r;
-	memory_range m_w;
+	data_ref m_r;
+	mutable_data_ref m_w;
 };

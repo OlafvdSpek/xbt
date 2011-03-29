@@ -430,7 +430,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 		Csql_query q(m_database, "(?,?,?,?),");
 		q(ntohl(ti.m_ipa));
 		if (ti.m_info_hash.empty())
-			q.p_raw(const_memory_range("null"));
+			q.p_raw(data_ref("null"));
 		else
 			q(ti.m_info_hash);
 		q(user ? user->uid : 0);
@@ -816,7 +816,7 @@ void Cserver::t_file::debug(std::ostream& os) const
 			<< "<td align=right>" << i.second.uid
 			<< "<td align=right>" << i.second.left
 			<< "<td align=right>" << ::time(NULL) - i.second.mtime
-			<< "<td>" << hex_encode(const_memory_range(i.second.peer_id.begin(), i.second.peer_id.end()));
+			<< "<td>" << hex_encode(data_ref(i.second.peer_id.begin(), i.second.peer_id.end()));
 	}
 }
 

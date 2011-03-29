@@ -17,7 +17,7 @@ long long Ctransaction::connection_id() const
 	write_int(8, s, m_server.secret());
 	write_int(4, s + 8, m_a.sin_addr.s_addr);
 	char d[20];
-	(Csha1(const_memory_range(s, cb_s))).read(d);
+	(Csha1(data_ref(s, cb_s))).read(d);
 	return read_int(8, d);
 }
 
@@ -28,7 +28,7 @@ void Ctransaction::recv()
 	while (1)
 	{
 		socklen_t cb_a = sizeof(sockaddr_in);
-		int r = m_s.recvfrom(memory_range(b, cb_b), reinterpret_cast<sockaddr*>(&m_a), &cb_a);
+		int r = m_s.recvfrom(mutable_data_ref(b, cb_b), reinterpret_cast<sockaddr*>(&m_a), &cb_a);
 		if (r == SOCKET_ERROR)
 		{
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
@@ -41,21 +41,21 @@ void Ctransaction::recv()
 		{
 		case uta_connect:
 			if (r >= utic_size)
-				send_connect(const_memory_range(b, r));
+				send_connect(data_ref(b, r));
 			break;
 		case uta_announce:
 			if (r >= utia_size)
-				send_announce(const_memory_range(b, r));
+				send_announce(data_ref(b, r));
 			break;
 		case uta_scrape:
 			if (r >= utis_size)
-				send_scrape(const_memory_range(b, r));
+				send_scrape(data_ref(b, r));
 			break;
 		}
 	}
 }
 
-void Ctransaction::send_connect(const_memory_range r)
+void Ctransaction::send_connect(data_ref r)
 {
 	if (!m_server.config().m_anonymous_connect)
 		return;
@@ -66,10 +66,10 @@ void Ctransaction::send_connect(const_memory_range r)
 	write_int(4, d + uto_action, uta_connect);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r.end));
 	write_int(8, d + utoc_connection_id, connection_id());
-	send(const_memory_range(d, utoc_size));
+	send(data_ref(d, utoc_size));
 }
 
-void Ctransaction::send_announce(const_memory_range r)
+void Ctransaction::send_announce(data_ref r)
 {
 	if (read_int(8, r + uti_connection_id, r.end) != connection_id())
 		return;
@@ -108,10 +108,10 @@ void Ctransaction::send_announce(const_memory_range r)
 	write_int(4, d + utoa_seeders, file->seeders);
 	std::string peers = file->select_peers(ti);
 	memcpy(d + utoa_size, peers.data(), peers.size());
-	send(const_memory_range(d, d + utoa_size + peers.size()));
+	send(data_ref(d, d + utoa_size + peers.size()));
 }
 
-void Ctransaction::send_scrape(const_memory_range r)
+void Ctransaction::send_scrape(data_ref r)
 {
 	if (read_int(8, r + uti_connection_id, r.end) != connection_id())
 		return;
@@ -141,20 +141,20 @@ void Ctransaction::send_scrape(const_memory_range r)
 		}
 	}
 	m_server.stats().scraped_udp++;
-	send(const_memory_range(d, w));
+	send(data_ref(d, w));
 }
 
-void Ctransaction::send_error(const_memory_range r, const std::string& msg)
+void Ctransaction::send_error(data_ref r, const std::string& msg)
 {
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_error);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r.end));
 	memcpy(d + utoe_size, msg.data(), msg.size());
-	send(const_memory_range(d, utoe_size + msg.size()));
+	send(data_ref(d, utoe_size + msg.size()));
 }
 
-void Ctransaction::send(const_memory_range b)
+void Ctransaction::send(data_ref b)
 {
 	if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != b.size())
 		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
