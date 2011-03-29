@@ -394,7 +394,7 @@ Csha1::Csha1()
 	SHA1Reset(&m_context);
 }
 
-Csha1::Csha1(const_memory_range s)
+Csha1::Csha1(data_ref s)
 {
 	SHA1Reset(&m_context);
 	write(s);
@@ -412,7 +412,7 @@ std::string Csha1::read()
 	return std::string(d, SHA1HashSize);
 }
 
-void Csha1::write(const_memory_range s)
+void Csha1::write(data_ref s)
 {
 	SHA1Input(&m_context, s, s.size());
 }

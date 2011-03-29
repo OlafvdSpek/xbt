@@ -4,7 +4,7 @@
 
 namespace xcc_z
 {
-	Cvirtual_binary gunzip(const_memory_range);
-	Cvirtual_binary gzip(const_memory_range);
-	void gzip_out(const_memory_range);
+	Cvirtual_binary gunzip(data_ref);
+	Cvirtual_binary gzip(data_ref);
+	void gzip_out(data_ref);
 }

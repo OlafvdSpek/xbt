@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <string.h>
 
-Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
+Cvirtual_binary_source::Cvirtual_binary_source(data_ref d)
 {
 	m_range.begin = new unsigned char[d.size()];
 	m_range.end = m_range.begin + d.size();
@@ -15,13 +15,13 @@ Cvirtual_binary_source::Cvirtual_binary_source(const_memory_range d)
 Cvirtual_binary::Cvirtual_binary(size_t v)
 {
 #if BOOST_VERSION >= 104200
-	m_source = boost::make_shared<Cvirtual_binary_source>(const_memory_range(NULL, v));
+	m_source = boost::make_shared<Cvirtual_binary_source>(data_ref(NULL, v));
 #else
-	m_source.reset(new Cvirtual_binary_source(const_memory_range(NULL, v)));
+	m_source.reset(new Cvirtual_binary_source(data_ref(NULL, v)));
 #endif
 }
 
-Cvirtual_binary::Cvirtual_binary(const_memory_range d)
+Cvirtual_binary::Cvirtual_binary(data_ref d)
 {
 #if BOOST_VERSION >= 104200
 	m_source = boost::make_shared<Cvirtual_binary_source>(d);
@@ -73,14 +73,14 @@ unsigned char* Cvirtual_binary::write_start(size_t cb_d)
 	if (data() && size() == cb_d)
 		return data_edit();
 #if BOOST_VERSION >= 104200
-	m_source = boost::make_shared<Cvirtual_binary_source>(const_memory_range(NULL, cb_d));
+	m_source = boost::make_shared<Cvirtual_binary_source>(data_ref(NULL, cb_d));
 #else
-	m_source.reset(new Cvirtual_binary_source(const_memory_range(NULL, cb_d)));
+	m_source.reset(new Cvirtual_binary_source(data_ref(NULL, cb_d)));
 #endif
 	return data_edit();
 }
 
-void Cvirtual_binary::write(const_memory_range d)
+void Cvirtual_binary::write(data_ref d)
 {
 	memcpy(write_start(d.size()), d, d.size());
 }

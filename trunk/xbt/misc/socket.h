@@ -3,7 +3,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <string>
-#include <xbt/const_memory_range.h>
+#include <xbt/data_ref.h>
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -104,10 +104,10 @@ public:
 	int getsockopt(int level, int name, int& v);
 	int listen();
 	const Csocket& open(int t, bool blocking = false);
-	int recv(memory_range) const;
-	int recvfrom(memory_range, sockaddr* a, socklen_t* cb_a) const;
-	int send(const_memory_range) const;
-	int sendto(const_memory_range, const sockaddr* a, socklen_t cb_a) const;
+	int recv(mutable_data_ref) const;
+	int recvfrom(mutable_data_ref, sockaddr* a, socklen_t* cb_a) const;
+	int send(data_ref) const;
+	int sendto(data_ref, const sockaddr* a, socklen_t cb_a) const;
 	int setsockopt(int level, int name, const void* v, int cb_v);
 	int setsockopt(int level, int name, int v);
 	Csocket(SOCKET = INVALID_SOCKET);

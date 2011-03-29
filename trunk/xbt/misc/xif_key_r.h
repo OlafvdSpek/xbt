@@ -88,7 +88,7 @@ public:
 
 	t_key_map::const_iterator find_key(int id) const;
 	t_value_map::const_iterator find_value(int id) const;
-	int import(const_memory_range);
+	int import(data_ref);
 private:
 	int load(const byte* s);
 

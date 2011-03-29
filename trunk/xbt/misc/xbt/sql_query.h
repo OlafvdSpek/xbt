@@ -1,6 +1,6 @@
 #pragma once
 
-#include <xbt/const_memory_range.h>
+#include <xbt/data_ref.h>
 
 class Cdatabase;
 class Csql_result;
@@ -12,9 +12,10 @@ public:
 	std::string read() const;
 	void operator=(const std::string&);
 	void operator+=(const std::string&);
-	Csql_query& p_raw(const_memory_range);
+	Csql_query& p_name(const std::string&);
+	Csql_query& p_raw(data_ref);
 	Csql_query& operator()(long long);
-	Csql_query& operator()(const_memory_range);
+	Csql_query& operator()(data_ref);
 	Csql_query(Cdatabase&, const std::string& = "");
 
 #if 1
@@ -23,13 +24,12 @@ public:
 		return (*this)(v);
 	}
 
-	Csql_query& p(const_memory_range v)
+	Csql_query& p(data_ref v)
 	{
 		return (*this)(v);
 	}
 #endif
 private:
-	Csql_query& p_name(const std::string&);
 	std::string replace_names(const std::string&) const;
 
 	std::string m_in;

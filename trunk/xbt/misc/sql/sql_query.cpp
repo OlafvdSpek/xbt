@@ -64,7 +64,7 @@ Csql_query& Csql_query::p_name(const std::string& v0)
 	return *this;
 }
 
-Csql_query& Csql_query::p_raw(const_memory_range v)
+Csql_query& Csql_query::p_raw(data_ref v)
 {
 	size_t i = m_in.find('?');
 	assert(i != std::string::npos);
@@ -84,11 +84,11 @@ Csql_query& Csql_query::operator()(long long v)
 #else
 	sprintf(b, "%lld", v);
 #endif
-	p_raw(const_memory_range(b));
+	p_raw(data_ref(b));
 	return *this;
 }
 
-Csql_query& Csql_query::operator()(const_memory_range v)
+Csql_query& Csql_query::operator()(data_ref v)
 {
 	std::vector<char> r(2 * v.size() + 2);
 	r.resize(mysql_real_escape_string(m_database.handle(), &r.front() + 1, reinterpret_cast<const char*>(v.begin), v.size()) + 2);

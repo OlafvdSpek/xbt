@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string.h>
-#include <xbt/const_memory_range.h>
+#include <xbt/data_ref.h>
 
 inline float read_float(const void* r)
 {
@@ -32,14 +32,14 @@ inline long long read_int(int cb, const void* r0)
 	return v;
 }
 
-inline long long read_int(int cb, const_memory_range s)
+inline long long read_int(int cb, data_ref s)
 {
 	return s.size() < cb ? 0 : read_int(cb, s.begin);
 }
 
 inline long long read_int(int cb, const void* r, const void* s_end)
 {
-	return read_int(cb, const_memory_range(r, s_end));
+	return read_int(cb, data_ref(r, s_end));
 }
 
 template <class T>
