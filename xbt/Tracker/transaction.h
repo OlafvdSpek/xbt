@@ -7,11 +7,11 @@ class Ctransaction
 public:
 	long long connection_id() const;
 	void recv();
-	void send(const_memory_range);
-	void send_announce(const_memory_range);
-	void send_connect(const_memory_range);
-	void send_scrape(const_memory_range);
-	void send_error(const_memory_range, const std::string& msg);
+	void send(data_ref);
+	void send_announce(data_ref);
+	void send_connect(data_ref);
+	void send_scrape(data_ref);
+	void send_error(data_ref, const std::string& msg);
 	Ctransaction(Cserver&, const Csocket&);
 private:
 	Cserver& m_server;
