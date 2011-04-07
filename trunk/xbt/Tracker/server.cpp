@@ -432,7 +432,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 	if (ti.m_info_hashes.empty())
 	{
 		if (m_use_sql && m_config.m_log_scrape)
-			m_scrape_log_buffer += Csql_query(m_database, "(?,null,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(time()).read();
+			m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(time()).read();
 		m_stats.scraped_full++;
 		if (ti.m_compact)
 		{
@@ -695,7 +695,7 @@ void Cserver::write_db_files()
 		try
 		{
 			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
-			m_database.query("insert delayed into " + db_name("scrape_log") + " (ipa, info_hash, uid, mtime) values " + m_scrape_log_buffer);
+			m_database.query("insert delayed into " + db_name("scrape_log") + " (ipa, uid, mtime) values " + m_scrape_log_buffer);
 		}
 		catch (Cdatabase::exception&)
 		{
