@@ -425,24 +425,14 @@ static byte* write_compact_int(byte* w, unsigned int v)
 
 Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 {
-	if (m_use_sql && m_config.m_log_scrape)
-	{
-		Csql_query q(m_database, "(?,?,?,?),");
-		q(ntohl(ti.m_ipa));
-		if (ti.m_info_hash.empty())
-			q.p_raw(data_ref("null"));
-		else
-			q(ti.m_info_hash);
-		q(user ? user->uid : 0);
-		q(time());
-		m_scrape_log_buffer += q.read();
-	}
 	if (!m_config.m_anonymous_scrape && !user) 
 		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 	std::string d;
 	d += "d5:filesd";
 	if (ti.m_info_hashes.empty())
 	{
+		if (m_use_sql && m_config.m_log_scrape)
+			m_scrape_log_buffer += Csql_query(m_database, "(?,null,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(time()).read();
 		m_stats.scraped_full++;
 		if (ti.m_compact)
 		{
