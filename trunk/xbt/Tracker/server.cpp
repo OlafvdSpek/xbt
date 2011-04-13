@@ -901,11 +901,10 @@ int Cserver::test_sql()
 		if (m_config.m_log_announce)
 			Csql_query(m_database, "select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0").execute();
 		Csql_query(m_database, "select name, value from @config where 0").execute();
-		Csql_query(m_database, "select begin, end from @deny_from_hosts where 0").execute();
 		Csql_query(m_database, "select @fid, info_hash, @leechers, @seeders, flags, mtime, ctime from @files where 0").execute();
 		Csql_query(m_database, "select fid, uid, active, announced, completed, downloaded, `left`, uploaded from @files_users where 0").execute();
 		if (m_config.m_log_scrape)
-			Csql_query(m_database, "select id, ipa, info_hash, uid, mtime from @scrape_log where 0").execute();
+			Csql_query(m_database, "select id, ipa, uid, mtime from @scrape_log where 0").execute();
 		Csql_query(m_database, "select @uid, torrent_pass_version, downloaded, uploaded from @users where 0").execute();
 		m_read_users_can_leech = Csql_query(m_database, "show columns from @users like 'can_leech'").execute();
 		m_read_users_peers_limit = Csql_query(m_database, "show columns from @users like 'peers_limit'").execute();
