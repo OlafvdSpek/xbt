@@ -69,7 +69,6 @@ void Cconfig::fill_maps(const Cconfig* v)
 			"query_log", &m_query_log, "",
 			"redirect_url", &m_redirect_url, "",
 			"table_announce_log", &m_table_announce_log, "",
-			"table_deny_from_hosts", &m_table_deny_from_hosts, "",
 			"table_files", &m_table_torrents, "",
 			"table_files_users", &m_table_torrents_users, "",
 			"table_scrape_log", &m_table_scrape_log, "",
