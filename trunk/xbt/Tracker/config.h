@@ -49,8 +49,8 @@ public:
 	std::string m_redirect_url;
 	std::string m_table_announce_log;
 	std::string m_table_deny_from_hosts;
-	std::string m_table_files;
-	std::string m_table_files_users;
+	std::string m_table_torrents;
+	std::string m_table_torrents_users;
 	std::string m_table_scrape_log;
 	std::string m_table_users;
 	std::string m_torrent_pass_private_key;

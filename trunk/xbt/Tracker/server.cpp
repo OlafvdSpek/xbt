@@ -737,8 +737,8 @@ void Cserver::read_config()
 			m_database.set_name("uid", m_config.m_column_users_uid);
 			m_database.set_name("deny_from_hosts", m_config.m_table_deny_from_hosts.empty() ? m_table_prefix + "deny_from_hosts" : m_config.m_table_deny_from_hosts);
 			m_database.set_name("announce_log", m_config.m_table_announce_log.empty() ? m_table_prefix + "announce_log" : m_config.m_table_announce_log);
-			m_database.set_name("files", m_config.m_table_files.empty() ? m_table_prefix + "files" : m_config.m_table_files);
-			m_database.set_name("files_users", m_config.m_table_files_users.empty() ? m_table_prefix + "files_users" : m_config.m_table_files_users);
+			m_database.set_name("files", m_config.m_table_torrents.empty() ? m_table_prefix + "files" : m_config.m_table_torrents);
+			m_database.set_name("files_users", m_config.m_table_torrents_users.empty() ? m_table_prefix + "files_users" : m_config.m_table_torrents_users);
 			m_database.set_name("scrape_log", m_config.m_table_scrape_log.empty() ? m_table_prefix + "scrape_log" : m_config.m_table_scrape_log);
 			m_database.set_name("users", m_config.m_table_users.empty() ? m_table_prefix + "users" : m_config.m_table_users);
 		}
