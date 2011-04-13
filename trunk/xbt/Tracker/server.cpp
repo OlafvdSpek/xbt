@@ -219,6 +219,7 @@ void Cserver::accept(const Csocket& l)
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{
+  		m_stats.slow_tcp++;
 			m_connections.push_back(connection.release());
 			m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
@@ -825,6 +826,7 @@ std::string Cserver::statistics() const
 		<< "<tr><td>"
 		<< "<tr><td>accepted tcp<td align=right>" << m_stats.accepted_tcp
 		<< "<tr><td>rejected tcp<td align=right>" << m_stats.rejected_tcp
+		<< "<tr><td>slow tcp<td align=right>" << m_stats.slow_tcp
 		<< "<tr><td>announced<td align=right>" << m_stats.announced();
 	if (m_stats.announced())
 	{
