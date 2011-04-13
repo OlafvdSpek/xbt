@@ -60,13 +60,13 @@ public:
 
 	typedef std::map<peer_key_c, t_peer> t_peers;
 
-	struct t_file
+	struct t_torrent
 	{
 		void clean_up(time_t t, Cserver&);
 		void debug(std::ostream&) const;
 		std::string select_peers(const Ctracker_input&) const;
 
-		t_file()
+		t_torrent()
 		{
 			completed = 0;
 			dirty = true;
@@ -114,10 +114,10 @@ public:
 	t_user* find_user_by_torrent_pass(const std::string&, const std::string& info_hash);
 	t_user* find_user_by_uid(int);
 	void read_config();
-	void write_db_files();
+	void write_db_torrents();
 	void write_db_users();
-	void read_db_files();
-	void read_db_files_sql();
+	void read_db_torrents();
+	void read_db_torrents_sql();
 	void read_db_users();
 	void clean_up();
 	std::string insert_peer(const Ctracker_input&, bool udp, t_user*);
@@ -129,9 +129,9 @@ public:
 	static void term();
 	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 
-	const t_file* file(const std::string& id) const
+	const t_torrent* torrent(const std::string& id) const
 	{	
-		return find_ptr(m_files, id);
+		return find_ptr(m_torrents, id);
 	}
 
 	const Cconfig& config() const
@@ -157,7 +157,7 @@ private:
 	typedef boost::ptr_list<Cconnection> t_connections;
 	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef std::list<Cudp_listen_socket> t_udp_sockets;
-	typedef std::map<std::string, t_file> t_files;
+	typedef std::map<std::string, t_torrent> t_torrents;
 	typedef std::map<int, t_user> t_users;
 	typedef std::map<std::string, t_user*> t_users_torrent_passes;
 
@@ -174,22 +174,22 @@ private:
 	bool m_use_sql;
 	time_t m_clean_up_time;
 	time_t m_read_config_time;
-	time_t m_read_db_files_time;
+	time_t m_read_db_torrents_time;
 	time_t m_read_db_users_time;
 	time_t m_time;
-	time_t m_write_db_files_time;
+	time_t m_write_db_torrents_time;
 	time_t m_write_db_users_time;
 	int m_fid_end;
 	long long m_secret;
 	t_connections m_connections;
 	Cdatabase& m_database;
 	Cepoll m_epoll;
-	t_files m_files;
+	t_torrents m_torrents;
 	t_users m_users;
 	t_users_torrent_passes m_users_torrent_passes;
 	std::string m_announce_log_buffer;
 	std::string m_conf_file;
-	std::string m_files_users_updates_buffer;
+	std::string m_torrents_users_updates_buffer;
 	std::string m_scrape_log_buffer;
 	std::string m_table_prefix;
 	std::string m_users_updates_buffer;
