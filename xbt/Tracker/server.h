@@ -60,12 +60,6 @@ public:
 
 	typedef std::map<peer_key_c, t_peer> t_peers;
 
-	struct t_deny_from_host
-	{
-		unsigned int begin;
-		bool marked;
-	};
-
 	struct t_file
 	{
 		void clean_up(time_t t, Cserver&);
@@ -122,7 +116,6 @@ public:
 	void read_config();
 	void write_db_files();
 	void write_db_users();
-	void read_db_deny_from_hosts();
 	void read_db_files();
 	void read_db_files_sql();
 	void read_db_users();
@@ -165,7 +158,6 @@ private:
 	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef std::list<Cudp_listen_socket> t_udp_sockets;
 	typedef std::map<std::string, t_file> t_files;
-	typedef std::map<unsigned int, t_deny_from_host> t_deny_from_hosts;
 	typedef std::map<int, t_user> t_users;
 	typedef std::map<std::string, t_user*> t_users_torrent_passes;
 
@@ -182,7 +174,6 @@ private:
 	bool m_use_sql;
 	time_t m_clean_up_time;
 	time_t m_read_config_time;
-	time_t m_read_db_deny_from_hosts_time;
 	time_t m_read_db_files_time;
 	time_t m_read_db_users_time;
 	time_t m_time;
@@ -193,7 +184,6 @@ private:
 	t_connections m_connections;
 	Cdatabase& m_database;
 	Cepoll m_epoll;
-	t_deny_from_hosts m_deny_from_hosts;
 	t_files m_files;
 	t_users m_users;
 	t_users_torrent_passes m_users_torrent_passes;

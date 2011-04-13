@@ -81,7 +81,6 @@ int Cserver::run()
 		}
 	}
 	clean_up();
-	read_db_deny_from_hosts();
 	read_db_files();
 	read_db_users();
 	write_db_files();
@@ -183,8 +182,6 @@ int Cserver::run()
 			read_config();
 		else if (time() - m_clean_up_time > m_config.m_clean_up_interval)
 			clean_up();
-		else if (time() - m_read_db_deny_from_hosts_time > m_config.m_read_db_interval)
-			read_db_deny_from_hosts();
 		else if (time() - m_read_db_files_time > m_config.m_read_db_interval)
 			read_db_files();
 		else if (time() - m_read_db_users_time > m_config.m_read_db_interval)
@@ -214,12 +211,6 @@ void Cserver::accept(const Csocket& l)
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
 				std::cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			break;
-		}
-		t_deny_from_hosts::const_iterator i = m_deny_from_hosts.lower_bound(ntohl(a.sin_addr.s_addr));
-		if (i != m_deny_from_hosts.end() && ntohl(a.sin_addr.s_addr) >= i->second.begin)
-		{
-			m_stats.rejected_tcp++;
-			continue;
 		}
 		m_stats.accepted_tcp++;
 		if (s.blocking(false))
@@ -478,35 +469,6 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 const std::string& Cserver::db_name(const std::string& v) const
 {
 	return m_database.name(v);
-}
-
-void Cserver::read_db_deny_from_hosts()
-{
-	m_read_db_deny_from_hosts_time = time();
-	if (!m_use_sql)
-		return;
-	try
-	{
-		Csql_result result = Csql_query(m_database, "select begin, end from @deny_from_hosts").execute();
-		BOOST_FOREACH(t_deny_from_hosts::reference i, m_deny_from_hosts)
-			i.second.marked = true;
-		while (Csql_row row = result.fetch_row())
-		{
-			t_deny_from_host& deny_from_host = m_deny_from_hosts[row[1].i()];
-			deny_from_host.marked = false;
-			deny_from_host.begin = row[0].i();
-		}
-		for (t_deny_from_hosts::iterator i = m_deny_from_hosts.begin(); i != m_deny_from_hosts.end(); )
-		{
-			if (i->second.marked)
-				m_deny_from_hosts.erase(i++);
-			else
-				i++;
-		}
-	}
-	catch (Cdatabase::exception&)
-	{
-	}
 }
 
 void Cserver::read_db_files()
