@@ -96,17 +96,17 @@ void Ctransaction::send_announce(data_ref r)
 		send_error(r, error);
 		return;
 	}
-	const Cserver::t_file* file = m_server.file(ti.m_info_hash);
-	if (!file)
+	const Cserver::t_torrent* torrent = m_server.torrent(ti.m_info_hash);
+	if (!torrent)
 		return;
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_announce);
 	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r.end));
 	write_int(4, d + utoa_interval, m_server.config().m_announce_interval);
-	write_int(4, d + utoa_leechers, file->leechers);
-	write_int(4, d + utoa_seeders, file->seeders);
-	std::string peers = file->select_peers(ti);
+	write_int(4, d + utoa_leechers, torrent->leechers);
+	write_int(4, d + utoa_seeders, torrent->seeders);
+	std::string peers = torrent->select_peers(ti);
 	memcpy(d + utoa_size, peers.data(), peers.size());
 	send(data_ref(d, d + utoa_size + peers.size()));
 }
@@ -127,11 +127,11 @@ void Ctransaction::send_scrape(data_ref r)
 	char* w = d + utos_size;
 	for (r += utis_size; r + 20 <= r.end && w + 12 <= d + cb_d; r += 20)
 	{
-		if (const Cserver::t_file* file = m_server.file(r.sub_range(0, 20).string()))
+		if (const Cserver::t_torrent* t = m_server.torrent(r.sub_range(0, 20).string()))
 		{
-			w = write_int(4, w, file->seeders);
-			w = write_int(4, w, file->completed);
-			w = write_int(4, w, file->leechers);
+			w = write_int(4, w, t->seeders);
+			w = write_int(4, w, t->completed);
+			w = write_int(4, w, t->leechers);
 		}
 		else
 		{
