@@ -2,7 +2,6 @@
 
 #include <cstdio>
 #include <vector>
-#include <xbt/find_ptr.h>
 #include <xbt/database.h>
 
 Csql_query::Csql_query(Cdatabase& database, const std::string& v):
