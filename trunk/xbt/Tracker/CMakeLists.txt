@@ -11,7 +11,7 @@ if(HAVE_SYS_EPOLL)
 	add_definitions(-DEPOLL)
 endif()
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-missing-braces -Wno-missing-field-initializers -Wno-parentheses -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-missing-field-initializers -Wno-parentheses -Wno-sign-compare")
 add_executable(
 	xbt_tracker
 	../misc/sql/database.cpp
