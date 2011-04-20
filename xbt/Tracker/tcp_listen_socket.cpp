@@ -14,7 +14,7 @@ Ctcp_listen_socket::Ctcp_listen_socket(Cserver* server, const Csocket& s)
 	m_s = s;
 }
 
-void Ctcp_listen_socket::process_events(int events)
+void Ctcp_listen_socket::process_events(int)
 {
 	m_server->accept(m_s);
 }
