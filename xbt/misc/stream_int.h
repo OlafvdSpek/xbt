@@ -34,7 +34,7 @@ inline long long read_int(int cb, const void* r0)
 
 inline long long read_int(int cb, data_ref s)
 {
-	return s.size() < cb ? 0 : read_int(cb, s.begin);
+	return s.size() < static_cast<size_t>(cb) ? 0 : read_int(cb, s.begin);
 }
 
 inline long long read_int(int cb, const void* r, const void* s_end)
@@ -65,7 +65,7 @@ inline long long read_int_le(int cb, const void* r0)
 	return v;
 }
 
-inline long long read_int_le(int cb, const void* r, const void* s_end)
+inline long long read_int_le(int cb, const void* r, const void* /*s_end*/)
 {
 	return read_int_le(cb, r);
 }
