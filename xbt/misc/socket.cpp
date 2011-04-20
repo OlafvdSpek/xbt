@@ -4,6 +4,7 @@
 #if BOOST_VERSION >= 104200
 #include <boost/make_shared.hpp>
 #endif
+#include <cstring>
 #include <cstdio>
 
 #ifdef WIN32
