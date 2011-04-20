@@ -22,59 +22,59 @@ void Cconfig::fill_maps(const Cconfig* v)
 	{
 		t_attribute<bool> attributes[] =
 		{
-			"auto_register", &m_auto_register, false,
-			"anonymous_connect", &m_anonymous_connect, true,
-			"anonymous_announce", &m_anonymous_announce, true,
-			"anonymous_scrape", &m_anonymous_scrape, true,
-			"daemon", &m_daemon, true,
-			"debug", &m_debug, false,
-			"full_scrape", &m_full_scrape, false,
-			"gzip_debug", &m_gzip_debug, true,
-			"gzip_scrape", &m_gzip_scrape, true,
-			"log_access", &m_log_access, false,
-			"log_announce", &m_log_announce, false,
-			"log_scrape", &m_log_scrape, false,
-			NULL
+      { "auto_register", &m_auto_register, false },
+			{ "anonymous_connect", &m_anonymous_connect, true },
+			{ "anonymous_announce", &m_anonymous_announce, true },
+			{ "anonymous_scrape", &m_anonymous_scrape, true },
+			{ "daemon", &m_daemon, true },
+			{ "debug", &m_debug, false },
+			{ "full_scrape", &m_full_scrape, false },
+			{ "gzip_debug", &m_gzip_debug, true },
+			{ "gzip_scrape", &m_gzip_scrape, true },
+			{ "log_access", &m_log_access, false },
+			{ "log_announce", &m_log_announce, false },
+			{ "log_scrape", &m_log_scrape, false },
+			{ NULL, NULL, false }
 		};
 		fill_map(attributes, v ? &v->m_attributes_bool : NULL, m_attributes_bool);
 	}
 	{
 		t_attribute<int> attributes[] =
 		{
-			"announce_interval", &m_announce_interval, 1800,
-			"clean_up_interval", &m_clean_up_interval, 60,
-			"read_config_interval", &m_read_config_interval, 60,
-			"read_db_interval", &m_read_db_interval, 60,
-			"scrape_interval", &m_scrape_interval, 0,
-			"write_db_interval", &m_write_db_interval, 15,
-			NULL
+			{ "announce_interval", &m_announce_interval, 1800 },
+			{ "clean_up_interval", &m_clean_up_interval, 60 },
+			{ "read_config_interval", &m_read_config_interval, 60 },
+			{ "read_db_interval", &m_read_db_interval, 60 },
+			{ "scrape_interval", &m_scrape_interval, 0 },
+			{ "write_db_interval", &m_write_db_interval, 15 },
+			{ NULL, NULL, 0 }
 		};
 		fill_map(attributes, v ? &v->m_attributes_int : NULL, m_attributes_int);
 	}
 	{
 		t_attribute<std::string> attributes[] =
 		{
-			"column_files_completed", &m_column_files_completed, "completed",
-			"column_files_fid", &m_column_files_fid, "fid",
-			"column_files_leechers", &m_column_files_leechers, "leechers",
-			"column_files_seeders", &m_column_files_seeders, "seeders",
-			"column_users_uid", &m_column_users_uid, "uid",
-			"mysql_database", &m_mysql_database, "xbt",
-			"mysql_host", &m_mysql_host, "",
-			"mysql_password", &m_mysql_password, "",
-			"mysql_table_prefix", &m_mysql_table_prefix, "xbt_",
-			"mysql_user", &m_mysql_user, "",
-			"offline_message", &m_offline_message, "",
-			"pid_file", &m_pid_file, "",
-			"query_log", &m_query_log, "",
-			"redirect_url", &m_redirect_url, "",
-			"table_announce_log", &m_table_announce_log, "",
-			"table_files", &m_table_torrents, "",
-			"table_files_users", &m_table_torrents_users, "",
-			"table_scrape_log", &m_table_scrape_log, "",
-			"table_users", &m_table_users, "",
-			"torrent_pass_private_key", &m_torrent_pass_private_key, "",
-			NULL, NULL, ""
+			{ "column_files_completed", &m_column_files_completed, "completed" },
+			{ "column_files_fid", &m_column_files_fid, "fid" },
+			{ "column_files_leechers", &m_column_files_leechers, "leechers" },
+			{ "column_files_seeders", &m_column_files_seeders, "seeders" },
+			{ "column_users_uid", &m_column_users_uid, "uid" },
+			{ "mysql_database", &m_mysql_database, "xbt" },
+			{ "mysql_host", &m_mysql_host, "" },
+			{ "mysql_password", &m_mysql_password, "" },
+			{ "mysql_table_prefix", &m_mysql_table_prefix, "xbt_" },
+			{ "mysql_user", &m_mysql_user, "" },
+			{ "offline_message", &m_offline_message, "" },
+			{ "pid_file", &m_pid_file, "" },
+			{ "query_log", &m_query_log, "" },
+			{ "redirect_url", &m_redirect_url, "" },
+			{ "table_announce_log", &m_table_announce_log, "" },
+			{ "table_files", &m_table_torrents, "" },
+			{ "table_files_users", &m_table_torrents_users, "" },
+			{ "table_scrape_log", &m_table_scrape_log, "" },
+			{ "table_users", &m_table_users, "" },
+			{ "torrent_pass_private_key", &m_torrent_pass_private_key, "" },
+			{ NULL, NULL, "" }
 		};
 		fill_map(attributes, v ? &v->m_attributes_string : NULL, m_attributes_string);
 	}
