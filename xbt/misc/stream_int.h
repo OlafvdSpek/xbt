@@ -10,7 +10,7 @@ inline float read_float(const void* r)
 	return v;
 }
 
-inline float read_float(const void* r0, const void* s_end)
+inline float read_float(const void* r0, const void* /*s_end*/)
 {
 	return read_float(r0);
 }
