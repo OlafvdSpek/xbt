@@ -305,8 +305,7 @@ int Cbvalue::pre_read() const
 Cvirtual_binary Cbvalue::read() const
 {
 	Cvirtual_binary d;
-	int cb_d = read(d.write_start(pre_read()));
-	assert(cb_d == d.size());
+  BOOST_VERIFY(read(d.write_start(pre_read())) == d.size());
 	return d;
 }
 
