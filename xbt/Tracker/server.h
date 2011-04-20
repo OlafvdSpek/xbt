@@ -23,6 +23,8 @@ public:
 			host_ = host;
 #ifdef PEERS_KEY
 			uid_ = uid;
+#else
+      (void)uid;
 #endif
 		}
 
