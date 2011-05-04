@@ -868,8 +868,7 @@ Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, const 
 		if (v.size() >= 8 && Csha1((boost::format("%s %d %d %s") % m_config.m_torrent_pass_private_key % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8)))
 			return user;
 	}
-	t_user** i = find_ptr(m_users_torrent_passes, v);
-	return i ? *i : NULL;
+	return find_ptr2(m_users_torrent_passes, v);
 }
 
 Cserver::t_user* Cserver::find_user_by_uid(int v)
