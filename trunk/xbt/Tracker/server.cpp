@@ -628,7 +628,7 @@ void Cserver::write_db_torrents()
 		}
 		if (!buffer.empty())
 		{
-			buffer.pop_back();
+			buffer.erase(buffer.size() - 1);
 			m_database.query("insert into " + db_name("files") + " (" + db_name("leechers") + ", " + db_name("seeders") + ", " + db_name("completed") + ", " + db_name("fid") + ") values "
 				+ buffer
 				+ " on duplicate key update"
@@ -645,7 +645,7 @@ void Cserver::write_db_torrents()
 	{
 		try
 		{
-			m_announce_log_buffer.pop_back();
+			m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
 			m_database.query("insert delayed into " + db_name("announce_log") + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
 		}
 		catch (Cdatabase::exception&)
@@ -657,7 +657,7 @@ void Cserver::write_db_torrents()
 	{
 		try
 		{
-			m_scrape_log_buffer.pop_back();
+			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
 			m_database.query("insert delayed into " + db_name("scrape_log") + " (ipa, uid, mtime) values " + m_scrape_log_buffer);
 		}
 		catch (Cdatabase::exception&)
@@ -674,7 +674,7 @@ void Cserver::write_db_users()
 		return;
 	if (!m_torrents_users_updates_buffer.empty())
 	{
-		m_torrents_users_updates_buffer.pop_back();
+		m_torrents_users_updates_buffer.erase(m_torrents_users_updates_buffer.size() - 1);
 		try
 		{
 			m_database.query("insert into " + db_name("files_users") + " (active, announced, completed, downloaded, `left`, uploaded, mtime, fid, uid) values "
@@ -695,7 +695,7 @@ void Cserver::write_db_users()
 	}
 	if (!m_users_updates_buffer.empty())
 	{
-		m_users_updates_buffer.pop_back();
+		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
 		try
 		{
 			m_database.query("insert into " + db_name("users") + " (downloaded, uploaded, " + db_name("uid") + ") values "
