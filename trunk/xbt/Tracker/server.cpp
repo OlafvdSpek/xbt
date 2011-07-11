@@ -481,8 +481,7 @@ void Cserver::read_db_torrents()
 	{
 		std::set<std::string> new_files;
 		std::ifstream is("xbt_torrents.txt");
-		std::string s;
-		while (getline(is, s))
+		for (std::string s; getline(is, s); )
 		{
 			s = hex_decode(s);
 			if (s.size() != 20)
