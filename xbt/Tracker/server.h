@@ -24,7 +24,16 @@ public:
 #ifdef PEERS_KEY
 			uid_ = uid;
 #else
-      (void)uid;
+			(void)uid;
+#endif
+		}
+
+		bool operator==(peer_key_c v) const
+		{
+#ifdef PEERS_KEY
+			return host_ == v.host_ && uid_ == v.uid_;
+#else
+			return host_ == v.host_;
 #endif
 		}
 
@@ -37,12 +46,21 @@ public:
 #endif
 		}
 
+		friend std::size_t hash_value(const peer_key_c& v)
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, v.host_);
+#ifdef PEERS_KEY
+			boost::hash_combine(seed, v.uid_);
+#endif
+			return seed;
+		}
+
 		int host_;
 #ifdef PEERS_KEY
 		int uid_;
 #endif
 	};
-
 
 	struct t_peer
 	{
@@ -60,7 +78,7 @@ public:
 		boost::array<char, 20> peer_id;
 	};
 
-	typedef std::map<peer_key_c, t_peer> t_peers;
+	typedef boost::unordered_map<peer_key_c, t_peer> t_peers;
 
 	struct t_torrent
 	{
@@ -159,12 +177,12 @@ private:
 	typedef boost::ptr_list<Cconnection> t_connections;
 	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
 	typedef std::list<Cudp_listen_socket> t_udp_sockets;
-	typedef std::map<std::string, t_torrent> t_torrents;
-	typedef std::map<int, t_user> t_users;
-	typedef std::map<std::string, t_user*> t_users_torrent_passes;
+	typedef boost::unordered_map<std::string, t_torrent> t_torrents;
+	typedef boost::unordered_map<int, t_user> t_users;
+	typedef boost::unordered_map<std::string, t_user*> t_users_torrent_passes;
 
-	const std::string& db_name(const std::string& v) const;
-	static void sig_handler(int v);
+	const std::string& db_name(const std::string&) const;
+	static void sig_handler(int);
 
 	Cconfig m_config;
 	Cstats m_stats;
