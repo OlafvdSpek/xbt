@@ -44,19 +44,9 @@
 #define O_BINARY 0
 #endif
 
-inline long long max(long long a, long long b)
-{
-	return a > b ? a : b;
-}
-
-inline long long min(long long a, long long b)
-{
-	return a < b ? a : b;
-}
-
-#include <bt_misc.h>
 #include <bvalue.h>
 #include <socket.h>
+#include <xbt/bt_misc.h>
 #include <xbt/virtual_binary.h>
 
 typedef unsigned char byte;

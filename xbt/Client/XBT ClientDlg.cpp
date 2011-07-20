@@ -3,7 +3,6 @@
 
 #include <sys/stat.h>
 #include "windows/browse_for_directory.h"
-#include "bt_misc.h"
 #include "bt_torrent.h"
 #include "dlg_about.h"
 #include "dlg_block_list.h"

@@ -3,11 +3,10 @@
 
 #include "bt_file.h"
 #include "server.h"
-#include <bt_misc.h>
 #include <bt_strings.h>
 #include <sstream>
 #include <stream_int.h>
-#include <xcc_z.h>
+#include <xbt/xcc_z.h>
 
 Cbt_tracker_link::Cbt_tracker_link()
 {
