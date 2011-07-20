@@ -25,10 +25,6 @@ int Cxif_key_r::import(data_ref s)
 	{
 		if (Z_OK != uncompress(d.write_start(cb_d), &cb_d, s + sizeof(t_xif_header_fast), h.size_compressed))
 			return 1;
-		/*
-		if (uncompress(d.write_start(cb_d), &cb_d, s + sizeof(t_xif_header_fast), h.size_compressed) != Z_OK)
-			return 1;
-		*/
 		load(d);
 		// m_external_data = d + h.size_compressed;
 	}
