@@ -17,7 +17,6 @@
 #include <afxsock.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
-#include <bt_misc.h>
 #include <cassert>
 #include <fstream>
 #include <io.h>
@@ -32,6 +31,7 @@
 #include <sys/stat.h>
 #include <vector>
 #include <windows/ETSLayout.h>
+#include <xbt/bt_misc.h>
 #include <xbt/virtual_binary.h>
 
 inline long long max(long long a, long long b)

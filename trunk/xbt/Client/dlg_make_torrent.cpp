@@ -3,7 +3,7 @@
 
 #include "bt_strings.h"
 #include "bt_torrent.h"
-#include "xcc_z.h"
+#include "xbt/xcc_z.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>

@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "alerts.h"
 
-#include "bt_misc.h"
-
 int Calert::pre_dump() const
 {
 	return m_message.size() + m_source.size() + 16;
