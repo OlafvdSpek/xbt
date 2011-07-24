@@ -150,7 +150,7 @@ public:
 	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 
 	const t_torrent* torrent(const std::string& id) const
-	{	
+	{
 		return find_ptr(m_torrents, id);
 	}
 
