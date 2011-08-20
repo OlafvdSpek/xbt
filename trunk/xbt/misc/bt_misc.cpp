@@ -354,6 +354,8 @@ std::string xbt_version2a(int v)
 
 std::string mk_sname(std::string v)
 {
+	boost::erase_all(v, "-");
+	boost::erase_all(v, "@");
 	std::replace(v.begin(), v.end(), '0', 'o');
 	std::replace(v.begin(), v.end(), '1', 'i');
 	std::replace(v.begin(), v.end(), '3', 'e');
