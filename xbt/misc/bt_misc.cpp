@@ -351,3 +351,20 @@ std::string xbt_version2a(int v)
 {
 	return n(v / 100) + "." + n(v / 10 % 10) + "." + n(v % 10);
 }
+
+std::string mk_sname(std::string v)
+{
+	std::replace(v.begin(), v.end(), '0', 'o');
+	std::replace(v.begin(), v.end(), '1', 'i');
+	std::replace(v.begin(), v.end(), '3', 'e');
+	std::replace(v.begin(), v.end(), '4', 'a');
+	std::replace(v.begin(), v.end(), 'l', 'i');
+	for (int i = 1; i < v.size(); )
+	{
+		if (v[i] == v[i - 1])
+			v.erase(i, 1);
+		else
+			i++;
+	}
+	return v;
+}
