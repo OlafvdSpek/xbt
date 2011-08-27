@@ -1,5 +1,6 @@
 #include "xbt/bt_misc.h"
 
+#include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <sys/stat.h>
 #include <algorithm>
