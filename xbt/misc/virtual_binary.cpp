@@ -4,13 +4,6 @@
 #include <cstdio>
 #include <cstring>
 
-Cvirtual_binary_source::Cvirtual_binary_source(data_ref d)
-{
-	m_range.assign(new unsigned char[d.size()], d.size());
-	if (d)
-		memcpy(m_range, d, d.size());
-}
-
 Cvirtual_binary::Cvirtual_binary(size_t v)
 {
   assign(v);
@@ -29,11 +22,14 @@ void Cvirtual_binary::assign(size_t v)
 void Cvirtual_binary::assign(data_ref v)
 {
   if (v.size())
+  {
 #if BOOST_VERSION >= 104200
-    m_source = boost::make_shared<Cvirtual_binary_source>(v);
+    m_source = boost::make_shared<Cvirtual_binary_source>(v.size());
 #else
-    m_source.reset(new Cvirtual_binary_source(v));
+    m_source.reset(new Cvirtual_binary_source(v.size()));
 #endif
+    memcpy(data_edit(), v, v.size());
+  }
   else
     m_source.reset();
 }

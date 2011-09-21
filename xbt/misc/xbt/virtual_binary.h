@@ -1,9 +1,7 @@
 #pragma once
 
 #include <boost/version.hpp>
-#if 1 // BOOST_VERSION >= 104200
 #include <boost/make_shared.hpp>
-#endif
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
 #include <cassert>
@@ -13,14 +11,17 @@
 class Cvirtual_binary_source: boost::noncopyable
 {
 public:
-	Cvirtual_binary_source(data_ref);
+	Cvirtual_binary_source(size_t v)
+  {
+  	m_range.assign(new char[v], v);
+  }
 
 	~Cvirtual_binary_source()
 	{
 		delete[] m_range.begin;
 	}
 
-	mutable_data_ref range()
+	operator mutable_data_ref()
 	{
 		return m_range;
 	}
@@ -83,7 +84,7 @@ public:
 
 	data_ref range() const
 	{
-		return m_source ? m_source->range() : mutable_data_ref();
+		return m_source ? *m_source : mutable_data_ref();
 	}
 
 	mutable_data_ref mutable_range()
@@ -92,7 +93,7 @@ public:
 			return mutable_data_ref();
 		if (!m_source.unique())
       assign(range());
-		return m_source->range();
+		return *m_source;
 	}
 
 	bool empty() const
