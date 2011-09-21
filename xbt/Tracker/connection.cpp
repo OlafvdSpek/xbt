@@ -261,8 +261,8 @@ void Cconnection::read(const std::string& v)
 		if (r < h.size())
 		{
 			m_write_b.resize(h.size() + s.size());
-			memcpy(m_write_b.data_edit(), h.data(), h.size());
-			s.read(m_write_b.data_edit() + h.size());
+			memcpy(m_write_b.data_edit(), h);
+			memcpy(m_write_b.data_edit() + h.size(), s);
 		}
 		else
 		{
