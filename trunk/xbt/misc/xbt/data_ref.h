@@ -249,3 +249,9 @@ public:
 
 typedef const_memory_range_base<const unsigned char*> data_ref;
 typedef memory_range_base<unsigned char*> mutable_data_ref;
+
+inline size_t memcpy(void* d, data_ref s)
+{
+  ::memcpy(d, s, s.size());
+  return s.size();
+}
