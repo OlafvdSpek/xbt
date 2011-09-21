@@ -61,12 +61,6 @@ void Cvirtual_binary::clear()
 	m_source.reset();
 }
 
-size_t Cvirtual_binary::read(void* d) const
-{
-	memcpy(d, data(), size());
-	return size();
-}
-
 unsigned char* Cvirtual_binary::write_start(size_t cb_d)
 {
 	if (data() && size() == cb_d)
@@ -77,9 +71,4 @@ unsigned char* Cvirtual_binary::write_start(size_t cb_d)
 	m_source.reset(new Cvirtual_binary_source(data_ref(NULL, cb_d)));
 #endif
 	return data_edit();
-}
-
-void Cvirtual_binary::write(data_ref d)
-{
-	memcpy(write_start(d.size()), d, d.size());
 }

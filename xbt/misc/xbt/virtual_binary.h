@@ -41,9 +41,7 @@ public:
 	int load(const std::string&);
 	Cvirtual_binary& load1(const std::string&);
 	void clear();
-	size_t read(void* d) const;
 	unsigned char* write_start(size_t cb_d);
-	void write(data_ref);
 	Cvirtual_binary(size_t);
 	Cvirtual_binary(data_ref);
 
