@@ -6,8 +6,7 @@
 
 Cvirtual_binary_source::Cvirtual_binary_source(data_ref d)
 {
-	m_range.begin = new unsigned char[d.size()];
-	m_range.end = m_range.begin + d.size();
+	m_range.assign(new unsigned char[d.size()], d.size());
 	if (d)
 		memcpy(m_range, d, d.size());
 }
