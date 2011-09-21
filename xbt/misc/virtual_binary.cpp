@@ -4,21 +4,6 @@
 #include <cstdio>
 #include <cstring>
 
-Cvirtual_binary::Cvirtual_binary(size_t v)
-{
-  assign(v);
-}
-
-Cvirtual_binary::Cvirtual_binary(data_ref v)
-{
-  assign(v);
-}
-
-void Cvirtual_binary::assign(size_t v)
-{
-  assign(data_ref(NULL, v));
-}
-
 void Cvirtual_binary::assign(data_ref v)
 {
   if (v.size())
@@ -59,11 +44,6 @@ Cvirtual_binary& Cvirtual_binary::load1(const std::string& fname)
 {
 	load(fname);
 	return *this;
-}
-
-void Cvirtual_binary::clear()
-{
-	m_source.reset();
 }
 
 unsigned char* Cvirtual_binary::write_start(size_t cb_d)
