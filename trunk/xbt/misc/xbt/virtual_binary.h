@@ -41,16 +41,27 @@ public:
 	int save(const std::string&) const;
 	int load(const std::string&);
 	Cvirtual_binary& load1(const std::string&);
-	void assign(size_t);
 	void assign(data_ref);
-	void clear();
 	unsigned char* write_start(size_t cb_d);
-	Cvirtual_binary(size_t);
-	Cvirtual_binary(data_ref);
 
 	Cvirtual_binary()
 	{
 	}
+
+  Cvirtual_binary(size_t v)
+  {
+    assign(v);
+  }
+
+  Cvirtual_binary(data_ref v)
+  {
+    assign(v);
+  }
+
+	void assign(size_t v)
+  {
+    assign(data_ref(NULL, v));
+  }
 
 	const unsigned char* begin() const
 	{
@@ -95,6 +106,11 @@ public:
       assign(range());
 		return *m_source;
 	}
+
+  void Cvirtual_binary::clear()
+  {
+    m_source.reset();
+  }
 
 	bool empty() const
 	{
