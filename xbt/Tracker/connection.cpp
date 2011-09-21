@@ -231,8 +231,8 @@ void Cconnection::read(const std::string& v)
 	h += "\r\n";
 #ifdef WIN32
 	m_write_b.resize(h.size() + s.size());
-	memcpy(m_write_b.data_edit(), h.data(), h.size());
-	s.read(m_write_b.data_edit() + h.size());
+	memcpy(m_write_b.data_edit(), h);
+	memcpy(m_write_b.data_edit() + h.size(), s);
 	int r = m_s.send(m_write_b);
 #else
 	boost::array<iovec, 2> d;
