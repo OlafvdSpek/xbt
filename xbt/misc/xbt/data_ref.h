@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/array.hpp>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -252,6 +253,6 @@ typedef memory_range_base<unsigned char*> mutable_data_ref;
 
 inline size_t memcpy(void* d, data_ref s)
 {
-  ::memcpy(d, s, s.size());
+  memcpy(d, s, s.size());
   return s.size();
 }
