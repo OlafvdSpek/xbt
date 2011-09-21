@@ -107,7 +107,7 @@ public:
 		return *m_source;
 	}
 
-  void Cvirtual_binary::clear()
+  void clear()
   {
     m_source.reset();
   }
