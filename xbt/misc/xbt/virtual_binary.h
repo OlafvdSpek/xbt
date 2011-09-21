@@ -40,6 +40,8 @@ public:
 	int save(const std::string&) const;
 	int load(const std::string&);
 	Cvirtual_binary& load1(const std::string&);
+	void assign(size_t);
+	void assign(data_ref);
 	void clear();
 	unsigned char* write_start(size_t cb_d);
 	Cvirtual_binary(size_t);
@@ -89,11 +91,7 @@ public:
 		if (!m_source)
 			return mutable_data_ref();
 		if (!m_source.unique())
-#if BOOST_VERSION >= 104200
-			m_source = boost::make_shared<Cvirtual_binary_source>(range());
-#else
-			m_source.reset(new Cvirtual_binary_source(range()));
-#endif
+      assign(range());
 		return m_source->range();
 	}
 

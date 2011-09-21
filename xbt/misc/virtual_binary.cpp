@@ -2,7 +2,7 @@
 
 #include <sys/stat.h>
 #include <cstdio>
-#include <string.h>
+#include <cstring>
 
 Cvirtual_binary_source::Cvirtual_binary_source(data_ref d)
 {
@@ -13,20 +13,29 @@ Cvirtual_binary_source::Cvirtual_binary_source(data_ref d)
 
 Cvirtual_binary::Cvirtual_binary(size_t v)
 {
-#if BOOST_VERSION >= 104200
-	m_source = boost::make_shared<Cvirtual_binary_source>(data_ref(NULL, v));
-#else
-	m_source.reset(new Cvirtual_binary_source(data_ref(NULL, v)));
-#endif
+  assign(v);
 }
 
-Cvirtual_binary::Cvirtual_binary(data_ref d)
+Cvirtual_binary::Cvirtual_binary(data_ref v)
 {
+  assign(v);
+}
+
+void Cvirtual_binary::assign(size_t v)
+{
+  assign(data_ref(NULL, v));
+}
+
+void Cvirtual_binary::assign(data_ref v)
+{
+  if (v.size())
 #if BOOST_VERSION >= 104200
-	m_source = boost::make_shared<Cvirtual_binary_source>(d);
+    m_source = boost::make_shared<Cvirtual_binary_source>(v);
 #else
-	m_source.reset(new Cvirtual_binary_source(d));
+    m_source.reset(new Cvirtual_binary_source(v));
 #endif
+  else
+    m_source.reset();
 }
 
 int Cvirtual_binary::save(const std::string& fname) const
@@ -63,12 +72,7 @@ void Cvirtual_binary::clear()
 
 unsigned char* Cvirtual_binary::write_start(size_t cb_d)
 {
-	if (data() && size() == cb_d)
-		return data_edit();
-#if BOOST_VERSION >= 104200
-	m_source = boost::make_shared<Cvirtual_binary_source>(data_ref(NULL, cb_d));
-#else
-	m_source.reset(new Cvirtual_binary_source(data_ref(NULL, cb_d)));
-#endif
+	if (size() != cb_d)
+    assign(cb_d);
 	return data_edit();
 }
