@@ -18,18 +18,23 @@ public:
 
 	~Cvirtual_binary_source()
 	{
-		delete[] m_range.begin;
+		delete[] m_range.begin();
 	}
 
-	operator mutable_data_ref()
+	unsigned char* begin()
 	{
-		return m_range;
+		return m_range.begin();
+	}
+
+	unsigned char* end()
+	{
+		return m_range.end();
 	}
 
 	void resize(size_t v)
 	{
 		assert(v <= m_range.size());
-		m_range.end = m_range.begin + v;
+		m_range.end_ = m_range.begin_ + v;
 	}
 private:
 	mutable_data_ref m_range;
@@ -65,32 +70,32 @@ public:
 
 	const unsigned char* begin() const
 	{
-		return range().begin;
+		return range().begin();
 	}
 
 	unsigned char* mutable_begin()
 	{
-		return mutable_range().begin;
+		return mutable_range().begin();
 	}
 
 	const unsigned char* data() const
 	{
-		return range().begin;
+		return range().begin();
 	}
 
 	unsigned char* data_edit()
 	{
-		return mutable_range().begin;
+		return mutable_range().begin();
 	}
 
 	const unsigned char* end() const
 	{
-		return range().end;
+		return range().end();
 	}
 
 	unsigned char* mutable_end()
 	{
-		return mutable_range().end;
+		return mutable_range().end();
 	}
 
 	data_ref range() const

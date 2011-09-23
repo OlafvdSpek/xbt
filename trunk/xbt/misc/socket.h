@@ -104,10 +104,10 @@ public:
 	int getsockopt(int level, int name, int& v);
 	int listen();
 	const Csocket& open(int t, bool blocking = false);
-	int recv(mutable_data_ref) const;
-	int recvfrom(mutable_data_ref, sockaddr* a, socklen_t* cb_a) const;
-	int send(data_ref) const;
-	int sendto(data_ref, const sockaddr* a, socklen_t cb_a) const;
+	int recv(mutable_str_ref) const;
+	int recvfrom(mutable_str_ref, sockaddr* a, socklen_t* cb_a) const;
+	int send(str_ref) const;
+	int sendto(str_ref, const sockaddr* a, socklen_t cb_a) const;
 	int setsockopt(int level, int name, const void* v, int cb_v);
 	int setsockopt(int level, int name, int v);
 	Csocket(SOCKET = INVALID_SOCKET);

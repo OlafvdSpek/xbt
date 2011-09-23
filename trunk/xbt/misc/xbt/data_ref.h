@@ -1,9 +1,7 @@
 #pragma once
 
-#include <boost/array.hpp>
 #include <cstring>
 #include <string>
-#include <vector>
 
 template <class T>
 class mutable_data_ref_base
@@ -11,107 +9,102 @@ class mutable_data_ref_base
 public:
 	mutable_data_ref_base()
 	{
-		begin = NULL;
-		end = NULL;
+    clear();
 	}
 
-	template<class U>
-	mutable_data_ref_base(const mutable_data_ref_base<U>& v)
+	template<class V>
+  mutable_data_ref_base(V& v)
 	{
-		assign(v.begin, v.end);
+    if (v.end() == v.begin())
+      clear();
+    else
+		  assign(&*v.begin(), &*v.end());
 	}
 
-	mutable_data_ref_base(void* begin_, void* end_)
+	mutable_data_ref_base(void* begin, void* end)
 	{
-		assign(begin_, end_);
+		assign(begin, end);
 	}
 
-	mutable_data_ref_base(void* begin_, size_t size)
+	mutable_data_ref_base(void* begin, size_t size)
 	{
-		assign(begin_, size);
+		assign(begin, size);
 	}
 
-	template<size_t U>
-	mutable_data_ref_base(boost::array<char, U>& v)
+	mutable_data_ref_base assign(void* begin, void* end)
 	{
-		assign(&v.front(), v.size());
-	}
-
-	template<size_t U>
-	mutable_data_ref_base(boost::array<unsigned char, U>& v)
-	{
-		assign(&v.front(), v.size());
-	}
-
-	mutable_data_ref_base(std::vector<char>& v)
-	{
-		assign(&v.front(), v.size());
-	}
-
-	mutable_data_ref_base(std::vector<unsigned char>& v)
-	{
-		assign(&v.front(), v.size());
-	}
-
-	mutable_data_ref_base assign(void* begin_, void* end_)
-	{
-		begin = reinterpret_cast<T>(begin_);
-		end = reinterpret_cast<T>(end_);
+		begin_ = reinterpret_cast<T>(begin);
+		end_ = reinterpret_cast<T>(end);
 		return *this;
 	}
 	
-	mutable_data_ref_base assign(void* begin_, size_t size)
+	mutable_data_ref_base assign(void* begin, size_t size)
 	{
-		begin = reinterpret_cast<T>(begin_);
-		end = begin + size;
+		begin_ = reinterpret_cast<T>(begin);
+		end_ = begin_ + size;
 		return *this;
 	}
 	
-	void clear()
+	T begin() const
+  {
+    return begin_;
+  }
+
+	T end() const
+  {
+    return begin_;
+  }
+
+	T data() const
+  {
+    return begin();
+  }
+
+  void clear()
 	{
-		begin = end = NULL;
+		begin_ = end_ = NULL;
 	}
 	
 	bool empty() const
 	{
-		return begin == end;
+		return begin_ == end_;
 	}
 
 	size_t size() const
 	{
-		return end - begin;
+		return end_ - begin_;
 	}
 
 	std::string string() const
 	{
-		return std::string(reinterpret_cast<const char*>(begin), size());
+		return std::string(reinterpret_cast<const char*>(begin_), size());
 	}
 
 	mutable_data_ref_base sub_range(size_t o, size_t s)
 	{
-		return mutable_data_ref_base(begin + o, s);
+		return mutable_data_ref_base(begin_ + o, s);
 	}
 
 	operator T() const
 	{
-		return begin;
+		return begin_;
 	}
 
 	mutable_data_ref_base operator++(int)
 	{
 		mutable_data_ref_base t = *this;
-		begin++;
+		begin_++;
 		return t;
 	}
 
 	mutable_data_ref_base operator+=(size_t v)
 	{
-		begin += v;
+		begin_ += v;
 		return *this;
 	}
 
-	T begin;
-	T end;
+	T begin_;
+	T end_;
 };
 
 template <class T>
@@ -120,81 +113,70 @@ class data_ref_base
 public:
 	data_ref_base()
 	{
-		begin = NULL;
-		end = NULL;
+		clear();
 	}
 
-	template<class U>
-	data_ref_base(const data_ref_base<U>& v)
+	template<class V>
+  data_ref_base(const V& v)
 	{
-		assign(v.begin, v.end);
+    if (v.end() == v.begin())
+      clear();
+    else
+		  assign(&*v.begin(), &*v.end());
 	}
 
-	template<class U>
-	data_ref_base(const mutable_data_ref_base<U>& v)
+  explicit data_ref_base(const char* v)
+  {
+    assign(v, strlen(v));
+  }
+
+	data_ref_base(const void* begin, const void* end)
 	{
-		assign(v.begin, v.end);
+		assign(begin, end);
 	}
 
-	data_ref_base(const void* begin_, const void* end_)
+	data_ref_base(const void* begin, size_t size)
 	{
-		assign(begin_, end_);
+		assign(begin, size);
 	}
 
-	data_ref_base(const void* begin_, size_t size)
+	data_ref_base assign(const void* begin, const void* end)
 	{
-		assign(begin_, size);
-	}
-
-	data_ref_base(const std::string& v)
-	{
-		assign(v.data(), v.size());
-	}
-
-	template<size_t U>
-	data_ref_base(const boost::array<char, U>& v)
-	{
-		assign(&v.front(), v.size());
-	}
-
-	template<size_t U>
-	data_ref_base(const boost::array<unsigned char, U>& v)
-	{
-		assign(&v.front(), v.size());
-	}
-
-	data_ref_base(const std::vector<char>& v)
-	{
-		assign(&v.front(), v.size());
-	}
-
-	data_ref_base(const std::vector<unsigned char>& v)
-	{
-		assign(&v.front(), v.size());
-	}
-
-	data_ref_base assign(const void* begin_, const void* end_)
-	{
-		begin = reinterpret_cast<T>(begin_);
-		end = reinterpret_cast<T>(end_);
+		begin_ = reinterpret_cast<T>(begin);
+		end_ = reinterpret_cast<T>(end);
 		return *this;
 	}
 	
-	data_ref_base assign(const void* begin_, size_t size)
+	data_ref_base assign(const void* begin, size_t size)
 	{
-		begin = reinterpret_cast<T>(begin_);
-		end = begin + size;
+		begin_ = reinterpret_cast<T>(begin);
+		end_ = begin_ + size;
 		return *this;
 	}
 	
+	T begin() const
+  {
+    return begin_;
+  }
+
+	T end() const
+  {
+    return begin_;
+  }
+
+	T data() const
+  {
+    return begin();
+  }
+
 	void clear()
 	{
-		begin = end = NULL;
+		begin_ = end_ = NULL;
 	}
 	
 	bool empty() const
 	{
-		return begin == end;
+		return begin_ == end_;
 	}
 
 	template<class U>
@@ -208,48 +190,50 @@ public:
 
 	long long i() const
 	{
-		return atoll(reinterpret_cast<const char*>(begin));
+		return atoll(reinterpret_cast<const char*>(begin_));
 	}
 
 	size_t size() const
 	{
-		return end - begin;
+		return end_ - begin_;
 	}
 
 	std::string string() const
 	{
-		return std::string(reinterpret_cast<const char*>(begin), size());
+		return std::string(reinterpret_cast<const char*>(begin_), size());
 	}
 
 	data_ref_base sub_range(size_t o, size_t s)
 	{
-		return data_ref_base(begin + o, s);
+		return data_ref_base(begin_ + o, s);
 	}
 
 	operator T() const
 	{
-		return begin;
+		return begin_;
 	}
 
 	data_ref_base operator++(int)
 	{
 		data_ref_base t = *this;
-		begin++;
+		begin_++;
 		return t;
 	}
 
 	data_ref_base operator+=(size_t v)
 	{
-		begin += v;
+		begin_ += v;
 		return *this;
 	}
 
-	T begin;
-	T end;
+	T begin_;
+	T end_;
 };
 
 typedef data_ref_base<const unsigned char*> data_ref;
 typedef mutable_data_ref_base<unsigned char*> mutable_data_ref;
+typedef data_ref_base<const char*> str_ref;
+typedef mutable_data_ref_base<char*> mutable_str_ref;
 
 inline size_t memcpy(void* d, data_ref s)
 {

@@ -13,7 +13,7 @@ void Cvirtual_binary::assign(data_ref v)
 #else
     m_source.reset(new Cvirtual_binary_source(v.size()));
 #endif
-    if (v.begin)
+    if (v.begin())
       memcpy(data_edit(), v, v.size());
   }
   else

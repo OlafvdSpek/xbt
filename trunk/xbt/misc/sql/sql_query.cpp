@@ -71,7 +71,7 @@ Csql_query& Csql_query::p_raw(data_ref v)
 		return *this;
 	m_out.append(replace_names(m_in.substr(0, i)));
 	m_in.erase(0, i + 1);
-	m_out.append(v.begin, v.end);
+	m_out.append(v.begin(), v.end());
 	return *this;
 }
 
@@ -87,10 +87,10 @@ Csql_query& Csql_query::operator()(long long v)
 	return *this;
 }
 
-Csql_query& Csql_query::operator()(data_ref v)
+Csql_query& Csql_query::operator()(str_ref v)
 {
 	std::vector<char> r(2 * v.size() + 2);
-	r.resize(mysql_real_escape_string(m_database.handle(), &r.front() + 1, reinterpret_cast<const char*>(v.begin), v.size()) + 2);
+	r.resize(mysql_real_escape_string(m_database.handle(), &r.front() + 1, v, v.size()) + 2);
 	r.front() = '\'';
 	r.back() = '\'';
 	p_raw(r);
