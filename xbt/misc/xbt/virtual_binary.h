@@ -34,7 +34,7 @@ public:
 	void resize(size_t v)
 	{
 		assert(v <= m_range.size());
-		m_range.end_ = m_range.begin_ + v;
+		m_range.assign(m_range.begin(), v);
 	}
 private:
 	mutable_data_ref m_range;
