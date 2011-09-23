@@ -15,7 +15,7 @@ public:
 	Csql_query& p_name(const std::string&);
 	Csql_query& p_raw(data_ref);
 	Csql_query& operator()(long long);
-	Csql_query& operator()(data_ref);
+	Csql_query& operator()(str_ref);
 	Csql_query(Cdatabase&, const std::string& = "");
 
 #if 1

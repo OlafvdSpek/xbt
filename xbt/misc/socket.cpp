@@ -99,24 +99,24 @@ const Csocket& Csocket::open(int t, bool _blocking)
 	return *this;
 }
 
-int Csocket::recv(mutable_data_ref d) const
+int Csocket::recv(mutable_str_ref d) const
 {
-	return ::recv(*this, reinterpret_cast<char*>(d.begin), d.size(), MSG_NOSIGNAL);
+	return ::recv(*this, d, d.size(), MSG_NOSIGNAL);
 }
 
-int Csocket::recvfrom(mutable_data_ref d, sockaddr* a, socklen_t* cb_a) const
+int Csocket::recvfrom(mutable_str_ref d, sockaddr* a, socklen_t* cb_a) const
 {
-	return ::recvfrom(*this, reinterpret_cast<char*>(d.begin), d.size(), MSG_NOSIGNAL, a, cb_a);
+	return ::recvfrom(*this, d, d.size(), MSG_NOSIGNAL, a, cb_a);
 }
 
-int Csocket::send(data_ref s) const
+int Csocket::send(str_ref s) const
 {
-	return ::send(*this, reinterpret_cast<const char*>(s.begin), s.size(), MSG_NOSIGNAL);
+	return ::send(*this, s, s.size(), MSG_NOSIGNAL);
 }
 
-int Csocket::sendto(data_ref s, const sockaddr* a, socklen_t cb_a) const
+int Csocket::sendto(str_ref s, const sockaddr* a, socklen_t cb_a) const
 {
-	return ::sendto(*this, reinterpret_cast<const char*>(s.begin), s.size(), MSG_NOSIGNAL, a, cb_a);
+	return ::sendto(*this, s, s.size(), MSG_NOSIGNAL, a, cb_a);
 }
 
 int Csocket::getsockopt(int level, int name, void* v, socklen_t& cb_v)

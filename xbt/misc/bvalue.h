@@ -32,7 +32,7 @@ public:
 	int read(void* d) const;
 	Cvirtual_binary read() const;
 	int write(const char* s, int cb_s);
-	int write(data_ref);
+	int write(str_ref);
 	Cbvalue(long long v = 0);
 	Cbvalue(t_value_type t);
 	Cbvalue(const std::string& v);

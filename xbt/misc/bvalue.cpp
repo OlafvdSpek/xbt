@@ -95,9 +95,9 @@ const Cbvalue& Cbvalue::operator=(const Cbvalue& v)
 	return *this;
 }
 
-int Cbvalue::write(data_ref s)
+int Cbvalue::write(str_ref s)
 {
-	return write(reinterpret_cast<const char*>(s.begin), s.size());
+	return write(s, s.size());
 }
 
 int Cbvalue::write(const char* s, int cb_s)
