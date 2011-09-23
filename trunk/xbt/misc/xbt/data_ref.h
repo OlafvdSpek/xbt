@@ -102,7 +102,7 @@ public:
 		begin_ += v;
 		return *this;
 	}
-
+private:
 	T begin_;
 	T end_;
 };
@@ -225,7 +225,7 @@ public:
 		begin_ += v;
 		return *this;
 	}
-
+private:
 	T begin_;
 	T end_;
 };
