@@ -21,7 +21,7 @@ public:
 		  assign(&*v.begin(), &*v.end());
 	}
 
-  data_ref_base(const char* v)
+  explicit data_ref_base(const char* v)
   {
     assign(v, strlen(v));
   }
@@ -50,6 +50,11 @@ public:
 		return *this;
 	}
 	
+	void clear()
+	{
+		begin_ = end_ = NULL;
+	}
+	
 	T begin() const
   {
     return begin_;
@@ -65,14 +70,14 @@ public:
     return begin();
   }
 
-	void clear()
+	size_t size() const
 	{
-		begin_ = end_ = NULL;
+		return end() - begin();
 	}
-	
+
 	bool empty() const
 	{
-		return begin_ == end_;
+		return end() == begin();
 	}
 
 	template<class V>
@@ -86,17 +91,12 @@ public:
 
 	long long i() const
 	{
-		return atoll(reinterpret_cast<const char*>(begin_));
-	}
-
-	size_t size() const
-	{
-		return end_ - begin_;
+		return atoll(reinterpret_cast<const char*>(data()));
 	}
 
 	std::string string() const
 	{
-		return std::string(reinterpret_cast<const char*>(begin_), size());
+		return std::string(reinterpret_cast<const char*>(data()), size());
 	}
 
 	data_ref_base sub_range(size_t o, size_t s)
