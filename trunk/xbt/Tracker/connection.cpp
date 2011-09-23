@@ -63,13 +63,13 @@ int Cconnection::recv()
 	do
 	{
 		state = m_state;
-		while (a < m_w && *a != '\n' && *a != '\r')
+		while (a < m_w.begin() && *a != '\n' && *a != '\r')
 		{
 			a++;
 			if (m_state)
 				m_state = 1;
 		}
-		if (a < m_w)
+		if (a < m_w.begin())
 		{
 			switch (m_state)
 			{
