@@ -14,6 +14,15 @@ public:
 	}
 
 	template<class V>
+  data_ref_base(const V& v)
+	{
+    if (v.end() == v.begin())
+      clear();
+    else
+		  assign(&*v.begin(), &*v.end());
+	}
+
+	template<class V>
   data_ref_base(V& v)
 	{
     if (v.end() == v.begin())
@@ -23,6 +32,11 @@ public:
 	}
 
   explicit data_ref_base(const char* v)
+  {
+    assign(v, strlen(v));
+  }
+
+  explicit data_ref_base(char* v)
   {
     assign(v, strlen(v));
   }
