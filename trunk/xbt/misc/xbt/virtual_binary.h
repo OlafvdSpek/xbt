@@ -100,7 +100,7 @@ public:
 
 	data_ref range() const
 	{
-		return m_source ? *m_source : mutable_data_ref();
+		return m_source ? *m_source : data_ref();
 	}
 
 	mutable_data_ref mutable_range()
