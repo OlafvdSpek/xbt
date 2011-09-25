@@ -59,19 +59,19 @@ void Ctransaction::send_connect(data_ref r)
 {
 	if (!m_server.config().m_anonymous_connect)
 		return;
-	if (read_int(8, r + uti_connection_id, r.end()) != 0x41727101980ll)
+	if (read_int(8, &r[uti_connection_id], r.end()) != 0x41727101980ll)
 		return;
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_connect);
-	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r.end()));
+	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
 	write_int(8, d + utoc_connection_id, connection_id());
 	send(data_ref(d, utoc_size));
 }
 
 void Ctransaction::send_announce(data_ref r)
 {
-	if (read_int(8, r + uti_connection_id, r.end()) != connection_id())
+	if (read_int(8, &r[uti_connection_id], r.end()) != connection_id())
 		return;
 	if (!m_server.config().m_anonymous_announce)
 	{
@@ -79,17 +79,17 @@ void Ctransaction::send_announce(data_ref r)
 		return;
 	}
 	Ctracker_input ti;
-	ti.m_downloaded = read_int(8, r + utia_downloaded, r.end());
-	ti.m_event = static_cast<Ctracker_input::t_event>(read_int(4, r + utia_event, r.end()));
-	ti.m_info_hash.assign(reinterpret_cast<const char*>(r + utia_info_hash), 20);
-	ti.m_ipa = read_int(4, r + utia_ipa, r.end()) && is_private_ipa(m_a.sin_addr.s_addr)
-		? htonl(read_int(4, r + utia_ipa, r.end()))
+	ti.m_downloaded = read_int(8, &r[utia_downloaded], r.end());
+	ti.m_event = static_cast<Ctracker_input::t_event>(read_int(4, &r[utia_event], r.end()));
+	ti.m_info_hash.assign(reinterpret_cast<const char*>(&r[utia_info_hash]), 20);
+	ti.m_ipa = read_int(4, &r[utia_ipa], r.end()) && is_private_ipa(m_a.sin_addr.s_addr)
+		? htonl(read_int(4, &r[utia_ipa], r.end()))
 		: m_a.sin_addr.s_addr;
-	ti.m_left = read_int(8, r + utia_left, r.end());
-	ti.m_num_want = read_int(4, r + utia_num_want, r.end());
-	ti.m_peer_id.assign(reinterpret_cast<const char*>(r + utia_peer_id), 20);
-	ti.m_port = htons(read_int(2, r + utia_port, r.end()));
-	ti.m_uploaded = read_int(8, r + utia_uploaded, r.end());
+	ti.m_left = read_int(8, &r[utia_left], r.end());
+	ti.m_num_want = read_int(4, &r[utia_num_want], r.end());
+	ti.m_peer_id.assign(reinterpret_cast<const char*>(&r[utia_peer_id]), 20);
+	ti.m_port = htons(read_int(2, &r[utia_port], r.end()));
+	ti.m_uploaded = read_int(8, &r[utia_uploaded], r.end());
 	std::string error = m_server.insert_peer(ti, true, NULL);
 	if (!error.empty())
 	{
@@ -102,7 +102,7 @@ void Ctransaction::send_announce(data_ref r)
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_announce);
-	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r.end()));
+	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
 	write_int(4, d + utoa_interval, m_server.config().m_announce_interval);
 	write_int(4, d + utoa_leechers, torrent->leechers);
 	write_int(4, d + utoa_seeders, torrent->seeders);
@@ -113,7 +113,7 @@ void Ctransaction::send_announce(data_ref r)
 
 void Ctransaction::send_scrape(data_ref r)
 {
-	if (read_int(8, r + uti_connection_id, r.end()) != connection_id())
+	if (read_int(8, &r[uti_connection_id], r.end()) != connection_id())
 		return;
 	if (!m_server.config().m_anonymous_scrape)
 	{
@@ -123,9 +123,9 @@ void Ctransaction::send_scrape(data_ref r)
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_scrape);
-	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r.end()));
+	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
 	char* w = d + utos_size;
-	for (r += utis_size; r + 20 <= r.end() && w + 12 <= d + cb_d; r += 20)
+	for (r += utis_size; r.size() >= 20 && w + 12 <= d + cb_d; r += 20)
 	{
 		if (const Cserver::t_torrent* t = m_server.torrent(r.sub_range(0, 20).string()))
 		{
@@ -149,7 +149,7 @@ void Ctransaction::send_error(data_ref r, const std::string& msg)
 	const int cb_d = 2 << 10;
 	char d[cb_d];
 	write_int(4, d + uto_action, uta_error);
-	write_int(4, d + uto_transaction_id, read_int(4, r + uti_transaction_id, r.end()));
+	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
 	memcpy(d + utoe_size, msg.data(), msg.size());
 	send(data_ref(d, utoe_size + msg.size()));
 }

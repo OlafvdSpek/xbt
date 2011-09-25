@@ -102,6 +102,11 @@ public:
 		return end() == begin();
 	}
 
+  T0& operator[](size_t i) const
+  {
+    return data()[i];
+  }
+
 	template<class V>
 	data_ref_base find(V v) const
 	{
