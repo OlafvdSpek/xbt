@@ -90,7 +90,7 @@ Csql_query& Csql_query::operator()(long long v)
 Csql_query& Csql_query::operator()(str_ref v)
 {
 	std::vector<char> r(2 * v.size() + 2);
-	r.resize(mysql_real_escape_string(m_database.handle(), &r.front() + 1, v, v.size()) + 2);
+	r.resize(mysql_real_escape_string(m_database.handle(), &r.front() + 1, v.data(), v.size()) + 2);
 	r.front() = '\'';
 	r.back() = '\'';
 	p_raw(r);

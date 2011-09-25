@@ -414,5 +414,5 @@ std::string Csha1::read()
 
 void Csha1::write(data_ref s)
 {
-	SHA1Input(&m_context, s, s.size());
+	SHA1Input(&m_context, s.data(), s.size());
 }

@@ -57,7 +57,7 @@ int Cconnection::recv()
 	}
 	if (m_state == 5)
 		return 0;
-	const unsigned char* a = m_w;
+	const unsigned char* a = m_w.data();
 	m_w += r;
 	int state;
 	do

@@ -12,6 +12,9 @@ public:
   typedef T0* T;
   typedef typename boost::conditional<boost::is_const<T0>::value, const void*, void*>::type U;
 
+  typedef T const_iterator;
+  typedef T iterator;
+
 	data_ref_base()
 	{
 		clear();
@@ -152,6 +155,6 @@ typedef data_ref_base<char> mutable_str_ref;
 
 inline size_t memcpy(void* d, data_ref s)
 {
-  memcpy(d, s, s.size());
+  memcpy(d, s.data(), s.size());
   return s.size();
 }
