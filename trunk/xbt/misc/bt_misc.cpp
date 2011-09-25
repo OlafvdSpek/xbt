@@ -99,8 +99,8 @@ std::string hex_encode(data_ref v)
 {
 	std::string r;
 	r.reserve(v.size() << 1);
-	for (size_t i = 0; i < v.size(); i++)
-		r += hex_encode(2, v[i]);
+	BOOST_FOREACH(int i, v)
+		r += hex_encode(2, i);
 	return r;
 }
 

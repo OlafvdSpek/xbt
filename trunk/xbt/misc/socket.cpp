@@ -101,22 +101,22 @@ const Csocket& Csocket::open(int t, bool _blocking)
 
 int Csocket::recv(mutable_str_ref d) const
 {
-	return ::recv(*this, d, d.size(), MSG_NOSIGNAL);
+	return ::recv(*this, d.data(), d.size(), MSG_NOSIGNAL);
 }
 
 int Csocket::recvfrom(mutable_str_ref d, sockaddr* a, socklen_t* cb_a) const
 {
-	return ::recvfrom(*this, d, d.size(), MSG_NOSIGNAL, a, cb_a);
+	return ::recvfrom(*this, d.data(), d.size(), MSG_NOSIGNAL, a, cb_a);
 }
 
 int Csocket::send(str_ref s) const
 {
-	return ::send(*this, s, s.size(), MSG_NOSIGNAL);
+	return ::send(*this, s.data(), s.size(), MSG_NOSIGNAL);
 }
 
 int Csocket::sendto(str_ref s, const sockaddr* a, socklen_t cb_a) const
 {
-	return ::sendto(*this, s, s.size(), MSG_NOSIGNAL, a, cb_a);
+	return ::sendto(*this, s.data(), s.size(), MSG_NOSIGNAL, a, cb_a);
 }
 
 int Csocket::getsockopt(int level, int name, void* v, socklen_t& cb_v)

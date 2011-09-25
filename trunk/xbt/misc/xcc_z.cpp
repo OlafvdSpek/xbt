@@ -55,7 +55,7 @@ Cvirtual_binary xcc_z::gzip(data_ref s)
 		deflateEnd(&stream);
 		w = stream.next_out;
 	}
-	w = write_int_le(4, w, crc32(crc32(0, NULL, 0), s, s.size()));
+	w = write_int_le(4, w, crc32(crc32(0, NULL, 0), s.data(), s.size()));
 	w = write_int_le(4, w, s.size());
 	d.resize(w - d.data());
 	return d;
