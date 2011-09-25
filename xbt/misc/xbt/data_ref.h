@@ -1,13 +1,17 @@
 #pragma once
 
+#include <boost/type_traits.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 
-template <class T, class U>
+template <class T0>
 class data_ref_base
 {
 public:
+  typedef T0* T;
+  typedef typename boost::conditional<boost::is_const<T0>::value, const void*, void*>::type U;
+
 	data_ref_base()
 	{
 		clear();
@@ -141,10 +145,10 @@ private:
 	T end_;
 };
 
-typedef data_ref_base<const unsigned char*, const void*> data_ref;
-typedef data_ref_base<unsigned char*, void*> mutable_data_ref;
-typedef data_ref_base<const char*, const void*> str_ref;
-typedef data_ref_base<char*, void*> mutable_str_ref;
+typedef data_ref_base<const unsigned char> data_ref;
+typedef data_ref_base<unsigned char> mutable_data_ref;
+typedef data_ref_base<const char> str_ref;
+typedef data_ref_base<char> mutable_str_ref;
 
 inline size_t memcpy(void* d, data_ref s)
 {
