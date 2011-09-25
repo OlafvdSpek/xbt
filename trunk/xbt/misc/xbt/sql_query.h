@@ -24,7 +24,7 @@ public:
 		return (*this)(v);
 	}
 
-	Csql_query& p(data_ref v)
+	Csql_query& p(str_ref v)
 	{
 		return (*this)(v);
 	}
