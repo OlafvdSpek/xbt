@@ -820,11 +820,16 @@ std::string Cserver::statistics() const
 		seeders += i.second.seeders;
 		torrents += i.second.leechers || i.second.seeders;
 	}
+  int peers = leechers + seeders;
 	time_t t = time();
-	os << "<table><tr><td>leechers<td align=right>" << leechers
-		<< "<tr><td>seeders<td align=right>" << seeders
-		<< "<tr><td>peers<td align=right>" << leechers + seeders
-		<< "<tr><td>torrents<td align=right>" << torrents
+	os << "<table>"
+		<< "<tr><td>peers<td align=right>" << peers;
+  if (peers)
+  {
+    os << "<tr><td>seeders<td align=right>" << seeders << "<td align=right>" << seeders * 100 / peers << " %"
+      << "<tr><td>leechers<td align=right>" << leechers << "<td align=right>" << leechers * 100 / peers << " %";
+  }
+	os << "<tr><td>torrents<td align=right>" << torrents
 		<< "<tr><td>"
 		<< "<tr><td>accepted tcp<td align=right>" << m_stats.accepted_tcp
 		<< "<tr><td>rejected tcp<td align=right>" << m_stats.rejected_tcp
