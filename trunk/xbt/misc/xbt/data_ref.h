@@ -25,7 +25,7 @@ public:
     if (v.end() == v.begin())
       clear();
     else
-		  assign(&*v.begin(), &*v.end());
+		  assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
 	}
 
 	template<class V>
@@ -34,7 +34,7 @@ public:
     if (v.end() == v.begin())
       clear();
     else
-		  assign(&*v.begin(), &*v.end());
+		  assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
 	}
 
   explicit data_ref_base(const char* v)
