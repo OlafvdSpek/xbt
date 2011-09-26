@@ -131,11 +131,6 @@ public:
 		return data_ref_base(begin_ + o, s);
 	}
 
-	operator T() const
-	{
-		return begin_;
-	}
-
 	data_ref_base operator++(int)
 	{
 		data_ref_base t = *this;
