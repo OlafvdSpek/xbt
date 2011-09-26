@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/type_traits.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -58,18 +57,16 @@ public:
 		assign(begin, size);
 	}
 
-	data_ref_base assign(U begin, U end)
+	void assign(U begin, U end)
 	{
 		begin_ = reinterpret_cast<T>(begin);
 		end_ = reinterpret_cast<T>(end);
-		return *this;
 	}
 	
-	data_ref_base assign(U begin, size_t size)
+	void assign(U begin, size_t size)
 	{
 		begin_ = reinterpret_cast<T>(begin);
 		end_ = begin_ + size;
-		return *this;
 	}
 	
 	void clear()
