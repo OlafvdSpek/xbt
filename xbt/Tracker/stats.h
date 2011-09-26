@@ -5,6 +5,7 @@ class Cstats
 public:
 	Cstats()
 	{
+    accept_errors = 0;
 		accepted_tcp = 0;
 		announced_http = 0;
 		announced_udp = 0;
@@ -26,6 +27,7 @@ public:
 		return scraped_http + scraped_udp;
 	}
 
+  long long accept_errors;
 	long long accepted_tcp;
 	long long announced_http;
 	long long announced_udp;
