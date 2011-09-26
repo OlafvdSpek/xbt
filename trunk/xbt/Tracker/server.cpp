@@ -209,7 +209,10 @@ void Cserver::accept(const Csocket& l)
 			if (WSAGetLastError() == WSAECONNABORTED)
 				continue;
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
+      {
+        m_stats.accept_errors++;
 				std::cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+      }
 			break;
 		}
 		m_stats.accepted_tcp++;
@@ -825,18 +828,19 @@ std::string Cserver::statistics() const
 		<< "<tr><td>"
 		<< "<tr><td>accepted tcp<td align=right>" << m_stats.accepted_tcp
 		<< "<tr><td>rejected tcp<td align=right>" << m_stats.rejected_tcp
-		<< "<tr><td>slow tcp<td align=right>" << m_stats.slow_tcp
-		<< "<tr><td>announced<td align=right>" << m_stats.announced();
+    << "<tr><td>accept errors<td align=right>" << m_stats.accept_errors
+		<< "<tr><td>slow tcp<td align=right>" << m_stats.slow_tcp;
 	if (m_stats.announced())
 	{
-		os << "<tr><td>announced http <td align=right>" << m_stats.announced_http << "<td align=right>" << m_stats.announced_http * 100 / m_stats.announced() << " %"
+		os << "<tr><td>announced<td align=right>" << m_stats.announced() << "<td align=right>" << m_stats.announced() * 100 / m_stats.accepted_tcp << " %"
+		  << "<tr><td>announced http <td align=right>" << m_stats.announced_http << "<td align=right>" << m_stats.announced_http * 100 / m_stats.announced() << " %"
 			<< "<tr><td>announced udp<td align=right>" << m_stats.announced_udp << "<td align=right>" << m_stats.announced_udp * 100 / m_stats.announced() << " %";
 	}
-	os << "<tr><td>scraped full<td align=right>" << m_stats.scraped_full
-		<< "<tr><td>scraped<td align=right>" << m_stats.scraped();
+	os << "<tr><td>scraped full<td align=right>" << m_stats.scraped_full;
 	if (m_stats.scraped())
 	{
-		os << "<tr><td>scraped http<td align=right>" << m_stats.scraped_http << "<td align=right>" << m_stats.scraped_http * 100 / m_stats.scraped() << " %"
+		os << "<tr><td>scraped<td align=right>" << m_stats.scraped() << "<td align=right>" << m_stats.scraped() * 100 / m_stats.accepted_tcp << " %"
+		  << "<tr><td>scraped http<td align=right>" << m_stats.scraped_http << "<td align=right>" << m_stats.scraped_http * 100 / m_stats.scraped() << " %"
 			<< "<tr><td>scraped udp<td align=right>" << m_stats.scraped_udp << "<td align=right>" << m_stats.scraped_udp * 100 / m_stats.scraped() << " %";
 	}
 	os << "<tr><td>"
