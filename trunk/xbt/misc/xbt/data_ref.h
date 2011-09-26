@@ -84,7 +84,7 @@ public:
 
 	T end() const
   {
-    return begin_;
+    return end_;
   }
 
 	T data() const
