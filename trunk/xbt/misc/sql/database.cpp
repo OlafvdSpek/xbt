@@ -35,7 +35,7 @@ Csql_result Cdatabase::query(const std::string& q)
 	if (!m_query_log.empty())
 	{
 		static std::ofstream f(m_query_log.c_str());
-		f << q.substr(0, 239) << std::endl;
+		f << q.substr(0, 999) << std::endl;
 	}
 	if (mysql_real_query(&m_handle, q.data(), q.size()))
 	{
