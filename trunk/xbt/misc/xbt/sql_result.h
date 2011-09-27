@@ -58,7 +58,17 @@ public:
 		m_size = size;
 	}
 
-	const char* raw() const
+	const char* begin() const
+  {
+    return m_begin;
+  }
+
+  const char* end() const
+  {
+    return m_begin + m_size;
+  }
+
+  const char* data() const
 	{
 		return m_begin;
 	}
@@ -70,26 +80,21 @@ public:
 
 	float f(float d = 0) const
 	{
-		return raw() ? atof(raw()) : d;
+		return data() ? atof(data()) : d;
 	}
 
 	long long i(long long d = 0) const
 	{
 #ifdef WIN32
-		return raw() ? _atoi64(raw()) : d;
+		return data() ? _atoi64(data()) : d;
 #else
-		return raw() ? atoll(raw()) : d;
+		return data() ? atoll(data()) : d;
 #endif
 	}
 
 	const std::string s(const std::string& d = "") const
 	{
-		return raw() ? std::string(raw(), size()) : d;
-	}
-
-	data_ref vdata() const
-	{
-		return data_ref(raw(), size());
+		return data() ? std::string(data(), size()) : d;
 	}
 private:
 	const char* m_begin;
