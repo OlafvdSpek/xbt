@@ -6,7 +6,6 @@ add_library(
 	bt_misc.cpp
 	sql/database.cpp
 	sql/sql_query.cpp
-	sql/sql_result.cpp
 	virtual_binary.cpp
 	xcc_z.cpp
 )
