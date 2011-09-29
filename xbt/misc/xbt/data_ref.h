@@ -6,7 +6,7 @@
 #include <string>
 
 template <class T, class U>
-class data_ref_base : public boost::iterator_range<T*>
+class data_ref_base : public boost::iterator_range<T>
 {
 public:
 	data_ref_base()
@@ -49,15 +49,15 @@ public:
 
 	void assign(U begin, U end)
 	{
-    static_cast<iterator_range_&>(*this) = iterator_range_(reinterpret_cast<T*>(begin), reinterpret_cast<T*>(end));
+    static_cast<iterator_range_&>(*this) = iterator_range_(reinterpret_cast<T>(begin), reinterpret_cast<T>(end));
 	}
 	
 	void assign(U begin, size_t size)
 	{
-    assign(begin, reinterpret_cast<T*>(begin) + size);
+    assign(begin, reinterpret_cast<T>(begin) + size);
 	}
 	
-	T* data() const
+	T data() const
   {
     return begin();
   }
@@ -87,10 +87,10 @@ public:
 	}
 };
 
-typedef data_ref_base<const unsigned char, const void*> data_ref;
-typedef data_ref_base<unsigned char, void*> mutable_data_ref;
-typedef data_ref_base<const char, const void*> str_ref;
-typedef data_ref_base<char, void*> mutable_str_ref;
+typedef data_ref_base<const unsigned char*, const void*> data_ref;
+typedef data_ref_base<unsigned char*, void*> mutable_data_ref;
+typedef data_ref_base<const char*, const void*> str_ref;
+typedef data_ref_base<char*, void*> mutable_str_ref;
 
 inline size_t memcpy(void* d, data_ref s)
 {
