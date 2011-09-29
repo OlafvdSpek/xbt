@@ -70,11 +70,6 @@ public:
 		return empty() ? d : atoll(data());
 #endif
 	}
-
-	const std::string s() const
-	{
-		return std::string(data(), size());
-	}
 };
 
 class Csql_row
