@@ -8,6 +8,8 @@
 template <class T, class U>
 class data_ref_base : public boost::iterator_range<T>
 {
+private:
+  typedef boost::iterator_range<T> base_t;
 public:
 	data_ref_base()
 	{
@@ -49,7 +51,7 @@ public:
 
 	void assign(U begin, U end)
 	{
-    static_cast<iterator_range_&>(*this) = iterator_range_(reinterpret_cast<T>(begin), reinterpret_cast<T>(end));
+    static_cast<base_t&>(*this) = base_t(reinterpret_cast<T>(begin), reinterpret_cast<T>(end));
 	}
 	
 	void assign(U begin, size_t size)
@@ -59,7 +61,7 @@ public:
 	
 	T data() const
   {
-    return begin();
+    return base_t::begin();
   }
 
 	template<class V>
@@ -78,12 +80,12 @@ public:
 
 	std::string string() const
 	{
-		return std::string(reinterpret_cast<const char*>(data()), size());
+		return std::string(reinterpret_cast<const char*>(data()), base_t::size());
 	}
 
 	data_ref_base sub_range(size_t o, size_t s)
 	{
-		return data_ref_base(begin() + o, s);
+		return data_ref_base(base_t::begin() + o, s);
 	}
 };
 
