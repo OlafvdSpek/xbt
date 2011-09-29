@@ -74,7 +74,14 @@ public:
 
 	long long i() const
 	{
-    return boost::lexical_cast<long long>(*this);
+    try
+    {
+      return boost::lexical_cast<long long>(*this);
+    }
+    catch (bad_lexical_cast&)
+    {
+    }
+    return 0;
 	}
 
 	std::string s() const
