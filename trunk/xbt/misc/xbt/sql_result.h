@@ -49,56 +49,32 @@ private:
 	ptr_t m_source;
 };
 
-class Csql_field
+class Csql_field : public str_ref
 {
 public:
-	Csql_field(const char* begin, int size)
+	Csql_field(const char* data, int size)
 	{
-		m_begin = begin;
-		m_size = size;
-	}
-
-	const char* begin() const
-  {
-    return m_begin;
-  }
-
-  const char* end() const
-  {
-    return m_begin + m_size;
-  }
-
-  const char* data() const
-	{
-		return m_begin;
-	}
-
-	int size() const
-	{
-		return m_size;
+    assign(data, size);
 	}
 
 	float f(float d = 0) const
 	{
-		return data() ? atof(data()) : d;
+		return empty() ? d : atof(data());
 	}
 
 	long long i(long long d = 0) const
 	{
 #ifdef WIN32
-		return data() ? _atoi64(data()) : d;
+		return empty() ? d : _atoi64(data());
 #else
-		return data() ? atoll(data()) : d;
+		return empty() ? d : atoll(data());
 #endif
 	}
 
-	const std::string s(const std::string& d = "") const
+	const std::string s() const
 	{
-		return data() ? std::string(data(), size()) : d;
+		return std::string(data(), size());
 	}
-private:
-	const char* m_begin;
-	int m_size;
 };
 
 class Csql_row
