@@ -49,29 +49,6 @@ private:
 	ptr_t m_source;
 };
 
-class Csql_field : public str_ref
-{
-public:
-	Csql_field(const char* data, int size)
-	{
-    assign(data, size);
-	}
-
-	float f(float d = 0) const
-	{
-		return empty() ? d : atof(data());
-	}
-
-	long long i(long long d = 0) const
-	{
-#ifdef WIN32
-		return empty() ? d : _atoi64(data());
-#else
-		return empty() ? d : atoll(data());
-#endif
-	}
-};
-
 class Csql_row
 {
 public:
@@ -91,9 +68,9 @@ public:
 		return m_data;
 	}
 
-	Csql_field operator[](size_t i) const
+	str_ref operator[](size_t i) const
 	{
-		return m_data ? Csql_field(m_data[i], m_sizes[i]) : Csql_field(NULL, 0);
+		return m_data ? str_ref(m_data[i], m_sizes[i]) : str_ref();
 	}
 private:
 	MYSQL_ROW m_data;
