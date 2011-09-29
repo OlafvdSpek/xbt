@@ -13,7 +13,6 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_ctime = server->time();
 
 	m_state = 0;
-	m_r.clear();
 	m_w = m_read_b;
 }
 
@@ -58,7 +57,7 @@ int Cconnection::recv()
 	if (m_state == 5)
 		return 0;
 	const unsigned char* a = m_w.data();
-	m_w += r;
+	m_w.advance_begin(r);
 	int state;
 	do
 	{
@@ -111,7 +110,7 @@ int Cconnection::send()
 		std::cerr << "send failed: " << Csocket::error2a(e) << std::endl;
 		return 1;
 	}
-	m_r += r;
+  m_r.advance_begin(r);
 	if (m_r.empty())
 		m_write_b.clear();
 	return 0;
@@ -271,7 +270,7 @@ void Cconnection::read(const std::string& v)
 		}
 #endif
 		m_r = m_write_b;
-		m_r += r;
+    m_r.advance_begin(r);
 	}
 	if (m_r.empty())
 		m_write_b.clear();
