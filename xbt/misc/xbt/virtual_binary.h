@@ -21,12 +21,12 @@ public:
 		delete[] m_range.begin();
 	}
 
-	unsigned char* begin()
+	unsigned char* begin() const
 	{
 		return m_range.begin();
 	}
 
-	unsigned char* end()
+	unsigned char* end() const
 	{
 		return m_range.end();
 	}
