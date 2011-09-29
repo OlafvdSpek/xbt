@@ -72,6 +72,18 @@ public:
 		return t;
 	}
 
+	float f() const
+	{
+    try
+    {
+      return boost::lexical_cast<float>(*this);
+    }
+    catch (boost::bad_lexical_cast&)
+    {
+    }
+    return 0;
+	}
+
 	long long i() const
 	{
     try
