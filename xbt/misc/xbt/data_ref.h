@@ -8,8 +8,6 @@
 template <class T, class U>
 class data_ref_base : public boost::iterator_range<T>
 {
-private:
-  typedef boost::iterator_range<T> base_t;
 public:
 	data_ref_base()
 	{
@@ -87,6 +85,8 @@ public:
 	{
 		return data_ref_base(base_t::begin() + o, s);
 	}
+private:
+  typedef boost::iterator_range<T> base_t;
 };
 
 typedef data_ref_base<const unsigned char*, const void*> data_ref;
