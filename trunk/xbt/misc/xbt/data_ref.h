@@ -1,39 +1,29 @@
 #pragma once
 
+#include <boost/range/iterator_range.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <string>
 
-template <class T0, class U>
-class data_ref_base
+template <class T, class U>
+class data_ref_base : public boost::iterator_range<T*>
 {
 public:
-  typedef T0* T;
-  // typedef typename boost::conditional<boost::is_const<T0>::value, const void*, void*>::type U;
-
-  typedef T const_iterator;
-  typedef T iterator;
-
 	data_ref_base()
 	{
-		clear();
 	}
 
 	template<class V>
   data_ref_base(const V& v)
 	{
-    if (v.end() == v.begin())
-      clear();
-    else
+    if (v.end() != v.begin())
 		  assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
 	}
 
 	template<class V>
   data_ref_base(V& v)
 	{
-    if (v.end() == v.begin())
-      clear();
-    else
+    if (v.end() != v.begin())
 		  assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
 	}
 
@@ -59,49 +49,17 @@ public:
 
 	void assign(U begin, U end)
 	{
-		begin_ = reinterpret_cast<T>(begin);
-		end_ = reinterpret_cast<T>(end);
+    static_cast<iterator_range_&>(*this) = iterator_range_(reinterpret_cast<T*>(begin), reinterpret_cast<T*>(end));
 	}
 	
 	void assign(U begin, size_t size)
 	{
-		begin_ = reinterpret_cast<T>(begin);
-		end_ = begin_ + size;
+    assign(begin, reinterpret_cast<T*>(begin) + size);
 	}
 	
-	void clear()
-	{
-		begin_ = end_ = NULL;
-	}
-	
-	T begin() const
-  {
-    return begin_;
-  }
-
-	T end() const
-  {
-    return end_;
-  }
-
-	T data() const
+	T* data() const
   {
     return begin();
-  }
-
-	size_t size() const
-	{
-		return end() - begin();
-	}
-
-	bool empty() const
-	{
-		return end() == begin();
-	}
-
-  T0& operator[](size_t i) const
-  {
-    return data()[i];
   }
 
 	template<class V>
@@ -125,24 +83,8 @@ public:
 
 	data_ref_base sub_range(size_t o, size_t s)
 	{
-		return data_ref_base(begin_ + o, s);
+		return data_ref_base(begin() + o, s);
 	}
-
-	data_ref_base operator++(int)
-	{
-		data_ref_base t = *this;
-		begin_++;
-		return t;
-	}
-
-	data_ref_base operator+=(size_t v)
-	{
-		begin_ += v;
-		return *this;
-	}
-private:
-	T begin_;
-	T end_;
 };
 
 typedef data_ref_base<const unsigned char, const void*> data_ref;
