@@ -8,12 +8,12 @@ inline void set(ctemplate::TemplateDictionary& d, const char* name, long long v)
 	d.SetIntValue(name, v);
 }
 
-inline void set(ctemplate::TemplateDictionary& d, const char* name, const std::string& v)
+inline void set(ctemplate::TemplateDictionary& d, const char* name, const char* v)
 {
 	d.SetValue(name, v);
 }
 
-inline void set(ctemplate::TemplateDictionary& d, const char* name, const Csql_field& v)
+inline void set(ctemplate::TemplateDictionary& d, const char* name, data_ref v)
 {
-	set(d, name, v.s());
+	d.SetValue(name, v.s());
 }
