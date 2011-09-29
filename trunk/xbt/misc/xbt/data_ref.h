@@ -78,7 +78,7 @@ public:
     {
       return boost::lexical_cast<long long>(*this);
     }
-    catch (bad_lexical_cast&)
+    catch (boost::bad_lexical_cast&)
     {
     }
     return 0;
