@@ -125,7 +125,7 @@ void Ctransaction::send_scrape(data_ref r)
 	write_int(4, d + uto_action, uta_scrape);
 	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
 	char* w = d + utos_size;
-	for (r += utis_size; r.size() >= 20 && w + 12 <= d + cb_d; r += 20)
+  for (r.advance_begin(utis_size); r.size() >= 20 && w + 12 <= d + cb_d; r.advance_begin(20))
 	{
 		if (const Cserver::t_torrent* t = m_server.torrent(r.sub_range(0, 20).string()))
 		{
