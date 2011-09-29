@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/lexical_cast.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <cstdlib>
 #include <cstring>
@@ -73,10 +74,10 @@ public:
 
 	long long i() const
 	{
-		return atoll(reinterpret_cast<const char*>(data()));
+    return boost::lexical_cast<long long>(*this);
 	}
 
-	std::string string() const
+	std::string s() const
 	{
 		return std::string(reinterpret_cast<const char*>(data()), base_t::size());
 	}
