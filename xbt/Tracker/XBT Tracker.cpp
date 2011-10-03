@@ -79,17 +79,8 @@ void WINAPI nt_service_main(DWORD argc, LPTSTR* argv)
 }
 #endif
 
-struct S : public boost::iterator_range<char*>
-{
-	void f()
-	{
-		iterator_range_ v;	
-	}
-};
-
 int main(int argc, char* argv[])
 {
-  S s;
 #ifdef WIN32
 	if (argc >= 2)
 	{
