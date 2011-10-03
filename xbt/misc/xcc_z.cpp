@@ -64,6 +64,6 @@ Cvirtual_binary xcc_z::gzip(data_ref s)
 void xcc_z::gzip_out(data_ref s)
 {
 	gzFile f = gzdopen(fileno(stdout), "wb");
-	gzwrite(f, const_cast<unsigned char*>(s.begin()), s.size());
+	gzwrite(f, s.data(), s.size());
 	gzflush(f, Z_FINISH);
 }
