@@ -1,7 +1,6 @@
 g++ $@ -DEPOLL -DNDEBUG -I ../misc -I . -O3 -o xbt_tracker \
 	../misc/sql/database.cpp \
 	../misc/sql/sql_query.cpp \
-	../misc/sql/sql_result.cpp \
 	../misc/bt_misc.cpp \
 	../misc/bvalue.cpp \
 	../misc/sha1.cpp \
