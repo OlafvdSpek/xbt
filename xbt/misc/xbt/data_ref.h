@@ -74,26 +74,12 @@ public:
 
 	float f() const
 	{
-    try
-    {
-      return boost::lexical_cast<float>(*this);
-    }
-    catch (boost::bad_lexical_cast&)
-    {
-    }
-    return 0;
+    return to_float(*this);
 	}
 
 	long long i() const
 	{
-    try
-    {
-      return boost::lexical_cast<long long>(*this);
-    }
-    catch (boost::bad_lexical_cast&)
-    {
-    }
-    return 0;
+    return to_int(*this);
 	}
 
 	std::string s() const
@@ -118,4 +104,28 @@ inline size_t memcpy(void* d, data_ref s)
 {
   memcpy(d, s.data(), s.size());
   return s.size();
+}
+
+inline float to_float(data_ref v)
+{
+  try
+  {
+    return boost::lexical_cast<float>(v);
+  }
+  catch (boost::bad_lexical_cast&)
+  {
+  }
+  return 0;
+}
+
+inline long long to_int(data_ref v)
+{
+  try
+  {
+    return boost::lexical_cast<long long>(v);
+  }
+  catch (boost::bad_lexical_cast&)
+  {
+  }
+  return 0;
 }
