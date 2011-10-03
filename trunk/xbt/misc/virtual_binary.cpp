@@ -8,11 +8,7 @@ void Cvirtual_binary::assign(data_ref v)
 {
   if (v.size())
   {
-#if BOOST_VERSION >= 104200
     m_source = boost::make_shared<Cvirtual_binary_source>(v.size());
-#else
-    m_source.reset(new Cvirtual_binary_source(v.size()));
-#endif
     if (v.begin())
       memcpy(data_edit(), v.data(), v.size());
   }
@@ -20,31 +16,27 @@ void Cvirtual_binary::assign(data_ref v)
     m_source.reset();
 }
 
-int Cvirtual_binary::save(const std::string& fname) const
+int file_put(const std::string& fname, data_ref v)
 {
 	FILE* f = fopen(fname.c_str(), "wb");
 	if (!f)
 		return 1;
-	int error = fwrite(data(), 1, size(), f) != size();
+	int error = fwrite(v.data(), v.size(), 1, f) != 1;
 	fclose(f);
 	return error;
 }
 
-int Cvirtual_binary::load(const std::string& fname)
+Cvirtual_binary file_get(const std::string& fname)
 {
+  Cvirtual_binary d;
 	FILE* f = fopen(fname.c_str(), "rb");
 	if (!f)
-		return 1;
+		return d;
 	struct stat b;
-	int error = fstat(fileno(f), &b) ? 1 : fread(write_start(b.st_size), 1, b.st_size, f) != b.st_size;
+	if (fstat(fileno(f), &b) ? 1 : fread(d.write_start(b.st_size), b.st_size, 1, f) != 1)
+    d.clear();
 	fclose(f);
-	return error;
-}
-
-Cvirtual_binary& Cvirtual_binary::load1(const std::string& fname)
-{
-	load(fname);
-	return *this;
+	return d;
 }
 
 unsigned char* Cvirtual_binary::write_start(size_t cb_d)

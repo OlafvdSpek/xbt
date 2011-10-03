@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/version.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
@@ -43,9 +42,6 @@ private:
 class Cvirtual_binary
 {
 public:
-	int save(const std::string&) const;
-	int load(const std::string&);
-	Cvirtual_binary& load1(const std::string&);
 	void assign(data_ref);
 	unsigned char* write_start(size_t cb_d);
 
@@ -152,3 +148,6 @@ public:
 private:
 	boost::shared_ptr<Cvirtual_binary_source> m_source;
 };
+
+Cvirtual_binary file_get(const std::string&);
+int file_put(const std::string&, data_ref);
