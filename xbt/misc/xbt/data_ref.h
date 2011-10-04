@@ -12,6 +12,7 @@ class data_ref_base : public boost::iterator_range<T>
 public:
 	data_ref_base()
 	{
+    clear();
 	}
 
 	template<class V>
@@ -19,6 +20,8 @@ public:
 	{
     if (v.end() != v.begin())
 		  assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
+    else
+      clear();
 	}
 
 	template<class V>
@@ -26,6 +29,8 @@ public:
 	{
     if (v.end() != v.begin())
 		  assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
+    else
+      clear();
 	}
 
   explicit data_ref_base(const char* v)
@@ -57,6 +62,11 @@ public:
 	{
     assign(begin, reinterpret_cast<T>(begin) + size);
 	}
+
+  void clear()
+  {
+    assign(T(NULL), T(NULL));
+  }
 	
 	T data() const
   {
