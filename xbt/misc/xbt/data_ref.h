@@ -97,9 +97,9 @@ public:
 		return std::string(reinterpret_cast<const char*>(data()), base_t::size());
 	}
 
-	data_ref_base sub_range(size_t o, size_t s)
+	data_ref_base substr(size_t ofs, size_t sz)
 	{
-		return data_ref_base(base_t::begin() + o, s);
+		return data_ref_base(base_t::begin() + ofs, sz);
 	}
 private:
   typedef boost::iterator_range<T> base_t;
