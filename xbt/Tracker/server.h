@@ -129,6 +129,7 @@ public:
 		int wait_time;
 	};
 
+	void test_announce();
 	int test_sql();
 	void accept(const Csocket&);
 	t_user* find_user_by_torrent_pass(const std::string&, const std::string& info_hash);

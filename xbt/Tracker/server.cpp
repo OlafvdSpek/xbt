@@ -85,6 +85,9 @@ int Cserver::run()
 	read_db_users();
 	write_db_torrents();
 	write_db_users();
+#ifndef NDEBUG
+	test_announce();
+#endif
 #ifndef WIN32
 	if (m_config.m_daemon)
 	{
@@ -897,6 +900,29 @@ void Cserver::sig_handler(int v)
 void Cserver::term()
 {
 	g_sig_term = true;
+}
+
+void Cserver::test_announce()
+{
+	t_user* u = find_ptr(m_users, 1);
+	Ctracker_input i;
+	i.m_info_hash = "IHIHIHIHIHIHIHIHIHIH";
+	i.m_peer_id = "PIPIPIPIPIPIPIPIPIPI";
+	i.m_ipa = htonl(0x7f000063);
+	i.m_port = 54321;
+	std::cout << insert_peer(i, false, u) << std::endl;
+	write_db_torrents();
+	write_db_users();
+	m_time++;
+	i.m_uploaded = 1 << 30;
+	i.m_downloaded = 1 << 20;
+	std::cout << insert_peer(i, false, u) << std::endl;
+	write_db_torrents();
+	write_db_users();
+	m_time += 3600;
+	clean_up();
+	write_db_torrents();
+	write_db_users();
 }
 
 int Cserver::test_sql()
