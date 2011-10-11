@@ -12,36 +12,36 @@ class data_ref_base : public boost::iterator_range<T>
 public:
 	data_ref_base()
 	{
-    clear();
+		clear();
 	}
 
 	template<class V>
-  data_ref_base(const V& v)
+	data_ref_base(const V& v)
 	{
-    if (v.end() != v.begin())
-		  assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
-    else
-      clear();
+		if (v.end() != v.begin())
+			assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
+		else
+			clear();
 	}
 
 	template<class V>
-  data_ref_base(V& v)
+	data_ref_base(V& v)
 	{
-    if (v.end() != v.begin())
-		  assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
-    else
-      clear();
+		if (v.end() != v.begin())
+			assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
+		else
+			clear();
 	}
 
-  explicit data_ref_base(const char* v)
-  {
-    assign(v, strlen(v));
-  }
+	explicit data_ref_base(const char* v)
+	{
+		assign(v, strlen(v));
+	}
 
-  explicit data_ref_base(char* v)
-  {
-    assign(v, strlen(v));
-  }
+	explicit data_ref_base(char* v)
+	{
+		assign(v, strlen(v));
+	}
 
 	data_ref_base(U begin, U end)
 	{
@@ -55,23 +55,23 @@ public:
 
 	void assign(U begin, U end)
 	{
-    static_cast<base_t&>(*this) = base_t(reinterpret_cast<T>(begin), reinterpret_cast<T>(end));
-	}
-	
-	void assign(U begin, size_t size)
-	{
-    assign(begin, reinterpret_cast<T>(begin) + size);
+		static_cast<base_t&>(*this) = base_t(reinterpret_cast<T>(begin), reinterpret_cast<T>(end));
 	}
 
-  void clear()
-  {
-    assign(T(NULL), T(NULL));
-  }
-	
+	void assign(U begin, size_t size)
+	{
+		assign(begin, reinterpret_cast<T>(begin) + size);
+	}
+
+	void clear()
+	{
+		assign(T(NULL), T(NULL));
+	}
+
 	T data() const
-  {
-    return base_t::begin();
-  }
+	{
+		return base_t::begin();
+	}
 
 	template<class V>
 	data_ref_base find(V v) const
@@ -84,12 +84,12 @@ public:
 
 	float f() const
 	{
-    return to_float(*this);
+		return to_float(*this);
 	}
 
 	long long i() const
 	{
-    return to_int(*this);
+		return to_int(*this);
 	}
 
 	std::string s() const
@@ -102,7 +102,7 @@ public:
 		return data_ref_base(base_t::begin() + ofs, sz);
 	}
 private:
-  typedef boost::iterator_range<T> base_t;
+	typedef boost::iterator_range<T> base_t;
 };
 
 typedef data_ref_base<const unsigned char*, const void*> data_ref;
@@ -112,30 +112,30 @@ typedef data_ref_base<char*, void*> mutable_str_ref;
 
 inline size_t memcpy(void* d, data_ref s)
 {
-  memcpy(d, s.data(), s.size());
-  return s.size();
+	memcpy(d, s.data(), s.size());
+	return s.size();
 }
 
 inline float to_float(data_ref v)
 {
-  try
-  {
-    return boost::lexical_cast<float>(v);
-  }
-  catch (boost::bad_lexical_cast&)
-  {
-  }
-  return 0;
+	try
+	{
+		return boost::lexical_cast<float>(v);
+	}
+	catch (boost::bad_lexical_cast&)
+	{
+	}
+	return 0;
 }
 
 inline long long to_int(data_ref v)
 {
-  try
-  {
-    return boost::lexical_cast<long long>(v);
-  }
-  catch (boost::bad_lexical_cast&)
-  {
-  }
-  return 0;
+	try
+	{
+		return boost::lexical_cast<long long>(v);
+	}
+	catch (boost::bad_lexical_cast&)
+	{
+	}
+	return 0;
 }
