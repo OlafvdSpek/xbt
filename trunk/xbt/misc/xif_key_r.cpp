@@ -15,7 +15,7 @@ static int read_int(const byte*& r)
 int Cxif_key_r::import(data_ref s)
 {
 	Cvirtual_binary d;
-	const t_xif_header_fast& h = *reinterpret_cast<const t_xif_header_fast*>(s.begin);
+	const t_xif_header_fast& h = *reinterpret_cast<const t_xif_header_fast*>(s.data());
 	if (s.size() < sizeof(t_xif_header_fast) + 8
 		|| h.id != file_id
 		|| h.version != file_version_fast)
@@ -23,14 +23,14 @@ int Cxif_key_r::import(data_ref s)
 	unsigned long cb_d = h.size_uncompressed;
 	if (cb_d)
 	{
-		if (Z_OK != uncompress(d.write_start(cb_d), &cb_d, s + sizeof(t_xif_header_fast), h.size_compressed))
+		if (Z_OK != uncompress(d.write_start(cb_d), &cb_d, &s[sizeof(t_xif_header_fast)], h.size_compressed))
 			return 1;
 		load(d);
 		// m_external_data = d + h.size_compressed;
 	}
 	else
 	{
-		load(s + sizeof(t_xif_header_fast));
+		load(&s[sizeof(t_xif_header_fast)]);
 		// m_external_data = s + sizeof(t_xif_header_fast) + h.size_uncompressed
 	}
 
