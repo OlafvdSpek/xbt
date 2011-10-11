@@ -32,7 +32,7 @@ template <class T, class U>
 typename T::value_type::second_type& find_ref(T& c, U v)
 {
 	typename T::iterator i = c.find(v);
-  assert(i != c.end());
+	assert(i != c.end());
 	return i->second;
 }
 
@@ -40,7 +40,7 @@ template <class T, class U>
 const typename T::value_type::second_type& find_ref(const T& c, U v)
 {
 	typename T::const_iterator i = c.find(v);
-  assert(i != c.end());
+	assert(i != c.end());
 	return i->second;
 }
 
