@@ -86,7 +86,7 @@ int Cserver::run()
 	write_db_torrents();
 	write_db_users();
 #ifndef NDEBUG
-	test_announce();
+	// test_announce();
 #endif
 #ifndef WIN32
 	if (m_config.m_daemon)
@@ -904,7 +904,7 @@ void Cserver::term()
 
 void Cserver::test_announce()
 {
-	t_user* u = find_ptr(m_users, 1);
+	t_user* u = m_users.empty() ? NULL : &m_users.begin()->second;
 	Ctracker_input i;
 	i.m_info_hash = "IHIHIHIHIHIHIHIHIHIH";
 	i.m_peer_id = "PIPIPIPIPIPIPIPIPIPI";

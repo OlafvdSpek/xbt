@@ -11,9 +11,9 @@ class Cvirtual_binary_source: boost::noncopyable
 {
 public:
 	Cvirtual_binary_source(size_t v)
-  {
-  	m_range.assign(new char[v], v);
-  }
+	{
+		m_range.assign(new char[v], v);
+	}
 
 	~Cvirtual_binary_source()
 	{
@@ -49,20 +49,20 @@ public:
 	{
 	}
 
-  Cvirtual_binary(size_t v)
-  {
-    assign(v);
-  }
+	Cvirtual_binary(size_t v)
+	{
+		assign(v);
+	}
 
-  Cvirtual_binary(data_ref v)
-  {
-    assign(v);
-  }
+	Cvirtual_binary(data_ref v)
+	{
+		assign(v);
+	}
 
 	void assign(size_t v)
-  {
-    assign(data_ref(NULL, v));
-  }
+	{
+		assign(data_ref(NULL, v));
+	}
 
 	const unsigned char* begin() const
 	{
@@ -104,14 +104,14 @@ public:
 		if (!m_source)
 			return mutable_data_ref();
 		if (!m_source.unique())
-      assign(range());
+			assign(range());
 		return *m_source;
 	}
 
-  void clear()
-  {
-    m_source.reset();
-  }
+	void clear()
+	{
+		m_source.reset();
+	}
 
 	bool empty() const
 	{
