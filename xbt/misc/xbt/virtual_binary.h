@@ -49,12 +49,12 @@ public:
 	{
 	}
 
-	Cvirtual_binary(size_t v)
+	explicit Cvirtual_binary(size_t v)
 	{
 		assign(v);
 	}
 
-	Cvirtual_binary(data_ref v)
+	explicit Cvirtual_binary(data_ref v)
 	{
 		assign(v);
 	}
