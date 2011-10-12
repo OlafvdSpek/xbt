@@ -904,7 +904,7 @@ void Cserver::term()
 
 void Cserver::test_announce()
 {
-	t_user* u = m_users.empty() ? NULL : &m_users.begin()->second;
+	t_user* u = find_ptr(m_users, 1);
 	Ctracker_input i;
 	i.m_info_hash = "IHIHIHIHIHIHIHIHIHIH";
 	i.m_peer_id = "PIPIPIPIPIPIPIPIPIPI";
