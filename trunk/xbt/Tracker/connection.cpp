@@ -56,7 +56,7 @@ int Cconnection::recv()
 	}
 	if (m_state == 5)
 		return 0;
-	const unsigned char* a = m_w.data();
+	const char* a = m_w.data();
 	m_w.advance_begin(r);
 	int state;
 	do
@@ -73,7 +73,7 @@ int Cconnection::recv()
 			switch (m_state)
 			{
 			case 0:
-				read(std::string(&m_read_b.front(), reinterpret_cast<const char*>(a) - &m_read_b.front()));
+				read(std::string(&m_read_b.front(), a));
 				m_state = 1;
 			case 1:
 			case 3:
@@ -110,7 +110,7 @@ int Cconnection::send()
 		std::cerr << "send failed: " << Csocket::error2a(e) << std::endl;
 		return 1;
 	}
-  m_r.advance_begin(r);
+	m_r.advance_begin(r);
 	if (m_r.empty())
 		m_write_b.clear();
 	return 0;
