@@ -73,7 +73,7 @@ int Cconnection::recv()
 			switch (m_state)
 			{
 			case 0:
-				read(std::string(&m_read_b.front(), a));
+				read(std::string(&m_read_b.front(), a - &m_read_b.front()));
 				m_state = 1;
 			case 1:
 			case 3:
