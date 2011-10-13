@@ -16,6 +16,8 @@ public:
 
 	explicit shared_array2(size_t sz)
 	{
+		if (!sz)
+			return;
 		boost::shared_ptr<T> n(new T[sz], boost::checked_array_deleter<T>());
 		static_cast<base_t&>(*this) = base_t(n.get(), n.get() + sz);
 		n_ = n;
