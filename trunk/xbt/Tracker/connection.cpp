@@ -270,7 +270,7 @@ void Cconnection::read(const std::string& v)
 		}
 #endif
 		m_r = m_write_b;
-    m_r.advance_begin(r);
+		m_r.advance_begin(r);
 	}
 	if (m_r.empty())
 		m_write_b.clear();
