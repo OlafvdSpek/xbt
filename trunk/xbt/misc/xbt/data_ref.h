@@ -18,7 +18,7 @@ public:
 	}
 
 	template<class V>
-	data_ref_base(const V& v, typename boost::enable_if<typename boost::is_class<V>>::type* = 0)
+	data_ref_base(const V& v, typename boost::enable_if<typename boost::is_class<V> >::type* = 0)
 	{
 		if (v.end() != v.begin())
 			assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
@@ -27,7 +27,7 @@ public:
 	}
 
 	template<class V>
-	data_ref_base(V& v, typename boost::enable_if<typename boost::is_class<V>>::type* = 0)
+	data_ref_base(V& v, typename boost::enable_if<typename boost::is_class<V> >::type* = 0)
 	{
 		if (v.end() != v.begin())
 			assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
