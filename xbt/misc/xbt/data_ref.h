@@ -2,6 +2,8 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/range/iterator_range.hpp>
+#include <boost/type_traits/is_class.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -16,7 +18,7 @@ public:
 	}
 
 	template<class V>
-	data_ref_base(const V& v)
+	data_ref_base(const V& v, typename boost::enable_if<typename boost::is_class<V>>::type* = 0)
 	{
 		if (v.end() != v.begin())
 			assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
@@ -25,7 +27,7 @@ public:
 	}
 
 	template<class V>
-	data_ref_base(V& v)
+	data_ref_base(V& v, typename boost::enable_if<typename boost::is_class<V>>::type* = 0)
 	{
 		if (v.end() != v.begin())
 			assign(&*v.begin(), v.end() - v.begin() + &*v.begin());
@@ -35,12 +37,10 @@ public:
 
 	explicit data_ref_base(const char* v)
 	{
-		assign(v, strlen(v));
-	}
-
-	explicit data_ref_base(char* v)
-	{
-		assign(v, strlen(v));
+		if (v)
+			assign(v, strlen(v));
+		else
+			clear();
 	}
 
 	data_ref_base(U begin, U end)
