@@ -20,7 +20,6 @@ add_executable(
 	../misc/bvalue.cpp
 	../misc/sha1.cpp
 	../misc/socket.cpp
-	../misc/virtual_binary.cpp
 	../misc/xcc_z.cpp
 	config.cpp
 	connection.cpp
