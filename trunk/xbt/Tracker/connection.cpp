@@ -259,9 +259,9 @@ void Cconnection::read(const std::string& v)
 #ifndef WIN32
 		if (r < h.size())
 		{
-			m_write_b.resize(h.size() + s.size());
-			memcpy(m_write_b.data_edit(), h);
-			memcpy(m_write_b.data_edit() + h.size(), s);
+			m_write_b = shared_data(h.size() + s.size());
+			memcpy(m_write_b.data(), h);
+			memcpy(m_write_b.data() + h.size(), s);
 		}
 		else
 		{
