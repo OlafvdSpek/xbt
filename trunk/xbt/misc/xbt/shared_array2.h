@@ -5,6 +5,7 @@
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/type_traits/is_class.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <xbt/data_ref.h>
 
 template<class T> 
 class shared_array2 : public boost::iterator_range<T*>
