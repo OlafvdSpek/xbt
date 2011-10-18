@@ -1,6 +1,6 @@
 #pragma once
 
-#include <xbt/shared_array2.h>
+#include <xbt/shared_data.h>
 
 namespace xcc_z
 {
