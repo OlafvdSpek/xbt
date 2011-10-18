@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <xbt/shared_array2.h>
+#include <xbt/shared_data.h>
 
 class Cbvalue
 {
