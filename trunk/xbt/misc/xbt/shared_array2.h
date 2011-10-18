@@ -24,7 +24,7 @@ public:
 	}
 
 	template<class V>
-	shared_array2(const V& v, typename boost::enable_if<typename boost::is_class<V>>::type* = 0) :
+	shared_array2(const shared_array2<V>& v) : // , typename boost::enable_if<typename boost::is_class<V>>::type* = 0) :
 		base_t(v.data(), v.data() + v.size()),
 		n_(v.n())
 	{
@@ -40,6 +40,11 @@ public:
 		base_t(b, b + sz),
 		n_(n)
 	{
+	}
+
+	void clear()
+	{
+		*this = shared_array2();
 	}
 
 	T* data() const
@@ -62,7 +67,11 @@ private:
 	boost::shared_ptr<void> n_;
 };
 
-typedef shared_array2<const unsigned char> shared_data;
-typedef shared_array2<unsigned char> shared_mutable_data;
-typedef shared_array2<const char> shared_str;
-typedef shared_array2<char> shared_mutable_str;
+typedef shared_array2<unsigned char> shared_data;
+
+inline shared_data make_shared_data(data_ref v)
+{
+  shared_data d(v.size());
+  memcpy(d.data(), v);
+  return d;
+}

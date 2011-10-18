@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <xbt/virtual_binary.h>
+#include <xbt/shared_array2.h>
 
 class Cbvalue
 {
@@ -30,7 +30,7 @@ public:
 	int pre_read() const;
 	int read(char* d) const;
 	int read(void* d) const;
-	Cvirtual_binary read() const;
+	shared_data read() const;
 	int write(const char* s, int cb_s);
 	int write(str_ref);
 	Cbvalue(long long v = 0);

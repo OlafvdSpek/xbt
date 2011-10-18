@@ -166,7 +166,7 @@ void Cconnection::read(const std::string& v)
 		}
 	}
 	std::string h = "HTTP/1.0 200 OK\r\n";
-	Cvirtual_binary s;
+	shared_data s;
 	bool gzip = true;
 	switch (a < v.size() ? v[a] : 0)
 	{
@@ -187,7 +187,7 @@ void Cconnection::read(const std::string& v)
 		{
 			gzip = m_server->config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = Cvirtual_binary(m_server->debug(ti));
+			s = make_shared_data(m_server->debug(ti));
 		}
 		break;
 	case 's':
@@ -195,7 +195,7 @@ void Cconnection::read(const std::string& v)
 		{
 			gzip = m_server->config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = Cvirtual_binary(m_server->statistics());
+			s = make_shared_data(m_server->statistics());
 		}
 		else if (m_server->config().m_full_scrape || ti.m_compact || !ti.m_info_hash.empty())
 		{
@@ -216,7 +216,7 @@ void Cconnection::read(const std::string& v)
 	}
 	else if (gzip)
 	{
-		Cvirtual_binary s2 = xcc_z::gzip(s);
+		shared_data s2 = xcc_z::gzip(s);
 #ifndef NDEBUG
 		static std::ofstream f("xbt_tracker_gzip.log");
 		f << m_server->time() << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << std::endl;
@@ -229,9 +229,9 @@ void Cconnection::read(const std::string& v)
 	}
 	h += "\r\n";
 #ifdef WIN32
-	m_write_b.resize(h.size() + s.size());
-	memcpy(m_write_b.data_edit(), h);
-	memcpy(m_write_b.data_edit() + h.size(), s);
+	m_write_b = shared_data(h.size() + s.size());
+	memcpy(m_write_b.data(), h);
+	memcpy(m_write_b.data() + h.size(), s);
 	int r = m_s.send(m_write_b);
 #else
 	boost::array<iovec, 2> d;

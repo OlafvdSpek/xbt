@@ -5,32 +5,32 @@
 #include <zlib.h>
 #include "stream_int.h"
 
-Cvirtual_binary xcc_z::gunzip(data_ref s)
+shared_data xcc_z::gunzip(data_ref s)
 {
 	if (s.size() < 18)
-		return Cvirtual_binary();
-	Cvirtual_binary d;
+		return shared_data();
+	shared_data d(read_int_le(4, s.end() - 4));
 	z_stream stream;
 	stream.zalloc = NULL;
 	stream.zfree = NULL;
 	stream.opaque = NULL;
 	stream.next_in = const_cast<unsigned char*>(s.begin()) + 10;
 	stream.avail_in = s.size() - 18;
-	stream.next_out = d.write_start(read_int_le(4, s.end() - 4));
+	stream.next_out = d.data();
 	stream.avail_out = d.size();
 	return stream.next_out
 		&& Z_OK == inflateInit2(&stream, -MAX_WBITS)
 		&& Z_STREAM_END == inflate(&stream, Z_FINISH)
 		&& Z_OK == inflateEnd(&stream)
 		? d 
-		: Cvirtual_binary();
+		: shared_data();
 }
 
-Cvirtual_binary xcc_z::gzip(data_ref s)
+shared_data xcc_z::gzip(data_ref s)
 {
-	Cvirtual_binary d;
 	unsigned long cb_d = s.size() + (s.size() + 999) / 1000 + 12;
-	unsigned char* w = d.write_start(10 + cb_d + 8);
+	shared_data d(10 + cb_d + 8);
+	unsigned char* w = d.data();
 	*w++ = 0x1f;
 	*w++ = 0x8b;
 	*w++ = Z_DEFLATED;
@@ -57,8 +57,7 @@ Cvirtual_binary xcc_z::gzip(data_ref s)
 	}
 	w = write_int_le(4, w, crc32(crc32(0, NULL, 0), s.data(), s.size()));
 	w = write_int_le(4, w, s.size());
-	d.resize(w - d.data());
-	return d;
+	return d.substr(0, w - d.data());
 }
 
 void xcc_z::gzip_out(data_ref s)

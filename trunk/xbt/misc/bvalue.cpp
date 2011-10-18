@@ -302,10 +302,10 @@ int Cbvalue::pre_read() const
 	return 0;
 }
 
-Cvirtual_binary Cbvalue::read() const
+shared_data Cbvalue::read() const
 {
-	Cvirtual_binary d;
-  BOOST_VERIFY(read(d.write_start(pre_read())) == d.size());
+	shared_data d(pre_read());
+  BOOST_VERIFY(read(d.data()) == d.size());
 	return d;
 }
 
