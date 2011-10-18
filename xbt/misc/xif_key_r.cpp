@@ -14,7 +14,6 @@ static int read_int(const byte*& r)
 
 int Cxif_key_r::import(data_ref s)
 {
-	Cvirtual_binary d;
 	const t_xif_header_fast& h = *reinterpret_cast<const t_xif_header_fast*>(s.data());
 	if (s.size() < sizeof(t_xif_header_fast) + 8
 		|| h.id != file_id
@@ -23,6 +22,7 @@ int Cxif_key_r::import(data_ref s)
 	unsigned long cb_d = h.size_uncompressed;
 	if (cb_d)
 	{
+		Cvirtual_binary d;
 		if (Z_OK != uncompress(d.write_start(cb_d), &cb_d, &s[sizeof(t_xif_header_fast)], h.size_compressed))
 			return 1;
 		load(d);
@@ -65,18 +65,18 @@ int Cxif_key_r::load(const byte* s)
 	return r - s;
 }
 
-Cxif_key_r::t_key_map::const_iterator Cxif_key_r::find_key(int id) const
+const Cxif_key_r* Cxif_key_r::find_key(int id) const
 {
 	t_key_map::const_iterator i = keys().begin();
 	while (i != keys().end() && i->first != id)
 		i++;
-	return i;
+	return i == keys().end() ? NULL : &i->second;
 }
 
-Cxif_key_r::t_value_map::const_iterator Cxif_key_r::find_value(int id) const
+const Cxif_value* Cxif_key_r::find_value(int id) const
 {
 	t_value_map::const_iterator i = values().begin();
 	while (i != values().end() && i->first != id)
 		i++;
-	return i;
+	return i == values().end() ? NULL : &i->second;
 }

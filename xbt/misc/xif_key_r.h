@@ -11,14 +11,14 @@ public:
 
 	const Cxif_key_r& get_key(int id) const
 	{
-		return find_key(id)->second;
+		return *find_key(id);
 	}
 
 	const Cxif_value& get_value(int id) const
 	{
 		static Cxif_value z;
-		t_value_map::const_iterator i = find_value(id);
-		return i == values().end() ? z : i->second;
+		const Cxif_value* i = find_value(id);
+		return i ? *i : z;
 	}
 
 	float get_value_float(int id) const
@@ -78,16 +78,16 @@ public:
 
 	bool has_key(int id) const
 	{
-		return find_key(id) != keys().end();
+		return find_key(id);
 	}
 
 	bool has_value(int id) const
 	{
-		return find_value(id) != values().end();
+		return find_value(id);
 	}
 
-	t_key_map::const_iterator find_key(int id) const;
-	t_value_map::const_iterator find_value(int id) const;
+	const Cxif_key_r* find_key(int id) const;
+	const Cxif_value* find_value(int id) const;
 	int import(data_ref);
 private:
 	int load(const byte* s);
