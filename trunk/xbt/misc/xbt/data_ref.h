@@ -139,3 +139,8 @@ inline long long to_int(data_ref v)
 	}
 	return 0;
 }
+
+inline std::string to_string(str_ref v)
+{
+	return std::string(v.data(), v.size());
+}
