@@ -144,8 +144,8 @@ public:
 	std::string insert_peer(const Ctracker_input&, bool udp, t_user*);
 	std::string debug(const Ctracker_input&) const;
 	std::string statistics() const;
-	Cvirtual_binary select_peers(const Ctracker_input&) const;
-	Cvirtual_binary scrape(const Ctracker_input&, t_user*);
+	shared_data select_peers(const Ctracker_input&) const;
+	shared_data scrape(const Ctracker_input&, t_user*);
 	int run();
 	static void term();
 	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);

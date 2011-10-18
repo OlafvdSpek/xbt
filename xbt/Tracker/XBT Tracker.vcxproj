@@ -148,8 +148,6 @@
     </ClCompile>
     <ClCompile Include="udp_listen_socket.cpp">
     </ClCompile>
-    <ClCompile Include="..\misc\virtual_binary.cpp">
-    </ClCompile>
     <ClCompile Include="XBT Tracker.cpp">
     </ClCompile>
     <ClCompile Include="..\misc\xcc_z.cpp">
@@ -172,7 +170,6 @@
     <ClInclude Include="tracker_input.h" />
     <ClInclude Include="transaction.h" />
     <ClInclude Include="udp_listen_socket.h" />
-    <ClInclude Include="..\misc\xcc_z.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\XBT Tracker.ico" />

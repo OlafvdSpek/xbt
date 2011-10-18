@@ -366,13 +366,13 @@ std::string Cserver::t_torrent::select_peers(const Ctracker_input& ti) const
 	return d;
 }
 
-Cvirtual_binary Cserver::select_peers(const Ctracker_input& ti) const
+shared_data Cserver::select_peers(const Ctracker_input& ti) const
 {
 	const t_torrent* f = torrent(ti.m_info_hash);
 	if (!f)
-		return Cvirtual_binary();
+		return shared_data();
 	std::string peers = f->select_peers(ti);
-	return Cvirtual_binary((boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
+	return make_shared_data((boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
 		% f->seeders % f->leechers % config().m_announce_interval % config().m_announce_interval % peers.size() % peers).str());
 }
 
@@ -421,7 +421,7 @@ static byte* write_compact_int(byte* w, unsigned int v)
 	return w;
 }
 
-Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
+shared_data Cserver::scrape(const Ctracker_input& ti, t_user* user)
 {
 	if (!m_config.m_anonymous_scrape && !user) 
 		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
@@ -434,8 +434,8 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 		m_stats.scraped_full++;
 		if (ti.m_compact)
 		{
-			Cvirtual_binary d;
-			byte* w = d.write_start(32 * m_torrents.size() + 1);
+			shared_data d(32 * m_torrents.size() + 1);
+			byte* w = d.data();
 			*w++ = 'x';
 			BOOST_FOREACH(t_torrents::reference i, m_torrents)
 			{
@@ -447,8 +447,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 				w = write_compact_int(w, i.second.leechers);
 				w = write_compact_int(w, i.second.completed);
 			}
-			d.resize(w - d);
-			return d;
+			return d.substr(0, w - d.data());
 		}
 		d.reserve(90 * m_torrents.size());
 		BOOST_FOREACH(t_torrents::reference i, m_torrents)
@@ -470,7 +469,7 @@ Cvirtual_binary Cserver::scrape(const Ctracker_input& ti, t_user* user)
 	if (m_config.m_scrape_interval)
 		d += (boost::format("5:flagsd20:min_request_intervali%dee") % m_config.m_scrape_interval).str();
 	d += "e";
-	return Cvirtual_binary(d);
+	return make_shared_data(d);
 }
 
 const std::string& Cserver::db_name(const std::string& v) const
