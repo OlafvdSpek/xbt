@@ -30,7 +30,7 @@ public:
 	Cdatabase();
 	~Cdatabase();
 
-	MYSQL* handle()
+	operator MYSQL*()
 	{
 		return &m_handle;
 	}
