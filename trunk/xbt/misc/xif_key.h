@@ -2,7 +2,7 @@
 
 #include <map>
 #include <string>
-#include <xbt/virtual_binary.h>
+#include <xbt/shared_data.h>
 #include <xif_value.h>
 
 const static int file_id = 0x1a464958; // *reinterpret_cast<const int*>("XIF\x1a");
@@ -51,7 +51,7 @@ public:
 		m_values = v.m_values;
 	}
 
-	explicit Cxif_key(const Cvirtual_binary& v):
+	explicit Cxif_key(const shared_data& v):
 		m_keys(*new t_xif_key_map)
 	{
 		load_key(v);
@@ -118,7 +118,7 @@ public:
 		m_values[id] = Cxif_value(vt_bin32, v);
 	}
 
-	void set_value_binary(int id, const Cvirtual_binary v, bool fast = false)
+	void set_value_binary(int id, const shared_data& v, bool fast = false)
 	{
 		m_values[id] = Cxif_value(v, fast);
 	}
@@ -140,7 +140,7 @@ public:
 
 	void set_value_int64(int id, long long v)
 	{
-		set_value_binary(id, Cvirtual_binary(data_ref(&v, 8)));
+		set_value_binary(id, make_shared_data(&v, 8));
 	}
 
 	const Cxif_key& get_key(int id) const
@@ -212,7 +212,7 @@ public:
 		return m_values.size();
 	}
 
-	int load_key(const Cvirtual_binary& data)
+	int load_key(data_ref data)
 	{
 		return load_key(data.data(), data.size());
 	}
@@ -233,11 +233,11 @@ public:
 		m_values.clear();
 	}
 
-	void dump(std::ostream& os, bool show_ratio, int depth = 0, Cvirtual_binary* t = NULL) const;
-	void dump_ratio(std::ostream& os, Cvirtual_binary* t) const;
-	Cvirtual_binary export_bz() const;
+	void dump(std::ostream& os, bool show_ratio, int depth = 0, shared_data* t = NULL) const;
+	void dump_ratio(std::ostream& os, shared_data* t) const;
+	shared_data export_bz() const;
 	int load_key(const byte* data, size_t size);
-	Cvirtual_binary vdata(bool fast = false) const;
+	shared_data vdata(bool fast = false) const;
 
 	t_xif_key_map& m_keys;
 	t_xif_value_map m_values;

@@ -2,7 +2,7 @@
 #include "xif_key_r.h"
 
 #include <stream_int.h>
-#include <xbt/virtual_binary.h>
+#include <xbt/shared_data.h>
 #include <xif_key.h>
 #include <zlib.h>
 
@@ -22,10 +22,10 @@ int Cxif_key_r::import(data_ref s)
 	unsigned long cb_d = h.size_uncompressed;
 	if (cb_d)
 	{
-		Cvirtual_binary d;
-		if (Z_OK != uncompress(d.write_start(cb_d), &cb_d, &s[sizeof(t_xif_header_fast)], h.size_compressed))
+		shared_data d(cb_d);
+		if (Z_OK != uncompress(d.data(), &cb_d, &s[sizeof(t_xif_header_fast)], h.size_compressed))
 			return 1;
-		load(d);
+		load(d.data());
 		// m_external_data = d + h.size_compressed;
 	}
 	else

@@ -2,9 +2,14 @@
 
 #include <boost/checked_delete.hpp>
 #include <boost/range/iterator_range.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
-#include <boost/type_traits/is_class.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+// #include <boost/type_traits/is_class.hpp>
+// #include <boost/utility/enable_if.hpp>
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <sys/stat.h>
 #include <xbt/data_ref.h>
 
 template<class T> 
@@ -75,4 +80,36 @@ inline shared_data make_shared_data(data_ref v)
   shared_data d(v.size());
   memcpy(d.data(), v);
   return d;
+}
+
+inline shared_data make_shared_data(const void* d, size_t sz)
+{
+	return make_shared_data(data_ref(d, sz));
+}
+
+inline shared_data file_get(const std::string& fname)
+{
+	shared_data d;
+	FILE* f = fopen(fname.c_str(), "rb");
+	if (!f)
+		return d;
+	struct stat b;
+	if (!fstat(fileno(f), &b))
+	{
+		d = shared_data(b.st_size);
+		if (fread(d.data(), b.st_size, 1, f) != 1)
+			d.clear();
+	}
+	fclose(f);
+	return d;
+}
+
+inline int file_put(const std::string& fname, data_ref v)
+{
+	FILE* f = fopen(fname.c_str(), "wb");
+	if (!f)
+		return 1;
+	int error = fwrite(v.data(), v.size(), 1, f) != 1;
+	fclose(f);
+	return error;
 }
