@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string.h>
-#include <xbt/virtual_binary.h>
+#include <xbt/shared_data.h>
 
 enum t_vt {vt_bin32, vt_binary, vt_int32, vt_string, vt_external_binary, vt_float, vt_unknown};
 
@@ -25,7 +25,7 @@ public:
 		m_value_int = v;
 	}
 
-	Cxif_value(const Cvirtual_binary v, bool fast = false)
+	Cxif_value(const shared_data& v, bool fast = false)
 	{
 		m_type = fast ? vt_external_binary : vt_binary;
 		m_data = v;
@@ -34,10 +34,10 @@ public:
 	Cxif_value(const std::string& v)
 	{
 		m_type = vt_string;
-		memcpy(m_data.write_start(v.length() + 1), v.c_str(), v.length() + 1);
+		m_data = make_shared_data(v.c_str(), v.size() + 1);
 	}
 
-	Cvirtual_binary get_vdata() const
+	shared_data get_vdata() const
 	{
 		assert(!idata());
 		return m_data;
@@ -102,8 +102,9 @@ public:
 	bool external_data() const;
 	void external_save(byte*& data) const;
 private:
-	Cvirtual_binary m_data;
+	shared_data m_data;
 	t_vt m_type;
+
 	union
 	{
 		byte m_value[4];

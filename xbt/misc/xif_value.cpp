@@ -51,7 +51,7 @@ void Cxif_value::load_old(const byte*& data)
 	int size = read_int(data);
 	if (size == 4)
 		memcpy(m_value, data, size);
-	memcpy(m_data.write_start(size), data, size);
+	m_data = make_shared_data(data, size);
 	data += size;
 	m_type = vt_unknown;
 	m_type = get_type();
@@ -71,12 +71,12 @@ void Cxif_value::load_new(const byte*& data)
 		m_value_float = read_float(data);
 		break;
 	case vt_external_binary:
-		m_data.write_start(read_int(data));
+		m_data = shared_data(read_int(data));
 		break;
 	default:
 		{
 			int size = read_int(data);
-			memcpy(m_data.write_start(size), data, size);
+			m_data = make_shared_data(data, size);
 			data += size;
 		}
 	}
@@ -86,7 +86,7 @@ void Cxif_value::load_external(const byte*& data)
 {
 	if (!external_data())
 		return;
-	memcpy(m_data.data_edit(), data, get_size());
+	m_data = make_shared_data(data, get_size());
 	data += get_size();
 }
 

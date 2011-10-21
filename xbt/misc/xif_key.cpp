@@ -130,11 +130,11 @@ int Cxif_key::load_key(const byte* data, size_t size)
 		unsigned long cb_d = header.size_uncompressed;
 		if (cb_d)
 		{
-			Cvirtual_binary d;
+			shared_data d(cb_d);
 			if (header.version == file_version_new)
-				error = Z_OK != uncompress(d.write_start(cb_d), &cb_d, data + sizeof(t_xif_header_old), size - sizeof(t_xif_header_old));
+				error = Z_OK != uncompress(d.data(), &cb_d, data + sizeof(t_xif_header_old), size - sizeof(t_xif_header_old));
 			else
-				error = Z_OK != uncompress(d.write_start(cb_d), &cb_d, data + sizeof(t_xif_header_fast), header.size_compressed);
+				error = Z_OK != uncompress(d.data(), &cb_d, data + sizeof(t_xif_header_fast), header.size_compressed);
 			if (!error)
 			{
 				read_p = d.data();
@@ -159,38 +159,38 @@ int Cxif_key::load_key(const byte* data, size_t size)
 	return error;
 }
 
-Cvirtual_binary Cxif_key::vdata(bool fast) const
+shared_data Cxif_key::vdata(bool fast) const
 {
-	Cvirtual_binary d;
 	int size = get_size();
 	int external_size = get_external_size();
 	if (fast)
 	{
-		t_xif_header_fast& header = *reinterpret_cast<t_xif_header_fast*>(d.write_start(sizeof(t_xif_header_fast) + size + external_size));
+		shared_data d(sizeof(t_xif_header_fast) + size + external_size);
+		t_xif_header_fast& header = *reinterpret_cast<t_xif_header_fast*>(d.data());
 		header.id = file_id;
 		header.version = file_version_fast;
 		header.size_uncompressed = 0;
 		header.size_compressed = size;
 		header.size_external = external_size;
-		byte* w = d.data_edit() + sizeof(t_xif_header_fast);
+		byte* w = d.data() + sizeof(t_xif_header_fast);
 		save(w);
 		external_save(w);
 		assert(d.end() == w);
 		return d;
 	}
-	Cvirtual_binary s;
-	byte* w = s.write_start(size);
+	shared_data s(size);
+	byte* w = s.data();
 	save(w);
 	unsigned long cb_d = s.size() + (s.size() + 999) / 1000 + 12;
-	t_xif_header_fast& header = *reinterpret_cast<t_xif_header_fast*>(d.write_start(sizeof(t_xif_header_fast) + cb_d + external_size));
-	compress(d.data_edit() + sizeof(t_xif_header_fast), &cb_d, s.data(), s.size());
-	w = d.data_edit() + sizeof(t_xif_header_fast) + cb_d;
+	shared_data d(sizeof(t_xif_header_fast) + cb_d + external_size);
+	t_xif_header_fast& header = *reinterpret_cast<t_xif_header_fast*>(d.data());
+	compress(d.data() + sizeof(t_xif_header_fast), &cb_d, s.data(), s.size());
+	w = d.data() + sizeof(t_xif_header_fast) + cb_d;
 	external_save(w);
 	header.id = file_id;
 	header.version = file_version_fast;
 	header.size_uncompressed = size;
 	header.size_compressed = cb_d;
 	header.size_external = external_size;
-	d.resize(sizeof(t_xif_header_fast) + cb_d + external_size);
-	return d;
+	return d.substr(0, sizeof(t_xif_header_fast) + cb_d + external_size);
 }
