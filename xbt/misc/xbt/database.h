@@ -20,6 +20,7 @@ public:
 	void open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors = false);
 	const std::string& name(const std::string&) const;
 	Csql_result query(const std::string&);
+	void query_nothrow(const std::string&);
 	void set_name(const std::string&, const std::string&);
 	void set_query_log(const std::string&);
 	int affected_rows();
