@@ -647,26 +647,14 @@ void Cserver::write_db_torrents()
 	}
 	if (!m_announce_log_buffer.empty())
 	{
-		try
-		{
-			m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
-			m_database.query("insert delayed into " + db_name("announce_log") + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
-		}
-		catch (Cdatabase::exception&)
-		{
-		}
+		m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
+		m_database.query_nothrow("insert delayed into " + db_name("announce_log") + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
 		m_announce_log_buffer.erase();
 	}
 	if (!m_scrape_log_buffer.empty())
 	{
-		try
-		{
-			m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
-			m_database.query("insert delayed into " + db_name("scrape_log") + " (ipa, uid, mtime) values " + m_scrape_log_buffer);
-		}
-		catch (Cdatabase::exception&)
-		{
-		}
+		m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
+		m_database.query_nothrow("insert delayed into " + db_name("scrape_log") + " (ipa, uid, mtime) values " + m_scrape_log_buffer);
 		m_scrape_log_buffer.erase();
 	}
 }
@@ -679,38 +667,26 @@ void Cserver::write_db_users()
 	if (!m_torrents_users_updates_buffer.empty())
 	{
 		m_torrents_users_updates_buffer.erase(m_torrents_users_updates_buffer.size() - 1);
-		try
-		{
-			m_database.query("insert into " + db_name("files_users") + " (active, announced, completed, downloaded, `left`, uploaded, mtime, fid, uid) values "
-				+ m_torrents_users_updates_buffer
-				+ " on duplicate key update"
-				+ "  active = values(active),"
-				+ "  announced = announced + values(announced),"
-				+ "  completed = completed + values(completed),"
-				+ "  downloaded = downloaded + values(downloaded),"
-				+ "  `left` = if(values(`left`) = 18446744073709551615, `left`, values(`left`)),"
-				+ "  uploaded = uploaded + values(uploaded),"
-				+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
-		}
-		catch (Cdatabase::exception&)
-		{
-		}
+		m_database.query_nothrow("insert into " + db_name("files_users") + " (active, announced, completed, downloaded, `left`, uploaded, mtime, fid, uid) values "
+			+ m_torrents_users_updates_buffer
+			+ " on duplicate key update"
+			+ "  active = values(active),"
+			+ "  announced = announced + values(announced),"
+			+ "  completed = completed + values(completed),"
+			+ "  downloaded = downloaded + values(downloaded),"
+			+ "  `left` = if(values(`left`) = 18446744073709551615, `left`, values(`left`)),"
+			+ "  uploaded = uploaded + values(uploaded),"
+			+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
 		m_torrents_users_updates_buffer.erase();
 	}
 	if (!m_users_updates_buffer.empty())
 	{
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
-		try
-		{
-			m_database.query("insert into " + db_name("users") + " (downloaded, uploaded, " + db_name("uid") + ") values "
-				+ m_users_updates_buffer
-				+ " on duplicate key update"
-				+ "  downloaded = downloaded + values(downloaded),"
-				+ "  uploaded = uploaded + values(uploaded)");
-		}
-		catch (Cdatabase::exception&)
-		{
-		}
+		m_database.query_nothrow("insert into " + db_name("users") + " (downloaded, uploaded, " + db_name("uid") + ") values "
+			+ m_users_updates_buffer
+			+ " on duplicate key update"
+			+ "  downloaded = downloaded + values(downloaded),"
+			+ "  uploaded = uploaded + values(uploaded)");
 		m_users_updates_buffer.erase();
 	}
 }
