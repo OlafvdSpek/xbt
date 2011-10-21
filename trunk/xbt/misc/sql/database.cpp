@@ -55,6 +55,18 @@ Csql_result Cdatabase::query(const std::string& q)
 	return Csql_result(result);
 }
 
+void Cdatabase::query_nothrow(const std::string& q)
+{
+  try
+  {
+		query(q);
+  }
+  catch (Cdatabase::exception&)
+  {
+  }
+}
+
+
 void Cdatabase::close()
 {
 	mysql_close(&m_handle);
