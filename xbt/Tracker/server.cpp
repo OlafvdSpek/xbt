@@ -906,7 +906,7 @@ int Cserver::test_sql()
 		return 0;
 	try
 	{
-		mysql_get_server_version(m_database.handle());
+		mysql_get_server_version(m_database);
 		if (m_config.m_log_announce)
 			Csql_query(m_database, "select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0").execute();
 		Csql_query(m_database, "select name, value from @config where 0").execute();
