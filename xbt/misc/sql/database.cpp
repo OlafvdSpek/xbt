@@ -57,13 +57,13 @@ Csql_result Cdatabase::query(const std::string& q)
 
 void Cdatabase::query_nothrow(const std::string& q)
 {
-  try
-  {
+	try
+	{
 		query(q);
-  }
-  catch (Cdatabase::exception&)
-  {
-  }
+	}
+	catch (Cdatabase::exception&)
+	{
+	}
 }
 
 
