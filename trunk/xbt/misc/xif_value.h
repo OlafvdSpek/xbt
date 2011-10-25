@@ -99,7 +99,6 @@ public:
 	void load_external(const byte*& data);
 	void save(byte*& data) const;
 	static int skip(const byte* s);
-	bool external_data() const;
 	void external_save(byte*& data) const;
 private:
 	shared_data m_data;
