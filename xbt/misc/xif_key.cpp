@@ -38,14 +38,6 @@ void Cxif_key::load_new(const byte*& data)
 	}
 }
 
-void Cxif_key::load_external(const byte*& data)
-{
-	BOOST_FOREACH(t_xif_key_map::reference i, m_keys)
-		i.second.load_external(data);
-	BOOST_FOREACH(t_xif_value_map::reference i, m_values)
-		i.second.load_external(data);
-}
-
 int Cxif_key::get_size() const
 {
 	int size = 8;
@@ -60,21 +52,9 @@ int Cxif_key::get_size() const
 		case vt_int32:
 			break;
 		default:
-			if (!i.second.external_data())
-				size += i.second.get_size();
+			size += i.second.get_size();
 		}
 	}
-	return size;
-}
-
-int Cxif_key::get_external_size() const
-{
-	int size = 0;
-	BOOST_FOREACH(t_xif_key_map::const_reference i, m_keys)
-		size += i.second.get_external_size();			
-	BOOST_FOREACH(t_xif_value_map::const_reference i, m_values)
-		if (i.second.external_data())
-			size += i.second.get_size();
 	return size;
 }
 
@@ -100,14 +80,6 @@ void Cxif_key::save(byte*& data) const
 			i.second.save(data);
 		}
 	}
-}
-
-void Cxif_key::external_save(byte*& data) const
-{
-	BOOST_FOREACH(t_xif_key_map::const_reference i, m_keys)
-		i.second.external_save(data);
-	BOOST_FOREACH(t_xif_value_map::const_reference i, m_values)
-		i.second.external_save(data);
 }
 
 int Cxif_key::load_key(const byte* data, size_t size)
@@ -143,7 +115,6 @@ int Cxif_key::load_key(const byte* data, size_t size)
 				if (header.version == file_version_fast && !error)
 				{
 					read_p = data + sizeof(t_xif_header_fast) + header.size_compressed;
-					load_external(read_p);
 					error = size != read_p - data;
 				}
 			}
@@ -152,45 +123,27 @@ int Cxif_key::load_key(const byte* data, size_t size)
 		{
 			read_p = data + (header.version == file_version_fast ? sizeof(t_xif_header_fast) : sizeof(t_xif_header_old));
 			load_new(read_p);
-			load_external(read_p);
 			error = size != read_p - data;
 		}
 	}
 	return error;
 }
 
-shared_data Cxif_key::vdata(bool fast) const
+shared_data Cxif_key::vdata() const
 {
 	int size = get_size();
-	int external_size = get_external_size();
-	if (fast)
-	{
-		shared_data d(sizeof(t_xif_header_fast) + size + external_size);
-		t_xif_header_fast& header = *reinterpret_cast<t_xif_header_fast*>(d.data());
-		header.id = file_id;
-		header.version = file_version_fast;
-		header.size_uncompressed = 0;
-		header.size_compressed = size;
-		header.size_external = external_size;
-		byte* w = d.data() + sizeof(t_xif_header_fast);
-		save(w);
-		external_save(w);
-		assert(d.end() == w);
-		return d;
-	}
 	shared_data s(size);
 	byte* w = s.data();
 	save(w);
 	unsigned long cb_d = s.size() + (s.size() + 999) / 1000 + 12;
-	shared_data d(sizeof(t_xif_header_fast) + cb_d + external_size);
+	shared_data d(sizeof(t_xif_header_fast) + cb_d);
 	t_xif_header_fast& header = *reinterpret_cast<t_xif_header_fast*>(d.data());
 	compress(d.data() + sizeof(t_xif_header_fast), &cb_d, s.data(), s.size());
 	w = d.data() + sizeof(t_xif_header_fast) + cb_d;
-	external_save(w);
 	header.id = file_id;
 	header.version = file_version_fast;
 	header.size_uncompressed = size;
 	header.size_compressed = cb_d;
-	header.size_external = external_size;
-	return d.substr(0, sizeof(t_xif_header_fast) + cb_d + external_size);
+	header.size_external = 0;
+	return d.substr(0, sizeof(t_xif_header_fast) + cb_d);
 }

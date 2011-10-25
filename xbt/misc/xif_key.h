@@ -118,9 +118,9 @@ public:
 		m_values[id] = Cxif_value(vt_bin32, v);
 	}
 
-	void set_value_binary(int id, const shared_data& v, bool fast = false)
+	void set_value_binary(int id, const shared_data& v)
 	{
-		m_values[id] = Cxif_value(v, fast);
+		m_values[id] = Cxif_value(v);
 	}
 
 	void set_value_float(int id, float v)
@@ -237,16 +237,13 @@ public:
 	void dump_ratio(std::ostream& os, shared_data* t) const;
 	shared_data export_bz() const;
 	int load_key(const byte* data, size_t size);
-	shared_data vdata(bool fast = false) const;
+	shared_data vdata() const;
 
 	t_xif_key_map& m_keys;
 	t_xif_value_map m_values;
 private:
 	int get_size() const;
-	int get_external_size() const;
 	void load_old(const byte*& data);
 	void load_new(const byte*& data);
-	void load_external(const byte*& data);
 	void save(byte*& data) const;
-	void external_save(byte*& data) const;
 };
