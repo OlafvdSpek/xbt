@@ -148,6 +148,3 @@ public:
 private:
 	boost::shared_ptr<Cvirtual_binary_source> m_source;
 };
-
-Cvirtual_binary file_get(const std::string&);
-int file_put(const std::string&, data_ref);

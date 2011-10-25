@@ -25,9 +25,9 @@ public:
 		m_value_int = v;
 	}
 
-	Cxif_value(const shared_data& v, bool fast = false)
+	Cxif_value(const shared_data& v)
 	{
-		m_type = fast ? vt_external_binary : vt_binary;
+		m_type = vt_binary;
 		m_data = v;
 	}
 
