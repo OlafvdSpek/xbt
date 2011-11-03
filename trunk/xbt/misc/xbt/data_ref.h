@@ -118,6 +118,8 @@ inline size_t memcpy(void* d, data_ref s)
 
 inline float to_float(data_ref v)
 {
+	if (v.empty())
+		return 0;
 	try
 	{
 		return boost::lexical_cast<float>(v);
@@ -130,6 +132,8 @@ inline float to_float(data_ref v)
 
 inline long long to_int(data_ref v)
 {
+	if (v.empty())
+		return 0;
 	try
 	{
 		return boost::lexical_cast<long long>(v);
