@@ -57,8 +57,6 @@ void Ctransaction::recv()
 
 void Ctransaction::send_connect(data_ref r)
 {
-	if (!m_server.config().m_anonymous_connect)
-		return;
 	if (read_int(8, &r[uti_connection_id], r.end()) != 0x41727101980ll)
 		return;
 	const int cb_d = 2 << 10;
