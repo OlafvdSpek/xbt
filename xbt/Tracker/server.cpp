@@ -829,7 +829,6 @@ std::string Cserver::statistics() const
 	os << "<tr><td>"
 		<< "<tr><td>up time<td align=right>" << duration2a(time() - m_stats.start_time)
 		<< "<tr><td>"
-		<< "<tr><td>anonymous connect<td align=right>" << m_config.m_anonymous_connect
 		<< "<tr><td>anonymous announce<td align=right>" << m_config.m_anonymous_announce
 		<< "<tr><td>anonymous scrape<td align=right>" << m_config.m_anonymous_scrape
 		<< "<tr><td>auto register<td align=right>" << m_config.m_auto_register

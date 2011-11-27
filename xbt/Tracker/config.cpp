@@ -23,7 +23,6 @@ void Cconfig::fill_maps(const Cconfig* v)
 		t_attribute<bool> attributes[] =
 		{
 			{ "auto_register", &m_auto_register, false },
-			{ "anonymous_connect", &m_anonymous_connect, true },
 			{ "anonymous_announce", &m_anonymous_announce, true },
 			{ "anonymous_scrape", &m_anonymous_scrape, true },
 			{ "daemon", &m_daemon, true },

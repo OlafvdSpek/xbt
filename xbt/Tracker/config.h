@@ -16,7 +16,6 @@ public:
 	const Cconfig& operator=(const Cconfig&);
 
 	bool m_anonymous_announce;
-	bool m_anonymous_connect;
 	bool m_anonymous_scrape;
 	bool m_auto_register;
 	bool m_daemon;
