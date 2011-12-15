@@ -20,6 +20,17 @@ create table if not exists xbt_config
 	value varchar(255) not null
 );
 
+-- create table if not exists xbt_deny_from_clients
+-- (
+	-- peer_id char(20) not null
+-- );
+
+-- create table if not exists xbt_deny_from_hosts
+-- (
+	-- begin int unsigned not null,
+	-- end int unsigned not null
+-- );
+
 create table if not exists xbt_files
 (
 	fid int not null auto_increment,
