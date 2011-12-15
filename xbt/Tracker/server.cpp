@@ -496,10 +496,10 @@ void Cserver::read_db_torrents()
 		}
 		for (t_torrents::iterator i = m_torrents.begin(); i != m_torrents.end(); )
 		{
-			if (!new_files.count(i->first))
-				m_torrents.erase(i++);
-			else
+			if (new_files.count(i->first))
 				i++;
+			else
+				m_torrents.erase(i++);
 		}
 	}
 }
