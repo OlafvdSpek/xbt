@@ -83,5 +83,8 @@ create table if not exists xbt_users
 	primary key (uid)
 );
 
+-- alter table xbt_files_users add down_rate int unsigned not null;
+-- alter table xbt_files_users add up_rate int unsigned not null;
+
 -- alter table xbt_files_users add foreign key (fid) references xbt_files (fid) on delete cascade;
 -- alter table xbt_files_users add foreign key (uid) references xbt_users (uid) on delete cascade;
