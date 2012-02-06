@@ -77,7 +77,7 @@ public:
 	data_ref_base find(V v) const
 	{
 		data_ref_base t = *this;
-		while (!t.empty() && t[0] != v)
+		while (!t.empty() && t.front() != v)
 			t.advance_begin(1);
 		return t;
 	}
