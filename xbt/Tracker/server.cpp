@@ -26,7 +26,7 @@ int Cserver::run()
 	read_config();
 	if (test_sql())
 		return 1;
-	if (m_epoll.create(1 << 10) == -1)
+	if (m_epoll.create() == -1)
 	{
 		std::cerr << "epoll_create failed" << std::endl;
 		return 1;

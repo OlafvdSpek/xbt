@@ -17,10 +17,10 @@ Cepoll::~Cepoll()
 #endif
 }
 
-int Cepoll::create(int size)
+int Cepoll::create()
 {
 #ifdef EPOLL
-	return m_fd = epoll_create(size);
+	return m_fd = epoll_create(0);
 #else
 	return 0;
 #endif
