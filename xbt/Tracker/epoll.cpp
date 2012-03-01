@@ -20,7 +20,7 @@ Cepoll::~Cepoll()
 int Cepoll::create()
 {
 #ifdef EPOLL
-	return m_fd = epoll_create(0);
+	return m_fd = epoll_create(1);
 #else
 	return 0;
 #endif
