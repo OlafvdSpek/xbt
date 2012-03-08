@@ -130,10 +130,12 @@ inline float to_float(data_ref v)
 	return 0;
 }
 
-inline long long to_int(data_ref v)
+inline long long to_int(str_ref v)
 {
 	if (v.empty())
 		return 0;
+	if (!*v.end())
+		return atoi(v.data());
 	try
 	{
 		return boost::lexical_cast<long long>(v);
