@@ -104,7 +104,6 @@ public:
 		bool dirty;
 	};
 
-
 	struct t_user
 	{
 		t_user()
