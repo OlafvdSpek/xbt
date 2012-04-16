@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.4)
 project(xbt-tracker)
 set(CMAKE_BUILD_TYPE release)
+set(CMAKE_CXX_FLAGS -std=c++0x)
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_CONTACT "Olaf van der Spek <olafvdspek@gmail.com>")
 set(CPACK_STRIP_FILES true)
