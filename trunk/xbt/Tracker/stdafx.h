@@ -3,6 +3,7 @@
 #define FD_SETSIZE 1024
 #define NOMINMAX
 
+#include <array>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
