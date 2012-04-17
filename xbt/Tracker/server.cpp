@@ -106,7 +106,7 @@ int Cserver::run()
 	}
 #endif
 #ifdef EPOLL
-	boost::array<epoll_event, 64> events;
+	std::array<epoll_event, 64> events;
 #else
 	fd_set fd_read_set;
 	fd_set fd_write_set;
@@ -333,14 +333,14 @@ std::string Cserver::t_torrent::select_peers(const Ctracker_input& ti) const
 	if (ti.m_event == Ctracker_input::e_stopped)
 		return "";
 
-	typedef std::vector<boost::array<char, 6> > t_candidates;
+	typedef std::vector<std::array<char, 6> > t_candidates;
 
 	t_candidates candidates;
 	BOOST_FOREACH(t_peers::const_reference i, peers)
 	{
 		if (!ti.m_left && !i.second.left)
 			continue;
-		boost::array<char, 6> v;
+		std::array<char, 6> v;
 		memcpy(&v.front(), &i.first.host_, 4);
 		memcpy(&v.front() + 4, &i.second.port, 2);
 		candidates.push_back(v);
@@ -748,7 +748,7 @@ void Cserver::t_torrent::debug(std::ostream& os) const
 			<< "<td align=right>" << i.second.uid
 			<< "<td align=right>" << i.second.left
 			<< "<td align=right>" << ::time(NULL) - i.second.mtime
-			<< "<td>" << hex_encode(data_ref(i.second.peer_id.begin(), i.second.peer_id.end()));
+			<< "<td>" << hex_encode(i.second.peer_id);
 	}
 }
 

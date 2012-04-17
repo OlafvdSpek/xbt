@@ -20,7 +20,7 @@ private:
 	sockaddr_in m_a;
 	time_t m_ctime;
 	int m_state;
-	boost::array<char, 4 << 10> m_read_b;
+	std::array<char, 4 << 10> m_read_b;
 	shared_data m_write_b;
 	str_ref m_r;
 	mutable_str_ref m_w;

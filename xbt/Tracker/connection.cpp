@@ -234,7 +234,7 @@ void Cconnection::read(const std::string& v)
 	memcpy(m_write_b.data() + h.size(), s);
 	int r = m_s.send(m_write_b);
 #else
-	boost::array<iovec, 2> d;
+	std::array<iovec, 2> d;
 	d[0].iov_base = const_cast<char*>(h.data());
 	d[0].iov_len = h.size();
 	d[1].iov_base = const_cast<unsigned char*>(s.data());

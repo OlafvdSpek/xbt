@@ -75,7 +75,7 @@ public:
 		int uid;
 		short port;
 		bool left;
-		boost::array<char, 20> peer_id;
+		std::array<char, 20> peer_id;
 	};
 
 	typedef boost::unordered_map<peer_key_c, t_peer> t_peers;
