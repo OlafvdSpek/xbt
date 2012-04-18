@@ -526,9 +526,7 @@ void Cserver::read_db_torrents_sql()
 				Csql_query(m_database, "delete from @files where @fid = ?")(row[1].i()).execute();
 			}
 		}
-		if (m_torrents.empty())
-			Csql_query(m_database, "update @files set @leechers = 0, @seeders = 0").execute();
-		else if (m_config.m_auto_register)
+		if (m_config.m_auto_register && !m_torrents.empty())
 			return;
 		Csql_result result = Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute();
 		while (Csql_row row = result.fetch_row())
@@ -914,6 +912,8 @@ int Cserver::test_sql()
 		if (m_config.m_log_scrape)
 			Csql_query(m_database, "select id, ipa, uid, mtime from @scrape_log where 0").execute();
 		Csql_query(m_database, "select @uid, torrent_pass_version, downloaded, uploaded from @users where 0").execute();
+		Csql_query(m_database, "update @files set @leechers = 0, @seeders = 0").execute();
+		Csql_query(m_database, "update @files_users set active = 0").execute();
 		m_read_users_can_leech = Csql_query(m_database, "show columns from @users like 'can_leech'").execute();
 		m_read_users_peers_limit = Csql_query(m_database, "show columns from @users like 'peers_limit'").execute();
 		m_read_users_torrent_pass = Csql_query(m_database, "show columns from @users like 'torrent_pass'").execute();
