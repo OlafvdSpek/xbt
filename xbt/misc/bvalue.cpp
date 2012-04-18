@@ -340,25 +340,25 @@ int Cbvalue::read(char* d) const
 	case vt_list:
 		{
 			*w++ = 'l';
-			for (t_list::const_iterator i = m_list->begin(); i != m_list->end(); i++)
-				w += i->read(w);
+			BOOST_FOREACH(t_list::const_reference i, *m_list)
+				w += i.read(w);
 			*w++ = 'e';
 			return w - d;
 		}
 	case vt_dictionary:
 		{
 			*w++ = 'd';
-			for (t_map::const_iterator i = m_map->begin(); i != m_map->end(); i++)
+			BOOST_FOREACH(t_map::const_reference i, *m_map)
 			{
 #ifdef WIN32
-				sprintf(w, "%d:", i->first.size());
+				sprintf(w, "%d:", i.first.size());
 #else
-				sprintf(w, "%zu:", i->first.size());
+				sprintf(w, "%zu:", i.first.size());
 #endif
-				w += n(i->first.size()).size() + 1;
-				memcpy(w, i->first.data(), i->first.size());
-				w += i->first.size();
-				w += i->second.read(w);
+				w += n(i.first.size()).size() + 1;
+				memcpy(w, i.first.data(), i.first.size());
+				w += i.first.size();
+				w += i.second.read(w);
 			}
 			*w++ = 'e';
 			return w - d;
