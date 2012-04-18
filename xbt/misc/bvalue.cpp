@@ -214,7 +214,7 @@ const Cbvalue::t_map& Cbvalue::d() const
 
 bool Cbvalue::d_has(const std::string& v) const
 {
-	return m_value_type == vt_dictionary && m_map->find(v) != m_map->end();
+	return m_value_type == vt_dictionary && m_map->count(v);
 }
 
 const Cbvalue& Cbvalue::d(const std::string& v) const
