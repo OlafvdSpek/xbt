@@ -221,9 +221,8 @@ const Cbvalue& Cbvalue::d(const std::string& v) const
 {
 	if (m_value_type == vt_dictionary)
 	{
-		t_map::const_iterator i = m_map->find(v);
-		if (i != m_map->end())
-			return i->second;
+		if (const Cbvalue* i = find_ptr(*m_map, v))
+			return *i;
 	}
 	static Cbvalue z;
 	return z;
