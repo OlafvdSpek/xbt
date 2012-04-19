@@ -219,13 +219,8 @@ bool Cbvalue::d_has(const std::string& v) const
 
 const Cbvalue& Cbvalue::d(const std::string& v) const
 {
-	if (m_value_type == vt_dictionary)
-	{
-		if (const Cbvalue* i = find_ptr(*m_map, v))
-			return *i;
-	}
 	static Cbvalue z;
-	return z;
+	return m_value_type == vt_dictionary ? find_ref(*m_map, v, z) : z;
 }
 
 const Cbvalue& Cbvalue::operator[](const std::string& v) const
