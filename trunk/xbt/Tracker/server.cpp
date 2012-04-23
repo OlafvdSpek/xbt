@@ -315,7 +315,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 		t_peer& peer = file.peers[peer_key];
 		peer.downloaded = v.m_downloaded;
 		peer.left = v.m_left;
-		std::copy(v.m_peer_id.begin(), v.m_peer_id.end(), peer.peer_id.begin());
+		peer.peer_id = v.m_peer_id;
 		peer.port = v.m_port;
 		peer.uid = user ? user->uid : 0;
 		peer.uploaded = v.m_uploaded;
@@ -882,7 +882,7 @@ void Cserver::test_announce()
 	t_user* u = find_ptr(m_users, 1);
 	Ctracker_input i;
 	i.m_info_hash = "IHIHIHIHIHIHIHIHIHIH";
-	i.m_peer_id = "PIPIPIPIPIPIPIPIPIPI";
+	memcpy(i.m_peer_id.data(), str_ref("PIPIPIPIPIPIPIPIPIPI"));
 	i.m_ipa = htonl(0x7f000063);
 	i.m_port = 54321;
 	std::cout << insert_peer(i, false, u) << std::endl;
