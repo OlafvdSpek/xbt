@@ -131,7 +131,7 @@ public:
 	void test_announce();
 	int test_sql();
 	void accept(const Csocket&);
-	t_user* find_user_by_torrent_pass(const std::string&, const std::string& info_hash);
+	t_user* find_user_by_torrent_pass(const std::string&, str_ref info_hash);
 	t_user* find_user_by_uid(int);
 	void read_config();
 	void write_db_torrents();
@@ -149,7 +149,7 @@ public:
 	static void term();
 	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 
-	const t_torrent* torrent(const std::string& id) const
+	const t_torrent* find_torrent(const std::string& id) const
 	{
 		return find_ptr(m_torrents, id);
 	}

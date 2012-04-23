@@ -60,11 +60,11 @@ static int hex_decode(char v)
 	return -1;
 };
 
-std::string hex_decode(const std::string& v)
+std::string hex_decode(str_ref v)
 {
 	std::string r;
-	r.resize(v.length() >> 1);
-	for (size_t i = 0; i + 2 <= v.length(); i += 2)
+	r.resize(v.size() >> 1);
+	for (size_t i = 0; i + 2 <= v.size(); i += 2)
 	{
 		int a = hex_decode(v[i]);
 		r[i >> 1] = a << 4 | hex_decode(v[i + 1]);
@@ -104,7 +104,7 @@ std::string hex_encode(data_ref v)
 	return r;
 }
 
-std::string js_encode(const std::string& v)
+std::string js_encode(str_ref v)
 {
 	std::string r;
 	BOOST_FOREACH(int i, v)
