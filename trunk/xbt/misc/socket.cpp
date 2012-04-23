@@ -1,9 +1,6 @@
 #include "socket.h"
 
-#include <boost/version.hpp>
-#if BOOST_VERSION >= 104200
 #include <boost/make_shared.hpp>
-#endif
 #include <cstring>
 #include <cstdio>
 
@@ -29,12 +26,8 @@ static bool g_start_up_done = false;
 
 Csocket::Csocket(SOCKET s)
 {
-#if BOOST_VERSION >= 104200
 	if (s != INVALID_SOCKET)
 		m_source = boost::make_shared<Csocket_source>(s);
-#else
-	m_source.reset(s == INVALID_SOCKET ? NULL : new Csocket_source(s));
-#endif
 }
 
 int Csocket::accept(int& h, int& p)
