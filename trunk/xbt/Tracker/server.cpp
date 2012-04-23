@@ -2,7 +2,6 @@
 #include "server.h"
 
 #include <bt_strings.h>
-#include <bvalue.h>
 #include "transaction.h"
 
 static volatile bool g_sig_term = false;
@@ -427,7 +426,7 @@ static byte* write_compact_int(byte* w, unsigned int v)
 shared_data Cserver::scrape(const Ctracker_input& ti, t_user* user)
 {
 	if (!m_config.m_anonymous_scrape && !user)
-		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
+		return make_shared_data(str_ref("d14:failure reason25:unregistered torrent passe"));
 	std::string d;
 	d += "d5:filesd";
 	if (ti.m_info_hashes.empty())
