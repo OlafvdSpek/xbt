@@ -170,13 +170,9 @@ void Cconnection::read(const std::string& v)
 	switch (a < v.size() ? v[a] : 0)
 	{
 	case 'a':
-		if (!ti.valid())
-			break;
-		gzip = false;
-		if (0)
-			s = "d14:failure reason28:access denied, banned cliente";
-		else
+		if (ti.valid())
 		{
+			gzip = false;
 			std::string error = m_server->insert_peer(ti, false, m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash));
 			s = error.empty() ? m_server->select_peers(ti) : (boost::format("d14:failure reason%d:%se") % error.size() % error).str();
 		}
