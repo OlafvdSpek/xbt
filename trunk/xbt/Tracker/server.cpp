@@ -256,7 +256,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 		return m_config.m_offline_message;
 	if (!m_config.m_anonymous_announce && !user)
 		return bts_unregistered_torrent_pass;
-	if (!m_config.m_auto_register && !torrent(v.m_info_hash))
+	if (!m_config.m_auto_register && !find_torrent(v.m_info_hash))
 		return bts_unregistered_torrent;
 	if (v.m_left && user && !user->can_leech)
 		return bts_can_not_leech;
@@ -371,7 +371,7 @@ std::string Cserver::t_torrent::select_peers(const Ctracker_input& ti) const
 
 shared_data Cserver::select_peers(const Ctracker_input& ti) const
 {
-	const t_torrent* f = torrent(ti.m_info_hash);
+	const t_torrent* f = find_torrent(ti.m_info_hash);
 	if (!f)
 		return shared_data();
 	std::string peers = f->select_peers(ti);
@@ -535,7 +535,7 @@ void Cserver::read_db_torrents_sql()
 		while (Csql_row row = result.fetch_row())
 		{
 			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
-			if (row[0].size() != 20 || torrent(row[0].s()))
+			if (row[0].size() != 20 || find_torrent(row[0].s()))
 				continue;
 			t_torrent& file = m_torrents[row[0].s()];
 			if (file.fid)
@@ -847,7 +847,7 @@ std::string Cserver::statistics() const
 	return os.str();
 }
 
-Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, const std::string& info_hash)
+Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, str_ref info_hash)
 {
 	if (t_user* user = find_user_by_uid(read_int(4, hex_decode(v.substr(0, 8)))))
 	{
