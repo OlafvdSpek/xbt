@@ -21,7 +21,7 @@ public:
 	std::string m_info_hash;
 	t_info_hashes m_info_hashes;
 	int m_ipa;
-	std::string m_peer_id;
+	std::array<char, 20> m_peer_id;
 	long long m_downloaded;
 	long long m_left;
 	int m_port;
