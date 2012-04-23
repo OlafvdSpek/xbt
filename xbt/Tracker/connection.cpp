@@ -165,7 +165,7 @@ void Cconnection::read(const std::string& v)
 		}
 	}
 	std::string h = "HTTP/1.0 200 OK\r\n";
-	shared_data s;
+	std::string s;
 	bool gzip = true;
 	switch (a < v.size() ? v[a] : 0)
 	{
@@ -174,11 +174,11 @@ void Cconnection::read(const std::string& v)
 			break;
 		gzip = false;
 		if (0)
-			s = make_shared_data(str_ref("d14:failure reason28:access denied, banned cliente"));
+			s = "d14:failure reason28:access denied, banned cliente";
 		else
 		{
 			std::string error = m_server->insert_peer(ti, false, m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash));
-			s = error.empty() ? m_server->select_peers(ti) : make_shared_data((boost::format("d14:failure reason%d:%se") % error.size() % error).str());
+			s = error.empty() ? m_server->select_peers(ti) : (boost::format("d14:failure reason%d:%se") % error.size() % error).str();
 		}
 		break;
 	case 'd':
@@ -186,7 +186,7 @@ void Cconnection::read(const std::string& v)
 		{
 			gzip = m_server->config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = make_shared_data(m_server->debug(ti));
+			s = m_server->debug(ti);
 		}
 		break;
 	case 's':
@@ -194,7 +194,7 @@ void Cconnection::read(const std::string& v)
 		{
 			gzip = m_server->config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = make_shared_data(m_server->statistics());
+			s = m_server->statistics();
 		}
 		else if (m_server->config().m_full_scrape || ti.m_compact || !ti.m_info_hash.empty())
 		{
@@ -223,7 +223,7 @@ void Cconnection::read(const std::string& v)
 		if (s2.size() + 24 < s.size())
 		{
 			h += "Content-Encoding: gzip\r\n";
-			s = s2;
+			s = to_string(s2);
 		}
 	}
 	h += "\r\n";
