@@ -264,7 +264,7 @@ void Cconnection::read(const std::string& v)
 		}
 		else
 		{
-			m_write_b = s;
+			m_write_b = make_shared_data(s);
 			r -= h.size();
 		}
 #endif
