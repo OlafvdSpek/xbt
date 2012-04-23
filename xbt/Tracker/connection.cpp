@@ -2,7 +2,6 @@
 #include "connection.h"
 
 #include <bt_strings.h>
-#include <bvalue.h>
 #include "server.h"
 
 Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a)
@@ -175,11 +174,11 @@ void Cconnection::read(const std::string& v)
 			break;
 		gzip = false;
 		if (0)
-			s = Cbvalue().d(bts_failure_reason, bts_banned_client).read();
+			s = make_shared_data(str_ref("d14:failure reason28:access denied, banned cliente"));
 		else
 		{
 			std::string error = m_server->insert_peer(ti, false, m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash));
-			s = error.empty() ? m_server->select_peers(ti) : Cbvalue().d(bts_failure_reason, error).read();
+			s = error.empty() ? m_server->select_peers(ti) : make_shared_data((boost::format("d14:failure reason%d:%se") % error.size() % error).str());
 		}
 		break;
 	case 'd':

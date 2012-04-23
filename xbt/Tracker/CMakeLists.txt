@@ -18,7 +18,6 @@ add_executable(
 	../misc/sql/database.cpp
 	../misc/sql/sql_query.cpp
 	../misc/bt_misc.cpp
-	../misc/bvalue.cpp
 	../misc/sha1.cpp
 	../misc/socket.cpp
 	../misc/xcc_z.cpp
