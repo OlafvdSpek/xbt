@@ -122,18 +122,18 @@ std::string js_encode(const std::string& v)
 	return r;
 }
 
-std::string uri_decode(const std::string& v)
+std::string uri_decode(str_ref v)
 {
 	std::string r;
-	r.reserve(v.length());
-	for (size_t i = 0; i < v.length(); i++)
+	r.reserve(v.size());
+	for (size_t i = 0; i < v.size(); i++)
 	{
 		char c = v[i];
 		switch (c)
 		{
 		case '%':
 			{
-				if (i + 2 >= v.length())
+				if (i + 2 >= v.size())
 					return "";
 				int l = v[++i];
 				r += hex_decode(l) << 4 | hex_decode(v[++i]);
@@ -149,10 +149,10 @@ std::string uri_decode(const std::string& v)
 	return r;
 };
 
-std::string uri_encode(const std::string& v)
+std::string uri_encode(str_ref v)
 {
 	std::string r;
-	r.reserve(v.length());
+	r.reserve(v.size());
 	BOOST_FOREACH(char c, v)
 	{
 		if (isalpha(c & 0xff) || isdigit(c & 0xff))
