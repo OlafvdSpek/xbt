@@ -40,9 +40,10 @@
 #include <netinet/tcp.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <cerrno>
 #include <cstdio>
-#include <errno.h>
 #include <signal.h>
+#include <syslog.h>
 #include <unistd.h>
 #endif
 
