@@ -212,10 +212,10 @@ void Cserver::accept(const Csocket& l)
 			if (WSAGetLastError() == WSAECONNABORTED)
 				continue;
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
-      {
-        m_stats.accept_errors++;
+			{
+				m_stats.accept_errors++;
 				std::cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-      }
+			}
 			break;
 		}
 		m_stats.accepted_tcp++;
@@ -225,7 +225,7 @@ void Cserver::accept(const Csocket& l)
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{
-  		m_stats.slow_tcp++;
+			m_stats.slow_tcp++;
 			m_connections.push_back(connection.release());
 			m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
@@ -423,7 +423,7 @@ static byte* write_compact_int(byte* w, unsigned int v)
 
 shared_data Cserver::scrape(const Ctracker_input& ti, t_user* user)
 {
-	if (!m_config.m_anonymous_scrape && !user) 
+	if (!m_config.m_anonymous_scrape && !user)
 		return Cbvalue().d(bts_failure_reason, bts_unregistered_torrent_pass).read();
 	std::string d;
 	d += "d5:filesd";
@@ -796,32 +796,32 @@ std::string Cserver::statistics() const
 		seeders += i.second.seeders;
 		torrents += i.second.leechers || i.second.seeders;
 	}
-  int peers = leechers + seeders;
+	int peers = leechers + seeders;
 	time_t t = time();
 	os << "<table>"
 		<< "<tr><td>peers<td align=right>" << peers;
-  if (peers)
-  {
-    os << "<tr><td>seeders<td align=right>" << seeders << "<td align=right>" << seeders * 100 / peers << " %"
-      << "<tr><td>leechers<td align=right>" << leechers << "<td align=right>" << leechers * 100 / peers << " %";
-  }
+	if (peers)
+	{
+		os << "<tr><td>seeders<td align=right>" << seeders << "<td align=right>" << seeders * 100 / peers << " %"
+			<< "<tr><td>leechers<td align=right>" << leechers << "<td align=right>" << leechers * 100 / peers << " %";
+	}
 	os << "<tr><td>torrents<td align=right>" << torrents
 		<< "<tr><td>"
 		<< "<tr><td>accepted tcp<td align=right>" << m_stats.accepted_tcp
 		<< "<tr><td>rejected tcp<td align=right>" << m_stats.rejected_tcp
-    << "<tr><td>accept errors<td align=right>" << m_stats.accept_errors
+		<< "<tr><td>accept errors<td align=right>" << m_stats.accept_errors
 		<< "<tr><td>slow tcp<td align=right>" << m_stats.slow_tcp;
 	if (m_stats.announced())
 	{
 		os << "<tr><td>announced<td align=right>" << m_stats.announced() << "<td align=right>" << m_stats.announced() * 100 / m_stats.accepted_tcp << " %"
-		  << "<tr><td>announced http <td align=right>" << m_stats.announced_http << "<td align=right>" << m_stats.announced_http * 100 / m_stats.announced() << " %"
+			<< "<tr><td>announced http <td align=right>" << m_stats.announced_http << "<td align=right>" << m_stats.announced_http * 100 / m_stats.announced() << " %"
 			<< "<tr><td>announced udp<td align=right>" << m_stats.announced_udp << "<td align=right>" << m_stats.announced_udp * 100 / m_stats.announced() << " %";
 	}
 	os << "<tr><td>scraped full<td align=right>" << m_stats.scraped_full;
 	if (m_stats.scraped())
 	{
 		os << "<tr><td>scraped<td align=right>" << m_stats.scraped() << "<td align=right>" << m_stats.scraped() * 100 / m_stats.accepted_tcp << " %"
-		  << "<tr><td>scraped http<td align=right>" << m_stats.scraped_http << "<td align=right>" << m_stats.scraped_http * 100 / m_stats.scraped() << " %"
+			<< "<tr><td>scraped http<td align=right>" << m_stats.scraped_http << "<td align=right>" << m_stats.scraped_http * 100 / m_stats.scraped() << " %"
 			<< "<tr><td>scraped udp<td align=right>" << m_stats.scraped_udp << "<td align=right>" << m_stats.scraped_udp * 100 / m_stats.scraped() << " %";
 	}
 	os << "<tr><td>"
