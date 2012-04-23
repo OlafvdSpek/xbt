@@ -41,8 +41,8 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <cerrno>
+#include <csignal>
 #include <cstdio>
-#include <signal.h>
 #include <syslog.h>
 #include <unistd.h>
 #endif
