@@ -8,6 +8,18 @@
 #include "tracker_input.h"
 #include "udp_listen_socket.h"
 
+namespace std
+{
+	template<class T, size_t N>
+	struct hash<std::array<T, N>>
+	{
+		size_t operator()(std::array<T, N>& v)
+		{
+			return boost::hash_range(v.begin(), v.end());
+		}
+	};
+}
+
 class Cserver
 {
 public:
