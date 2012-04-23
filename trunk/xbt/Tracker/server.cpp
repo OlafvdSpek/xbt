@@ -368,14 +368,14 @@ std::string Cserver::t_torrent::select_peers(const Ctracker_input& ti) const
 	return d;
 }
 
-shared_data Cserver::select_peers(const Ctracker_input& ti) const
+std::string Cserver::select_peers(const Ctracker_input& ti) const
 {
 	const t_torrent* f = find_torrent(ti.m_info_hash);
 	if (!f)
-		return shared_data();
+		return std::string();
 	std::string peers = f->select_peers(ti);
-	return make_shared_data((boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
-		% f->seeders % f->leechers % config().m_announce_interval % config().m_announce_interval % peers.size() % peers).str());
+	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
+		% f->seeders % f->leechers % config().m_announce_interval % config().m_announce_interval % peers.size() % peers).str();
 }
 
 void Cserver::t_torrent::clean_up(time_t t, Cserver& server)
@@ -423,10 +423,10 @@ static byte* write_compact_int(byte* w, unsigned int v)
 	return w;
 }
 
-shared_data Cserver::scrape(const Ctracker_input& ti, t_user* user)
+std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
 {
 	if (!m_config.m_anonymous_scrape && !user)
-		return make_shared_data(str_ref("d14:failure reason25:unregistered torrent passe"));
+		return "d14:failure reason25:unregistered torrent passe";
 	std::string d;
 	d += "d5:filesd";
 	if (ti.m_info_hashes.empty())
@@ -434,6 +434,7 @@ shared_data Cserver::scrape(const Ctracker_input& ti, t_user* user)
 		if (m_use_sql && m_config.m_log_scrape)
 			m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(time()).read();
 		m_stats.scraped_full++;
+		/*
 		if (ti.m_compact)
 		{
 			shared_data d(32 * m_torrents.size() + 1);
@@ -451,6 +452,7 @@ shared_data Cserver::scrape(const Ctracker_input& ti, t_user* user)
 			}
 			return d.substr(0, w - d.data());
 		}
+		*/
 		d.reserve(90 * m_torrents.size());
 		BOOST_FOREACH(t_torrents::reference i, m_torrents)
 		{
@@ -471,7 +473,7 @@ shared_data Cserver::scrape(const Ctracker_input& ti, t_user* user)
 	if (m_config.m_scrape_interval)
 		d += (boost::format("5:flagsd20:min_request_intervali%dee") % m_config.m_scrape_interval).str();
 	d += "e";
-	return make_shared_data(d);
+	return d;
 }
 
 const std::string& Cserver::db_name(const std::string& v) const
