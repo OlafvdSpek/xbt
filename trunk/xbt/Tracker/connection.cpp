@@ -236,7 +236,7 @@ void Cconnection::read(const std::string& v)
 	std::array<iovec, 2> d;
 	d[0].iov_base = const_cast<char*>(h.data());
 	d[0].iov_len = h.size();
-	d[1].iov_base = const_cast<unsigned char*>(s.data());
+	d[1].iov_base = const_cast<char*>(s.data());
 	d[1].iov_len = s.size();
 	msghdr m;
 	m.msg_name = NULL;
