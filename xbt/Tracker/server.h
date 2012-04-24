@@ -186,13 +186,6 @@ public:
 		return m_time;
 	}
 private:
-	typedef boost::ptr_list<Cconnection> t_connections;
-	typedef std::list<Ctcp_listen_socket> t_tcp_sockets;
-	typedef std::list<Cudp_listen_socket> t_udp_sockets;
-	typedef boost::unordered_map<std::string, t_torrent> t_torrents;
-	typedef boost::unordered_map<int, t_user> t_users;
-	typedef boost::unordered_map<std::string, t_user*> t_users_torrent_passes;
-
 	const std::string& db_name(const std::string&) const;
 	static void sig_handler(int);
 
@@ -213,12 +206,12 @@ private:
 	time_t m_write_db_users_time;
 	int m_fid_end;
 	long long m_secret;
-	t_connections m_connections;
+	boost::ptr_list<Cconnection> m_connections;
 	Cdatabase& m_database;
 	Cepoll m_epoll;
-	t_torrents m_torrents;
-	t_users m_users;
-	t_users_torrent_passes m_users_torrent_passes;
+	boost::unordered_map<std::string, t_torrent> m_torrents;
+	boost::unordered_map<int, t_user> m_users;
+	boost::unordered_map<std::string, t_user*> m_users_torrent_passes;
 	std::string m_announce_log_buffer;
 	std::string m_conf_file;
 	std::string m_torrents_users_updates_buffer;

@@ -30,8 +30,8 @@ int Cserver::run()
 		std::cerr << "epoll_create failed" << std::endl;
 		return 1;
 	}
-	t_tcp_sockets lt;
-	t_udp_sockets lu;
+	std::list<Ctcp_listen_socket> lt;
+	std::list<Cudp_listen_socket> lu;
 	BOOST_FOREACH(auto& j, m_config.m_listen_ipas)
 	{
 		BOOST_FOREACH(auto& i, m_config.m_listen_ports)
