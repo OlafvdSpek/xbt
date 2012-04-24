@@ -6,6 +6,16 @@
 
 static volatile bool g_sig_term = false;
 
+static void sig_handler(int v)
+{
+	switch (v)
+	{
+	case SIGTERM:
+		g_sig_term = true;
+		break;
+	}
+}
+
 Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql, const std::string& conf_file):
 	m_database(database)
 {
@@ -858,21 +868,6 @@ Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, str_re
 			return user;
 	}
 	return find_ptr2(m_users_torrent_passes, v);
-}
-
-Cserver::t_user* Cserver::find_user_by_uid(int v)
-{
-	return find_ptr(m_users, v);
-}
-
-void Cserver::sig_handler(int v)
-{
-	switch (v)
-	{
-	case SIGTERM:
-		g_sig_term = true;
-		break;
-	}
 }
 
 void Cserver::term()

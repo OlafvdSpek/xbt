@@ -144,7 +144,6 @@ public:
 	int test_sql();
 	void accept(const Csocket&);
 	t_user* find_user_by_torrent_pass(const std::string&, str_ref info_hash);
-	t_user* find_user_by_uid(int);
 	void read_config();
 	void write_db_torrents();
 	void write_db_users();
@@ -164,6 +163,11 @@ public:
 	const t_torrent* find_torrent(const std::string& id) const
 	{
 		return find_ptr(m_torrents, id);
+	}
+
+	t_user* find_user_by_uid(int v)
+	{
+		return find_ptr(m_users, v);
 	}
 
 	const Cconfig& config() const
@@ -187,7 +191,6 @@ public:
 	}
 private:
 	const std::string& db_name(const std::string&) const;
-	static void sig_handler(int);
 
 	Cconfig m_config;
 	Cstats m_stats;
