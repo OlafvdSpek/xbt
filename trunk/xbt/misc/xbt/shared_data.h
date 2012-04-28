@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 #include <xbt/data_ref.h>
 
-template<class T> 
+template<class T>
 class shared_array2 : public boost::iterator_range<T*>
 {
 public:
