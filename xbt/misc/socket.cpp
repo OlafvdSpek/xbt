@@ -1,6 +1,5 @@
 #include "socket.h"
 
-#include <boost/make_shared.hpp>
 #include <cstring>
 #include <cstdio>
 
@@ -27,7 +26,7 @@ static bool g_start_up_done = false;
 Csocket::Csocket(SOCKET s)
 {
 	if (s != INVALID_SOCKET)
-		m_source = boost::make_shared<Csocket_source>(s);
+		m_source = std::make_shared<Csocket_source>(s);
 }
 
 int Csocket::accept(int& h, int& p)

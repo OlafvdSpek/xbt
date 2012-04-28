@@ -2,12 +2,11 @@
 
 #include <boost/checked_delete.hpp>
 #include <boost/range/iterator_range.hpp>
-#include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
 // #include <boost/type_traits/is_class.hpp>
 // #include <boost/utility/enable_if.hpp>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <string>
 #include <sys/stat.h>
 #include <xbt/data_ref.h>
@@ -24,7 +23,7 @@ public:
 	{
 		if (!sz)
 			return;
-		boost::shared_ptr<T> n(new T[sz], boost::checked_array_deleter<T>());
+		std::shared_ptr<T> n(new T[sz], boost::checked_array_deleter<T>());
 		static_cast<base_t&>(*this) = base_t(n.get(), n.get() + sz);
 		n_ = n;
 	}
@@ -36,13 +35,13 @@ public:
 	{
 	}
 
-	shared_array2(T* b, T* e, boost::shared_ptr<void> const& n) :
+	shared_array2(T* b, T* e, std::shared_ptr<void> const& n) :
 		base_t(b, e),
 		n_(n)
 	{
 	}
 
-	shared_array2(T* b, size_t sz, boost::shared_ptr<void> const& n) :
+	shared_array2(T* b, size_t sz, std::shared_ptr<void> const& n) :
 		base_t(b, b + sz),
 		n_(n)
 	{
@@ -58,7 +57,7 @@ public:
 		return base_t::begin();
 	}
 
-	boost::shared_ptr<void> const& n() const
+	std::shared_ptr<void> const& n() const
 	{
 		return n_;
 	}
@@ -70,7 +69,7 @@ public:
 private:
 	typedef boost::iterator_range<T*> base_t;
 
-	boost::shared_ptr<void> n_;
+	std::shared_ptr<void> n_;
 };
 
 typedef shared_array2<unsigned char> shared_data;
