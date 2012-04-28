@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
 #include <boost/utility.hpp>
+#include <memory>
 #include <string>
 #include <xbt/data_ref.h>
 
@@ -117,5 +117,5 @@ public:
 		return m_source ? static_cast<SOCKET>(*m_source) : INVALID_SOCKET;
 	}
 private:
-	boost::shared_ptr<Csocket_source> m_source;
+	std::shared_ptr<Csocket_source> m_source;
 };
