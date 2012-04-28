@@ -2,10 +2,8 @@ g++ $@ -DEPOLL -DNDEBUG -I ../misc -I . -O3 -o xbt_tracker -std=c++0x \
 	../misc/sql/database.cpp \
 	../misc/sql/sql_query.cpp \
 	../misc/bt_misc.cpp \
-	../misc/bvalue.cpp \
 	../misc/sha1.cpp \
 	../misc/socket.cpp \
-	../misc/virtual_binary.cpp \
 	../misc/xcc_z.cpp \
 	config.cpp \
 	connection.cpp \
