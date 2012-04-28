@@ -25,10 +25,8 @@ add_executable(
 	connection.cpp
 	epoll.cpp
 	server.cpp
-	tcp_listen_socket.cpp
 	tracker_input.cpp
 	transaction.cpp
-	udp_listen_socket.cpp
 	"XBT Tracker.cpp"
 )
 target_link_libraries(xbt_tracker mysqlclient z)

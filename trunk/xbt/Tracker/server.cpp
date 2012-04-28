@@ -16,6 +16,51 @@ static void sig_handler(int v)
 	}
 }
 
+class Ctcp_listen_socket : public Cclient
+{
+public:
+	using Cclient::s;
+
+	Ctcp_listen_socket()
+	{
+		m_server = NULL;
+	}
+
+	Ctcp_listen_socket(Cserver* server, const Csocket& s)
+	{
+		m_server = server;
+		m_s = s;
+	}
+
+	virtual void process_events(int)
+	{
+		m_server->accept(m_s);
+	}
+};
+
+class Cudp_listen_socket : public Cclient
+{
+public:
+	using Cclient::s;
+
+	Cudp_listen_socket()
+	{
+		m_server = NULL;
+	}
+
+	Cudp_listen_socket(Cserver* server, const Csocket& s)
+	{
+		m_server = server;
+		m_s = s;
+	}
+
+	virtual void process_events(int events)
+	{
+		if (events & EPOLLIN)
+			Ctransaction(*m_server, m_s).recv();
+	}
+};
+
 Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql, const std::string& conf_file):
 	m_database(database)
 {

@@ -138,13 +138,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="tcp_listen_socket.cpp">
-    </ClCompile>
     <ClCompile Include="tracker_input.cpp">
     </ClCompile>
     <ClCompile Include="transaction.cpp">
-    </ClCompile>
-    <ClCompile Include="udp_listen_socket.cpp">
     </ClCompile>
     <ClCompile Include="XBT Tracker.cpp">
     </ClCompile>
@@ -163,10 +159,8 @@
     <ClInclude Include="stats.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="..\misc\stream_int.h" />
-    <ClInclude Include="tcp_listen_socket.h" />
     <ClInclude Include="tracker_input.h" />
     <ClInclude Include="transaction.h" />
-    <ClInclude Include="udp_listen_socket.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\XBT Tracker.ico" />
