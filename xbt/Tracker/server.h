@@ -60,8 +60,7 @@ public:
 
 		friend std::size_t hash_value(const peer_key_c& v)
 		{
-			std::size_t seed = 0;
-			boost::hash_combine(seed, v.host_);
+			std::size_t seed = boost::hash_value(v.host_);
 #ifdef PEERS_KEY
 			boost::hash_combine(seed, v.uid_);
 #endif

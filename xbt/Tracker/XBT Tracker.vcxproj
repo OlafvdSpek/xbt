@@ -116,8 +116,6 @@
   <ItemGroup>
     <ClCompile Include="..\misc\bt_misc.cpp">
     </ClCompile>
-    <ClCompile Include="..\misc\bvalue.cpp">
-    </ClCompile>
     <ClCompile Include="config.cpp">
     </ClCompile>
     <ClCompile Include="connection.cpp">
@@ -154,7 +152,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\misc\bvalue.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="connection.h" />
