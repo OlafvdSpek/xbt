@@ -4,9 +4,7 @@
 #include "connection.h"
 #include "epoll.h"
 #include "stats.h"
-#include "tcp_listen_socket.h"
 #include "tracker_input.h"
-#include "udp_listen_socket.h"
 
 namespace std
 {

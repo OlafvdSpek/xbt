@@ -9,9 +9,7 @@ g++ $@ -DEPOLL -DNDEBUG -I ../misc -I . -O3 -o xbt_tracker -std=c++0x \
 	connection.cpp \
 	epoll.cpp \
 	server.cpp \
-	tcp_listen_socket.cpp \
 	tracker_input.cpp \
 	transaction.cpp \
-	udp_listen_socket.cpp \
 	"XBT Tracker.cpp" \
 	`mysql_config --libs` -lz && strip xbt_tracker
