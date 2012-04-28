@@ -156,7 +156,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="..\misc\sha1.h" />
-    <ClInclude Include="stats.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="..\misc\stream_int.h" />
     <ClInclude Include="tracker_input.h" />
