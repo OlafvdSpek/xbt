@@ -5,7 +5,7 @@
 #include "epoll.h"
 #include "tracker_input.h"
 
-namespace std
+namespace boost
 {
 	template<class T, size_t N>
 	struct hash<std::array<T, N>>
@@ -15,15 +15,6 @@ namespace std
 			return boost::hash_range(v.begin(), v.end());
 		}
 	};
-}
-
-namespace boost 
-{
-	template<class T, size_t N>
-	size_t hash_value(const std::array<T, N>& v)
-	{
-		return boost::hash_range(v.begin(), v.end());
-	}
 }
 
 class Cstats
