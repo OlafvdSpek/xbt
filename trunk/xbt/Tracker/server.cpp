@@ -284,7 +284,7 @@ void Cserver::accept(const Csocket& l)
 		if (connection->s() != INVALID_SOCKET)
 		{
 			m_stats.slow_tcp++;
-			m_connections.push_back(connection.release());
+			m_connections.push_back(connection);
 			m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
 	}
