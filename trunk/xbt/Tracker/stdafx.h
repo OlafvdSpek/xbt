@@ -7,10 +7,12 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
-#include <boost/smart_ptr.hpp>
 #include <boost/utility.hpp>
 #include <cassert>
+#include <cerrno>
+#include <csignal>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <fstream>
@@ -40,9 +42,6 @@
 #include <netinet/tcp.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <cerrno>
-#include <csignal>
-#include <cstdio>
 #include <syslog.h>
 #include <unistd.h>
 #endif
