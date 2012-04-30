@@ -5,9 +5,6 @@
 class Cconfig: public Cconfig_base
 {
 public:
-	typedef std::set<int> t_listen_ipas;
-	typedef std::set<int> t_listen_ports;
-
 	int set(const std::string& name, const std::string& value);
 	int set(const std::string& name, int value);
 	int set(const std::string& name, bool value);
@@ -52,8 +49,8 @@ public:
 	std::string m_table_scrape_log;
 	std::string m_table_users;
 	std::string m_torrent_pass_private_key;
-	t_listen_ipas m_listen_ipas;
-	t_listen_ports m_listen_ports;
+	std::set<int> m_listen_ipas;
+	std::set<int> m_listen_ports;
 private:
 	void fill_maps(const Cconfig*);
 };
