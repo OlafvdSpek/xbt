@@ -10,11 +10,20 @@ namespace std
 	template<class T, size_t N>
 	struct hash<std::array<T, N>>
 	{
-		size_t operator()(std::array<T, N>& v)
+		size_t operator()(const std::array<T, N>& v) const
 		{
 			return boost::hash_range(v.begin(), v.end());
 		}
 	};
+}
+
+namespace boost 
+{
+	template<class T, size_t N>
+	size_t hash_value(const std::array<T, N>& v)
+	{
+		return boost::hash_range(v.begin(), v.end());
+	}
 }
 
 class Cstats
@@ -249,7 +258,7 @@ private:
 	Cepoll m_epoll;
 	boost::unordered_map<std::string, t_torrent> m_torrents;
 	boost::unordered_map<int, t_user> m_users;
-	boost::unordered_map<std::string, t_user*> m_users_torrent_passes;
+	boost::unordered_map<std::array<char, 32>, t_user*> m_users_torrent_passes;
 	std::string m_announce_log_buffer;
 	std::string m_conf_file;
 	std::string m_torrents_users_updates_buffer;
