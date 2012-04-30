@@ -2,6 +2,7 @@
 #include "server.h"
 
 #include <bt_strings.h>
+#include <xbt/to_array.h>
 #include "transaction.h"
 
 static volatile bool g_sig_term = false;
@@ -646,7 +647,7 @@ void Cserver::read_db_users()
 			if (m_read_users_torrent_pass)
 			{
 				if (row[c].size() == 32)
-					m_users_torrent_passes[row[c].s()] = &user;
+					m_users_torrent_passes[to_array<char, 32>(row[c])] = &user;
 				c++;
 			}
 			user.torrent_pass_version = row[c++].i();
@@ -912,7 +913,7 @@ Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, str_re
 		if (v.size() >= 8 && Csha1((boost::format("%s %d %d %s") % m_config.m_torrent_pass_private_key % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8)))
 			return user;
 	}
-	return find_ptr2(m_users_torrent_passes, v);
+	return find_ptr2(m_users_torrent_passes, to_array<char, 32>(v));
 }
 
 void Cserver::term()
