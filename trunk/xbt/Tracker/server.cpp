@@ -868,11 +868,13 @@ std::string Cserver::statistics() const
 	return os.str();
 }
 
-Cserver::t_user* Cserver::find_user_by_torrent_pass(const std::string& v, str_ref info_hash)
+Cserver::t_user* Cserver::find_user_by_torrent_pass(str_ref v, str_ref info_hash)
 {
+	if (v.size() != 32)
+		return NULL;
 	if (t_user* user = find_user_by_uid(read_int(4, hex_decode(v.substr(0, 8)))))
 	{
-		if (v.size() >= 8 && Csha1((boost::format("%s %d %d %s") % m_config.m_torrent_pass_private_key % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8)))
+		if (Csha1((boost::format("%s %d %d %s") % m_config.m_torrent_pass_private_key % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8, 24)))
 			return user;
 	}
 	return find_ptr2(m_users_torrent_passes, to_array<char, 32>(v));
