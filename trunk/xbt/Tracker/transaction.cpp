@@ -85,7 +85,7 @@ void Ctransaction::send_announce(data_ref r)
 		: m_a.sin_addr.s_addr;
 	ti.m_left = read_int(8, &r[utia_left], r.end());
 	ti.m_num_want = read_int(4, &r[utia_num_want], r.end());
-	memcpy(ti.m_peer_id.data(), r.substr(utia_peer_id, 20));
+	memcpy(ti.m_peer_id.data(), &r[utia_peer_id], 20);
 	ti.m_port = htons(read_int(2, &r[utia_port], r.end()));
 	ti.m_uploaded = read_int(8, &r[utia_uploaded], r.end());
 	std::string error = m_server.insert_peer(ti, true, NULL);
@@ -97,8 +97,7 @@ void Ctransaction::send_announce(data_ref r)
 	const Cserver::t_torrent* torrent = m_server.find_torrent(ti.m_info_hash);
 	if (!torrent)
 		return;
-	const int cb_d = 2 << 10;
-	char d[cb_d];
+	char d[2 << 10];
 	write_int(4, d + uto_action, uta_announce);
 	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
 	write_int(4, d + utoa_interval, m_server.config().m_announce_interval);
@@ -123,7 +122,7 @@ void Ctransaction::send_scrape(data_ref r)
 	write_int(4, d + uto_action, uta_scrape);
 	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
 	char* w = d + utos_size;
-  for (r.advance_begin(utis_size); r.size() >= 20 && w + 12 <= d + cb_d; r.advance_begin(20))
+	for (r.advance_begin(utis_size); r.size() >= 20 && w + 12 <= d + cb_d; r.advance_begin(20))
 	{
 		if (const Cserver::t_torrent* t = m_server.find_torrent(r.substr(0, 20).s()))
 		{
@@ -144,11 +143,10 @@ void Ctransaction::send_scrape(data_ref r)
 
 void Ctransaction::send_error(data_ref r, const std::string& msg)
 {
-	const int cb_d = 2 << 10;
-	char d[cb_d];
+	char d[2 << 10];
 	write_int(4, d + uto_action, uta_error);
 	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
-	memcpy(d + utoe_size, msg.data(), msg.size());
+	memcpy(d + utoe_size, msg);
 	send(data_ref(d, utoe_size + msg.size()));
 }
 

@@ -59,7 +59,7 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 		break;
 	case 'p':
 		if (name == "peer_id" && value.size() == 20)
-			memcpy(m_peer_id.data(), value);
+			memcpy(m_peer_id, value);
 		else if (name == "port")
 			m_port = htons(atoi(value.c_str()));
 		break;
