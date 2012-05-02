@@ -180,7 +180,7 @@ public:
 	void test_announce();
 	int test_sql();
 	void accept(const Csocket&);
-	t_user* find_user_by_torrent_pass(const std::string&, str_ref info_hash);
+	t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 	void read_config();
 	void write_db_torrents();
 	void write_db_users();
