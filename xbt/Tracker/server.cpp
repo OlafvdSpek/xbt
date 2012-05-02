@@ -2,7 +2,6 @@
 #include "server.h"
 
 #include <bt_strings.h>
-#include <xbt/to_array.h>
 #include "transaction.h"
 
 static volatile bool g_sig_term = false;
@@ -523,7 +522,7 @@ std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
 		m_stats.scraped_http++;
 		BOOST_FOREACH(auto& j, ti.m_info_hashes)
 		{
-			if (t_torrent* i = find_ptr(m_torrents, j))
+			if (const t_torrent* i = find_torrent(j))
 				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % j % i->seeders % i->completed % i->leechers).str();
 		}
 	}
@@ -836,7 +835,7 @@ std::string Cserver::debug(const Ctracker_input& ti) const
 	}
 	else
 	{
-		if (const t_torrent* i = find_ptr(m_torrents, ti.m_info_hash))
+		if (const t_torrent* i = find_torrent(ti.m_info_hash))
 			i->debug(os);
 	}
 	os << "</table>";
