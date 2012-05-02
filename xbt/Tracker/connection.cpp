@@ -149,19 +149,15 @@ void Cconnection::read(const std::string& v)
 	}
 	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
 		ti.m_ipa = m_a.sin_addr.s_addr;
-	std::string torrent_pass0;
+	str_ref torrent_pass;
 	size_t a = 4;
 	if (a < e && v[a] == '/')
 	{
 		a++;
-		if (a + 1 < e && v[a + 1] == '/')
-			a += 2;
 		if (a + 32 < e && v[a + 32] == '/')
 		{
-			torrent_pass0 = v.substr(a, 32);
+			torrent_pass.assign(&v[a], 32);
 			a += 33;
-			if (a + 40 < e && v[a + 40] == '/')
-				a += 41;
 		}
 	}
 	std::string h = "HTTP/1.0 200 OK\r\n";
@@ -173,7 +169,7 @@ void Cconnection::read(const std::string& v)
 		if (ti.valid())
 		{
 			gzip = false;
-			std::string error = m_server->insert_peer(ti, false, m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash));
+			std::string error = m_server->insert_peer(ti, false, m_server->find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
 			s = error.empty() ? m_server->select_peers(ti) : (boost::format("d14:failure reason%d:%se") % error.size() % error).str();
 		}
 		break;
@@ -195,7 +191,7 @@ void Cconnection::read(const std::string& v)
 		else if (m_server->config().m_full_scrape || !ti.m_info_hash.empty())
 		{
 			gzip = m_server->config().m_gzip_scrape && ti.m_info_hash.empty();
- 			s = m_server->scrape(ti, m_server->find_user_by_torrent_pass(torrent_pass0, ti.m_info_hash));
+ 			s = m_server->scrape(ti, m_server->find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
 		}
 		break;
 	}
