@@ -520,6 +520,8 @@ std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
 	else
 	{
 		m_stats.scraped_http++;
+		if (ti.m_info_hashes.size() > 1)
+			m_stats.scraped_multi++;
 		BOOST_FOREACH(auto& j, ti.m_info_hashes)
 		{
 			if (const t_torrent* i = find_torrent(j))
@@ -877,6 +879,7 @@ std::string Cserver::statistics() const
 			<< "<tr><td>announced udp<td align=right>" << m_stats.announced_udp << "<td align=right>" << m_stats.announced_udp * 100 / m_stats.announced() << " %";
 	}
 	os << "<tr><td>scraped full<td align=right>" << m_stats.scraped_full;
+	os << "<tr><td>scraped multi<td align=right>" << m_stats.scraped_multi;
 	if (m_stats.scraped())
 	{
 		os << "<tr><td>scraped<td align=right>" << m_stats.scraped() << "<td align=right>" << m_stats.scraped() * 100 / m_stats.accepted_tcp << " %"

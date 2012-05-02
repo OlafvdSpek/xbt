@@ -29,6 +29,7 @@ public:
 		rejected_tcp = 0;
 		scraped_full = 0;
 		scraped_http = 0;
+		scraped_multi = 0;
 		scraped_udp = 0;
 		slow_tcp = 0;
 		start_time = time(NULL);
@@ -51,6 +52,7 @@ public:
 	long long rejected_tcp;
 	long long scraped_full;
 	long long scraped_http;
+	long long scraped_multi;
 	long long scraped_udp;
 	long long slow_tcp;
 	time_t start_time;
