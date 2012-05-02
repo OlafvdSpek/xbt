@@ -116,6 +116,13 @@ inline size_t memcpy(void* d, data_ref s)
 	return s.size();
 }
 
+inline size_t memcpy(mutable_data_ref d, data_ref s)
+{
+	assert(d.size() >= s.size());
+	memcpy(d.data(), s.data(), s.size());
+	return s.size();
+}
+
 inline float to_float(data_ref v)
 {
 	if (v.empty())
