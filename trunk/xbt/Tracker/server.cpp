@@ -461,25 +461,6 @@ void Cserver::clean_up()
 	m_clean_up_time = time();
 }
 
-static byte* write_compact_int(byte* w, unsigned int v)
-{
-	if (v >= 0x200000)
-	{
-		*w++ = 0xe0 | (v >> 24);
-		*w++ = v >> 16;
-		*w++ = v >> 8;
-	}
-	else if (v >= 0x4000)
-	{
-		*w++ = 0xc0 | (v >> 16);
-		*w++ = v >> 8;
-	}
-	else if (v >= 0x80)
-		*w++ = 0x80 | (v >> 8);
-	*w++ = v;
-	return w;
-}
-
 std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
 {
 	if (!m_config.m_anonymous_scrape && !user)
@@ -491,25 +472,6 @@ std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
 		if (m_use_sql && m_config.m_log_scrape)
 			m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(time()).read();
 		m_stats.scraped_full++;
-		/*
-		if (ti.m_compact)
-		{
-			shared_data d(32 * m_torrents.size() + 1);
-			byte* w = d.data();
-			*w++ = 'x';
-			BOOST_FOREACH(auto& i, m_torrents)
-			{
-				if (!i.second.leechers && !i.second.seeders)
-					continue;
-				memcpy(w, i.first.data(), i.first.size());
-				w += i.first.size();
-				w = write_compact_int(w, i.second.seeders);
-				w = write_compact_int(w, i.second.leechers);
-				w = write_compact_int(w, i.second.completed);
-			}
-			return d.substr(0, w - d.data());
-		}
-		*/
 		d.reserve(90 * m_torrents.size());
 		BOOST_FOREACH(auto& i, m_torrents)
 		{
