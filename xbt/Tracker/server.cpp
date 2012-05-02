@@ -546,19 +546,17 @@ void Cserver::read_db_torrents()
 		read_db_torrents_sql();
 	else if (!m_config.m_auto_register)
 	{
-		std::set<std::string> new_files;
+		std::set<t_torrent*> new_torrents;
 		std::ifstream is("xbt_torrents.txt");
 		for (std::string s; getline(is, s); )
 		{
 			s = hex_decode(s);
-			if (s.size() != 20)
-				continue;
-			m_torrents[s];
-			new_files.insert(s);
+			if (s.size() == 20)
+				new_torrents.insert(&m_torrents[s]);
 		}
 		for (auto i = m_torrents.begin(); i != m_torrents.end(); )
 		{
-			if (new_files.count(i->first))
+			if (new_torrents.count(&i->second))
 				i++;
 			else
 				m_torrents.erase(i++);
