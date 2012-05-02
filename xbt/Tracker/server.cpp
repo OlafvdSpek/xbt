@@ -582,7 +582,7 @@ void Cserver::read_db_torrents_sql()
 					}
 					m_torrents.erase(i);
 				}
-				Csql_query(m_database, "delete from @files where @fid = ?")(row[1].i()).execute();
+				Csql_query(m_database, "delete from @files where @fid = ?")(row[1]).execute();
 			}
 		}
 		if (m_config.m_auto_register && !m_torrents.empty())
