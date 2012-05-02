@@ -32,6 +32,7 @@
 #include <xbt/database.h>
 #include <xbt/find_ptr.h>
 #include <xbt/sql_query.h>
+#include <xbt/to_array.h>
 #include <xbt/xcc_z.h>
 
 #ifdef WIN32
