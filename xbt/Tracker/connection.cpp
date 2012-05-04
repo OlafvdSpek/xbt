@@ -176,7 +176,6 @@ void Cconnection::read(const std::string& v)
 	case 'd':
 		if (srv_config().m_debug)
 		{
-			gzip = srv_config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = srv_debug(ti);
 		}
@@ -184,7 +183,6 @@ void Cconnection::read(const std::string& v)
 	case 's':
 		if (v.size() >= 7 && v[6] == 't')
 		{
-			gzip = srv_config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = srv_statistics();
 		}

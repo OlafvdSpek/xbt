@@ -28,7 +28,6 @@ void Cconfig::fill_maps(const Cconfig* v)
 			{ "daemon", &m_daemon, true },
 			{ "debug", &m_debug, false },
 			{ "full_scrape", &m_full_scrape, false },
-			{ "gzip_debug", &m_gzip_debug, true },
 			{ "gzip_scrape", &m_gzip_scrape, true },
 			{ "log_access", &m_log_access, false },
 			{ "log_announce", &m_log_announce, false },
