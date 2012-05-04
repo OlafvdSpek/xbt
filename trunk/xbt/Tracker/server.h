@@ -176,11 +176,6 @@ struct t_user
 class Cserver
 {
 public:
-	std::string insert_peer(const Ctracker_input&, bool udp, t_user*);
-	std::string debug(const Ctracker_input&) const;
-	std::string statistics() const;
-	std::string select_peers(const Ctracker_input&) const;
-	std::string scrape(const Ctracker_input&, t_user*);
 };
 
 const t_torrent* find_torrent(const std::string& id);
@@ -194,3 +189,8 @@ time_t srv_time();
 
 int srv_run(const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 void srv_term();
+std::string srv_debug(const Ctracker_input&);
+std::string srv_insert_peer(const Ctracker_input&, bool udp, t_user*);
+std::string srv_scrape(const Ctracker_input&, t_user*);
+std::string srv_select_peers(const Ctracker_input&);
+std::string srv_statistics();

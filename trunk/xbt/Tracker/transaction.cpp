@@ -88,7 +88,7 @@ void Ctransaction::send_announce(data_ref r)
 	memcpy(ti.m_peer_id.data(), &r[utia_peer_id], 20);
 	ti.m_port = htons(read_int(2, &r[utia_port], r.end()));
 	ti.m_uploaded = read_int(8, &r[utia_uploaded], r.end());
-	std::string error = m_server.insert_peer(ti, true, NULL);
+	std::string error = srv_insert_peer(ti, true, NULL);
 	if (!error.empty())
 	{
 		send_error(r, error);
