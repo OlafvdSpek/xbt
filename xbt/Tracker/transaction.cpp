@@ -94,7 +94,7 @@ void Ctransaction::send_announce(data_ref r)
 		send_error(r, error);
 		return;
 	}
-	auto torrent = m_server.find_torrent(ti.m_info_hash);
+	auto torrent = find_torrent(ti.m_info_hash);
 	if (!torrent)
 		return;
 	char d[2 << 10];
@@ -124,7 +124,7 @@ void Ctransaction::send_scrape(data_ref r)
 	char* w = d + utos_size;
 	for (r.advance_begin(utis_size); r.size() >= 20 && w + 12 <= d + cb_d; r.advance_begin(20))
 	{
-		if (auto t = m_server.find_torrent(r.substr(0, 20).s()))
+		if (auto t = find_torrent(r.substr(0, 20).s()))
 		{
 			w = write_int(4, w, t->seeders);
 			w = write_int(4, w, t->completed);
