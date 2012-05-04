@@ -7,9 +7,9 @@
 
 static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
-boost::unordered_map<std::string, Cserver::t_torrent> m_torrents;
-boost::unordered_map<int, Cserver::t_user> m_users;
-boost::unordered_map<std::array<char, 32>, Cserver::t_user*> m_users_torrent_passes;
+boost::unordered_map<std::string, t_torrent> m_torrents;
+boost::unordered_map<int, t_user> m_users;
+boost::unordered_map<std::array<char, 32>, t_user*> m_users_torrent_passes;
 Cconfig m_config;
 Cdatabase m_database;
 Cepoll m_epoll;
@@ -103,12 +103,12 @@ Cdatabase& Cserver::database()
 	return m_database;
 }
 
-const Cserver::t_torrent* Cserver::find_torrent(const std::string& id) const
+const t_torrent* Cserver::find_torrent(const std::string& id) const
 {
 	return find_ptr(m_torrents, id);
 }
 
-Cserver::t_user* Cserver::find_user_by_uid(int v)
+t_user* Cserver::find_user_by_uid(int v)
 {
 	return find_ptr(m_users, v);
 }
@@ -440,7 +440,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 	return "";
 }
 
-std::string Cserver::t_torrent::select_peers(const Ctracker_input& ti) const
+std::string t_torrent::select_peers(const Ctracker_input& ti) const
 {
 	if (ti.m_event == Ctracker_input::e_stopped)
 		return "";
@@ -488,7 +488,7 @@ std::string Cserver::select_peers(const Ctracker_input& ti) const
 		% f->seeders % f->leechers % m_config.m_announce_interval % m_config.m_announce_interval % peers.size() % peers).str();
 }
 
-void Cserver::t_torrent::clean_up(time_t t, Cserver& server)
+void t_torrent::clean_up(time_t t, Cserver& server)
 {
 	for (auto i = peers.begin(); i != peers.end(); )
 	{
@@ -813,7 +813,7 @@ void Cserver::read_config()
 	m_read_config_time = time();
 }
 
-void Cserver::t_torrent::debug(std::ostream& os) const
+void t_torrent::debug(std::ostream& os) const
 {
 	BOOST_FOREACH(auto& i, peers)
 	{
@@ -921,7 +921,7 @@ std::string Cserver::statistics() const
 	return os.str();
 }
 
-Cserver::t_user* Cserver::find_user_by_torrent_pass(str_ref v, str_ref info_hash)
+t_user* Cserver::find_user_by_torrent_pass(str_ref v, str_ref info_hash)
 {
 	if (v.size() != 32)
 		return NULL;

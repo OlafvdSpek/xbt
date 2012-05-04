@@ -10,11 +10,11 @@ public:
 	virtual ~Cclient()
 	{
 	}
-protected:
+
 	const Csocket& s() const
 	{
 		return m_s;
 	}
-
+protected:
 	Csocket m_s;
 };
