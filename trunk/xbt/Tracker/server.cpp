@@ -9,6 +9,8 @@ static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
 boost::unordered_map<std::array<char, 32>, Cserver::t_user*> m_users_torrent_passes;
 Cepoll m_epoll;
+Cserver* g_server;
+Cstats m_stats;
 std::string m_announce_log_buffer;
 std::string m_conf_file;
 std::string m_scrape_log_buffer;
@@ -29,6 +31,8 @@ bool m_read_users_torrents_limit;
 bool m_read_users_wait_time;
 bool m_use_sql;
 
+void accept(const Csocket&);
+
 static void sig_handler(int v)
 {
 	switch (v)
@@ -42,51 +46,36 @@ static void sig_handler(int v)
 class Ctcp_listen_socket : public Cclient
 {
 public:
-	using Cclient::s;
-
-	Ctcp_listen_socket()
+	Ctcp_listen_socket(const Csocket& s)
 	{
-		m_server = NULL;
-	}
-
-	Ctcp_listen_socket(Cserver* server, const Csocket& s)
-	{
-		m_server = server;
 		m_s = s;
 	}
 
 	virtual void process_events(int)
 	{
-		m_server->accept(m_s);
+		accept(m_s);
 	}
 };
 
 class Cudp_listen_socket : public Cclient
 {
 public:
-	using Cclient::s;
-
-	Cudp_listen_socket()
+	Cudp_listen_socket(const Csocket& s)
 	{
-		m_server = NULL;
-	}
-
-	Cudp_listen_socket(Cserver* server, const Csocket& s)
-	{
-		m_server = server;
 		m_s = s;
 	}
 
 	virtual void process_events(int events)
 	{
 		if (events & EPOLLIN)
-			Ctransaction(*m_server, m_s).recv();
+			Ctransaction(*g_server, m_s).recv();
 	}
 };
 
 Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql, const std::string& conf_file):
 	m_database(database)
 {
+	g_server = this;
 	m_fid_end = 0;
 
 	for (int i = 0; i < 8; i++)
@@ -96,6 +85,11 @@ Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_
 	m_table_prefix = table_prefix;
 	m_time = ::time(NULL);
 	m_use_sql = use_sql;
+}
+
+Cstats& Cserver::stats()
+{
+	return m_stats;
 }
 
 int Cserver::run()
@@ -108,8 +102,8 @@ int Cserver::run()
 		std::cerr << "epoll_create failed" << std::endl;
 		return 1;
 	}
-	std::vector<Ctcp_listen_socket> lt;
-	std::vector<Cudp_listen_socket> lu;
+	std::list<Ctcp_listen_socket> lt;
+	std::list<Cudp_listen_socket> lu;
 	BOOST_FOREACH(auto& j, m_config.m_listen_ipas)
 	{
 		BOOST_FOREACH(auto& i, m_config.m_listen_ports)
@@ -134,7 +128,7 @@ int Cserver::run()
 				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, 90))
 					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
-				lt.push_back(Ctcp_listen_socket(this, l));
+				lt.push_back(Ctcp_listen_socket(l));
 				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
 					continue;
 			}
@@ -150,7 +144,7 @@ int Cserver::run()
 				std::cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			else
 			{
-				lu.push_back(Cudp_listen_socket(this, l));
+				lu.push_back(Cudp_listen_socket(l));
 				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP, &lu.back()))
 					continue;
 			}
@@ -277,7 +271,7 @@ int Cserver::run()
 	return 0;
 }
 
-void Cserver::accept(const Csocket& l)
+void accept(const Csocket& l)
 {
 	sockaddr_in a;
 	while (1)
@@ -301,7 +295,7 @@ void Cserver::accept(const Csocket& l)
 		m_stats.accepted_tcp++;
 		if (s.blocking(false))
 			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-		std::auto_ptr<Cconnection> connection(new Cconnection(this, s, a));
+		std::auto_ptr<Cconnection> connection(new Cconnection(g_server, s, a));
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{
