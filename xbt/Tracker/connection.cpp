@@ -2,6 +2,7 @@
 #include "connection.h"
 
 #include <bt_strings.h>
+#include "epoll.h"
 #include "server.h"
 
 Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a)

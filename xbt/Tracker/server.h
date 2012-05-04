@@ -2,7 +2,6 @@
 
 #include "config.h"
 #include "connection.h"
-#include "epoll.h"
 #include "tracker_input.h"
 
 namespace boost
@@ -231,31 +230,9 @@ private:
 
 	Cconfig m_config;
 	Cstats m_stats;
-	bool m_read_users_can_leech;
-	bool m_read_users_peers_limit;
-	bool m_read_users_torrent_pass;
-	bool m_read_users_torrents_limit;
-	bool m_read_users_wait_time;
-	bool m_use_sql;
-	time_t m_clean_up_time;
-	time_t m_read_config_time;
-	time_t m_read_db_torrents_time;
-	time_t m_read_db_users_time;
-	time_t m_time;
-	time_t m_write_db_torrents_time;
-	time_t m_write_db_users_time;
-	int m_fid_end;
 	long long m_secret;
-	boost::ptr_list<Cconnection> m_connections;
 	Cdatabase& m_database;
-	Cepoll m_epoll;
 	boost::unordered_map<std::string, t_torrent> m_torrents;
 	boost::unordered_map<int, t_user> m_users;
-	boost::unordered_map<std::array<char, 32>, t_user*> m_users_torrent_passes;
-	std::string m_announce_log_buffer;
-	std::string m_conf_file;
-	std::string m_torrents_users_updates_buffer;
-	std::string m_scrape_log_buffer;
-	std::string m_table_prefix;
-	std::string m_users_updates_buffer;
+	time_t m_time;
 };
