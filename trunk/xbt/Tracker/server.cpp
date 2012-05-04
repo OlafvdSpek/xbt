@@ -2,6 +2,7 @@
 #include "server.h"
 
 #include <bt_strings.h>
+#include "connection.h"
 #include "epoll.h"
 #include "transaction.h"
 

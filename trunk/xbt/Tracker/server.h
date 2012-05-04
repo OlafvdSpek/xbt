@@ -1,7 +1,6 @@
 #pragma once
 
 #include "config.h"
-#include "connection.h"
 #include "tracker_input.h"
 
 namespace boost

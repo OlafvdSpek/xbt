@@ -2,17 +2,16 @@
 
 #include "client.h"
 
-class Cconnection: public Cclient, boost::noncopyable
+class Cconnection : public Cclient, boost::noncopyable
 {
 public:
-	using Cclient::s;
 	int run();
 	void read(const std::string&);
 	int recv();
 	int send();
 	virtual void process_events(int);
-	int pre_select(fd_set* fd_read_set, fd_set* fd_write_set);
-	int post_select(fd_set* fd_read_set, fd_set* fd_write_set);
+	int pre_select(fd_set* read, fd_set* write);
+	int post_select(fd_set* read, fd_set* write);
 	Cconnection(const Csocket&, const sockaddr_in&);
 private:
 	sockaddr_in m_a;
