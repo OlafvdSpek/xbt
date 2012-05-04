@@ -181,8 +181,6 @@ public:
 	std::string statistics() const;
 	std::string select_peers(const Ctracker_input&) const;
 	std::string scrape(const Ctracker_input&, t_user*);
-	int run();
-	Cserver(const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 };
 
 const t_torrent* find_torrent(const std::string& id);
@@ -192,5 +190,7 @@ long long srv_secret();
 const Cconfig& srv_config();
 Cdatabase& srv_database();
 Cstats& srv_stats();
-void srv_term();
 time_t srv_time();
+
+int srv_run(const std::string& table_prefix, bool use_sql, const std::string& conf_file);
+void srv_term();

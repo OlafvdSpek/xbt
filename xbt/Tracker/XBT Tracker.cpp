@@ -38,7 +38,7 @@ int main1()
 		return 1;
 	}
 	srv_database().set_query_log(config.m_query_log);
-	return Cserver(config.m_mysql_table_prefix, config.m_mysql_host != "-", g_conf_file).run();
+	return srv_run(config.m_mysql_table_prefix, config.m_mysql_host != "-", g_conf_file);
 }
 
 #ifdef WIN32

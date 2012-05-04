@@ -86,20 +86,6 @@ public:
 	}
 };
 
-Cserver::Cserver(const std::string& table_prefix, bool use_sql, const std::string& conf_file)
-{
-	g_server = this;
-	m_fid_end = 0;
-
-	for (int i = 0; i < 8; i++)
-		m_secret = m_secret << 8 ^ rand();
-	m_conf_file = conf_file;
-	m_database.set_name("config", table_prefix + "config");
-	m_table_prefix = table_prefix;
-	m_time = ::time(NULL);
-	m_use_sql = use_sql;
-}
-
 const Cconfig& srv_config()
 {
 	return m_config;
@@ -135,8 +121,18 @@ time_t srv_time()
 	return m_time;
 }
 
-int Cserver::run()
+int srv_run(const std::string& table_prefix, bool use_sql, const std::string& conf_file)
 {
+	m_fid_end = 0;
+
+	for (int i = 0; i < 8; i++)
+		m_secret = m_secret << 8 ^ rand();
+	m_conf_file = conf_file;
+	m_database.set_name("config", table_prefix + "config");
+	m_table_prefix = table_prefix;
+	m_time = ::time(NULL);
+	m_use_sql = use_sql;
+
 	read_config();
 	if (test_sql())
 		return 1;
@@ -284,7 +280,7 @@ int Cserver::run()
 			BOOST_FOREACH(auto& i, lu)
 			{
 				if (FD_ISSET(i.s(), &fd_read_set))
-					Ctransaction(*this, i.s()).recv();
+					Ctransaction(*g_server, i.s()).recv();
 			}
 			for (auto i = m_connections.begin(); i != m_connections.end(); )
 			{
