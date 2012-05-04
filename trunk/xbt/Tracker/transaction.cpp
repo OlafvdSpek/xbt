@@ -3,9 +3,9 @@
 
 #include <bt_strings.h>
 #include <sha1.h>
+#include "server.h"
 
-Ctransaction::Ctransaction(Cserver& server, const Csocket& s):
-	m_server(server)
+Ctransaction::Ctransaction(const Csocket& s)
 {
 	m_s = s;
 }

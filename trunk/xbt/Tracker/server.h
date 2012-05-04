@@ -173,11 +173,6 @@ struct t_user
 	int wait_time;
 };
 
-class Cserver
-{
-public:
-};
-
 const t_torrent* find_torrent(const std::string& id);
 t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 t_user* find_user_by_uid(int v);
