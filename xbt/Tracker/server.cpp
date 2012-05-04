@@ -13,7 +13,6 @@ boost::unordered_map<std::array<char, 32>, t_user*> m_users_torrent_passes;
 Cconfig m_config;
 Cdatabase m_database;
 Cepoll m_epoll;
-Cserver* g_server;
 Cstats m_stats;
 std::string m_announce_log_buffer;
 std::string m_conf_file;
@@ -82,7 +81,7 @@ public:
 	virtual void process_events(int events)
 	{
 		if (events & EPOLLIN)
-			Ctransaction(*g_server, m_s).recv();
+			Ctransaction(m_s).recv();
 	}
 };
 
@@ -280,7 +279,7 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 			BOOST_FOREACH(auto& i, lu)
 			{
 				if (FD_ISSET(i.s(), &fd_read_set))
-					Ctransaction(*g_server, i.s()).recv();
+					Ctransaction(i.s()).recv();
 			}
 			for (auto i = m_connections.begin(); i != m_connections.end(); )
 			{
@@ -334,7 +333,7 @@ void accept(const Csocket& l)
 		m_stats.accepted_tcp++;
 		if (s.blocking(false))
 			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-		std::auto_ptr<Cconnection> connection(new Cconnection(g_server, s, a));
+		std::auto_ptr<Cconnection> connection(new Cconnection(s, a));
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{

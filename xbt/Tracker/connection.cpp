@@ -5,9 +5,8 @@
 #include "epoll.h"
 #include "server.h"
 
-Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a)
+Cconnection::Cconnection(const Csocket& s, const sockaddr_in& a)
 {
-	m_server = server;
 	m_s = s;
 	m_a = a;
 	m_ctime = srv_time();

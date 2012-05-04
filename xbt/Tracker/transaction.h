@@ -1,7 +1,5 @@
 #pragma once
 
-#include "server.h"
-
 class Ctransaction
 {
 public:
@@ -12,9 +10,8 @@ public:
 	void send_connect(data_ref);
 	void send_scrape(data_ref);
 	void send_error(data_ref, const std::string& msg);
-	Ctransaction(Cserver&, const Csocket&);
+	Ctransaction(const Csocket&);
 private:
-	Cserver& m_server;
 	Csocket m_s;
 	sockaddr_in m_a;
 };
