@@ -177,9 +177,6 @@ class Cserver
 {
 public:
 	void test_announce();
-	const t_torrent* find_torrent(const std::string& id) const;
-	t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
-	t_user* find_user_by_uid(int v);
 	void read_config();
 	void write_db_torrents();
 	void write_db_users();
@@ -201,3 +198,7 @@ public:
 	static void term();
 	Cserver(const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 };
+
+const t_torrent* find_torrent(const std::string& id);
+t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
+t_user* find_user_by_uid(int v);

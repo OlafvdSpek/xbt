@@ -103,12 +103,12 @@ Cdatabase& Cserver::database()
 	return m_database;
 }
 
-const t_torrent* Cserver::find_torrent(const std::string& id) const
+const t_torrent* find_torrent(const std::string& id)
 {
 	return find_ptr(m_torrents, id);
 }
 
-t_user* Cserver::find_user_by_uid(int v)
+t_user* find_user_by_uid(int v)
 {
 	return find_ptr(m_users, v);
 }
@@ -495,7 +495,7 @@ void t_torrent::clean_up(time_t t, Cserver& server)
 		if (i->second.mtime < t)
 		{
 			(i->second.left ? leechers : seeders)--;
-			if (t_user* user = server.find_user_by_uid(i->second.uid))
+			if (t_user* user = find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
 			if (i->second.uid)
 				m_torrents_users_updates_buffer += Csql_query(m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(fid)(i->second.uid).read();
@@ -921,7 +921,7 @@ std::string Cserver::statistics() const
 	return os.str();
 }
 
-t_user* Cserver::find_user_by_torrent_pass(str_ref v, str_ref info_hash)
+t_user* find_user_by_torrent_pass(str_ref v, str_ref info_hash)
 {
 	if (v.size() != 32)
 		return NULL;

@@ -170,7 +170,7 @@ void Cconnection::read(const std::string& v)
 		if (ti.valid())
 		{
 			gzip = false;
-			std::string error = m_server->insert_peer(ti, false, m_server->find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
+			std::string error = m_server->insert_peer(ti, false, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
 			s = error.empty() ? m_server->select_peers(ti) : (boost::format("d14:failure reason%d:%se") % error.size() % error).str();
 		}
 		break;
@@ -192,7 +192,7 @@ void Cconnection::read(const std::string& v)
 		else if (m_server->config().m_full_scrape || !ti.m_info_hash.empty())
 		{
 			gzip = m_server->config().m_gzip_scrape && ti.m_info_hash.empty();
- 			s = m_server->scrape(ti, m_server->find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
+ 			s = m_server->scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
 		}
 		break;
 	}
