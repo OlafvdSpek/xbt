@@ -2,9 +2,32 @@
 #include "server.h"
 
 #include <bt_strings.h>
+#include "epoll.h"
 #include "transaction.h"
 
 static volatile bool g_sig_term = false;
+boost::ptr_list<Cconnection> m_connections;
+boost::unordered_map<std::array<char, 32>, Cserver::t_user*> m_users_torrent_passes;
+Cepoll m_epoll;
+std::string m_announce_log_buffer;
+std::string m_conf_file;
+std::string m_scrape_log_buffer;
+std::string m_table_prefix;
+std::string m_torrents_users_updates_buffer;
+std::string m_users_updates_buffer;
+time_t m_clean_up_time;
+time_t m_read_config_time;
+time_t m_read_db_torrents_time;
+time_t m_read_db_users_time;
+time_t m_write_db_torrents_time;
+time_t m_write_db_users_time;
+int m_fid_end;
+bool m_read_users_can_leech;
+bool m_read_users_peers_limit;
+bool m_read_users_torrent_pass;
+bool m_read_users_torrents_limit;
+bool m_read_users_wait_time;
+bool m_use_sql;
 
 static void sig_handler(int v)
 {
@@ -445,7 +468,7 @@ void Cserver::t_torrent::clean_up(time_t t, Cserver& server)
 			if (t_user* user = server.find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
 			if (i->second.uid)
-				server.m_torrents_users_updates_buffer += Csql_query(server.m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(fid)(i->second.uid).read();
+				m_torrents_users_updates_buffer += Csql_query(server.m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(fid)(i->second.uid).read();
 			peers.erase(i++);
 			dirty = true;
 		}
