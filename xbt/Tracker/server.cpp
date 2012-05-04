@@ -375,19 +375,6 @@ void write_db_users()
 	}
 }
 
-void t_torrent::debug(std::ostream& os) const
-{
-	BOOST_FOREACH(auto& i, peers)
-	{
-		os << "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
-			<< "<td align=right>" << ntohs(i.second.port)
-			<< "<td align=right>" << i.second.uid
-			<< "<td align=right>" << i.second.left
-			<< "<td align=right>" << ::time(NULL) - i.second.mtime
-			<< "<td>" << hex_encode(i.second.peer_id);
-	}
-}
-
 int test_sql()
 {
 	if (!m_use_sql)
@@ -850,13 +837,23 @@ std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 	return d;
 }
 
+void debug(const t_torrent& t, std::ostream& os)
+{
+	BOOST_FOREACH(auto& i, t.peers)
+	{
+		os << "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
+			<< "<td align=right>" << ntohs(i.second.port)
+			<< "<td align=right>" << i.second.uid
+			<< "<td align=right>" << i.second.left
+			<< "<td align=right>" << ::time(NULL) - i.second.mtime
+			<< "<td>" << hex_encode(i.second.peer_id);
+	}
+}
+
 std::string srv_debug(const Ctracker_input& ti)
 {
 	std::ostringstream os;
 	os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
-	int leechers = 0;
-	int seeders = 0;
-	int torrents = 0;
 	os << "<table>";
 	if (ti.m_info_hash.empty())
 	{
@@ -864,9 +861,6 @@ std::string srv_debug(const Ctracker_input& ti)
 		{
 			if (!i.second.leechers && !i.second.seeders)
 				continue;
-			leechers += i.second.leechers;
-			seeders += i.second.seeders;
-			torrents++;
 			os << "<tr><td align=right>" << i.second.fid
 				<< "<td><a href=\"?info_hash=" << uri_encode(i.first) << "\">" << hex_encode(i.first) << "</a>"
 				<< "<td>" << (i.second.dirty ? '*' : ' ')
@@ -874,11 +868,8 @@ std::string srv_debug(const Ctracker_input& ti)
 				<< "<td align=right>" << i.second.seeders;
 		}
 	}
-	else
-	{
-		if (const t_torrent* i = find_torrent(ti.m_info_hash))
-			i->debug(os);
-	}
+	else if (const t_torrent* i = find_torrent(ti.m_info_hash))
+		debug(*i, os);
 	os << "</table>";
 	return os.str();
 }
