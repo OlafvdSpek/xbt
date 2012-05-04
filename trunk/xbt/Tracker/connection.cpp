@@ -10,7 +10,7 @@ Cconnection::Cconnection(Cserver* server, const Csocket& s, const sockaddr_in& a
 	m_server = server;
 	m_s = s;
 	m_a = a;
-	m_ctime = server->time();
+	m_ctime = srv_time();
 
 	m_state = 0;
 	m_w = m_read_b;
@@ -28,7 +28,7 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
 	return FD_ISSET(m_s, fd_read_set) && recv()
 		|| FD_ISSET(m_s, fd_write_set) && send()
-		|| m_server->time() - m_ctime > 10
+		|| srv_time() - m_ctime > 10
 		|| m_state == 5 && m_r.empty();
 }
 
@@ -124,7 +124,7 @@ void Cconnection::read(const std::string& v)
 	if (m_server->config().m_log_access)
 	{
 		static std::ofstream f("xbt_tracker_raw.log");
-		f << m_server->time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << std::endl;
+		f << srv_time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << std::endl;
 	}
 	Ctracker_input ti;
 	size_t e = v.find('?');
@@ -211,7 +211,7 @@ void Cconnection::read(const std::string& v)
 		shared_data s2 = xcc_z::gzip(s);
 #ifndef NDEBUG
 		static std::ofstream f("xbt_tracker_gzip.log");
-		f << m_server->time() << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << std::endl;
+		f << srv_time() << '\t' << v[5] << '\t' << s.size() << '\t' << s2.size() << std::endl;
 #endif
 		if (s2.size() + 24 < s.size())
 		{
@@ -278,5 +278,5 @@ void Cconnection::process_events(int events)
 
 int Cconnection::run()
 {
-	return s() == INVALID_SOCKET || m_server->time() - m_ctime > 10;
+	return s() == INVALID_SOCKET || srv_time() - m_ctime > 10;
 }

@@ -39,6 +39,8 @@ bool m_use_sql;
 
 void accept(const Csocket&);
 int test_sql();
+void write_db_torrents();
+void write_db_users();
 
 static void sig_handler(int v)
 {
@@ -123,7 +125,7 @@ Cstats& Cserver::stats()
 	return m_stats;
 }
 
-time_t Cserver::time() const
+time_t srv_time()
 {
 	return m_time;
 }
@@ -288,17 +290,17 @@ int Cserver::run()
 			}
 		}
 #endif
-		if (time() - m_read_config_time > m_config.m_read_config_interval)
+		if (srv_time() - m_read_config_time > m_config.m_read_config_interval)
 			read_config();
-		else if (time() - m_clean_up_time > m_config.m_clean_up_interval)
+		else if (srv_time() - m_clean_up_time > m_config.m_clean_up_interval)
 			clean_up();
-		else if (time() - m_read_db_torrents_time > m_config.m_read_db_interval)
+		else if (srv_time() - m_read_db_torrents_time > m_config.m_read_db_interval)
 			read_db_torrents();
-		else if (time() - m_read_db_users_time > m_config.m_read_db_interval)
+		else if (srv_time() - m_read_db_users_time > m_config.m_read_db_interval)
 			read_db_users();
-		else if (m_config.m_write_db_interval && time() - m_write_db_torrents_time > m_config.m_write_db_interval)
+		else if (m_config.m_write_db_interval && srv_time() - m_write_db_torrents_time > m_config.m_write_db_interval)
 			write_db_torrents();
-		else if (m_config.m_write_db_interval && time() - m_write_db_users_time > m_config.m_write_db_interval)
+		else if (m_config.m_write_db_interval && srv_time() - m_write_db_users_time > m_config.m_write_db_interval)
 			write_db_users();
 	}
 	write_db_torrents();
@@ -356,7 +358,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 			(v.m_left)
 			(v.m_uploaded)
 			(user ? user->uid : 0)
-			(time())
+			(srv_time())
 			.read();
 	}
 	if (!m_config.m_offline_message.empty())
@@ -371,8 +373,8 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 		return bts_can_not_leech;
 	t_torrent& file = m_torrents[v.m_info_hash];
 	if (!file.ctime)
-		file.ctime = time();
-	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > time())
+		file.ctime = srv_time();
+	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > srv_time())
 		return bts_wait_time;
 	t_peers::key_type peer_key(v.m_ipa, user ? user->uid : 0);
 	t_peer* i = find_ptr(file.peers, peer_key);
@@ -410,7 +412,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 			(downloaded)
 			(v.m_left)
 			(uploaded)
-			(time())
+			(srv_time())
 			(file.fid)
 			(user->uid)
 			.read();
@@ -431,7 +433,7 @@ std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user
 		(peer.left ? file.leechers : file.seeders)++;
 		if (user)
 			(peer.left ? user->incompletes : user->completes)++;
-		peer.mtime = time();
+		peer.mtime = srv_time();
 	}
 	if (v.m_event == Ctracker_input::e_completed)
 		file.completed++;
@@ -510,8 +512,8 @@ void t_torrent::clean_up(time_t t, Cserver& server)
 void Cserver::clean_up()
 {
 	BOOST_FOREACH(auto& i, m_torrents)
-		i.second.clean_up(time() - static_cast<int>(1.5 * m_config.m_announce_interval), *this);
-	m_clean_up_time = time();
+		i.second.clean_up(srv_time() - static_cast<int>(1.5 * m_config.m_announce_interval), *this);
+	m_clean_up_time = srv_time();
 }
 
 std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
@@ -523,7 +525,7 @@ std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
 	if (ti.m_info_hashes.empty())
 	{
 		if (m_use_sql && m_config.m_log_scrape)
-			m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(time()).read();
+			m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(srv_time()).read();
 		m_stats.scraped_full++;
 		d.reserve(90 * m_torrents.size());
 		BOOST_FOREACH(auto& i, m_torrents)
@@ -557,7 +559,7 @@ const std::string& db_name(const std::string& v)
 
 void Cserver::read_db_torrents()
 {
-	m_read_db_torrents_time = time();
+	m_read_db_torrents_time = srv_time();
 	if (m_use_sql)
 		read_db_torrents_sql();
 	else if (!m_config.m_auto_register)
@@ -626,7 +628,7 @@ void Cserver::read_db_torrents_sql()
 
 void Cserver::read_db_users()
 {
-	m_read_db_users_time = time();
+	m_read_db_users_time = srv_time();
 	if (!m_use_sql)
 		return;
 	try
@@ -683,9 +685,9 @@ void Cserver::read_db_users()
 	}
 }
 
-void Cserver::write_db_torrents()
+void write_db_torrents()
 {
-	m_write_db_torrents_time = time();
+	m_write_db_torrents_time = srv_time();
 	if (!m_use_sql)
 		return;
 	try
@@ -733,9 +735,9 @@ void Cserver::write_db_torrents()
 	}
 }
 
-void Cserver::write_db_users()
+void write_db_users()
 {
-	m_write_db_users_time = time();
+	m_write_db_users_time = srv_time();
 	if (!m_use_sql)
 		return;
 	if (!m_torrents_users_updates_buffer.empty())
@@ -810,7 +812,7 @@ void Cserver::read_config()
 		m_config.m_listen_ipas.insert(htonl(INADDR_ANY));
 	if (m_config.m_listen_ports.empty())
 		m_config.m_listen_ports.insert(2710);
-	m_read_config_time = time();
+	m_read_config_time = srv_time();
 }
 
 void t_torrent::debug(std::ostream& os) const
@@ -873,7 +875,7 @@ std::string Cserver::statistics() const
 		torrents += i.second.leechers || i.second.seeders;
 	}
 	int peers = leechers + seeders;
-	time_t t = time();
+	time_t t = srv_time();
 	os << "<table>"
 		<< "<tr><td>peers<td align=right>" << peers;
 	if (peers)
@@ -902,7 +904,7 @@ std::string Cserver::statistics() const
 			<< "<tr><td>scraped udp<td align=right>" << m_stats.scraped_udp << "<td align=right>" << m_stats.scraped_udp * 100 / m_stats.scraped() << " %";
 	}
 	os << "<tr><td>"
-		<< "<tr><td>up time<td align=right>" << duration2a(time() - m_stats.start_time)
+		<< "<tr><td>up time<td align=right>" << duration2a(srv_time() - m_stats.start_time)
 		<< "<tr><td>"
 		<< "<tr><td>anonymous announce<td align=right>" << m_config.m_anonymous_announce
 		<< "<tr><td>anonymous scrape<td align=right>" << m_config.m_anonymous_scrape
