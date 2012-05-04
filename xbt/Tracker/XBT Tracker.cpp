@@ -27,19 +27,18 @@ int main1()
 #else
 		std::cerr << "Unable to read " << g_conf_file << std::endl;
 #endif
-	Cserver server(config.m_mysql_table_prefix, config.m_mysql_host != "-", g_conf_file);
 	try
 	{
 		if (config.m_mysql_host != "-")
-			server.database().open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true);
+			srv_database().open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true);
 	}
 	catch (Cdatabase::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
 		return 1;
 	}
-	server.database().set_query_log(config.m_query_log);
-	return server.run();
+	srv_database().set_query_log(config.m_query_log);
+	return Cserver(config.m_mysql_table_prefix, config.m_mysql_host != "-", g_conf_file).run();
 }
 
 #ifdef WIN32
@@ -53,7 +52,7 @@ void WINAPI nt_service_handler(DWORD op)
 	case SERVICE_CONTROL_STOP:
 		g_service_status.dwCurrentState = SERVICE_STOP_PENDING;
 		SetServiceStatus(gh_service_status, &g_service_status);
-		Cserver::term();
+		srv_term();
 		break;
 	}
 	SetServiceStatus(gh_service_status, &g_service_status);

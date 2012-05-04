@@ -127,7 +127,7 @@ typedef boost::unordered_map<peer_key_c, t_peer> t_peers;
 
 struct t_torrent
 {
-	void clean_up(time_t t, Cserver&);
+	void clean_up(time_t);
 	void debug(std::ostream&) const;
 	std::string select_peers(const Ctracker_input&) const;
 
@@ -176,27 +176,21 @@ struct t_user
 class Cserver
 {
 public:
-	void test_announce();
-	void read_config();
-	void read_db_torrents();
-	void read_db_torrents_sql();
-	void read_db_users();
-	void clean_up();
 	std::string insert_peer(const Ctracker_input&, bool udp, t_user*);
 	std::string debug(const Ctracker_input&) const;
 	std::string statistics() const;
 	std::string select_peers(const Ctracker_input&) const;
 	std::string scrape(const Ctracker_input&, t_user*);
 	int run();
-	const Cconfig& config() const;
-	Cdatabase& database();
-	long long secret() const;
-	Cstats& stats();
-	static void term();
 	Cserver(const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 };
 
 const t_torrent* find_torrent(const std::string& id);
 t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 t_user* find_user_by_uid(int v);
+long long srv_secret();
+const Cconfig& srv_config();
+Cdatabase& srv_database();
+Cstats& srv_stats();
+void srv_term();
 time_t srv_time();

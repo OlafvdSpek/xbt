@@ -121,7 +121,7 @@ void Cconnection::read(const std::string& v)
 #ifndef NDEBUG
 	std::cout << v << std::endl;
 #endif
-	if (m_server->config().m_log_access)
+	if (srv_config().m_log_access)
 	{
 		static std::ofstream f("xbt_tracker_raw.log");
 		f << srv_time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << std::endl;
@@ -175,9 +175,9 @@ void Cconnection::read(const std::string& v)
 		}
 		break;
 	case 'd':
-		if (m_server->config().m_debug)
+		if (srv_config().m_debug)
 		{
-			gzip = m_server->config().m_gzip_debug;
+			gzip = srv_config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = m_server->debug(ti);
 		}
@@ -185,25 +185,25 @@ void Cconnection::read(const std::string& v)
 	case 's':
 		if (v.size() >= 7 && v[6] == 't')
 		{
-			gzip = m_server->config().m_gzip_debug;
+			gzip = srv_config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = m_server->statistics();
 		}
-		else if (m_server->config().m_full_scrape || !ti.m_info_hash.empty())
+		else if (srv_config().m_full_scrape || !ti.m_info_hash.empty())
 		{
-			gzip = m_server->config().m_gzip_scrape && ti.m_info_hash.empty();
+			gzip = srv_config().m_gzip_scrape && ti.m_info_hash.empty();
  			s = m_server->scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
 		}
 		break;
 	}
 	if (s.empty())
 	{
-		if (!ti.m_peer_id.empty() || m_server->config().m_redirect_url.empty())
+		if (!ti.m_peer_id.empty() || srv_config().m_redirect_url.empty())
 			h = "HTTP/1.0 404 Not Found\r\n";
 		else
 		{
 			h = "HTTP/1.0 302 Found\r\n"
-				"Location: " + m_server->config().m_redirect_url + (ti.m_info_hash.empty() ? "" : "?info_hash=" + uri_encode(ti.m_info_hash)) + "\r\n";
+				"Location: " + srv_config().m_redirect_url + (ti.m_info_hash.empty() ? "" : "?info_hash=" + uri_encode(ti.m_info_hash)) + "\r\n";
 		}
 	}
 	else if (gzip)

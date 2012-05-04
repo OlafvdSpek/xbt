@@ -14,7 +14,7 @@ long long Ctransaction::connection_id() const
 {
 	const int cb_s = 12;
 	char s[cb_s];
-	write_int(8, s, m_server.secret());
+	write_int(8, s, srv_secret());
 	write_int(4, s + 8, m_a.sin_addr.s_addr);
 	char d[20];
 	(Csha1(data_ref(s, cb_s))).read(d);
@@ -71,7 +71,7 @@ void Ctransaction::send_announce(data_ref r)
 {
 	if (read_int(8, &r[uti_connection_id], r.end()) != connection_id())
 		return;
-	if (!m_server.config().m_anonymous_announce)
+	if (!srv_config().m_anonymous_announce)
 	{
 		send_error(r, "access denied");
 		return;
@@ -100,7 +100,7 @@ void Ctransaction::send_announce(data_ref r)
 	char d[2 << 10];
 	write_int(4, d + uto_action, uta_announce);
 	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
-	write_int(4, d + utoa_interval, m_server.config().m_announce_interval);
+	write_int(4, d + utoa_interval, srv_config().m_announce_interval);
 	write_int(4, d + utoa_leechers, torrent->leechers);
 	write_int(4, d + utoa_seeders, torrent->seeders);
 	std::string peers = torrent->select_peers(ti);
@@ -112,7 +112,7 @@ void Ctransaction::send_scrape(data_ref r)
 {
 	if (read_int(8, &r[uti_connection_id], r.end()) != connection_id())
 		return;
-	if (!m_server.config().m_anonymous_scrape)
+	if (!srv_config().m_anonymous_scrape)
 	{
 		send_error(r, "access denied");
 		return;
@@ -137,7 +137,7 @@ void Ctransaction::send_scrape(data_ref r)
 			w = write_int(4, w, 0);
 		}
 	}
-	m_server.stats().scraped_udp++;
+	srv_stats().scraped_udp++;
 	send(data_ref(d, w));
 }
 
