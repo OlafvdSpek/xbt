@@ -177,7 +177,9 @@ public:
 	};
 
 	void test_announce();
+	const t_torrent* find_torrent(const std::string& id) const;
 	t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
+	t_user* find_user_by_uid(int v);
 	void read_config();
 	void write_db_torrents();
 	void write_db_users();
@@ -193,34 +195,9 @@ public:
 	int run();
 	const Cconfig& config() const;
 	Cdatabase& database();
+	long long secret() const;
 	Cstats& stats();
+	time_t time() const;
 	static void term();
 	Cserver(const std::string& table_prefix, bool use_sql, const std::string& conf_file);
-
-	const t_torrent* find_torrent(const std::string& id) const
-	{
-		return find_ptr(m_torrents, id);
-	}
-
-	t_user* find_user_by_uid(int v)
-	{
-		return find_ptr(m_users, v);
-	}
-
-	long long secret() const
-	{
-		return m_secret;
-	}
-
-	time_t time() const
-	{
-		return m_time;
-	}
-private:
-	const std::string& db_name(const std::string&) const;
-
-	long long m_secret;
-	boost::unordered_map<std::string, t_torrent> m_torrents;
-	boost::unordered_map<int, t_user> m_users;
-	time_t m_time;
 };
