@@ -7,6 +7,8 @@
 
 static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
+boost::unordered_map<std::string, Cserver::t_torrent> m_torrents;
+boost::unordered_map<int, Cserver::t_user> m_users;
 boost::unordered_map<std::array<char, 32>, Cserver::t_user*> m_users_torrent_passes;
 Cconfig m_config;
 Cdatabase m_database;
@@ -23,8 +25,10 @@ time_t m_clean_up_time;
 time_t m_read_config_time;
 time_t m_read_db_torrents_time;
 time_t m_read_db_users_time;
+time_t m_time;
 time_t m_write_db_torrents_time;
 time_t m_write_db_users_time;
+long long m_secret;
 int m_fid_end;
 bool m_read_users_can_leech;
 bool m_read_users_peers_limit;
@@ -99,9 +103,29 @@ Cdatabase& Cserver::database()
 	return m_database;
 }
 
+const Cserver::t_torrent* Cserver::find_torrent(const std::string& id) const
+{
+	return find_ptr(m_torrents, id);
+}
+
+Cserver::t_user* Cserver::find_user_by_uid(int v)
+{
+	return find_ptr(m_users, v);
+}
+
+long long Cserver::secret() const
+{
+	return m_secret;
+}
+
 Cstats& Cserver::stats()
 {
 	return m_stats;
+}
+
+time_t Cserver::time() const
+{
+	return m_time;
 }
 
 int Cserver::run()
@@ -526,7 +550,7 @@ std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
 	return d;
 }
 
-const std::string& Cserver::db_name(const std::string& v) const
+const std::string& db_name(const std::string& v)
 {
 	return m_database.name(v);
 }
