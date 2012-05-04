@@ -127,7 +127,6 @@ typedef boost::unordered_map<peer_key_c, t_peer> t_peers;
 
 struct t_torrent
 {
-	void debug(std::ostream&) const;
 	std::string select_peers(const Ctracker_input&) const;
 
 	t_torrent()
