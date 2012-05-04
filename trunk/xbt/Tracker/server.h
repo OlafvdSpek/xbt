@@ -177,7 +177,6 @@ public:
 	};
 
 	void test_announce();
-	int test_sql();
 	t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 	void read_config();
 	void write_db_torrents();
@@ -192,6 +191,7 @@ public:
 	std::string select_peers(const Ctracker_input&) const;
 	std::string scrape(const Ctracker_input&, t_user*);
 	int run();
+	const Cconfig& config() const;
 	Cdatabase& database();
 	Cstats& stats();
 	static void term();
@@ -207,11 +207,6 @@ public:
 		return find_ptr(m_users, v);
 	}
 
-	const Cconfig& config() const
-	{
-		return m_config;
-	}
-
 	long long secret() const
 	{
 		return m_secret;
@@ -224,7 +219,6 @@ public:
 private:
 	const std::string& db_name(const std::string&) const;
 
-	Cconfig m_config;
 	long long m_secret;
 	boost::unordered_map<std::string, t_torrent> m_torrents;
 	boost::unordered_map<int, t_user> m_users;

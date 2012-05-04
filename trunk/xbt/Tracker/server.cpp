@@ -8,6 +8,7 @@
 static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
 boost::unordered_map<std::array<char, 32>, Cserver::t_user*> m_users_torrent_passes;
+Cconfig m_config;
 Cdatabase m_database;
 Cepoll m_epoll;
 Cserver* g_server;
@@ -33,6 +34,7 @@ bool m_read_users_wait_time;
 bool m_use_sql;
 
 void accept(const Csocket&);
+int test_sql();
 
 static void sig_handler(int v)
 {
@@ -85,6 +87,11 @@ Cserver::Cserver(const std::string& table_prefix, bool use_sql, const std::strin
 	m_table_prefix = table_prefix;
 	m_time = ::time(NULL);
 	m_use_sql = use_sql;
+}
+
+const Cconfig& Cserver::config() const
+{
+	return m_config;
 }
 
 Cdatabase& Cserver::database()
@@ -454,7 +461,7 @@ std::string Cserver::select_peers(const Ctracker_input& ti) const
 		return std::string();
 	std::string peers = f->select_peers(ti);
 	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
-		% f->seeders % f->leechers % config().m_announce_interval % config().m_announce_interval % peers.size() % peers).str();
+		% f->seeders % f->leechers % m_config.m_announce_interval % m_config.m_announce_interval % peers.size() % peers).str();
 }
 
 void Cserver::t_torrent::clean_up(time_t t, Cserver& server)
@@ -930,7 +937,7 @@ void Cserver::test_announce()
 	write_db_users();
 }
 
-int Cserver::test_sql()
+int test_sql()
 {
 	if (!m_use_sql)
 		return 0;
