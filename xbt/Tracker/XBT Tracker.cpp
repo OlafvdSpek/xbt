@@ -27,19 +27,19 @@ int main1()
 #else
 		std::cerr << "Unable to read " << g_conf_file << std::endl;
 #endif
-	Cdatabase database;
+	Cserver server(config.m_mysql_table_prefix, config.m_mysql_host != "-", g_conf_file);
 	try
 	{
 		if (config.m_mysql_host != "-")
-			database.open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true);
+			server.database().open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true);
 	}
 	catch (Cdatabase::exception& e)
 	{
 		std::cerr << e.what() << std::endl;
 		return 1;
 	}
-	database.set_query_log(config.m_query_log);
-	return Cserver(database, config.m_mysql_table_prefix, config.m_mysql_host != "-", g_conf_file).run();
+	server.database().set_query_log(config.m_query_log);
+	return server.run();
 }
 
 #ifdef WIN32

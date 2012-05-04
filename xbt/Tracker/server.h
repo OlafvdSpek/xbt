@@ -192,9 +192,10 @@ public:
 	std::string select_peers(const Ctracker_input&) const;
 	std::string scrape(const Ctracker_input&, t_user*);
 	int run();
+	Cdatabase& database();
 	Cstats& stats();
 	static void term();
-	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);
+	Cserver(const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 
 	const t_torrent* find_torrent(const std::string& id) const
 	{
@@ -225,7 +226,6 @@ private:
 
 	Cconfig m_config;
 	long long m_secret;
-	Cdatabase& m_database;
 	boost::unordered_map<std::string, t_torrent> m_torrents;
 	boost::unordered_map<int, t_user> m_users;
 	time_t m_time;
