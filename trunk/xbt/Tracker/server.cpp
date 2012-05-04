@@ -8,6 +8,7 @@
 static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
 boost::unordered_map<std::array<char, 32>, Cserver::t_user*> m_users_torrent_passes;
+Cdatabase m_database;
 Cepoll m_epoll;
 Cserver* g_server;
 Cstats m_stats;
@@ -72,8 +73,7 @@ public:
 	}
 };
 
-Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_sql, const std::string& conf_file):
-	m_database(database)
+Cserver::Cserver(const std::string& table_prefix, bool use_sql, const std::string& conf_file)
 {
 	g_server = this;
 	m_fid_end = 0;
@@ -85,6 +85,11 @@ Cserver::Cserver(Cdatabase& database, const std::string& table_prefix, bool use_
 	m_table_prefix = table_prefix;
 	m_time = ::time(NULL);
 	m_use_sql = use_sql;
+}
+
+Cdatabase& Cserver::database()
+{
+	return m_database;
 }
 
 Cstats& Cserver::stats()
@@ -462,7 +467,7 @@ void Cserver::t_torrent::clean_up(time_t t, Cserver& server)
 			if (t_user* user = server.find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
 			if (i->second.uid)
-				m_torrents_users_updates_buffer += Csql_query(server.m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(fid)(i->second.uid).read();
+				m_torrents_users_updates_buffer += Csql_query(m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(fid)(i->second.uid).read();
 			peers.erase(i++);
 			dirty = true;
 		}
