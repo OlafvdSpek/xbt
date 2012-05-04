@@ -170,8 +170,8 @@ void Cconnection::read(const std::string& v)
 		if (ti.valid())
 		{
 			gzip = false;
-			std::string error = m_server->insert_peer(ti, false, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
-			s = error.empty() ? m_server->select_peers(ti) : (boost::format("d14:failure reason%d:%se") % error.size() % error).str();
+			std::string error = srv_insert_peer(ti, false, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
+			s = error.empty() ? srv_select_peers(ti) : (boost::format("d14:failure reason%d:%se") % error.size() % error).str();
 		}
 		break;
 	case 'd':
@@ -179,7 +179,7 @@ void Cconnection::read(const std::string& v)
 		{
 			gzip = srv_config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = m_server->debug(ti);
+			s = srv_debug(ti);
 		}
 		break;
 	case 's':
@@ -187,12 +187,12 @@ void Cconnection::read(const std::string& v)
 		{
 			gzip = srv_config().m_gzip_debug;
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
-			s = m_server->statistics();
+			s = srv_statistics();
 		}
 		else if (srv_config().m_full_scrape || !ti.m_info_hash.empty())
 		{
 			gzip = srv_config().m_gzip_scrape && ti.m_info_hash.empty();
- 			s = m_server->scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
+ 			s = srv_scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
 		}
 		break;
 	}

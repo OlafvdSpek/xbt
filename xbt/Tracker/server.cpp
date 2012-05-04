@@ -345,7 +345,7 @@ void accept(const Csocket& l)
 	}
 }
 
-std::string Cserver::insert_peer(const Ctracker_input& v, bool udp, t_user* user)
+std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 {
 	if (m_use_sql && m_config.m_log_announce)
 	{
@@ -481,7 +481,7 @@ std::string t_torrent::select_peers(const Ctracker_input& ti) const
 	return d;
 }
 
-std::string Cserver::select_peers(const Ctracker_input& ti) const
+std::string srv_select_peers(const Ctracker_input& ti)
 {
 	const t_torrent* f = find_torrent(ti.m_info_hash);
 	if (!f)
@@ -517,7 +517,7 @@ void clean_up()
 	m_clean_up_time = srv_time();
 }
 
-std::string Cserver::scrape(const Ctracker_input& ti, t_user* user)
+std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 {
 	if (!m_config.m_anonymous_scrape && !user)
 		return "d14:failure reason25:unregistered torrent passe";
@@ -829,7 +829,7 @@ void t_torrent::debug(std::ostream& os) const
 	}
 }
 
-std::string Cserver::debug(const Ctracker_input& ti) const
+std::string srv_debug(const Ctracker_input& ti)
 {
 	std::ostringstream os;
 	os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
@@ -862,7 +862,7 @@ std::string Cserver::debug(const Ctracker_input& ti) const
 	return os.str();
 }
 
-std::string Cserver::statistics() const
+std::string srv_statistics()
 {
 	std::ostringstream os;
 	os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
@@ -949,13 +949,13 @@ void test_announce()
 	memcpy(i.m_peer_id.data(), str_ref("PIPIPIPIPIPIPIPIPIPI"));
 	i.m_ipa = htonl(0x7f000063);
 	i.m_port = 54321;
-	std::cout << g_server->insert_peer(i, false, u) << std::endl;
+	std::cout << srv_insert_peer(i, false, u) << std::endl;
 	write_db_torrents();
 	write_db_users();
 	m_time++;
 	i.m_uploaded = 1 << 30;
 	i.m_downloaded = 1 << 20;
-	std::cout << g_server->insert_peer(i, false, u) << std::endl;
+	std::cout << srv_insert_peer(i, false, u) << std::endl;
 	write_db_torrents();
 	write_db_users();
 	m_time += 3600;
