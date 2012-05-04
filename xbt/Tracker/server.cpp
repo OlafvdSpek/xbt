@@ -37,15 +37,7 @@ bool m_read_users_wait_time;
 bool m_use_sql;
 
 void accept(const Csocket&);
-void clean_up();
-void read_config();
-void read_db_torrents();
-void read_db_torrents_sql();
-void read_db_users();
-int test_sql();
-void write_db_torrents();
-void write_db_users();
-
+	
 static void sig_handler(int v)
 {
 	switch (v)
@@ -118,6 +110,338 @@ Cstats& srv_stats()
 time_t srv_time()
 {
 	return m_time;
+}
+
+void read_config()
+{
+	if (m_use_sql)
+	{
+		try
+		{
+			Csql_result result = Csql_query(m_database, "select name, value from @config where value is not null").execute();
+			Cconfig config;
+			while (Csql_row row = result.fetch_row())
+			{
+				if (config.set(row[0].s(), row[1].s()))
+					std::cerr << "unknown config name: " << row[0].s() << std::endl;
+			}
+			config.load(m_conf_file);
+			if (config.m_torrent_pass_private_key.empty())
+			{
+				config.m_torrent_pass_private_key = generate_random_string(27);
+				Csql_query(m_database, "insert into @config (name, value) values ('torrent_pass_private_key', ?)")(config.m_torrent_pass_private_key).execute();
+			}
+			m_config = config;
+			m_database.set_name("completed", m_config.m_column_files_completed);
+			m_database.set_name("leechers", m_config.m_column_files_leechers);
+			m_database.set_name("seeders", m_config.m_column_files_seeders);
+			m_database.set_name("fid", m_config.m_column_files_fid);
+			m_database.set_name("uid", m_config.m_column_users_uid);
+			m_database.set_name("announce_log", m_config.m_table_announce_log.empty() ? m_table_prefix + "announce_log" : m_config.m_table_announce_log);
+			m_database.set_name("files", m_config.m_table_torrents.empty() ? m_table_prefix + "files" : m_config.m_table_torrents);
+			m_database.set_name("files_users", m_config.m_table_torrents_users.empty() ? m_table_prefix + "files_users" : m_config.m_table_torrents_users);
+			m_database.set_name("scrape_log", m_config.m_table_scrape_log.empty() ? m_table_prefix + "scrape_log" : m_config.m_table_scrape_log);
+			m_database.set_name("users", m_config.m_table_users.empty() ? m_table_prefix + "users" : m_config.m_table_users);
+		}
+		catch (Cdatabase::exception&)
+		{
+		}
+	}
+	else
+	{
+		Cconfig config;
+		if (!config.load(m_conf_file))
+			m_config = config;
+	}
+	if (m_config.m_listen_ipas.empty())
+		m_config.m_listen_ipas.insert(htonl(INADDR_ANY));
+	if (m_config.m_listen_ports.empty())
+		m_config.m_listen_ports.insert(2710);
+	m_read_config_time = srv_time();
+}
+
+void read_db_torrents_sql()
+{
+	try
+	{
+		if (!m_config.m_auto_register)
+		{
+			Csql_result result = Csql_query(m_database, "select info_hash, @fid from @files where flags & 1").execute();
+			while (Csql_row row = result.fetch_row())
+			{
+				auto i = m_torrents.find(row[0].s());
+				if (i != m_torrents.end())
+				{
+					BOOST_FOREACH(auto& j, i->second.peers)
+					{
+						if (t_user* user = find_user_by_uid(j.second.uid))
+							(j.second.left ? user->incompletes : user->completes)--;
+					}
+					m_torrents.erase(i);
+				}
+				Csql_query(m_database, "delete from @files where @fid = ?")(row[1]).execute();
+			}
+		}
+		if (m_config.m_auto_register && !m_torrents.empty())
+			return;
+		Csql_result result = Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute();
+		while (Csql_row row = result.fetch_row())
+		{
+			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
+			if (row[0].size() != 20 || find_torrent(row[0].s()))
+				continue;
+			t_torrent& file = m_torrents[row[0].s()];
+			if (file.fid)
+				continue;
+			file.completed = row[1].i();
+			file.dirty = false;
+			file.fid = row[2].i();
+			file.ctime = row[3].i();
+		}
+	}
+	catch (Cdatabase::exception&)
+	{
+	}
+}
+
+void read_db_torrents()
+{
+	m_read_db_torrents_time = srv_time();
+	if (m_use_sql)
+		read_db_torrents_sql();
+	else if (!m_config.m_auto_register)
+	{
+		std::set<t_torrent*> new_torrents;
+		std::ifstream is("xbt_torrents.txt");
+		for (std::string s; getline(is, s); )
+		{
+			s = hex_decode(s);
+			if (s.size() == 20)
+				new_torrents.insert(&m_torrents[s]);
+		}
+		for (auto i = m_torrents.begin(); i != m_torrents.end(); )
+		{
+			if (new_torrents.count(&i->second))
+				i++;
+			else
+				m_torrents.erase(i++);
+		}
+	}
+}
+
+void read_db_users()
+{
+	m_read_db_users_time = srv_time();
+	if (!m_use_sql)
+		return;
+	try
+	{
+		Csql_query q(m_database, "select @uid");
+		if (m_read_users_can_leech)
+			q += ", can_leech";
+		if (m_read_users_peers_limit)
+			q += ", peers_limit";
+		if (m_read_users_torrent_pass)
+			q += ", torrent_pass";
+		q += ", torrent_pass_version";
+		if (m_read_users_torrents_limit)
+			q += ", torrents_limit";
+		if (m_read_users_wait_time)
+			q += ", wait_time";
+		q += " from @users";
+		Csql_result result = q.execute();
+		BOOST_FOREACH(auto& i, m_users)
+			i.second.marked = true;
+		m_users_torrent_passes.clear();
+		while (Csql_row row = result.fetch_row())
+		{
+			t_user& user = m_users[row[0].i()];
+			user.marked = false;
+			int c = 0;
+			user.uid = row[c++].i();
+			if (m_read_users_can_leech)
+				user.can_leech = row[c++].i();
+			if (m_read_users_peers_limit)
+				user.peers_limit = row[c++].i();
+			if (m_read_users_torrent_pass)
+			{
+				if (row[c].size() == 32)
+					m_users_torrent_passes[to_array<char, 32>(row[c])] = &user;
+				c++;
+			}
+			user.torrent_pass_version = row[c++].i();
+			if (m_read_users_torrents_limit)
+				user.torrents_limit = row[c++].i();
+			if (m_read_users_wait_time)
+				user.wait_time = row[c++].i();
+		}
+		for (auto i = m_users.begin(); i != m_users.end(); )
+		{
+			if (i->second.marked)
+				m_users.erase(i++);
+			else
+				i++;
+		}
+	}
+	catch (Cdatabase::exception&)
+	{
+	}
+}
+
+const std::string& db_name(const std::string& v)
+{
+	return m_database.name(v);
+}
+
+void write_db_torrents()
+{
+	m_write_db_torrents_time = srv_time();
+	if (!m_use_sql)
+		return;
+	try
+	{
+		std::string buffer;
+		BOOST_FOREACH(auto& i, m_torrents)
+		{
+			t_torrent& file = i.second;
+			if (!file.dirty)
+				continue;
+			if (!file.fid)
+			{
+				Csql_query(m_database, "insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())")(i.first).execute();
+				file.fid = m_database.insert_id();
+			}
+			buffer += Csql_query(m_database, "(?,?,?,?),")(file.leechers)(file.seeders)(file.completed)(file.fid).read();
+			file.dirty = false;
+		}
+		if (!buffer.empty())
+		{
+			buffer.erase(buffer.size() - 1);
+			m_database.query("insert into " + db_name("files") + " (" + db_name("leechers") + ", " + db_name("seeders") + ", " + db_name("completed") + ", " + db_name("fid") + ") values "
+				+ buffer
+				+ " on duplicate key update"
+				+ "  " + db_name("leechers") + " = values(" + db_name("leechers") + "),"
+				+ "  " + db_name("seeders") + " = values(" + db_name("seeders") + "),"
+				+ "  " + db_name("completed") + " = values(" + db_name("completed") + "),"
+				+ "  mtime = unix_timestamp()");
+		}
+	}
+	catch (Cdatabase::exception&)
+	{
+	}
+	if (!m_announce_log_buffer.empty())
+	{
+		m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
+		m_database.query_nothrow("insert delayed into " + db_name("announce_log") + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
+		m_announce_log_buffer.erase();
+	}
+	if (!m_scrape_log_buffer.empty())
+	{
+		m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
+		m_database.query_nothrow("insert delayed into " + db_name("scrape_log") + " (ipa, uid, mtime) values " + m_scrape_log_buffer);
+		m_scrape_log_buffer.erase();
+	}
+}
+
+void write_db_users()
+{
+	m_write_db_users_time = srv_time();
+	if (!m_use_sql)
+		return;
+	if (!m_torrents_users_updates_buffer.empty())
+	{
+		m_torrents_users_updates_buffer.erase(m_torrents_users_updates_buffer.size() - 1);
+		m_database.query_nothrow("insert into " + db_name("files_users") + " (active, announced, completed, downloaded, `left`, uploaded, mtime, fid, uid) values "
+			+ m_torrents_users_updates_buffer
+			+ " on duplicate key update"
+			+ "  active = values(active),"
+			+ "  announced = announced + values(announced),"
+			+ "  completed = completed + values(completed),"
+			+ "  downloaded = downloaded + values(downloaded),"
+			+ "  `left` = if(values(`left`) = 18446744073709551615, `left`, values(`left`)),"
+			+ "  uploaded = uploaded + values(uploaded),"
+			+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
+		m_torrents_users_updates_buffer.erase();
+	}
+	if (!m_users_updates_buffer.empty())
+	{
+		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
+		m_database.query_nothrow("insert into " + db_name("users") + " (downloaded, uploaded, " + db_name("uid") + ") values "
+			+ m_users_updates_buffer
+			+ " on duplicate key update"
+			+ "  downloaded = downloaded + values(downloaded),"
+			+ "  uploaded = uploaded + values(uploaded)");
+		m_users_updates_buffer.erase();
+	}
+}
+
+void t_torrent::debug(std::ostream& os) const
+{
+	BOOST_FOREACH(auto& i, peers)
+	{
+		os << "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
+			<< "<td align=right>" << ntohs(i.second.port)
+			<< "<td align=right>" << i.second.uid
+			<< "<td align=right>" << i.second.left
+			<< "<td align=right>" << ::time(NULL) - i.second.mtime
+			<< "<td>" << hex_encode(i.second.peer_id);
+	}
+}
+
+int test_sql()
+{
+	if (!m_use_sql)
+		return 0;
+	try
+	{
+		mysql_get_server_version(m_database);
+		if (m_config.m_log_announce)
+			Csql_query(m_database, "select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0").execute();
+		Csql_query(m_database, "select name, value from @config where 0").execute();
+		Csql_query(m_database, "select @fid, info_hash, @leechers, @seeders, flags, mtime, ctime from @files where 0").execute();
+		Csql_query(m_database, "select fid, uid, active, announced, completed, downloaded, `left`, uploaded from @files_users where 0").execute();
+		if (m_config.m_log_scrape)
+			Csql_query(m_database, "select id, ipa, uid, mtime from @scrape_log where 0").execute();
+		Csql_query(m_database, "select @uid, torrent_pass_version, downloaded, uploaded from @users where 0").execute();
+		Csql_query(m_database, "update @files set @leechers = 0, @seeders = 0").execute();
+		Csql_query(m_database, "update @files_users set active = 0").execute();
+		m_read_users_can_leech = Csql_query(m_database, "show columns from @users like 'can_leech'").execute();
+		m_read_users_peers_limit = Csql_query(m_database, "show columns from @users like 'peers_limit'").execute();
+		m_read_users_torrent_pass = Csql_query(m_database, "show columns from @users like 'torrent_pass'").execute();
+		m_read_users_torrents_limit = Csql_query(m_database, "show columns from @users like 'torrents_limit'").execute();
+		m_read_users_wait_time = Csql_query(m_database, "show columns from @users like 'wait_time'").execute();
+		return 0;
+	}
+	catch (Cdatabase::exception&)
+	{
+	}
+	return 1;
+}
+
+void clean_up(t_torrent& t, time_t time)
+{
+	for (auto i = t.peers.begin(); i != t.peers.end(); )
+	{
+		if (i->second.mtime < time)
+		{
+			(i->second.left ? t.leechers : t.seeders)--;
+			if (t_user* user = find_user_by_uid(i->second.uid))
+				(i->second.left ? user->incompletes : user->completes)--;
+			if (i->second.uid)
+				m_torrents_users_updates_buffer += Csql_query(m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(t.fid)(i->second.uid).read();
+			t.peers.erase(i++);
+			t.dirty = true;
+		}
+		else
+			i++;
+	}
+}
+
+void clean_up()
+{
+	BOOST_FOREACH(auto& i, m_torrents)
+		clean_up(i.second, srv_time() - static_cast<int>(1.5 * m_config.m_announce_interval));
+	m_clean_up_time = srv_time();
 }
 
 int srv_run(const std::string& table_prefix, bool use_sql, const std::string& conf_file)
@@ -490,32 +814,6 @@ std::string srv_select_peers(const Ctracker_input& ti)
 		% f->seeders % f->leechers % m_config.m_announce_interval % m_config.m_announce_interval % peers.size() % peers).str();
 }
 
-void t_torrent::clean_up(time_t t)
-{
-	for (auto i = peers.begin(); i != peers.end(); )
-	{
-		if (i->second.mtime < t)
-		{
-			(i->second.left ? leechers : seeders)--;
-			if (t_user* user = find_user_by_uid(i->second.uid))
-				(i->second.left ? user->incompletes : user->completes)--;
-			if (i->second.uid)
-				m_torrents_users_updates_buffer += Csql_query(m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(fid)(i->second.uid).read();
-			peers.erase(i++);
-			dirty = true;
-		}
-		else
-			i++;
-	}
-}
-
-void clean_up()
-{
-	BOOST_FOREACH(auto& i, m_torrents)
-		i.second.clean_up(srv_time() - static_cast<int>(1.5 * m_config.m_announce_interval));
-	m_clean_up_time = srv_time();
-}
-
 std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 {
 	if (!m_config.m_anonymous_scrape && !user)
@@ -550,282 +848,6 @@ std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 		d += (boost::format("5:flagsd20:min_request_intervali%dee") % m_config.m_scrape_interval).str();
 	d += "e";
 	return d;
-}
-
-const std::string& db_name(const std::string& v)
-{
-	return m_database.name(v);
-}
-
-void read_db_torrents()
-{
-	m_read_db_torrents_time = srv_time();
-	if (m_use_sql)
-		read_db_torrents_sql();
-	else if (!m_config.m_auto_register)
-	{
-		std::set<t_torrent*> new_torrents;
-		std::ifstream is("xbt_torrents.txt");
-		for (std::string s; getline(is, s); )
-		{
-			s = hex_decode(s);
-			if (s.size() == 20)
-				new_torrents.insert(&m_torrents[s]);
-		}
-		for (auto i = m_torrents.begin(); i != m_torrents.end(); )
-		{
-			if (new_torrents.count(&i->second))
-				i++;
-			else
-				m_torrents.erase(i++);
-		}
-	}
-}
-
-void read_db_torrents_sql()
-{
-	try
-	{
-		if (!m_config.m_auto_register)
-		{
-			Csql_result result = Csql_query(m_database, "select info_hash, @fid from @files where flags & 1").execute();
-			while (Csql_row row = result.fetch_row())
-			{
-				auto i = m_torrents.find(row[0].s());
-				if (i != m_torrents.end())
-				{
-					BOOST_FOREACH(auto& j, i->second.peers)
-					{
-						if (t_user* user = find_user_by_uid(j.second.uid))
-							(j.second.left ? user->incompletes : user->completes)--;
-					}
-					m_torrents.erase(i);
-				}
-				Csql_query(m_database, "delete from @files where @fid = ?")(row[1]).execute();
-			}
-		}
-		if (m_config.m_auto_register && !m_torrents.empty())
-			return;
-		Csql_result result = Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute();
-		while (Csql_row row = result.fetch_row())
-		{
-			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
-			if (row[0].size() != 20 || find_torrent(row[0].s()))
-				continue;
-			t_torrent& file = m_torrents[row[0].s()];
-			if (file.fid)
-				continue;
-			file.completed = row[1].i();
-			file.dirty = false;
-			file.fid = row[2].i();
-			file.ctime = row[3].i();
-		}
-	}
-	catch (Cdatabase::exception&)
-	{
-	}
-}
-
-void read_db_users()
-{
-	m_read_db_users_time = srv_time();
-	if (!m_use_sql)
-		return;
-	try
-	{
-		Csql_query q(m_database, "select @uid");
-		if (m_read_users_can_leech)
-			q += ", can_leech";
-		if (m_read_users_peers_limit)
-			q += ", peers_limit";
-		if (m_read_users_torrent_pass)
-			q += ", torrent_pass";
-		q += ", torrent_pass_version";
-		if (m_read_users_torrents_limit)
-			q += ", torrents_limit";
-		if (m_read_users_wait_time)
-			q += ", wait_time";
-		q += " from @users";
-		Csql_result result = q.execute();
-		BOOST_FOREACH(auto& i, m_users)
-			i.second.marked = true;
-		m_users_torrent_passes.clear();
-		while (Csql_row row = result.fetch_row())
-		{
-			t_user& user = m_users[row[0].i()];
-			user.marked = false;
-			int c = 0;
-			user.uid = row[c++].i();
-			if (m_read_users_can_leech)
-				user.can_leech = row[c++].i();
-			if (m_read_users_peers_limit)
-				user.peers_limit = row[c++].i();
-			if (m_read_users_torrent_pass)
-			{
-				if (row[c].size() == 32)
-					m_users_torrent_passes[to_array<char, 32>(row[c])] = &user;
-				c++;
-			}
-			user.torrent_pass_version = row[c++].i();
-			if (m_read_users_torrents_limit)
-				user.torrents_limit = row[c++].i();
-			if (m_read_users_wait_time)
-				user.wait_time = row[c++].i();
-		}
-		for (auto i = m_users.begin(); i != m_users.end(); )
-		{
-			if (i->second.marked)
-				m_users.erase(i++);
-			else
-				i++;
-		}
-	}
-	catch (Cdatabase::exception&)
-	{
-	}
-}
-
-void write_db_torrents()
-{
-	m_write_db_torrents_time = srv_time();
-	if (!m_use_sql)
-		return;
-	try
-	{
-		std::string buffer;
-		BOOST_FOREACH(auto& i, m_torrents)
-		{
-			t_torrent& file = i.second;
-			if (!file.dirty)
-				continue;
-			if (!file.fid)
-			{
-				Csql_query(m_database, "insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())")(i.first).execute();
-				file.fid = m_database.insert_id();
-			}
-			buffer += Csql_query(m_database, "(?,?,?,?),")(file.leechers)(file.seeders)(file.completed)(file.fid).read();
-			file.dirty = false;
-		}
-		if (!buffer.empty())
-		{
-			buffer.erase(buffer.size() - 1);
-			m_database.query("insert into " + db_name("files") + " (" + db_name("leechers") + ", " + db_name("seeders") + ", " + db_name("completed") + ", " + db_name("fid") + ") values "
-				+ buffer
-				+ " on duplicate key update"
-				+ "  " + db_name("leechers") + " = values(" + db_name("leechers") + "),"
-				+ "  " + db_name("seeders") + " = values(" + db_name("seeders") + "),"
-				+ "  " + db_name("completed") + " = values(" + db_name("completed") + "),"
-				+ "  mtime = unix_timestamp()");
-		}
-	}
-	catch (Cdatabase::exception&)
-	{
-	}
-	if (!m_announce_log_buffer.empty())
-	{
-		m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
-		m_database.query_nothrow("insert delayed into " + db_name("announce_log") + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
-		m_announce_log_buffer.erase();
-	}
-	if (!m_scrape_log_buffer.empty())
-	{
-		m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
-		m_database.query_nothrow("insert delayed into " + db_name("scrape_log") + " (ipa, uid, mtime) values " + m_scrape_log_buffer);
-		m_scrape_log_buffer.erase();
-	}
-}
-
-void write_db_users()
-{
-	m_write_db_users_time = srv_time();
-	if (!m_use_sql)
-		return;
-	if (!m_torrents_users_updates_buffer.empty())
-	{
-		m_torrents_users_updates_buffer.erase(m_torrents_users_updates_buffer.size() - 1);
-		m_database.query_nothrow("insert into " + db_name("files_users") + " (active, announced, completed, downloaded, `left`, uploaded, mtime, fid, uid) values "
-			+ m_torrents_users_updates_buffer
-			+ " on duplicate key update"
-			+ "  active = values(active),"
-			+ "  announced = announced + values(announced),"
-			+ "  completed = completed + values(completed),"
-			+ "  downloaded = downloaded + values(downloaded),"
-			+ "  `left` = if(values(`left`) = 18446744073709551615, `left`, values(`left`)),"
-			+ "  uploaded = uploaded + values(uploaded),"
-			+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
-		m_torrents_users_updates_buffer.erase();
-	}
-	if (!m_users_updates_buffer.empty())
-	{
-		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
-		m_database.query_nothrow("insert into " + db_name("users") + " (downloaded, uploaded, " + db_name("uid") + ") values "
-			+ m_users_updates_buffer
-			+ " on duplicate key update"
-			+ "  downloaded = downloaded + values(downloaded),"
-			+ "  uploaded = uploaded + values(uploaded)");
-		m_users_updates_buffer.erase();
-	}
-}
-
-void read_config()
-{
-	if (m_use_sql)
-	{
-		try
-		{
-			Csql_result result = Csql_query(m_database, "select name, value from @config where value is not null").execute();
-			Cconfig config;
-			while (Csql_row row = result.fetch_row())
-			{
-				if (config.set(row[0].s(), row[1].s()))
-					std::cerr << "unknown config name: " << row[0].s() << std::endl;
-			}
-			config.load(m_conf_file);
-			if (config.m_torrent_pass_private_key.empty())
-			{
-				config.m_torrent_pass_private_key = generate_random_string(27);
-				Csql_query(m_database, "insert into @config (name, value) values ('torrent_pass_private_key', ?)")(config.m_torrent_pass_private_key).execute();
-			}
-			m_config = config;
-			m_database.set_name("completed", m_config.m_column_files_completed);
-			m_database.set_name("leechers", m_config.m_column_files_leechers);
-			m_database.set_name("seeders", m_config.m_column_files_seeders);
-			m_database.set_name("fid", m_config.m_column_files_fid);
-			m_database.set_name("uid", m_config.m_column_users_uid);
-			m_database.set_name("announce_log", m_config.m_table_announce_log.empty() ? m_table_prefix + "announce_log" : m_config.m_table_announce_log);
-			m_database.set_name("files", m_config.m_table_torrents.empty() ? m_table_prefix + "files" : m_config.m_table_torrents);
-			m_database.set_name("files_users", m_config.m_table_torrents_users.empty() ? m_table_prefix + "files_users" : m_config.m_table_torrents_users);
-			m_database.set_name("scrape_log", m_config.m_table_scrape_log.empty() ? m_table_prefix + "scrape_log" : m_config.m_table_scrape_log);
-			m_database.set_name("users", m_config.m_table_users.empty() ? m_table_prefix + "users" : m_config.m_table_users);
-		}
-		catch (Cdatabase::exception&)
-		{
-		}
-	}
-	else
-	{
-		Cconfig config;
-		if (!config.load(m_conf_file))
-			m_config = config;
-	}
-	if (m_config.m_listen_ipas.empty())
-		m_config.m_listen_ipas.insert(htonl(INADDR_ANY));
-	if (m_config.m_listen_ports.empty())
-		m_config.m_listen_ports.insert(2710);
-	m_read_config_time = srv_time();
-}
-
-void t_torrent::debug(std::ostream& os) const
-{
-	BOOST_FOREACH(auto& i, peers)
-	{
-		os << "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
-			<< "<td align=right>" << ntohs(i.second.port)
-			<< "<td align=right>" << i.second.uid
-			<< "<td align=right>" << i.second.left
-			<< "<td align=right>" << ::time(NULL) - i.second.mtime
-			<< "<td>" << hex_encode(i.second.peer_id);
-	}
 }
 
 std::string srv_debug(const Ctracker_input& ti)
@@ -961,34 +983,4 @@ void test_announce()
 	clean_up();
 	write_db_torrents();
 	write_db_users();
-}
-
-int test_sql()
-{
-	if (!m_use_sql)
-		return 0;
-	try
-	{
-		mysql_get_server_version(m_database);
-		if (m_config.m_log_announce)
-			Csql_query(m_database, "select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0").execute();
-		Csql_query(m_database, "select name, value from @config where 0").execute();
-		Csql_query(m_database, "select @fid, info_hash, @leechers, @seeders, flags, mtime, ctime from @files where 0").execute();
-		Csql_query(m_database, "select fid, uid, active, announced, completed, downloaded, `left`, uploaded from @files_users where 0").execute();
-		if (m_config.m_log_scrape)
-			Csql_query(m_database, "select id, ipa, uid, mtime from @scrape_log where 0").execute();
-		Csql_query(m_database, "select @uid, torrent_pass_version, downloaded, uploaded from @users where 0").execute();
-		Csql_query(m_database, "update @files set @leechers = 0, @seeders = 0").execute();
-		Csql_query(m_database, "update @files_users set active = 0").execute();
-		m_read_users_can_leech = Csql_query(m_database, "show columns from @users like 'can_leech'").execute();
-		m_read_users_peers_limit = Csql_query(m_database, "show columns from @users like 'peers_limit'").execute();
-		m_read_users_torrent_pass = Csql_query(m_database, "show columns from @users like 'torrent_pass'").execute();
-		m_read_users_torrents_limit = Csql_query(m_database, "show columns from @users like 'torrents_limit'").execute();
-		m_read_users_wait_time = Csql_query(m_database, "show columns from @users like 'wait_time'").execute();
-		return 0;
-	}
-	catch (Cdatabase::exception&)
-	{
-	}
-	return 1;
 }
