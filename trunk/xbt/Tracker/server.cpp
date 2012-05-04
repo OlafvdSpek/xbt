@@ -38,6 +38,11 @@ bool m_read_users_wait_time;
 bool m_use_sql;
 
 void accept(const Csocket&);
+void clean_up();
+void read_config();
+void read_db_torrents();
+void read_db_torrents_sql();
+void read_db_users();
 int test_sql();
 void write_db_torrents();
 void write_db_users();
@@ -95,12 +100,12 @@ Cserver::Cserver(const std::string& table_prefix, bool use_sql, const std::strin
 	m_use_sql = use_sql;
 }
 
-const Cconfig& Cserver::config() const
+const Cconfig& srv_config()
 {
 	return m_config;
 }
 
-Cdatabase& Cserver::database()
+Cdatabase& srv_database()
 {
 	return m_database;
 }
@@ -115,12 +120,12 @@ t_user* find_user_by_uid(int v)
 	return find_ptr(m_users, v);
 }
 
-long long Cserver::secret() const
+long long srv_secret()
 {
 	return m_secret;
 }
 
-Cstats& Cserver::stats()
+Cstats& srv_stats()
 {
 	return m_stats;
 }
@@ -490,7 +495,7 @@ std::string Cserver::select_peers(const Ctracker_input& ti) const
 		% f->seeders % f->leechers % m_config.m_announce_interval % m_config.m_announce_interval % peers.size() % peers).str();
 }
 
-void t_torrent::clean_up(time_t t, Cserver& server)
+void t_torrent::clean_up(time_t t)
 {
 	for (auto i = peers.begin(); i != peers.end(); )
 	{
@@ -509,10 +514,10 @@ void t_torrent::clean_up(time_t t, Cserver& server)
 	}
 }
 
-void Cserver::clean_up()
+void clean_up()
 {
 	BOOST_FOREACH(auto& i, m_torrents)
-		i.second.clean_up(srv_time() - static_cast<int>(1.5 * m_config.m_announce_interval), *this);
+		i.second.clean_up(srv_time() - static_cast<int>(1.5 * m_config.m_announce_interval));
 	m_clean_up_time = srv_time();
 }
 
@@ -557,7 +562,7 @@ const std::string& db_name(const std::string& v)
 	return m_database.name(v);
 }
 
-void Cserver::read_db_torrents()
+void read_db_torrents()
 {
 	m_read_db_torrents_time = srv_time();
 	if (m_use_sql)
@@ -582,7 +587,7 @@ void Cserver::read_db_torrents()
 	}
 }
 
-void Cserver::read_db_torrents_sql()
+void read_db_torrents_sql()
 {
 	try
 	{
@@ -626,7 +631,7 @@ void Cserver::read_db_torrents_sql()
 	}
 }
 
-void Cserver::read_db_users()
+void read_db_users()
 {
 	m_read_db_users_time = srv_time();
 	if (!m_use_sql)
@@ -767,7 +772,7 @@ void write_db_users()
 	}
 }
 
-void Cserver::read_config()
+void read_config()
 {
 	if (m_use_sql)
 	{
@@ -935,12 +940,12 @@ t_user* find_user_by_torrent_pass(str_ref v, str_ref info_hash)
 	return find_ptr2(m_users_torrent_passes, to_array<char, 32>(v));
 }
 
-void Cserver::term()
+void srv_term()
 {
 	g_sig_term = true;
 }
 
-void Cserver::test_announce()
+void test_announce()
 {
 	t_user* u = find_ptr(m_users, 1);
 	Ctracker_input i;
@@ -948,13 +953,13 @@ void Cserver::test_announce()
 	memcpy(i.m_peer_id.data(), str_ref("PIPIPIPIPIPIPIPIPIPI"));
 	i.m_ipa = htonl(0x7f000063);
 	i.m_port = 54321;
-	std::cout << insert_peer(i, false, u) << std::endl;
+	std::cout << g_server->insert_peer(i, false, u) << std::endl;
 	write_db_torrents();
 	write_db_users();
 	m_time++;
 	i.m_uploaded = 1 << 30;
 	i.m_downloaded = 1 << 20;
-	std::cout << insert_peer(i, false, u) << std::endl;
+	std::cout << g_server->insert_peer(i, false, u) << std::endl;
 	write_db_torrents();
 	write_db_users();
 	m_time += 3600;
