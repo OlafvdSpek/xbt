@@ -17,6 +17,7 @@ public:
 	int post_select(fd_set* fd_read_set, fd_set* fd_write_set);
 	Cconnection(Cserver*, const Csocket&, const sockaddr_in&);
 private:
+	Cserver* m_server;
 	sockaddr_in m_a;
 	time_t m_ctime;
 	int m_state;

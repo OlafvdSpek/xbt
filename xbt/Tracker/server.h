@@ -178,7 +178,6 @@ public:
 
 	void test_announce();
 	int test_sql();
-	void accept(const Csocket&);
 	t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 	void read_config();
 	void write_db_torrents();
@@ -193,6 +192,7 @@ public:
 	std::string select_peers(const Ctracker_input&) const;
 	std::string scrape(const Ctracker_input&, t_user*);
 	int run();
+	Cstats& stats();
 	static void term();
 	Cserver(Cdatabase&, const std::string& table_prefix, bool use_sql, const std::string& conf_file);
 
@@ -216,11 +216,6 @@ public:
 		return m_secret;
 	}
 
-	Cstats& stats()
-	{
-		return m_stats;
-	}
-
 	time_t time() const
 	{
 		return m_time;
@@ -229,7 +224,6 @@ private:
 	const std::string& db_name(const std::string&) const;
 
 	Cconfig m_config;
-	Cstats m_stats;
 	long long m_secret;
 	Cdatabase& m_database;
 	boost::unordered_map<std::string, t_torrent> m_torrents;
