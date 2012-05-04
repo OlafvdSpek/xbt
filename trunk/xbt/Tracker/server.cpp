@@ -541,7 +541,7 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 			std::cerr << "epoll_wait failed: " << errno << std::endl;
 		else
 		{
-			int prev_time = m_time;
+			time_t prev_time = m_time;
 			m_time = ::time(NULL);
 			for (int i = 0; i < r; i++)
 				reinterpret_cast<Cclient*>(events[i].data.ptr)->process_events(events[i].events);
@@ -759,9 +759,7 @@ std::string t_torrent::select_peers(const Ctracker_input& ti) const
 	if (ti.m_event == Ctracker_input::e_stopped)
 		return "";
 
-	typedef std::vector<std::array<char, 6> > t_candidates;
-
-	t_candidates candidates;
+	std::vector<std::array<char, 6>> candidates;
 	BOOST_FOREACH(auto& i, peers)
 	{
 		if (!ti.m_left && !i.second.left)
