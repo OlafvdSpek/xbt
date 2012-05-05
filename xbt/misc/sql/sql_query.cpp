@@ -18,8 +18,9 @@ Csql_result Csql_query::execute() const
 std::string Csql_query::replace_names(const std::string& v) const
 {
 	std::string r;
-	for (size_t i = 0, j; j = v.find('@', i); )
+	for (size_t i = 0; ; )
 	{
+		size_t j = v.find('@', i);
 		if (j == std::string::npos)
 		{
 			r.append(v.data() + i, v.size() - i);
