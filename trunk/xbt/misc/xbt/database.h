@@ -15,8 +15,6 @@ public:
 		}
 	};
 
-	typedef std::map<std::string, std::string> names_t;
-
 	void open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors = false);
 	const std::string& name(const std::string&) const;
 	Csql_result query(const std::string&);
@@ -37,6 +35,6 @@ public:
 private:
 	bool m_echo_errors;
 	MYSQL m_handle;
-	names_t m_names;
+	std::map<std::string, std::string> m_names;
 	std::string m_query_log;
 };
