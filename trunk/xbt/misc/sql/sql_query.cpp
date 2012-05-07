@@ -23,10 +23,10 @@ std::string Csql_query::replace_names(const std::string& v) const
 		size_t j = v.find('@', i);
 		if (j == std::string::npos)
 		{
-			r.append(v.data() + i, v.size() - i);
+			r.append(v, i, v.size() - i);
 			break;
 		}
-		r.append(v.data() + i, j - i);
+		r.append(v, i, j - i);
 		i = j + 1;
 		j = v.find_first_of(" ,", i);
 		r += m_database.name(v.substr(i, j - i));
