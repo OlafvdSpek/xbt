@@ -4,10 +4,10 @@
 #include <vector>
 #include <xbt/database.h>
 
-Csql_query::Csql_query(Cdatabase& database, const std::string& v):
-	m_database(database)
+Csql_query::Csql_query(Cdatabase& database, const std::string& v) :
+	m_database(database),
+	m_in(v)
 {
-	m_in = v;
 }
 
 Csql_result Csql_query::execute() const
@@ -29,9 +29,7 @@ std::string Csql_query::replace_names(const std::string& v) const
 		r.append(v.data() + i, j - i);
 		i = j + 1;
 		j = v.find_first_of(" ,", i);
-		if (j == std::string::npos)
-			j = v.size();
-		r.append(m_database.name(v.substr(i, j - i)));
+		r += m_database.name(v.substr(i, j - i));
 		i = j;
 	}
 	return r;
