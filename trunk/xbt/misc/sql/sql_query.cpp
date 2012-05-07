@@ -29,6 +29,8 @@ std::string Csql_query::replace_names(const std::string& v) const
 		r.append(v, i, j - i);
 		i = j + 1;
 		j = v.find_first_of(" ,", i);
+		if (j == std::string::npos)
+			j = v.size();
 		r += m_database.name(v.substr(i, j - i));
 		i = j;
 	}
