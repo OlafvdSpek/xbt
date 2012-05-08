@@ -4,9 +4,9 @@
 #include <vector>
 #include <xbt/database.h>
 
-Csql_query::Csql_query(Cdatabase& database, const std::string& v) :
+Csql_query::Csql_query(Cdatabase& database, std::string v) :
 	m_database(database),
-	m_in(v)
+	m_in(std::move(v))
 {
 }
 
@@ -42,9 +42,9 @@ std::string Csql_query::read() const
 	return m_out + replace_names(m_in);
 }
 
-void Csql_query::operator=(const std::string& v)
+void Csql_query::operator=(std::string v)
 {
-	m_in = v;
+	m_in = std::move(v);
 	m_out.clear();
 }
 

@@ -10,13 +10,13 @@ class Csql_query
 public:
 	Csql_result execute() const;
 	std::string read() const;
-	void operator=(const std::string&);
+	void operator=(std::string);
 	void operator+=(const std::string&);
 	Csql_query& p_name(const std::string&);
 	Csql_query& p_raw(data_ref);
 	Csql_query& operator()(long long);
 	Csql_query& operator()(str_ref);
-	Csql_query(Cdatabase&, const std::string& = "");
+	Csql_query(Cdatabase&, std::string);
 
 #if 1
 	Csql_query& p(long long v)
