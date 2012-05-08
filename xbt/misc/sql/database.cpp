@@ -93,9 +93,9 @@ void Cdatabase::set_query_log(const std::string& v)
 	m_query_log = v;
 }
 
-void Cdatabase::set_name(const std::string& a, const std::string& b)
+void Cdatabase::set_name(const std::string& a, std::string b)
 {
-	m_names[a] = b;
+	m_names[a] = std::move(b);
 }
 
 const std::string& Cdatabase::name(const std::string& v) const
