@@ -56,11 +56,11 @@ public:
 	{
 	}
 
-	Csql_row(MYSQL_ROW data, unsigned long* sizes, const Csql_result::ptr_t& source)
+	Csql_row(MYSQL_ROW data, unsigned long* sizes, Csql_result::ptr_t source)
 	{
 		m_data = data;
 		m_sizes = sizes;
-		m_source = source;
+		m_source = std::move(source);
 	}
 
 	operator const void*() const
