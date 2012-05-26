@@ -364,6 +364,7 @@ void write_db_users()
 			+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
 		m_torrents_users_updates_buffer.erase();
 	}
+	m_database.query_nothrow("update " + db_name("files_users") + " set active = 0 where mtime < unix_timestamp() - 60 * 60");
 	if (!m_users_updates_buffer.empty())
 	{
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
@@ -392,7 +393,7 @@ int test_sql()
 			Csql_query(m_database, "select id, ipa, uid, mtime from @scrape_log where 0").execute();
 		Csql_query(m_database, "select @uid, torrent_pass_version, downloaded, uploaded from @users where 0").execute();
 		Csql_query(m_database, "update @files set @leechers = 0, @seeders = 0").execute();
-		Csql_query(m_database, "update @files_users set active = 0").execute();
+		// Csql_query(m_database, "update @files_users set active = 0").execute();
 		m_read_users_can_leech = Csql_query(m_database, "show columns from @users like 'can_leech'").execute();
 		m_read_users_peers_limit = Csql_query(m_database, "show columns from @users like 'peers_limit'").execute();
 		m_read_users_torrent_pass = Csql_query(m_database, "show columns from @users like 'torrent_pass'").execute();
@@ -415,7 +416,7 @@ void clean_up(t_torrent& t, time_t time)
 			(i->second.left ? t.leechers : t.seeders)--;
 			if (t_user* user = find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
-			if (i->second.uid)
+			if (0) // i->second.uid)
 				m_torrents_users_updates_buffer += Csql_query(m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(t.fid)(i->second.uid).read();
 			t.peers.erase(i++);
 			t.dirty = true;
