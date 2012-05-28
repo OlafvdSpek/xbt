@@ -4,7 +4,8 @@
 #include <boost/foreach.hpp>
 #include <cstdio>
 #include <string.h>
-#include "xbt/bt_misc.h"
+#include <xbt/bt_misc.h>
+#include <xbt/find_ptr.h>
 
 Cbvalue::Cbvalue(long long v)
 {
