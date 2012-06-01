@@ -281,14 +281,14 @@ int Cbvalue::pre_read() const
 	case vt_list:
 		{
 			int v = 2;
-			BOOST_FOREACH(t_list::const_reference i, *m_list)
+			BOOST_FOREACH(auto& i, *m_list)
 				v += i.pre_read();
 			return v;
 		}
 	case vt_dictionary:
 		{
 			int v = 2;
-			BOOST_FOREACH(t_map::const_reference i, *m_map)
+			BOOST_FOREACH(auto& i, *m_map)
 				v += n(i.first.size()).size() + i.first.size() + i.second.pre_read() + 1;
 			return v;
 		}
@@ -336,7 +336,7 @@ int Cbvalue::read(char* d) const
 	case vt_list:
 		{
 			*w++ = 'l';
-			BOOST_FOREACH(t_list::const_reference i, *m_list)
+			BOOST_FOREACH(auto& i, *m_list)
 				w += i.read(w);
 			*w++ = 'e';
 			return w - d;
@@ -344,7 +344,7 @@ int Cbvalue::read(char* d) const
 	case vt_dictionary:
 		{
 			*w++ = 'd';
-			BOOST_FOREACH(t_map::const_reference i, *m_map)
+			BOOST_FOREACH(auto& i, *m_map)
 			{
 #ifdef WIN32
 				sprintf(w, "%d:", i.first.size());
