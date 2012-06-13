@@ -3,18 +3,6 @@
 #include "config.h"
 #include "tracker_input.h"
 
-namespace boost
-{
-	template<class T, size_t N>
-	struct hash<std::array<T, N>>
-	{
-		size_t operator()(const std::array<T, N>& v) const
-		{
-			return boost::hash_range(v.begin(), v.end());
-		}
-	};
-}
-
 class Cstats
 {
 public:

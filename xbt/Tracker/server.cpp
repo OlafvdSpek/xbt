@@ -6,6 +6,18 @@
 #include "epoll.h"
 #include "transaction.h"
 
+namespace boost
+{
+	template<class T, size_t N>
+	struct hash<std::array<T, N>>
+	{
+		size_t operator()(const std::array<T, N>& v) const
+		{
+			return boost::hash_range(v.begin(), v.end());
+		}
+	};
+}
+
 static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
 boost::unordered_map<std::string, t_torrent> m_torrents;
