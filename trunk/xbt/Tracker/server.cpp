@@ -764,13 +764,13 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 		file.completed++;
 	(udp ? m_stats.announced_udp : m_stats.announced_http)++;
 	file.dirty = true;
-	return "";
+	return std::string();
 }
 
 std::string t_torrent::select_peers(const Ctracker_input& ti) const
 {
 	if (ti.m_event == Ctracker_input::e_stopped)
-		return "";
+		return std::string();
 
 	std::vector<std::array<char, 6>> candidates;
 	BOOST_FOREACH(auto& i, peers)

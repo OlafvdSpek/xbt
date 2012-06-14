@@ -134,7 +134,7 @@ std::string uri_decode(str_ref v)
 		case '%':
 			{
 				if (i + 2 >= v.size())
-					return "";
+					return std::string();
 				int l = v[++i];
 				r += hex_decode(l) << 4 | hex_decode(v[++i]);
 				break;
@@ -227,7 +227,7 @@ static std::string peer_id2a(const std::string& name, const std::string& peer_id
 std::string peer_id2a(const std::string& v)
 {
 	if (v.length() != 20)
-		return "";
+		return std::string();
 	if (v[7] == '-')
 	{
 		switch (v[0])
@@ -297,7 +297,7 @@ std::string time2a(time_t v)
 {
 	const tm* date = localtime(&v);
 	if (!date)
-		return "";
+		return std::string();
 	char b[20];
 	sprintf(b, "%04d-%02d-%02d %02d:%02d:%02d", date->tm_year + 1900, date->tm_mon + 1, date->tm_mday, date->tm_hour, date->tm_min, date->tm_sec);
 	return b;
