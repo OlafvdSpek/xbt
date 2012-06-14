@@ -142,7 +142,7 @@ inline long long to_int(str_ref v)
 	if (v.empty())
 		return 0;
 	if (!*v.end())
-		return atoi(v.data());
+		return atoll(v.data());
 	try
 	{
 		return boost::lexical_cast<long long>(v);

@@ -7,7 +7,7 @@ add_library(
 	bt_misc.cpp
 	sql/database.cpp
 	sql/sql_query.cpp
-	virtual_binary.cpp
 	xcc_z.cpp
 )
+target_link_libraries(xbt mysqlclient z)
 install(TARGETS xbt DESTINATION lib)
