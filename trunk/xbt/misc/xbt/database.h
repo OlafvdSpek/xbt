@@ -20,7 +20,7 @@ public:
 	Csql_result query(const std::string&);
 	void query_nothrow(const std::string&);
 	void set_name(const std::string&, std::string);
-	void set_query_log(const std::string&);
+	void set_query_log(std::ostream*);
 	int affected_rows();
 	int insert_id();
 	int select_db(const std::string&);
@@ -36,5 +36,5 @@ private:
 	bool m_echo_errors;
 	MYSQL m_handle;
 	std::map<std::string, std::string> m_names;
-	std::string m_query_log;
+	std::ostream* m_query_log;
 };
