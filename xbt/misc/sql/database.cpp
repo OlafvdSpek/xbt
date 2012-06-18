@@ -1,6 +1,6 @@
 #include <xbt/database.h>
 
-#include <ostream>
+#include <iostream>
 #include <stdexcept>
 #include <xbt/find_ptr.h>
 
