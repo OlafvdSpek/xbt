@@ -1,7 +1,6 @@
 #include <xbt/database.h>
 
-#include <fstream>
-#include <iostream>
+#include <ostream>
 #include <stdexcept>
 #include <xbt/find_ptr.h>
 
@@ -11,7 +10,8 @@
 #include <syslog.h>
 #endif
 
-Cdatabase::Cdatabase()
+Cdatabase::Cdatabase() :
+	m_query_log(NULL)
 {
 	mysql_init(&m_handle);
 }
@@ -34,10 +34,9 @@ void Cdatabase::open(const std::string& host, const std::string& user, const std
 
 Csql_result Cdatabase::query(const std::string& q)
 {
-	if (!m_query_log.empty())
+	if (m_query_log)
 	{
-		static std::ofstream f(m_query_log.c_str());
-		f << q.substr(0, 999) << std::endl;
+		*m_query_log << q.substr(0, 999) << std::endl;
 	}
 	if (mysql_real_query(&m_handle, q.data(), q.size()))
 	{
@@ -88,7 +87,7 @@ int Cdatabase::select_db(const std::string& v)
 	return mysql_select_db(&m_handle, v.c_str());
 }
 
-void Cdatabase::set_query_log(const std::string& v)
+void Cdatabase::set_query_log(std::ostream* v)
 {
 	m_query_log = v;
 }
