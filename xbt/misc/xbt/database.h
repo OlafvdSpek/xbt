@@ -4,13 +4,13 @@
 #include <stdexcept>
 #include "sql_result.h"
 
-class Cdatabase: boost::noncopyable
+class Cdatabase : boost::noncopyable
 {
 public:
-	class exception: public std::runtime_error
+	class exception : public std::runtime_error
 	{
 	public:
-		exception(const std::string& s): runtime_error(s)
+		exception(const std::string& s) : runtime_error(s)
 		{
 		}
 	};
