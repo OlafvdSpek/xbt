@@ -20,7 +20,7 @@ namespace boost
 
 static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
-boost::unordered_map<std::string, t_torrent> m_torrents;
+boost::unordered_map<std::array<char, 20>, t_torrent> m_torrents;
 boost::unordered_map<int, t_user> m_users;
 boost::unordered_map<std::array<char, 32>, t_user*> m_users_torrent_passes;
 Cconfig m_config;
@@ -107,7 +107,7 @@ Cdatabase& srv_database()
 
 const t_torrent* find_torrent(const std::string& id)
 {
-	return find_ptr(m_torrents, id);
+	return find_ptr(m_torrents, to_array<char, 20>(id));
 }
 
 t_user* find_user_by_uid(int v)
@@ -187,7 +187,7 @@ void read_db_torrents_sql()
 			Csql_result result = Csql_query(m_database, "select info_hash, @fid from @files where flags & 1").execute();
 			while (Csql_row row = result.fetch_row())
 			{
-				auto i = m_torrents.find(row[0].s());
+				auto i = m_torrents.find(to_array<char, 20>(row[0]));
 				if (i != m_torrents.end())
 				{
 					BOOST_FOREACH(auto& j, i->second.peers)
@@ -208,7 +208,7 @@ void read_db_torrents_sql()
 			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
 			if (row[0].size() != 20 || find_torrent(row[0].s()))
 				continue;
-			t_torrent& file = m_torrents[row[0].s()];
+			t_torrent& file = m_torrents[to_array<char, 20>(row[0])];
 			if (file.fid)
 				continue;
 			file.completed = row[1].i();
@@ -235,7 +235,7 @@ void read_db_torrents()
 		{
 			s = hex_decode(s);
 			if (s.size() == 20)
-				new_torrents.insert(&m_torrents[s]);
+				new_torrents.insert(&m_torrents[to_array<char, 20>(s)]);
 		}
 		for (auto i = m_torrents.begin(); i != m_torrents.end(); )
 		{
@@ -701,7 +701,7 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 		return bts_unregistered_torrent;
 	if (v.m_left && user && !user->can_leech)
 		return bts_can_not_leech;
-	t_torrent& file = m_torrents[v.m_info_hash];
+	t_torrent& file = m_torrents[to_array<char, 20>(v.m_info_hash)];
 	if (!file.ctime)
 		file.ctime = srv_time();
 	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > srv_time())
@@ -833,7 +833,7 @@ std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 		BOOST_FOREACH(auto& i, m_torrents)
 		{
 			if (i.second.leechers || i.second.seeders)
-				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % i.first % i.second.seeders % i.second.completed % i.second.leechers).str();
+				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % boost::make_iterator_range(i.first) % i.second.seeders % i.second.completed % i.second.leechers).str();
 		}
 	}
 	else
