@@ -51,6 +51,11 @@ bool m_use_sql;
 
 void accept(const Csocket&);
 	
+static void async_query(const std::string& v)
+{
+	m_database.query_nothrow(v);
+}
+
 static void sig_handler(int v)
 {
 	switch (v)
@@ -330,7 +335,7 @@ void write_db_torrents()
 		if (!buffer.empty())
 		{
 			buffer.erase(buffer.size() - 1);
-			m_database.query("insert into " + db_name("files") + " (" + db_name("leechers") + ", " + db_name("seeders") + ", " + db_name("completed") + ", " + db_name("fid") + ") values "
+			async_query("insert into " + db_name("files") + " (" + db_name("leechers") + ", " + db_name("seeders") + ", " + db_name("completed") + ", " + db_name("fid") + ") values "
 				+ buffer
 				+ " on duplicate key update"
 				+ "  " + db_name("leechers") + " = values(" + db_name("leechers") + "),"
@@ -345,13 +350,13 @@ void write_db_torrents()
 	if (!m_announce_log_buffer.empty())
 	{
 		m_announce_log_buffer.erase(m_announce_log_buffer.size() - 1);
-		m_database.query_nothrow("insert delayed into " + db_name("announce_log") + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
+		async_query("insert delayed into " + db_name("announce_log") + " (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values " + m_announce_log_buffer);
 		m_announce_log_buffer.erase();
 	}
 	if (!m_scrape_log_buffer.empty())
 	{
 		m_scrape_log_buffer.erase(m_scrape_log_buffer.size() - 1);
-		m_database.query_nothrow("insert delayed into " + db_name("scrape_log") + " (ipa, uid, mtime) values " + m_scrape_log_buffer);
+		async_query("insert delayed into " + db_name("scrape_log") + " (ipa, uid, mtime) values " + m_scrape_log_buffer);
 		m_scrape_log_buffer.erase();
 	}
 }
@@ -364,7 +369,7 @@ void write_db_users()
 	if (!m_torrents_users_updates_buffer.empty())
 	{
 		m_torrents_users_updates_buffer.erase(m_torrents_users_updates_buffer.size() - 1);
-		m_database.query_nothrow("insert into " + db_name("files_users") + " (active, announced, completed, downloaded, `left`, uploaded, mtime, fid, uid) values "
+		async_query("insert into " + db_name("files_users") + " (active, announced, completed, downloaded, `left`, uploaded, mtime, fid, uid) values "
 			+ m_torrents_users_updates_buffer
 			+ " on duplicate key update"
 			+ "  active = values(active),"
@@ -376,11 +381,11 @@ void write_db_users()
 			+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
 		m_torrents_users_updates_buffer.erase();
 	}
-	m_database.query_nothrow("update " + db_name("files_users") + " set active = 0 where mtime < unix_timestamp() - 60 * 60");
+	async_query("update " + db_name("files_users") + " set active = 0 where mtime < unix_timestamp() - 60 * 60");
 	if (!m_users_updates_buffer.empty())
 	{
 		m_users_updates_buffer.erase(m_users_updates_buffer.size() - 1);
-		m_database.query_nothrow("insert into " + db_name("users") + " (downloaded, uploaded, " + db_name("uid") + ") values "
+		async_query("insert into " + db_name("users") + " (downloaded, uploaded, " + db_name("uid") + ") values "
 			+ m_users_updates_buffer
 			+ " on duplicate key update"
 			+ "  downloaded = downloaded + values(downloaded),"
