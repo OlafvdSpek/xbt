@@ -492,7 +492,7 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 				strcpy(afa.af_name, "httpready");
 				if (l.setsockopt(SOL_SOCKET, SO_ACCEPTFILTER, &afa, sizeof(afa)))
 					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-#elif TCP_DEFER_ACCEPT
+#elif 0 // TCP_DEFER_ACCEPT
 				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, 90))
 					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
