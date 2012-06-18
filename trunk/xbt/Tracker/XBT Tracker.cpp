@@ -37,7 +37,11 @@ int main1()
 		std::cerr << e.what() << std::endl;
 		return 1;
 	}
-	srv_database().set_query_log(config.m_query_log);
+	if (!config.m_query_log.empty())
+	{
+		static std::ofstream os(config.m_query_log.c_str());
+		srv_database().set_query_log(&os);
+	}
 	return srv_run(config.m_mysql_table_prefix, config.m_mysql_host != "-", g_conf_file);
 }
 
