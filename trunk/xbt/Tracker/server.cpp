@@ -645,7 +645,11 @@ void accept(const Csocket& l)
 	while (1)
 	{
 		socklen_t cb_a = sizeof(sockaddr_in);
+#ifdef SOCK_NONBLOCK
+		Csocket s = accept4(l, reinterpret_cast<sockaddr*>(&a), &cb_a, SOCK_NONBLOCK);
+#else
 		Csocket s = ::accept(l, reinterpret_cast<sockaddr*>(&a), &cb_a);
+#endif
 		if (s == SOCKET_ERROR)
 		{
 			if (WSAGetLastError() == WSAECONNABORTED)
@@ -661,8 +665,10 @@ void accept(const Csocket& l)
 			break;
 		}
 		m_stats.accepted_tcp++;
+#ifndef SOCK_NONBLOCK
 		if (s.blocking(false))
 			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+#endif
 		std::auto_ptr<Cconnection> connection(new Cconnection(s, a));
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
