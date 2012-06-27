@@ -102,7 +102,7 @@ std::string encode_field(const std::string& v, const std::string& local_domain_u
 
 std::string encode_field(str_ref v)
 {
-	return encode_field(v.s());
+	return encode_field(v.s(), "");
 }
 
 std::string encode_text(const std::string& v, const std::string& local_domain_url, bool add_span)
@@ -125,7 +125,7 @@ std::string encode_text(const std::string& v, const std::string& local_domain_ur
 
 std::string encode_text(str_ref v, bool add_span)
 {
-	return encode_text(v.s(), add_span);
+	return encode_text(v.s(), "", add_span);
 }
 
 std::string trim_field(const std::string& v)
