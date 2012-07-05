@@ -41,18 +41,11 @@ static std::string web_link(const std::string& link_title, const std::string& li
 		: (boost::format("<a href=\"%s\">%s</a>") % link % (link_title.empty() ? link : link_title)).str();
 }
 
-static std::string encode_local_url(const std::string& url, const std::string& local_domain_url)
-{
-	if (!local_domain_url.empty() && boost::istarts_with(url, local_domain_url))
-		return url.substr(local_domain_url.length());
-	return url;
-}
-
-std::string encode_field(const std::string& v, const std::string& local_domain_url)
+std::string encode_field(const std::string& v)
 {
 	std::string r;
-	r.reserve(v.length() << 1);
-	for (size_t i = 0; i < v.length(); )
+	r.reserve(v.size() << 1);
+	for (size_t i = 0; i < v.size(); )
 	{
 		if (boost::istarts_with(v.c_str() + i, "ftp://")
 			|| boost::istarts_with(v.c_str() + i, "http://")
@@ -60,7 +53,7 @@ std::string encode_field(const std::string& v, const std::string& local_domain_u
 			|| boost::istarts_with(v.c_str() + i, "mailto:"))
 		{
 			size_t p = i;
-			while (p < v.length()
+			while (p < v.size()
 				&& !isspace(v[p] & 0xff)
 				&& v[p] != '\"'
 				&& v[p] != '<'
@@ -78,7 +71,7 @@ std::string encode_field(const std::string& v, const std::string& local_domain_u
 			else if (boost::istarts_with(v.c_str() + i, "www."))
 				r += web_link(url, "http://" + url, false);
 			else
-				r += web_link(boost::istarts_with(v.c_str() + i, "mailto:") ? url.substr(7) : encode_local_url(url, local_domain_url), url, false);
+				r += web_link(boost::istarts_with(v.c_str() + i, "mailto:") ? url.substr(7) : url, url, false);
 			i = p;
 		}
 		else
@@ -102,20 +95,20 @@ std::string encode_field(const std::string& v, const std::string& local_domain_u
 
 std::string encode_field(str_ref v)
 {
-	return encode_field(v.s(), "");
+	return encode_field(v.s());
 }
 
-std::string encode_text(const std::string& v, const std::string& local_domain_url, bool add_span)
+std::string encode_text(const std::string& v, bool add_span)
 {
 	std::string r;
-	r.reserve(v.length() << 1);
-	for (size_t i = 0; i < v.length(); )
+	r.reserve(v.size() << 1);
+	for (size_t i = 0; i < v.size(); )
 	{
 		size_t p = v.find('\n', i);
 		if (p == std::string::npos)
-			p = v.length();
+			p = v.size();
 		std::string line = v.substr(i, p - i);
-		line = encode_field(line, local_domain_url);
+		line = encode_field(line);
 		r += add_span && boost::istarts_with(line, "> ") ? "<span class=quote>" + line + "</span>" : line;
 		r += "<br>";
 		i = p + 1;
@@ -125,7 +118,7 @@ std::string encode_text(const std::string& v, const std::string& local_domain_ur
 
 std::string encode_text(str_ref v, bool add_span)
 {
-	return encode_text(v.s(), "", add_span);
+	return encode_text(v.s(), add_span);
 }
 
 std::string trim_field(const std::string& v)
@@ -137,11 +130,11 @@ std::string trim_text(const std::string& v)
 {
 	std::string r;
 	bool copy_white = false;
-	for (size_t i = 0; i < v.length(); )
+	for (size_t i = 0; i < v.size(); )
 	{
 		size_t p = v.find('\n', i);
 		if (p == std::string::npos)
-			p = v.length();
+			p = v.size();
 		std::string line = trim_field(v.substr(i, p - i));
 		if (line.empty())
 			copy_white = true;
