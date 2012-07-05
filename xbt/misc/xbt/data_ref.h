@@ -92,7 +92,7 @@ public:
 		return to_int(*this);
 	}
 
-	std::string s() const
+	const std::string s() const
 	{
 		return std::string(reinterpret_cast<const char*>(data()), base_t::size());
 	}
@@ -153,7 +153,7 @@ inline long long to_int(str_ref v)
 	return 0;
 }
 
-inline std::string to_string(str_ref v)
+inline const std::string to_string(str_ref v)
 {
 	return std::string(v.data(), v.size());
 }
