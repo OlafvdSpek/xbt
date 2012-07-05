@@ -63,6 +63,16 @@ public:
 		assign(begin, reinterpret_cast<T>(begin) + size);
 	}
 
+	void set_begin(U v)
+	{
+		assign(v, base_t::end());
+	}
+
+	void set_end(U v)
+	{
+		assign(base_t::begin(), v);
+	}
+
 	void clear()
 	{
 		assign(T(NULL), T(NULL));
