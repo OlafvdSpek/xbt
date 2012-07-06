@@ -23,7 +23,7 @@ public:
 
 	operator const void*() const
 	{
-		return c_rows() ? this : NULL;
+		return size() ? this : NULL;
 	}
 
 	int c_fields() const
@@ -31,7 +31,7 @@ public:
 		return mysql_num_fields(h());
 	}
 
-	int c_rows() const
+	int size() const
 	{
 		return mysql_num_rows(h());
 	}
