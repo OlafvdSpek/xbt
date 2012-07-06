@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "nt_service.h"
 
 #include <windows.h>
