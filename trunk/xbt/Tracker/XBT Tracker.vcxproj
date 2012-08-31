@@ -13,17 +13,20 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{73C570AC-E7C3-451D-A5C6-7A2532F0121B}</ProjectGuid>
     <RootNamespace>XBT Tracker</RootNamespace>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -119,7 +122,7 @@
     </ClCompile>
     <ClCompile Include="connection.cpp">
     </ClCompile>
-    <ClCompile Include="..\misc\sql\database.cpp">
+    <ClCompile Include="..\misc\database.cpp">
     </ClCompile>
     <ClCompile Include="epoll.cpp">
     </ClCompile>
@@ -131,7 +134,7 @@
     </ClCompile>
     <ClCompile Include="..\misc\socket.cpp">
     </ClCompile>
-    <ClCompile Include="..\misc\sql\sql_query.cpp">
+    <ClCompile Include="..\misc\sql_query.cpp">
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

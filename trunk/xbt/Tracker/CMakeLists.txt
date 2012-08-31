@@ -16,11 +16,11 @@ endif()
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-parentheses -Wno-sign-compare")
 add_executable(
 	xbt_tracker
-	../misc/sql/database.cpp
-	../misc/sql/sql_query.cpp
 	../misc/bt_misc.cpp
+	../misc/database.cpp
 	../misc/sha1.cpp
 	../misc/socket.cpp
+	../misc/sql_query.cpp
 	../misc/xcc_z.cpp
 	config.cpp
 	connection.cpp
