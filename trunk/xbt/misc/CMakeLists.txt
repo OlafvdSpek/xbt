@@ -5,8 +5,8 @@ include_directories(.)
 add_library(
 	xbt
 	bt_misc.cpp
-	sql/database.cpp
-	sql/sql_query.cpp
+	database.cpp
+	sql_query.cpp
 	xcc_z.cpp
 )
 target_link_libraries(xbt mysqlclient z)
