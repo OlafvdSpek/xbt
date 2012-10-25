@@ -13,6 +13,19 @@ class Csql_row;
 class Csql_result
 {
 public:
+	class iterator
+	{
+	public:
+		iterator() : res_(NULL) { }
+		iterator(Csql_result& v) : res_(&v), row_(mysql_fetch_row(res_->h())) { }
+		bool operator!=(iterator v) { assert(!v.res_); return row_; }
+		Csql_row operator*();
+		void operator++() { row_ = mysql_fetch_row(res_->h()); }
+	private:
+		Csql_result* res_;
+		MYSQL_ROW row_;
+	};
+
 	typedef boost::shared_ptr<MYSQL_RES> ptr_t;
 
 	Csql_row fetch_row() const;
@@ -40,6 +53,9 @@ public:
 	{
 		mysql_data_seek(h(), i);
 	}
+
+	iterator begin() { return iterator(*this); }
+	iterator end() { return iterator(); }
 private:
 	MYSQL_RES* h() const
 	{
@@ -83,3 +99,5 @@ inline Csql_row Csql_result::fetch_row() const
 	MYSQL_ROW data = mysql_fetch_row(h());
 	return Csql_row(data, mysql_fetch_lengths(h()), m_source);
 }
+
+inline Csql_row Csql_result::iterator::operator*() { return Csql_row(row_, mysql_fetch_lengths(res_->h()), res_->m_source); }
