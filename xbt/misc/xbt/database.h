@@ -38,3 +38,5 @@ private:
 	std::map<std::string, std::string> m_names;
 	std::ostream* m_query_log;
 };
+
+typedef Cdatabase::exception bad_query;
