@@ -32,7 +32,7 @@ int main1()
 		if (config.m_mysql_host != "-")
 			srv_database().open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database, true);
 	}
-	catch (Cdatabase::exception& e)
+	catch (bad_query& e)
 	{
 		std::cerr << e.what() << std::endl;
 		return 1;
