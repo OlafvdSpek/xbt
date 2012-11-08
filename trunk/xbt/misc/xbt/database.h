@@ -4,17 +4,17 @@
 #include <stdexcept>
 #include "sql_result.h"
 
+class bad_query : public std::runtime_error
+{
+public:
+	bad_query(const std::string& s) : runtime_error(s)
+	{
+	}
+};
+
 class Cdatabase : boost::noncopyable
 {
 public:
-	class exception : public std::runtime_error
-	{
-	public:
-		exception(const std::string& s) : runtime_error(s)
-		{
-		}
-	};
-
 	void open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors = false);
 	const std::string& name(const std::string&) const;
 	Csql_result query(const std::string&);
@@ -38,5 +38,3 @@ private:
 	std::map<std::string, std::string> m_names;
 	std::ostream* m_query_log;
 };
-
-typedef Cdatabase::exception bad_query;

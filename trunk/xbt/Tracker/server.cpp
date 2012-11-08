@@ -161,7 +161,7 @@ void read_config()
 			m_database.set_name("scrape_log", m_config.m_table_scrape_log.empty() ? m_table_prefix + "scrape_log" : m_config.m_table_scrape_log);
 			m_database.set_name("users", m_config.m_table_users.empty() ? m_table_prefix + "users" : m_config.m_table_users);
 		}
-		catch (Cdatabase::exception&)
+		catch (bad_query&)
 		{
 		}
 	}
@@ -218,7 +218,7 @@ void read_db_torrents_sql()
 			file.ctime = row[3].i();
 		}
 	}
-	catch (Cdatabase::exception&)
+	catch (bad_query&)
 	{
 	}
 }
@@ -303,7 +303,7 @@ void read_db_users()
 				i++;
 		}
 	}
-	catch (Cdatabase::exception&)
+	catch (bad_query&)
 	{
 	}
 }
@@ -346,7 +346,7 @@ void write_db_torrents()
 				+ "  mtime = unix_timestamp()");
 		}
 	}
-	catch (Cdatabase::exception&)
+	catch (bad_query&)
 	{
 	}
 	if (!m_announce_log_buffer.empty())
@@ -420,7 +420,7 @@ int test_sql()
 		m_read_users_wait_time = Csql_query(m_database, "show columns from @users like 'wait_time'").execute();
 		return 0;
 	}
-	catch (Cdatabase::exception&)
+	catch (bad_query&)
 	{
 	}
 	return 1;
