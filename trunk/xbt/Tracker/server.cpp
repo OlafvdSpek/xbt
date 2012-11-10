@@ -660,9 +660,7 @@ void accept(const Csocket& l)
 			{
 				m_stats.accept_errors++;
 				std::cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
-#ifndef WIN32
-				syslog(LOG_ERR, "accept failed: %s", Csocket::error2a(WSAGetLastError()).c_str());
-#endif
+				xbt_syslog("accept failed: " + Csocket::error2a(WSAGetLastError()));
 			}
 			break;
 		}
