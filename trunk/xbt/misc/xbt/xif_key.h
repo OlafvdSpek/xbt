@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <xbt/shared_data.h>
-#include <xif_value.h>
+#include <xbt/xif_value.h>
 
 const static int file_id = 0x1a464958; // *reinterpret_cast<const int*>("XIF\x1a");
 const static int file_version_old = 0;

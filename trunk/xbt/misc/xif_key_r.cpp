@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "xif_key_r.h"
+#include "xbt/xif_key_r.h"
 
 #include <stream_int.h>
 #include <xbt/shared_data.h>
-#include <xif_key.h>
+#include <xbt/xif_key.h>
 #include <zlib.h>
 
 static int read_int(const byte*& r)
