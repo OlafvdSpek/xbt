@@ -39,14 +39,4 @@
 #include <xbt/to_array.h>
 #include <xbt/xcc_z.h>
 
-#ifndef WIN32
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <syslog.h>
-#include <unistd.h>
-#endif
-
 typedef unsigned char byte;
