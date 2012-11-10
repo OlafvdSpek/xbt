@@ -25,7 +25,6 @@
 #include <map>
 #include <set>
 #include <sha1.h>
-#include <signal.h>
 #include <socket.h>
 #include <sstream>
 #include <stream_int.h>
