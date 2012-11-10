@@ -3,6 +3,10 @@
 #define FD_SETSIZE 1024
 #define NOMINMAX
 
+#ifdef WIN32
+#define atoll _atoi64
+#endif
+
 #include <array>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
@@ -35,9 +39,7 @@
 #include <xbt/to_array.h>
 #include <xbt/xcc_z.h>
 
-#ifdef WIN32
-#define atoll _atoi64
-#else
+#ifndef WIN32
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
