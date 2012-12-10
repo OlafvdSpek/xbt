@@ -86,29 +86,26 @@ inline shared_data make_shared_data(const void* d, size_t sz)
 	return make_shared_data(data_ref(d, sz));
 }
 
+inline shared_data file_get(FILE* f)
+{
+	if (!f)
+		return shared_data();
+	fseek(f, 0, SEEK_SET);
+	struct stat b;
+	if (fstat(fileno(f), &b))
+		return shared_data();
+	shared_data d(b.st_size);
+	return fread(d.data(), b.st_size, 1, f) == 1 ? d : shared_data();
+}
+
 inline shared_data file_get(const std::string& fname)
 {
-	shared_data d;
-	FILE* f = fopen(fname.c_str(), "rb");
-	if (!f)
-		return d;
-	struct stat b;
-	if (!fstat(fileno(f), &b))
-	{
-		d = shared_data(b.st_size);
-		if (fread(d.data(), b.st_size, 1, f) != 1)
-			d.clear();
-	}
-	fclose(f);
-	return d;
+	std::unique_ptr<FILE, int(*)(FILE*)> f(fopen(fname.c_str(), "rb"), fclose);
+	return file_get(f.get());
 }
 
 inline int file_put(const std::string& fname, data_ref v)
 {
-	FILE* f = fopen(fname.c_str(), "wb");
-	if (!f)
-		return 1;
-	int error = fwrite(v.data(), v.size(), 1, f) != 1;
-	fclose(f);
-	return error;
+	std::unique_ptr<FILE, int(*)(FILE*)> f(fopen(fname.c_str(), "wb"), fclose);
+	return f ? fwrite(v.data(), v.size(), 1, f.get()) != 1 : 1;
 }
