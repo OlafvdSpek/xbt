@@ -29,7 +29,7 @@ const typename T::value_type::second_type find_ptr2(const T& c, U v)
 }
 
 template <class T, class U>
-const typename T::value_type* find_ptr3(const T& c, U v)
+const typename T::value_type* find_ptr0(const T& c, U v)
 {
 	typename T::const_iterator i = c.find(v);
 	return i == c.end() ? NULL : &*i;
