@@ -29,6 +29,7 @@ Csocket::Csocket(SOCKET s)
 		m_source = std::make_shared<Csocket_source>(s);
 }
 
+/*
 int Csocket::accept(int& h, int& p)
 {
 	sockaddr_in a;
@@ -39,8 +40,9 @@ int Csocket::accept(int& h, int& p)
 		return r;
 	h = a.sin_addr.s_addr;
 	p = a.sin_port;
-	return 0;
+	return r;
 }
+*/
 
 int Csocket::bind(int h, int p)
 {
