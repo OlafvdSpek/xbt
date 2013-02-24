@@ -15,7 +15,7 @@ Csql_result Csql_query::execute() const
 	return m_database.query(read());
 }
 
-void Csql_query::execute_nothrow() const
+int Csql_query::execute_nothrow() const
 {
 	return m_database.query_nothrow(read());
 }

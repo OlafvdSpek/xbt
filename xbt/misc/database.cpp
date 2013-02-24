@@ -31,7 +31,7 @@ void Cdatabase::open(const std::string& host, const std::string& user, const std
 	mysql_options(&m_handle, MYSQL_OPT_RECONNECT, &a0);
 }
 
-Csql_result Cdatabase::query(const std::string& q)
+int Cdatabase::query_nothrow(const std::string& q)
 {
 	if (m_query_log)
 	{
@@ -47,23 +47,19 @@ Csql_result Cdatabase::query(const std::string& q)
 #ifndef WIN32
 		syslog(LOG_ERR, "%s", mysql_error(&m_handle));
 #endif
-		throw bad_query(mysql_error(&m_handle));
+		return 1;
 	}
+	return 0;
+}
+
+Csql_result Cdatabase::query(const std::string& q)
+{
+	if (query_nothrow(q))
+		throw bad_query(mysql_error(&m_handle));
 	MYSQL_RES* result = mysql_store_result(&m_handle);
 	if (!result && mysql_errno(&m_handle))
 		throw bad_query(mysql_error(&m_handle));
 	return Csql_result(result);
-}
-
-void Cdatabase::query_nothrow(const std::string& q)
-{
-	try
-	{
-		query(q);
-	}
-	catch (bad_query&)
-	{
-	}
 }
 
 void Cdatabase::close()

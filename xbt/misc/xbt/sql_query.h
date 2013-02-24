@@ -9,7 +9,7 @@ class Csql_query
 {
 public:
 	Csql_result execute() const;
-	void execute_nothrow() const;
+	int execute_nothrow() const;
 	std::string read() const;
 	void operator=(std::string);
 	void operator+=(const std::string&);
