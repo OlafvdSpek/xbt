@@ -754,6 +754,8 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 			.read();
 		if (downloaded || uploaded)
 			m_users_updates_buffer += Csql_query(m_database, "(?,?,?),")(downloaded)(uploaded)(user->uid).read();
+		if (m_torrents_users_updates_buffer.size() > 255 << 10)
+			write_db_users();
 	}
 	if (v.m_event == Ctracker_input::e_stopped)
 		file.peers.erase(peer_key);
