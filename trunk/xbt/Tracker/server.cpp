@@ -206,7 +206,7 @@ void read_db_torrents_sql()
 		// m_torrents.reserve(m_torrents.size() + result.size());
 		while (Csql_row row = result.fetch_row())
 		{
-			m_fid_end = std::max(m_fid_end, static_cast<int>(row[2].i()) + 1);
+			m_fid_end = std::max<int>(m_fid_end, row[2].i() + 1);
 			if (row[0].size() != 20 || find_torrent(row[0].s()))
 				continue;
 			t_torrent& file = m_torrents[to_array<char, 20>(row[0])];
