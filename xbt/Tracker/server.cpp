@@ -321,21 +321,25 @@ void write_db_torrents()
 	try
 	{
 		std::string buffer;
-		BOOST_FOREACH(auto& i, m_torrents)
+		while (1)
 		{
-			t_torrent& file = i.second;
-			if (!file.dirty)
-				continue;
-			if (!file.fid)
+			BOOST_FOREACH(auto& i, m_torrents)
 			{
-				Csql_query(m_database, "insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())")(i.first).execute();
-				file.fid = m_database.insert_id();
+				t_torrent& file = i.second;
+				if (!file.dirty)
+					continue;
+				if (!file.fid)
+				{
+					Csql_query(m_database, "insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())")(i.first).execute();
+					file.fid = m_database.insert_id();
+				}
+				buffer += Csql_query(m_database, "(?,?,?,?),")(file.leechers)(file.seeders)(file.completed)(file.fid).read();
+				file.dirty = false;
+				if (buffer.size() > 255 << 10)
+					break;
 			}
-			buffer += Csql_query(m_database, "(?,?,?,?),")(file.leechers)(file.seeders)(file.completed)(file.fid).read();
-			file.dirty = false;
-		}
-		if (!buffer.empty())
-		{
+			if (buffer.empty())
+				break;
 			buffer.erase(buffer.size() - 1);
 			async_query("insert into " + db_name("files") + " (" + db_name("leechers") + ", " + db_name("seeders") + ", " + db_name("completed") + ", " + db_name("fid") + ") values "
 				+ buffer
@@ -344,6 +348,7 @@ void write_db_torrents()
 				+ "  " + db_name("seeders") + " = values(" + db_name("seeders") + "),"
 				+ "  " + db_name("completed") + " = values(" + db_name("completed") + "),"
 				+ "  mtime = unix_timestamp()");
+			buffer.clear();
 		}
 	}
 	catch (bad_query&)
