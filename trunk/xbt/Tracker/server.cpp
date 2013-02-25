@@ -383,9 +383,9 @@ void write_db_users()
 			+ "  announced = announced + values(announced),"
 			+ "  completed = completed + values(completed),"
 			+ "  downloaded = downloaded + values(downloaded),"
-			+ "  `left` = if(values(`left`) = 18446744073709551615, `left`, values(`left`)),"
+			+ "  `left` = values(`left`),"
 			+ "  uploaded = uploaded + values(uploaded),"
-			+ "  mtime = if(values(mtime) = -1, mtime, values(mtime))");
+			+ "  mtime = values(mtime)");
 		m_torrents_users_updates_buffer.erase();
 	}
 	async_query("update " + db_name("files_users") + " set active = 0 where mtime < unix_timestamp() - 60 * 60");
@@ -440,8 +440,6 @@ void clean_up(t_torrent& t, time_t time)
 			(i->second.left ? t.leechers : t.seeders)--;
 			if (t_user* user = find_user_by_uid(i->second.uid))
 				(i->second.left ? user->incompletes : user->completes)--;
-			if (0) // i->second.uid)
-				m_torrents_users_updates_buffer += Csql_query(m_database, "(0,0,0,0,18446744073709551615,0,-1,?,?),")(t.fid)(i->second.uid).read();
 			t.peers.erase(i++);
 			t.dirty = true;
 		}
