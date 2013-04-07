@@ -917,6 +917,7 @@ std::string srv_statistics()
 	}
 	int peers = leechers + seeders;
 	time_t t = srv_time();
+	time_t up_time = t - m_stats.start_time;
 	os << "<table>"
 		<< "<tr><td>peers<td align=right>" << peers;
 	if (peers)
@@ -926,10 +927,10 @@ std::string srv_statistics()
 	}
 	os << "<tr><td>torrents<td align=right>" << torrents
 		<< "<tr><td>"
-		<< "<tr><td>accepted tcp<td align=right>" << m_stats.accepted_tcp
+		<< "<tr><td>accepted tcp<td align=right>" << m_stats.accepted_tcp << "<td align=right>" << m_stats.accepted_tcp / up_time << " /s"
+		<< "<tr><td>slow tcp<td align=right>" << m_stats.slow_tcp << "<td align=right>" << m_stats.slow_tcp / up_time << " /s"
 		<< "<tr><td>rejected tcp<td align=right>" << m_stats.rejected_tcp
-		<< "<tr><td>accept errors<td align=right>" << m_stats.accept_errors
-		<< "<tr><td>slow tcp<td align=right>" << m_stats.slow_tcp;
+		<< "<tr><td>accept errors<td align=right>" << m_stats.accept_errors;
 	if (m_stats.announced())
 	{
 		os << "<tr><td>announced<td align=right>" << m_stats.announced() << "<td align=right>" << m_stats.announced() * 100 / m_stats.accepted_tcp << " %"
@@ -945,7 +946,7 @@ std::string srv_statistics()
 			<< "<tr><td>scraped udp<td align=right>" << m_stats.scraped_udp << "<td align=right>" << m_stats.scraped_udp * 100 / m_stats.scraped() << " %";
 	}
 	os << "<tr><td>"
-		<< "<tr><td>up time<td align=right>" << duration2a(srv_time() - m_stats.start_time)
+		<< "<tr><td>up time<td align=right>" << duration2a(up_time)
 		<< "<tr><td>"
 		<< "<tr><td>anonymous announce<td align=right>" << m_config.m_anonymous_announce
 		<< "<tr><td>anonymous scrape<td align=right>" << m_config.m_anonymous_scrape
