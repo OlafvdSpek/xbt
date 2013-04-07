@@ -917,7 +917,7 @@ std::string srv_statistics()
 	}
 	int peers = leechers + seeders;
 	time_t t = srv_time();
-	time_t up_time = t - m_stats.start_time;
+	time_t up_time = std::max<time_t>(1, t - m_stats.start_time);
 	os << "<table>"
 		<< "<tr><td>peers<td align=right>" << peers;
 	if (peers)
