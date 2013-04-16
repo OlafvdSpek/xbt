@@ -62,7 +62,7 @@ Csql_query& Csql_query::p_name(const std::string& v0)
 {
 	const std::string& v = m_database.name(v0);
 	std::vector<char> r(2 * v.size() + 2);
-	r.resize(mysql_real_escape_string(m_database, &r.front() + 1, v.data(), v.size()) + 2);
+	r.resize(mysql_real_escape_string(m_database, &r[1], v.data(), v.size()) + 2);
 	r.front() = '`';
 	r.back() = '`';
 	p_raw(r);
@@ -96,7 +96,7 @@ Csql_query& Csql_query::operator()(long long v)
 Csql_query& Csql_query::operator()(str_ref v)
 {
 	std::vector<char> r(2 * v.size() + 2);
-	r.resize(mysql_real_escape_string(m_database, &r.front() + 1, v.data(), v.size()) + 2);
+	r.resize(mysql_real_escape_string(m_database, &r[1], v.data(), v.size()) + 2);
 	r.front() = '\'';
 	r.back() = '\'';
 	p_raw(r);

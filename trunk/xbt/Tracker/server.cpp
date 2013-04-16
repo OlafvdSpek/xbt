@@ -794,8 +794,8 @@ std::string t_torrent::select_peers(const Ctracker_input& ti) const
 		if (!ti.m_left && !i.second.left)
 			continue;
 		std::array<char, 6> v;
-		memcpy(&v.front(), &i.first.host_, 4);
-		memcpy(&v.front() + 4, &i.second.port, 2);
+		memcpy(&v[0], &i.first.host_, 4);
+		memcpy(&v[4], &i.second.port, 2);
 		candidates.push_back(v);
 	}
 	size_t c = ti.m_num_want < 0 ? 50 : std::min(ti.m_num_want, 50);
