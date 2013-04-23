@@ -27,5 +27,4 @@ public:
 	int m_ipa;
 	int m_port;
 	int m_num_want;
-	bool m_compact;
 };
