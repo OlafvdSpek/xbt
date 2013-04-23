@@ -789,6 +789,7 @@ std::string t_torrent::select_peers(const Ctracker_input& ti) const
 		return std::string();
 
 	std::vector<std::array<char, 6>> candidates;
+	candidates.reserve(peers.size());
 	BOOST_FOREACH(auto& i, peers)
 	{
 		if (!ti.m_left && !i.second.left)
