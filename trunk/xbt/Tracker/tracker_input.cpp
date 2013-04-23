@@ -9,7 +9,6 @@ Ctracker_input::Ctracker_input()
 	m_left = 0;
 	m_port = 0;
 	m_uploaded = 0;
-	m_num_want = -1;
 }
 
 void Ctracker_input::set(const std::string& name, const std::string& value)
@@ -47,10 +46,6 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 	case 'l':
 		if (name == "left")
 			m_left = atoll(value.c_str());
-		break;
-	case 'n':
-		if (name == "numwant")
-			m_num_want = atoi(value.c_str());
 		break;
 	case 'p':
 		if (name == "peer_id" && value.size() == 20)

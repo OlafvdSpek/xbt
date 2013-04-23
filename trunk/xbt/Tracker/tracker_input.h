@@ -26,5 +26,4 @@ public:
 	long long m_uploaded;
 	int m_ipa;
 	int m_port;
-	int m_num_want;
 };
