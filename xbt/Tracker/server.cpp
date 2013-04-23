@@ -799,7 +799,7 @@ std::string t_torrent::select_peers(const Ctracker_input& ti) const
 		memcpy(&v[4], &i.second.port, 2);
 		candidates.push_back(v);
 	}
-	size_t c = ti.m_num_want < 0 ? 50 : std::min(ti.m_num_want, 50);
+	size_t c = 50;
 	std::string d;
 	d.reserve(300);
 	if (candidates.size() > c)
