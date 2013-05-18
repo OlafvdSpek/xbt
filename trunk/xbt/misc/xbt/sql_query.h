@@ -33,7 +33,7 @@ public:
 private:
 	std::string replace_names(const std::string&) const;
 
+	Cdatabase& m_database;
 	std::string m_in;
 	std::string m_out;
-	Cdatabase& m_database;
 };
