@@ -738,6 +738,7 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 		long long downloaded = 0;
 		long long uploaded = 0;
 		if (i
+			&& i->uid == user->uid
 			&& boost::equals(i->peer_id, v.m_peer_id)
 			&& v.m_downloaded >= i->downloaded
 			&& v.m_uploaded >= i->uploaded)
