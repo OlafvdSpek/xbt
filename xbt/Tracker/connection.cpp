@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "connection.h"
 
-#include <bt_strings.h>
 #include "epoll.h"
 #include "server.h"
 
