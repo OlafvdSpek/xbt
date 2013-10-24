@@ -58,12 +58,8 @@ static void async_query(const std::string& v)
 
 static void sig_handler(int v)
 {
-	switch (v)
-	{
-	case SIGTERM:
+	if (v == SIGTERM)
 		g_sig_term = true;
-		break;
-	}
 }
 
 class Ctcp_listen_socket : public Cclient
