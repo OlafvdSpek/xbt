@@ -186,7 +186,7 @@ void read_db_torrents_sql()
 				auto i = m_torrents.find(to_array<char, 20>(row[0]));
 				if (i != m_torrents.end())
 				{
-					BOOST_FOREACH(auto& j, i->second.peers)
+					for (auto& j : i->second.peers)
 					{
 						if (t_user* user = find_user_by_uid(j.second.uid))
 							(j.second.left ? user->incompletes : user->completes)--;
