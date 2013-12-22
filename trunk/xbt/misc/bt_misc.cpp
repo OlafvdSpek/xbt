@@ -376,7 +376,9 @@ std::string mk_sname(std::string v)
 
 void xbt_syslog(const std::string& v)
 {
-#ifndef WIN32
-		syslog(LOG_ERR, "%s", v.c_str());
+#ifdef WIN32
+	std::cerr << v << std::endl;
+#else
+	syslog(LOG_ERR, "%s", v.c_str());
 #endif
 }
