@@ -1,4 +1,3 @@
-#include <stdafx.h>
 #include "tf_misc.h"
 
 #include <boost/algorithm/string.hpp>
@@ -57,7 +56,9 @@ std::string encode_field(const std::string& v)
 				&& !isspace(v[p] & 0xff)
 				&& v[p] != '\"'
 				&& v[p] != '<'
-				&& v[p] != '>')
+				&& v[p] != '>'
+				&& v[p] != '['
+				&& v[p] != ']')
 			{
 				p++;
 			}
