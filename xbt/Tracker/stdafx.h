@@ -3,12 +3,7 @@
 #define FD_SETSIZE 1024
 #define NOMINMAX
 
-#ifdef WIN32
-#define atoll _atoi64
-#endif
-
 #include <array>
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/ptr_container/ptr_container.hpp>
 #include <boost/utility.hpp>
