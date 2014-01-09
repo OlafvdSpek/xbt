@@ -1,7 +1,6 @@
 #include "xbt/bt_misc.h"
 
 #include <boost/algorithm/string.hpp>
-#include <boost/foreach.hpp>
 #include <sys/stat.h>
 #include <algorithm>
 #include <cstdio>
@@ -18,7 +17,7 @@ std::string escape_string(const std::string& v)
 {
 	std::string w;
 	w.reserve(v.length());
-	BOOST_FOREACH(char i, v)
+	for (char i : v)
 	{
 		if (isgraph(i & 0xff))
 			w += i;
@@ -101,7 +100,7 @@ std::string hex_encode(data_ref v)
 {
 	std::string r;
 	r.reserve(v.size() << 1);
-	BOOST_FOREACH(int i, v)
+	for (int i : v)
 		r += hex_encode(2, i);
 	return r;
 }
@@ -109,7 +108,7 @@ std::string hex_encode(data_ref v)
 std::string js_encode(str_ref v)
 {
 	std::string r;
-	BOOST_FOREACH(int i, v)
+	for (int i : v)
 	{
 		switch (i)
 		{
@@ -155,7 +154,7 @@ std::string uri_encode(str_ref v)
 {
 	std::string r;
 	r.reserve(v.size());
-	BOOST_FOREACH(char c, v)
+	for (char c : v)
 	{
 		if (isalpha(c & 0xff) || isdigit(c & 0xff))
 			r += c;
