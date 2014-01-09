@@ -266,7 +266,7 @@ void read_db_users()
 		q += " from @users";
 		Csql_result result = q.execute();
 		// m_users.reserve(result.size());
-		BOOST_FOREACH(auto& i, m_users)
+		for (auto& i : m_users)
 			i.second.marked = true;
 		m_users_torrent_passes.clear();
 		while (Csql_row row = result.fetch_row())
@@ -319,7 +319,7 @@ void write_db_torrents()
 		std::string buffer;
 		while (1)
 		{
-			BOOST_FOREACH(auto& i, m_torrents)
+			for (auto& i : m_torrents)
 			{
 				t_torrent& file = i.second;
 				if (!file.dirty)
@@ -446,7 +446,7 @@ void clean_up(t_torrent& t, time_t time)
 
 void clean_up()
 {
-	BOOST_FOREACH(auto& i, m_torrents)
+	for (auto& i : m_torrents)
 		clean_up(i.second, srv_time() - static_cast<int>(1.5 * m_config.m_announce_interval));
 	m_clean_up_time = srv_time();
 }
@@ -473,9 +473,9 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 	}
 	std::list<Ctcp_listen_socket> lt;
 	std::list<Cudp_listen_socket> lu;
-	BOOST_FOREACH(auto& j, m_config.m_listen_ipas)
+	for (auto& j : m_config.m_listen_ipas)
 	{
-		BOOST_FOREACH(auto& i, m_config.m_listen_ports)
+		for (auto& i : m_config.m_listen_ports)
 		{
 			Csocket l;
 			if (l.open(SOCK_STREAM) == INVALID_SOCKET)
@@ -503,7 +503,7 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 			}
 			return 1;
 		}
-		BOOST_FOREACH(auto& i, m_config.m_listen_ports)
+		for (auto& i : m_config.m_listen_ports)
 		{
 			Csocket l;
 			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
@@ -579,17 +579,17 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 		FD_ZERO(&fd_write_set);
 		FD_ZERO(&fd_except_set);
 		int n = 0;
-		BOOST_FOREACH(auto& i, m_connections)
+		for (auto& i : m_connections)
 		{
 			int z = i.pre_select(&fd_read_set, &fd_write_set);
 			n = std::max(n, z);
 		}
-		BOOST_FOREACH(auto& i, lt)
+		for (auto& i : lt)
 		{
 			FD_SET(i.s(), &fd_read_set);
 			n = std::max<int>(n, i.s());
 		}
-		BOOST_FOREACH(auto& i, lu)
+		for (auto& i : lu)
 		{
 			FD_SET(i.s(), &fd_read_set);
 			n = std::max<int>(n, i.s());
@@ -602,12 +602,12 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 		else
 		{
 			m_time = ::time(NULL);
-			BOOST_FOREACH(auto& i, lt)
+			for (auto& i : lt)
 			{
 				if (FD_ISSET(i.s(), &fd_read_set))
 					accept(i.s());
 			}
-			BOOST_FOREACH(auto& i, lu)
+			for (auto& i : lu)
 			{
 				if (FD_ISSET(i.s(), &fd_read_set))
 					Ctransaction(i.s()).recv();
@@ -724,7 +724,7 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 	else if (v.m_left && user && user->peers_limit)
 	{
 		int c = 0;
-		BOOST_FOREACH(auto& j, file.peers)
+		for (auto& j : file.peers)
 			c += j.second.left && j.second.uid == user->uid;
 		if (c >= user->peers_limit)
 			return bts_peers_limit_reached;
@@ -787,7 +787,7 @@ std::string t_torrent::select_peers(const Ctracker_input& ti) const
 
 	std::vector<std::array<char, 6>> candidates;
 	candidates.reserve(peers.size());
-	BOOST_FOREACH(auto& i, peers)
+	for (auto& i : peers)
 	{
 		if (!ti.m_left && !i.second.left)
 			continue;
@@ -811,7 +811,7 @@ std::string t_torrent::select_peers(const Ctracker_input& ti) const
 	}
 	else
 	{
-		BOOST_FOREACH(auto& i, candidates)
+		for (auto& i : candidates)
 			d.append(i.begin(), i.end());
 	}
 	return d;
@@ -839,7 +839,7 @@ std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 			m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(srv_time()).read();
 		m_stats.scraped_full++;
 		d.reserve(90 * m_torrents.size());
-		BOOST_FOREACH(auto& i, m_torrents)
+		for (auto& i : m_torrents)
 		{
 			if (i.second.leechers || i.second.seeders)
 				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % boost::make_iterator_range(i.first) % i.second.seeders % i.second.completed % i.second.leechers).str();
@@ -850,7 +850,7 @@ std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 		m_stats.scraped_http++;
 		if (ti.m_info_hashes.size() > 1)
 			m_stats.scraped_multi++;
-		BOOST_FOREACH(auto& j, ti.m_info_hashes)
+		for (auto& j : ti.m_info_hashes)
 		{
 			if (const t_torrent* i = find_torrent(j))
 				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % j % i->seeders % i->completed % i->leechers).str();
@@ -865,7 +865,7 @@ std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 
 void debug(const t_torrent& t, std::ostream& os)
 {
-	BOOST_FOREACH(auto& i, t.peers)
+	for (auto& i : t.peers)
 	{
 		os << "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
 			<< "<td align=right>" << ntohs(i.second.port)
@@ -883,7 +883,7 @@ std::string srv_debug(const Ctracker_input& ti)
 	os << "<table>";
 	if (ti.m_info_hash.empty())
 	{
-		BOOST_FOREACH(auto& i, m_torrents)
+		for (auto& i : m_torrents)
 		{
 			if (!i.second.leechers && !i.second.seeders)
 				continue;
@@ -907,7 +907,7 @@ std::string srv_statistics()
 	int leechers = 0;
 	int seeders = 0;
 	int torrents = 0;
-	BOOST_FOREACH(auto& i, m_torrents)
+	for (auto& i : m_torrents)
 	{
 		leechers += i.second.leechers;
 		seeders += i.second.seeders;
