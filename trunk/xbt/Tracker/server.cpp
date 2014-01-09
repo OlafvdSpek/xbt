@@ -8,10 +8,10 @@
 
 namespace boost
 {
-	template<class T, size_t N>
-	struct hash<std::array<T, N>>
+	template<class t, size_t n>
+	struct hash<std::array<t, n>>
 	{
-		size_t operator()(const std::array<T, N>& v) const
+		size_t operator()(const std::array<t, n>& v) const
 		{
 			return boost::hash_range(v.begin(), v.end());
 		}
@@ -829,14 +829,14 @@ std::string srv_select_peers(const Ctracker_input& ti)
 
 std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 {
+	if (m_use_sql && m_config.m_log_scrape)
+		m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(srv_time()).read();
 	if (!m_config.m_anonymous_scrape && !user)
 		return "d14:failure reason25:unregistered torrent passe";
 	std::string d;
 	d += "d5:filesd";
 	if (ti.m_info_hashes.empty())
 	{
-		if (m_use_sql && m_config.m_log_scrape)
-			m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(srv_time()).read();
 		m_stats.scraped_full++;
 		d.reserve(90 * m_torrents.size());
 		for (auto& i : m_torrents)
