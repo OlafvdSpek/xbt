@@ -87,13 +87,7 @@ std::string hex_encode(int l, int v)
 
 std::string n(long long v)
 {
-	char b[21];
-#ifdef WIN32
-	sprintf(b, "%I64d", v);
-#else
-	sprintf(b, "%lld", v);
-#endif
-	return b;
+	return std::to_string(v);
 }
 
 std::string hex_encode(data_ref v)
