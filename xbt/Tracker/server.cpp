@@ -8,10 +8,10 @@
 
 namespace boost
 {
-	template<class t, size_t n>
-	struct hash<std::array<t, n>>
+	template<class T, size_t N>
+	struct hash<std::array<T, N>>
 	{
-		size_t operator()(const std::array<t, n>& v) const
+		size_t operator()(const std::array<T, N>& v) const
 		{
 			return boost::hash_range(v.begin(), v.end());
 		}
