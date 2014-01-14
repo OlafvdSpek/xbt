@@ -47,10 +47,6 @@ public:
 class peer_key_c
 {
 public:
-	peer_key_c()
-	{
-	}
-
 	peer_key_c(int host, int uid)
 	{
 		host_ = host;
