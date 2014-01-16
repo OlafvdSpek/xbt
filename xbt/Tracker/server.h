@@ -92,46 +92,26 @@ struct t_torrent
 {
 	std::string select_peers(const Ctracker_input&) const;
 
-	t_torrent()
-	{
-		completed = 0;
-		dirty = true;
-		fid = 0;
-		leechers = 0;
-		seeders = 0;
-	}
-
 	t_peers peers;
 	time_t ctime;
-	int completed;
-	int fid;
-	int leechers;
-	int seeders;
-	bool dirty;
+	int completed = 0;
+	int fid = 0;
+	int leechers = 0;
+	int seeders = 0;
+	bool dirty = true;
 };
 
 struct t_user
 {
-	t_user()
-	{
-		can_leech = true;
-		completes = 0;
-		incompletes = 0;
-		peers_limit = 0;
-		torrent_pass_version = 0;
-		torrents_limit = 0;
-		wait_time = 0;
-	}
-
-	bool can_leech;
+	bool can_leech = true;
 	bool marked;
 	int uid;
-	int completes;
-	int incompletes;
-	int peers_limit;
-	int torrent_pass_version;
-	int torrents_limit;
-	int wait_time;
+	int completes = 0;
+	int incompletes = 0;
+	int peers_limit = 0;
+	int torrent_pass_version = 0;
+	int torrents_limit = 0;
+	int wait_time = 0;
 };
 
 const t_torrent* find_torrent(const std::string& id);

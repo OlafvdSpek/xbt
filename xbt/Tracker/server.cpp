@@ -37,11 +37,11 @@ time_t m_clean_up_time;
 time_t m_read_config_time;
 time_t m_read_db_torrents_time;
 time_t m_read_db_users_time;
-time_t m_time;
+time_t m_time = time(NULL);
 time_t m_write_db_torrents_time;
 time_t m_write_db_users_time;
 long long m_secret;
-int m_fid_end;
+int m_fid_end = 0;
 bool m_read_users_can_leech;
 bool m_read_users_peers_limit;
 bool m_read_users_torrent_pass;
@@ -453,14 +453,11 @@ void clean_up()
 
 int srv_run(const std::string& table_prefix, bool use_sql, const std::string& conf_file)
 {
-	m_fid_end = 0;
-
 	for (int i = 0; i < 8; i++)
 		m_secret = m_secret << 8 ^ rand();
 	m_conf_file = conf_file;
 	m_database.set_name("config", table_prefix + "config");
 	m_table_prefix = table_prefix;
-	m_time = ::time(NULL);
 	m_use_sql = use_sql;
 
 	read_config();
