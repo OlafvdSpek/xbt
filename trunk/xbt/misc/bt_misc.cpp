@@ -184,11 +184,16 @@ bool is_private_ipa(int a)
 
 std::string b2a(long long v, const char* postfix)
 {
-	int l;
-	for (l = 0; v < -9999 || v > 999999; l++)
-		v >>= 10;
 	char d[32];
 	char* w = d;
+	if (v < 0)
+	{
+		v = -v;
+		*w++ = '-';
+	}
+	int l;
+	for (l = 0; v > 999999; l++)
+		v >>= 10;
 	if (v > 999)
 	{
 		l++;
