@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <xbt/data_ref.h>
 
 std::string encode_field(str_ref);
 std::string encode_text(str_ref, bool add_span);
