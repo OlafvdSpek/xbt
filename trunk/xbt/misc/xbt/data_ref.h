@@ -88,7 +88,7 @@ public:
 	{
 		data_ref_base t = *this;
 		while (!t.empty() && t.front() != v)
-			t.advance_begin(1);
+			t.pop_front();
 		return t;
 	}
 
@@ -107,9 +107,14 @@ public:
 		return std::string(reinterpret_cast<const char*>(data()), base_t::size());
 	}
 
-	data_ref_base substr(size_t ofs, size_t sz)
+	data_ref_base substr(size_t pos)
 	{
-		return data_ref_base(base_t::begin() + ofs, sz);
+		return data_ref_base(base_t::begin() + pos, base_t::size() - pos);
+	}
+
+	data_ref_base substr(size_t pos, size_t sz)
+	{
+		return data_ref_base(base_t::begin() + pos, sz);
 	}
 private:
 	typedef boost::iterator_range<T> base_t;
