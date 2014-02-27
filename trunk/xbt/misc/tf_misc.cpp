@@ -80,27 +80,17 @@ std::string encode_field(str_ref v)
 	return r;
 }
 
-std::string encode_text(const std::string& v, bool add_span)
+std::string encode_text(str_ref v, bool add_quote_class)
 {
 	std::string r;
 	r.reserve(v.size() << 1);
-	for (size_t i = 0; i < v.size(); )
+	while (v)
 	{
-		size_t p = v.find('\n', i);
-		if (p == std::string::npos)
-			p = v.size();
-		std::string line = v.substr(i, p - i);
-		line = encode_field(line);
-		r += add_span && boost::istarts_with(line, "> ") ? "<span class=quote>" + line + "</span>" : line;
+		str_ref line = read_until(v, '\n');
+		r += add_quote_class && boost::istarts_with(line, "> ") ? "<span class=quote>" + encode_field(line) + "</span>" : encode_field(line);
 		r += "<br>";
-		i = p + 1;
 	}
 	return r;
-}
-
-std::string encode_text(str_ref v, bool add_span)
-{
-	return encode_text(v.s(), add_span);
 }
 
 std::string trim_field(const std::string& v)

@@ -138,6 +138,14 @@ inline size_t memcpy(mutable_data_ref d, data_ref s)
 	return s.size();
 }
 
+inline str_ref read_until(str_ref& is, char sep)
+{
+	const char* a = is.begin();
+	const char* b = std::find(is.begin(), is.end(), sep);
+	is.set_begin(b == is.end() ? b : b + 1);
+	return str_ref(a, b);
+}
+
 inline float to_float(data_ref v)
 {
 	if (v.empty())
