@@ -3,32 +3,27 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
-static std::string web_encode(const std::string& v)
+static std::string web_encode(str_ref v)
 {
 	std::string d;
 	d.reserve(v.size() << 1);
-	for (int a = 0; a < v.size();)
+	while (v)
 	{
-		int b = v.find_first_of("\"<&", a);
-		if (b == std::string::npos)
+		switch (v.front())
 		{
-			d += v.substr(a);
-			return d;
-		}
-		d += v.substr(a, b - a);
-		switch (v[b])
-		{
-		case '"':
-			d += "&quot;";
+		case '"': 
+			d += "&quot;"; 
+			break;
+		case '&': 
+			d += "&amp;"; 
 			break;
 		case '<':
 			d += "&lt;";
 			break;
-		case '&':
-			d += "&amp;";
-			break;
+		default:
+			d += v.front();
 		}
-		a = b + 1;
+		v.pop_front();
 	}
 	return d;
 }
