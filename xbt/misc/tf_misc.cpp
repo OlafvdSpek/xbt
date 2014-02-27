@@ -33,63 +33,51 @@ static std::string web_link(str_ref title, str_ref link)
 	return (boost::format("<a href=\"%s\">%s</a>") % web_encode(link) % web_encode(title.empty() ? link : title)).str();
 }
 
-std::string encode_field(const std::string& v)
+std::string encode_field(str_ref v)
 {
 	std::string r;
 	r.reserve(v.size() << 1);
-	for (size_t i = 0; i < v.size(); )
+	while (v)
 	{
-		if (boost::istarts_with(v.c_str() + i, "ftp://")
-			|| boost::istarts_with(v.c_str() + i, "http://")
-			|| boost::istarts_with(v.c_str() + i, "https://")
-			|| boost::istarts_with(v.c_str() + i, "mailto:"))
+		if (boost::istarts_with(v, "ftp://")
+			|| boost::istarts_with(v, "http://")
+			|| boost::istarts_with(v, "https://")
+			|| boost::istarts_with(v, "mailto:"))
 		{
-			size_t p = i;
-			while (p < v.size()
-				&& !isspace(v[p] & 0xff)
-				&& v[p] != '\"'
-				&& v[p] != '<'
-				&& v[p] != '>'
-				&& v[p] != '['
-				&& v[p] != ']')
-			{
+			size_t p = 0;
+			while (p < v.size() && !isspace(v[p] & 0xff) && v[p] != '\"' && v[p] != '<' && v[p] != '>' && v[p] != '[' && v[p] != ']')
 				p++;
-			}
 			if (v[p - 1] == '!' || v[p - 1] == ',' || v[p - 1] == '.' || v[p - 1] == '?')
 				p--;
 			if (v[p - 1] == ')')
 				p--;
-			std::string url = web_encode(v.substr(i, p - i));
-			if (boost::istarts_with(v.c_str() + i, "ftp."))
-				r += web_link(url, "ftp://" + url);
-			else if (boost::istarts_with(v.c_str() + i, "www."))
-				r += web_link(url, "http://" + url);
+			str_ref url = v.substr(0, p);
+			if (boost::istarts_with(v, "ftp."))
+				r += web_link(url, "ftp://" + url.s());
+			else if (boost::istarts_with(v, "www."))
+				r += web_link(url, "http://" + url.s());
 			else
-				r += web_link(boost::istarts_with(v.c_str() + i, "mailto:") ? url.substr(7) : url, url);
-			i = p;
+				r += web_link(boost::istarts_with(v, "mailto:") ? url.substr(7) : url, url);
+			while (p--)
+				v.pop_front();
 		}
 		else
 		{
-			char c = v[i++];
-			switch (c)
+			switch (v.front())
 			{
-			case '<':
-				r += "&lt;";
-				break;
 			case '&':
 				r += "&amp;";
 				break;
+			case '<':
+				r += "&lt;";
+				break;
 			default:
-				r += c;
+				r += v.front();
 			}
+			v.pop_front();
 		}
 	}
 	return r;
-}
-
-std::string encode_field(str_ref v)
-{
-	return encode_field(v.s());
 }
 
 std::string encode_text(const std::string& v, bool add_span)
