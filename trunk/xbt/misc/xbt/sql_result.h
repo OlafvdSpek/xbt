@@ -8,7 +8,32 @@
 #endif
 #include <mysql/mysql.h>
 
-class Csql_row;
+class Csql_row
+{
+public:
+	Csql_row() = default;
+
+	Csql_row(MYSQL_ROW data, unsigned long* sizes, std::shared_ptr<MYSQL_RES> source)
+	{
+		m_data = data;
+		m_sizes = sizes;
+		m_source = std::move(source);
+	}
+
+	operator const void*() const
+	{
+		return m_data;
+	}
+
+	str_ref operator[](size_t i) const
+	{
+		return m_data ? str_ref(m_data[i], m_sizes[i]) : str_ref();
+	}
+private:
+	MYSQL_ROW m_data;
+	unsigned long* m_sizes;
+	std::shared_ptr<MYSQL_RES> m_source;
+};
 
 class Csql_result
 {
@@ -16,21 +41,31 @@ public:
 	class iterator
 	{
 	public:
-		iterator() : res_(NULL) { }
+		iterator() = default;
 		iterator(Csql_result& v) : res_(&v), row_(mysql_fetch_row(res_->h())) { }
 		bool operator!=(iterator v) { assert(!v.res_); return row_; }
-		Csql_row operator*();
+		Csql_row operator*() { return Csql_row(row_, mysql_fetch_lengths(res_->h()), res_->m_source); }
 		void operator++() { row_ = mysql_fetch_row(res_->h()); }
 	private:
-		Csql_result* res_;
+		Csql_result* res_ = NULL;
 		MYSQL_ROW row_;
 	};
 
-	typedef boost::shared_ptr<MYSQL_RES> ptr_t;
+	Csql_row fetch_row() const
+	{
+		MYSQL_ROW data = mysql_fetch_row(h());
+		return Csql_row(data, mysql_fetch_lengths(h()), m_source);
+	}
 
-	Csql_row fetch_row() const;
-	str_ref fetch_value() const;
-	long long fetch_int() const;
+	str_ref fetch_value() const
+	{
+		return fetch_row()[0];
+	}
+
+	long long fetch_int() const
+	{
+		return fetch_value().i();
+	}
 
 	Csql_result(MYSQL_RES* h) : m_source(h, mysql_free_result)
 	{
@@ -64,52 +99,5 @@ private:
 		return m_source.get();
 	}
 
-	ptr_t m_source;
+	std::shared_ptr<MYSQL_RES> m_source;
 };
-
-class Csql_row
-{
-public:
-	Csql_row()
-	{
-	}
-
-	Csql_row(MYSQL_ROW data, unsigned long* sizes, Csql_result::ptr_t source)
-	{
-		m_data = data;
-		m_sizes = sizes;
-		m_source = std::move(source);
-	}
-
-	operator const void*() const
-	{
-		return m_data;
-	}
-
-	str_ref operator[](size_t i) const
-	{
-		return m_data ? str_ref(m_data[i], m_sizes[i]) : str_ref();
-	}
-private:
-	MYSQL_ROW m_data;
-	unsigned long* m_sizes;
-	Csql_result::ptr_t m_source;
-};
-
-inline Csql_row Csql_result::fetch_row() const
-{
-	MYSQL_ROW data = mysql_fetch_row(h());
-	return Csql_row(data, mysql_fetch_lengths(h()), m_source);
-}
-
-inline str_ref Csql_result::fetch_value() const
-{
-	return fetch_row()[0];
-}
-
-inline long long Csql_result::fetch_int() const
-{
-	return fetch_value().i();
-}
-
-inline Csql_row Csql_result::iterator::operator*() { return Csql_row(row_, mysql_fetch_lengths(res_->h()), res_->m_source); }
