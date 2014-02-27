@@ -29,6 +29,8 @@ public:
 	typedef boost::shared_ptr<MYSQL_RES> ptr_t;
 
 	Csql_row fetch_row() const;
+	str_ref fetch_value() const;
+	long long fetch_int() const;
 
 	Csql_result(MYSQL_RES* h) : m_source(h, mysql_free_result)
 	{
@@ -98,6 +100,16 @@ inline Csql_row Csql_result::fetch_row() const
 {
 	MYSQL_ROW data = mysql_fetch_row(h());
 	return Csql_row(data, mysql_fetch_lengths(h()), m_source);
+}
+
+inline str_ref Csql_result::fetch_value() const
+{
+	return fetch_row()[0];
+}
+
+inline long long Csql_result::fetch_int() const
+{
+	return fetch_value().i();
 }
 
 inline Csql_row Csql_result::iterator::operator*() { return Csql_row(row_, mysql_fetch_lengths(res_->h()), res_->m_source); }
