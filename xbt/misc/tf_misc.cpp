@@ -28,11 +28,9 @@ static std::string web_encode(str_ref v)
 	return d;
 }
 
-static std::string web_link(const std::string& link_title, const std::string& link, bool encode)
+static std::string web_link(str_ref title, str_ref link)
 {
-	return encode
-		? web_link(web_encode(link_title), web_encode(link), false)
-		: (boost::format("<a href=\"%s\">%s</a>") % link % (link_title.empty() ? link : link_title)).str();
+	return (boost::format("<a href=\"%s\">%s</a>") % web_encode(link) % web_encode(title.empty() ? link : title)).str();
 }
 
 std::string encode_field(const std::string& v)
@@ -63,11 +61,11 @@ std::string encode_field(const std::string& v)
 				p--;
 			std::string url = web_encode(v.substr(i, p - i));
 			if (boost::istarts_with(v.c_str() + i, "ftp."))
-				r += web_link(url, "ftp://" + url, false);
+				r += web_link(url, "ftp://" + url);
 			else if (boost::istarts_with(v.c_str() + i, "www."))
-				r += web_link(url, "http://" + url, false);
+				r += web_link(url, "http://" + url);
 			else
-				r += web_link(boost::istarts_with(v.c_str() + i, "mailto:") ? url.substr(7) : url, url, false);
+				r += web_link(boost::istarts_with(v.c_str() + i, "mailto:") ? url.substr(7) : url, url);
 			i = p;
 		}
 		else
