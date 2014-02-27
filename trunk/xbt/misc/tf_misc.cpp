@@ -30,7 +30,7 @@ static std::string web_encode(str_ref v)
 
 static std::string web_link(str_ref title, str_ref link)
 {
-	return (boost::format("<a href=\"%s\">%s</a>") % web_encode(link) % web_encode(title.empty() ? link : title)).str();
+	return "<a href=\"" + web_encode(link) + "\">" + web_encode(title.empty() ? link : title) + "</a>";
 }
 
 std::string encode_field(str_ref v)
