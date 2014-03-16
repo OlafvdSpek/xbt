@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <boost/lexical_cast.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <boost/type_traits/is_class.hpp>
@@ -136,6 +137,14 @@ inline size_t memcpy(mutable_data_ref d, data_ref s)
 	assert(d.size() >= s.size());
 	memcpy(d.data(), s.data(), s.size());
 	return s.size();
+}
+
+inline int eat(str_ref& s, char v)
+{
+	if (!s || s.front() != v)
+		return 1;
+	s.pop_front();
+	return 0;
 }
 
 inline str_ref read_until(str_ref& is, char sep)
