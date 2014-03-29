@@ -85,7 +85,7 @@ public:
 	}
 
 	template<class V>
-	data_ref_base find(V v) const
+	data_ref_base find0(V v) const
 	{
 		data_ref_base t = *this;
 		while (!t.empty() && t.front() != v)
@@ -169,8 +169,33 @@ inline float to_float(data_ref v)
 	return 0;
 }
 
+template<class T>
+int try_parse(T& d, str_ref s)
+{
+	if (!s)
+		return 1;
+	bool neg = !eat(s, '-');
+	d = 0;
+	for (; s; s.pop_front())
+	{
+		char c = s.front();
+		if (c < '0' || c > '9')
+			return 1;
+		d = neg ? 10 * d - (c - '0') : 10 * d + (c - '0');
+	}
+	return 0;
+}
+
+template<class T>
+T parse(str_ref s)
+{
+	T d;
+	return try_parse(d, s) ? 0 : d;
+}
+
 inline long long to_int(str_ref v)
 {
+	return parse<long long>(v);
 	if (v.empty())
 		return 0;
 	if (!*v.end())
