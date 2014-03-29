@@ -43,7 +43,7 @@ public:
 	public:
 		iterator() = default;
 		iterator(Csql_result& v) : res_(&v), row_(mysql_fetch_row(res_->h())) { }
-		bool operator!=(iterator v) { assert(!v.res_); return row_; }
+		bool operator!=(iterator) { return row_; }
 		Csql_row operator*() { return Csql_row(row_, mysql_fetch_lengths(res_->h()), res_->m_source); }
 		void operator++() { row_ = mysql_fetch_row(res_->h()); }
 	private:
