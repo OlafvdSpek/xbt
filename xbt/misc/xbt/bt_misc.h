@@ -24,7 +24,6 @@ std::string peer_id2a(const std::string&);
 std::string time2a(time_t);
 std::string uri_decode(str_ref);
 std::string uri_encode(str_ref);
-int xbt_atoi(const std::string&);
 void xbt_syslog(const std::string&);
 std::string xbt_version2a(int);
 
