@@ -34,7 +34,7 @@ static std::string web_link(str_ref title, str_ref link)
 	return "<a href=\"" + web_encode(link) + "\">" + web_encode(title.empty() ? link : title) + "</a>";
 }
 
-std::string encode_field(str_ref v)
+std::string encode_field(str_ref v, bool add_br)
 {
 	std::string r;
 	r.reserve(v.size() << 1);
@@ -66,6 +66,11 @@ std::string encode_field(str_ref v)
 		{
 			switch (v.front())
 			{
+			case '\n':
+				r += add_br ? "<br>" : " ";
+				break;
+			case '\r':
+				break;
 			case '&':
 				r += "&amp;";
 				break;
@@ -228,7 +233,7 @@ string bbformat(str_ref s)
 		switch (get_next(s, a0))
 		{
 		case bb_literal:
-			d += encode_text(a0, false);
+			d += encode_field(a0, true);
 			break;
 		case bb_none:
 			break;
