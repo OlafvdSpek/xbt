@@ -145,7 +145,9 @@ enum bb_t
 	bb_strike_close,
 	bb_underline,
 	bb_underline_close,
+	bb_url,
 	bb_unknown,
+	bb_video,
 	bb_end,
 };
 
@@ -222,10 +224,15 @@ bb_t get_next(str_ref& s, str_ref& a0)
 	if (boost::starts_with(tag, "url="))
 	{
 		a0 = tag.substr(4);
-		return bb_literal;
+		return bb_url;
 	}
 	if (tag.s() == "/url")
 		return bb_none;
+	if (boost::starts_with(tag, "video="))
+	{
+		a0 = tag.substr(6);
+		return bb_video;
+	}
 	a0 = tag;
 	return bb_unknown;
 }
@@ -274,6 +281,12 @@ string bbformat(str_ref s)
 			break;
 		case bb_underline_close:
 			d += "</u>";
+			break;
+		case bb_url:
+			d += encode_field(a0, true) + " ";
+			break;
+		case bb_video:
+			d += encode_field(a0, true) + " ";
 			break;
 		case bb_unknown:
 			d += "[" + encode_field(a0) + "]";
