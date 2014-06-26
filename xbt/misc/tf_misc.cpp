@@ -1,5 +1,6 @@
 #include "tf_misc.h"
 
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
@@ -123,4 +124,119 @@ std::string trim_text(const std::string& v)
 		i = p + 1;
 	}
 	return r;
+}
+
+enum bb_t
+{
+	bb_literal,
+	bb_none,
+	bb_bold,
+	bb_bold_close,
+	bb_color,
+	bb_color_close,
+	bb_quote,
+	bb_quote_close,
+	bb_unknown,
+	bb_end,
+};
+
+bb_t get_next(str_ref& s, str_ref& a0)
+{
+	if (!s)
+		return bb_end;
+	if (s.front() != '[')
+	{
+		auto a = std::find(s.begin(), s.end(), '[');
+		if (a == s.end())
+		{
+			a0 = s;
+			s.clear();
+		}
+		else
+		{
+			a0 = str_ref(s.begin(), a);
+			s.set_begin(a);
+		}
+		return bb_literal;
+	}
+	auto a = std::find(s.begin(), s.end(), ']');
+	if (a == s.end())
+	{
+		a0 = s;
+		s.clear();
+		return bb_literal;
+	}
+	str_ref tag = { &s[1], a };
+	s.set_begin(a + 1);
+	a0.clear();
+	if (tag.s() == "b")
+		return bb_bold;
+	if (tag.s() == "/b")
+		return bb_bold_close;
+	if (boost::starts_with(tag, "color="))
+	{
+		a0 = tag.substr(6);
+		return bb_color;
+	}
+	if (tag.s() == "/color")
+		return bb_color_close;
+	if (boost::starts_with(tag, "font=") || tag.s() == "/font")
+		return bb_none;
+	if (tag.s() == "q" || tag.s() == "quote")
+		return bb_quote;
+	if (boost::starts_with(tag, "quote="))
+	{
+		a0 = tag.substr(6);
+		return bb_quote;
+	}
+	if (tag.s() == "/q" || tag.s() == "/quote")
+		return bb_quote_close;
+	if (boost::starts_with(tag, "size=") || tag.s() == "/size")
+		return bb_none;
+	a0 = tag;
+	return bb_unknown;
+}
+
+string bbformat(str_ref s)
+{
+	string d;
+	str_ref a0;
+	while (1)
+	{
+		switch (get_next(s, a0))
+		{
+		case bb_literal:
+			d += encode_field(a0);
+			break;
+		case bb_none:
+			break;
+		case bb_bold:
+			d += "<b>";
+			break;
+		case bb_bold_close:
+			d += "</b>";
+			break;
+		case bb_color:
+			d += "<font color=\"" + a0.s() + "\">"; // escape a0
+			break;
+		case bb_color_close:
+			d += "</font>";
+			break;
+		case bb_quote:
+			if (a0)
+				d += "<b>" + encode_field(a0) + " wrote:</b>";
+			d += "<blockquote class=bq>";
+			break;
+		case bb_quote_close:
+			d += "</blockquote>";
+			break;
+		case bb_unknown:
+			d += "[" + encode_field(a0) + "]";
+			break;
+		case bb_end:
+			return d;
+		default:
+			assert(false);
+		}
+	}
 }
