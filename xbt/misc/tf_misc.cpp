@@ -182,6 +182,8 @@ bb_t get_next(str_ref& s, str_ref& a0)
 		return bb_color_close;
 	if (boost::starts_with(tag, "font=") || tag.s() == "/font")
 		return bb_none;
+	if (tag.s() == "img" || tag.s() == "/img")
+		return bb_none;
 	if (tag.s() == "q" || tag.s() == "quote")
 		return bb_quote;
 	if (boost::starts_with(tag, "quote="))
@@ -217,7 +219,7 @@ string bbformat(str_ref s)
 			d += "</b>";
 			break;
 		case bb_color:
-			d += "<font color=\"" + a0.s() + "\">"; // escape a0
+			d += "<font color=\"" + encode_field(a0) + "\">"; // escape a0
 			break;
 		case bb_color_close:
 			d += "</font>";
