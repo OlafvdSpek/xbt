@@ -184,6 +184,8 @@ bb_t get_next(str_ref& s, str_ref& a0)
 		return bb_color_close;
 	if (boost::starts_with(tag, "font=") || tag.s() == "/font")
 		return bb_none;
+	if (tag.s() == "i" || tag.s() == "/i")
+		return bb_none;
 	if (tag.s() == "img" || tag.s() == "/img")
 		return bb_none;
 	if (boost::starts_with(tag, "img="))
@@ -226,7 +228,7 @@ string bbformat(str_ref s)
 		switch (get_next(s, a0))
 		{
 		case bb_literal:
-			d += encode_field(a0);
+			d += encode_text(a0, false);
 			break;
 		case bb_none:
 			break;
