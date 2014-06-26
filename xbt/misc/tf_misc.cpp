@@ -186,6 +186,11 @@ bb_t get_next(str_ref& s, str_ref& a0)
 		return bb_none;
 	if (tag.s() == "img" || tag.s() == "/img")
 		return bb_none;
+	if (boost::starts_with(tag, "img="))
+	{
+		a0 = tag.substr(4);
+		return bb_literal;
+	}
 	if (tag.s() == "q" || tag.s() == "quote")
 		return bb_quote;
 	if (boost::starts_with(tag, "quote="))
@@ -200,6 +205,13 @@ bb_t get_next(str_ref& s, str_ref& a0)
 	if (tag.s() == "/s")
 		return bb_strike_close;
 	if (boost::starts_with(tag, "size=") || tag.s() == "/size")
+		return bb_none;
+	if (boost::starts_with(tag, "url="))
+	{
+		a0 = tag.substr(4);
+		return bb_literal;
+	}
+	if (tag.s() == "/url")
 		return bb_none;
 	a0 = tag;
 	return bb_unknown;
