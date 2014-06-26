@@ -143,6 +143,8 @@ enum bb_t
 	bb_quote_close,
 	bb_strike,
 	bb_strike_close,
+	bb_underline,
+	bb_underline_close,
 	bb_unknown,
 	bb_end,
 };
@@ -213,6 +215,10 @@ bb_t get_next(str_ref& s, str_ref& a0)
 		return bb_strike_close;
 	if (boost::starts_with(tag, "size=") || tag.s() == "/size")
 		return bb_none;
+	if (tag.s() == "s")
+		return bb_underline;
+	if (tag.s() == "/s")
+		return bb_underline_close;
 	if (boost::starts_with(tag, "url="))
 	{
 		a0 = tag.substr(4);
@@ -262,6 +268,12 @@ string bbformat(str_ref s)
 			break;
 		case bb_strike_close:
 			d += "</s>";
+			break;
+		case bb_underline:
+			d += "<u>";
+			break;
+		case bb_underline_close:
+			d += "</u>";
 			break;
 		case bb_unknown:
 			d += "[" + encode_field(a0) + "]";
