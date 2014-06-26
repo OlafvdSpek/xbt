@@ -215,9 +215,9 @@ bb_t get_next(str_ref& s, str_ref& a0)
 		return bb_strike_close;
 	if (boost::starts_with(tag, "size=") || tag.s() == "/size")
 		return bb_none;
-	if (tag.s() == "s")
+	if (tag.s() == "u")
 		return bb_underline;
-	if (tag.s() == "/s")
+	if (tag.s() == "/u")
 		return bb_underline_close;
 	if (boost::starts_with(tag, "url="))
 	{
