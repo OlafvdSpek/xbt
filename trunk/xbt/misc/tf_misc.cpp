@@ -136,6 +136,8 @@ enum bb_t
 	bb_color_close,
 	bb_quote,
 	bb_quote_close,
+	bb_strike,
+	bb_strike_close,
 	bb_unknown,
 	bb_end,
 };
@@ -193,6 +195,10 @@ bb_t get_next(str_ref& s, str_ref& a0)
 	}
 	if (tag.s() == "/q" || tag.s() == "/quote")
 		return bb_quote_close;
+	if (tag.s() == "s")
+		return bb_strike;
+	if (tag.s() == "/s")
+		return bb_strike_close;
 	if (boost::starts_with(tag, "size=") || tag.s() == "/size")
 		return bb_none;
 	a0 = tag;
@@ -231,6 +237,12 @@ string bbformat(str_ref s)
 			break;
 		case bb_quote_close:
 			d += "</blockquote>";
+			break;
+		case bb_strike:
+			d += "<s>";
+			break;
+		case bb_strike_close:
+			d += "</s>";
 			break;
 		case bb_unknown:
 			d += "[" + encode_field(a0) + "]";
