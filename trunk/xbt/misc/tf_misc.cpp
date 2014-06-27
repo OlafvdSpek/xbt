@@ -137,6 +137,8 @@ enum bb_t
 	bb_none,
 	bb_bold,
 	bb_bold_close,
+	bb_center,
+	bb_center_close,
 	bb_color,
 	bb_color_close,
 	bb_quote,
@@ -184,6 +186,10 @@ bb_t get_next(str_ref& s, str_ref& a0)
 		return bb_bold;
 	if (tag.s() == "/b")
 		return bb_bold_close;
+	if (tag.s() == "center")
+		return bb_center;
+	if (tag.s() == "/center")
+		return bb_center_close;
 	if (boost::starts_with(tag, "color="))
 	{
 		a0 = tag.substr(6);
@@ -255,6 +261,12 @@ string bbformat(str_ref s)
 			break;
 		case bb_bold_close:
 			d += "</b>";
+			break;
+		case bb_center:
+			d += "<center>";
+			break;
+		case bb_center_close:
+			d += "</center>";
 			break;
 		case bb_color:
 			d += "<font color=\"" + encode_field(a0) + "\">"; // escape a0
