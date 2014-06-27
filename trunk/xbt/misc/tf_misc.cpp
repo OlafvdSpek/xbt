@@ -153,6 +153,11 @@ enum bb_t
 	bb_end,
 };
 
+static bool operator==(str_ref a, const char* b)
+{
+	return a.size() == strlen(b) && !memcmp(a.data(), b, a.size());
+}
+
 bb_t get_next(str_ref& s, str_ref& a0)
 {
 	if (!s)
@@ -182,57 +187,57 @@ bb_t get_next(str_ref& s, str_ref& a0)
 	str_ref tag = { &s[1], a };
 	s.set_begin(a + 1);
 	a0.clear();
-	if (tag.s() == "b")
+	if (tag == "b")
 		return bb_bold;
-	if (tag.s() == "/b")
+	if (tag == "/b")
 		return bb_bold_close;
-	if (tag.s() == "center")
+	if (tag == "center")
 		return bb_center;
-	if (tag.s() == "/center")
+	if (tag == "/center")
 		return bb_center_close;
 	if (boost::starts_with(tag, "color="))
 	{
 		a0 = tag.substr(6);
 		return bb_color;
 	}
-	if (tag.s() == "/color")
+	if (tag == "/color")
 		return bb_color_close;
-	if (boost::starts_with(tag, "font=") || tag.s() == "/font")
+	if (boost::starts_with(tag, "font=") || tag == "/font")
 		return bb_none;
-	if (tag.s() == "i" || tag.s() == "/i")
+	if (tag == "i" || tag == "/i")
 		return bb_none;
-	if (tag.s() == "img" || tag.s() == "/img")
+	if (tag == "img" || tag == "IMG" || tag == "/img" || tag == "/IMG")
 		return bb_none;
 	if (boost::starts_with(tag, "img="))
 	{
 		a0 = tag.substr(4);
 		return bb_literal;
 	}
-	if (tag.s() == "q" || tag.s() == "quote")
+	if (tag == "q" || tag == "quote")
 		return bb_quote;
 	if (boost::starts_with(tag, "quote="))
 	{
 		a0 = tag.substr(6);
 		return bb_quote;
 	}
-	if (tag.s() == "/q" || tag.s() == "/quote")
+	if (tag == "/q" || tag == "/quote")
 		return bb_quote_close;
-	if (tag.s() == "s")
+	if (tag == "s")
 		return bb_strike;
-	if (tag.s() == "/s")
+	if (tag == "/s")
 		return bb_strike_close;
-	if (boost::starts_with(tag, "size=") || tag.s() == "/size")
+	if (boost::starts_with(tag, "size=") || tag == "/size")
 		return bb_none;
-	if (tag.s() == "u")
+	if (tag == "u")
 		return bb_underline;
-	if (tag.s() == "/u")
+	if (tag == "/u")
 		return bb_underline_close;
 	if (boost::starts_with(tag, "url="))
 	{
 		a0 = tag.substr(4);
 		return bb_url;
 	}
-	if (tag.s() == "/url")
+	if (tag == "/url")
 		return bb_none;
 	if (boost::starts_with(tag, "video="))
 	{
