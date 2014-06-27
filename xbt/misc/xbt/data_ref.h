@@ -126,6 +126,8 @@ typedef data_ref_base<unsigned char*, void*> mutable_data_ref;
 typedef data_ref_base<const char*, const void*> str_ref;
 typedef data_ref_base<char*, void*> mutable_str_ref;
 
+bool operator==(str_ref a, const char* b);
+
 inline size_t memcpy(void* d, data_ref s)
 {
 	memcpy(d, s.data(), s.size());
