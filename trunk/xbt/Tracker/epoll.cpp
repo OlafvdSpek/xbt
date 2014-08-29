@@ -4,11 +4,6 @@
 #include <unistd.h>
 #endif
 
-Cepoll::Cepoll()
-{
-	m_fd = -1;
-}
-
 Cepoll::~Cepoll()
 {
 #ifdef EPOLL
