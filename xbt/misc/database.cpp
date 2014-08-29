@@ -9,8 +9,7 @@
 #include <syslog.h>
 #endif
 
-Cdatabase::Cdatabase() :
-	m_query_log(NULL)
+Cdatabase::Cdatabase()
 {
 	mysql_init(&m_handle);
 }

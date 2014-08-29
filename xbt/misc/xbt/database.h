@@ -36,5 +36,5 @@ private:
 	bool m_echo_errors;
 	MYSQL m_handle;
 	std::map<std::string, std::string> m_names;
-	std::ostream* m_query_log;
+	std::ostream* m_query_log = NULL;
 };
