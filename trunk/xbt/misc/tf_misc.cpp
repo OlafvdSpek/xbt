@@ -248,9 +248,9 @@ bb_t get_next(str_ref& s, str_ref& a0)
 	return bb_unknown;
 }
 
-string bbformat(str_ref s)
+std::string bbformat(str_ref s)
 {
-	string d;
+	std::string d;
 	str_ref a0;
 	while (1)
 	{
