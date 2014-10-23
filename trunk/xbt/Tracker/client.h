@@ -7,9 +7,7 @@ class Cclient
 public:
 	virtual void process_events(int) = 0;
 
-	virtual ~Cclient()
-	{
-	}
+	virtual ~Cclient() = default;
 
 	const Csocket& s() const
 	{
