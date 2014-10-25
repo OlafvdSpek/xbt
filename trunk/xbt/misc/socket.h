@@ -11,9 +11,10 @@
 typedef int socklen_t;
 #else
 #include <arpa/inet.h>
+#include <cerrno>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <cerrno>
+#include <sys/socket.h>
 
 #define closesocket close
 #define ioctlsocket ioctl
@@ -68,7 +69,7 @@ const int INVALID_SOCKET = -1;
 const int SOCKET_ERROR = -1;
 #endif
 
-class Csocket_source: boost::noncopyable
+class Csocket_source : boost::noncopyable
 {
 public:
 	Csocket_source(SOCKET s)
