@@ -15,6 +15,7 @@ typedef int socklen_t;
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <sys/socket.h>
+#include <sys/uio.h>
 
 #define closesocket close
 #define ioctlsocket ioctl
