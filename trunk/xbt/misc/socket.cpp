@@ -66,7 +66,7 @@ int Csocket::blocking(bool v)
 
 void Csocket::close()
 {
-	*this = INVALID_SOCKET;
+	m_source.reset();
 }
 
 int Csocket::connect(int h, int p)
