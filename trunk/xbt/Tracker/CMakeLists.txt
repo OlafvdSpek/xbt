@@ -12,7 +12,7 @@ check_include_file_cxx(sys/epoll.h HAVE_SYS_EPOLL)
 if(HAVE_SYS_EPOLL)
 	add_definitions(-DEPOLL)
 endif()
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-parentheses -Wno-sign-compare")
 add_executable(
 	xbt_tracker
