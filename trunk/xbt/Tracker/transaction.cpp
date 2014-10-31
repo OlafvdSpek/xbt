@@ -4,9 +4,9 @@
 #include <sha1.h>
 #include "server.h"
 
-Ctransaction::Ctransaction(const Csocket& s)
+Ctransaction::Ctransaction(const Csocket& s) : 
+	m_s(s)
 {
-	m_s = s;
 }
 
 long long Ctransaction::connection_id() const

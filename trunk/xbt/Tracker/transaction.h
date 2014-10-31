@@ -12,6 +12,6 @@ public:
 	void send_error(data_ref, const std::string& msg);
 	Ctransaction(const Csocket&);
 private:
-	Csocket m_s;
+	const Csocket& m_s;
 	sockaddr_in m_a;
 };
