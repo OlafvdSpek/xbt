@@ -59,7 +59,7 @@ static int hex_decode(char v)
 	if (v >= 'a' && v <= 'f')
 		return v - 'a' + 10;
 	return -1;
-};
+}
 
 std::string hex_decode(str_ref v)
 {
@@ -83,7 +83,7 @@ std::string hex_encode(int l, int v)
 		v >>= 4;
 	}
 	return r;
-};
+}
 
 std::string n(long long v)
 {
@@ -142,7 +142,7 @@ std::string uri_decode(str_ref v)
 		}
 	}
 	return r;
-};
+}
 
 std::string uri_encode(str_ref v)
 {
@@ -172,7 +172,7 @@ std::string uri_encode(str_ref v)
 		}
 	}
 	return r;
-};
+}
 
 bool is_private_ipa(int a)
 {
