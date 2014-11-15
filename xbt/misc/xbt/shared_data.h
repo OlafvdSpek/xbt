@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <sys/stat.h>
+#include <xbt/bstream.h>
 #include <xbt/data_ref.h>
 
 template<class T>
@@ -100,12 +101,12 @@ inline shared_data file_get(FILE* f)
 
 inline shared_data file_get(const std::string& fname)
 {
-	std::unique_ptr<FILE, int(*)(FILE*)> f(fopen(fname.c_str(), "rb"), fclose);
-	return file_get(f.get());
+	bstream f = fopen(fname.c_str(), "rb");
+	return file_get(f);
 }
 
 inline int file_put(const std::string& fname, data_ref v)
 {
-	std::unique_ptr<FILE, int(*)(FILE*)> f(fopen(fname.c_str(), "wb"), fclose);
-	return f ? fwrite(v.data(), v.size(), 1, f.get()) != 1 : 1;
+	bstream f = fopen(fname.c_str(), "wb");
+	return !f || f.write(v.data(), v.size()) != v.size();
 }
