@@ -1,24 +1,35 @@
 #pragma once
 
+#include <boost/noncopyable.hpp>
 #include <cstdio>
 
-class bstream
+class cfile : boost::noncopyable
 {
 public:
-	bstream() = default;
+	cfile() = default;
 
-	bstream(bstream&& v) : f_(v.f_)
-	{
-		v.f_ = NULL;
-	}
-
-	bstream(FILE* f) : f_(f)
+	cfile(cfile&& v) : f_(v.release())
 	{
 	}
 
-	~bstream()
+	explicit cfile(FILE* f) : f_(f)
+	{
+	}
+
+	explicit cfile(const char* name, const char* mode) : f_(fopen(name, mode))
+	{
+	}
+
+	~cfile()
 	{
 		close();
+	}
+
+	FILE* release()
+	{
+		FILE* f = f_;
+		f_ = NULL;
+		return f;
 	}
 
 	operator FILE*()
