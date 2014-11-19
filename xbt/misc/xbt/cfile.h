@@ -2,6 +2,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <cstdio>
+#include <string>
 
 class cfile : boost::noncopyable
 {
@@ -17,6 +18,10 @@ public:
 	}
 
 	explicit cfile(const char* name, const char* mode) : f_(fopen(name, mode))
+	{
+	}
+
+	explicit cfile(const std::string& name, const char* mode) : f_(fopen(name.c_str(), mode))
 	{
 	}
 
@@ -47,12 +52,9 @@ public:
 		return fwrite(d, 1, cb_d, f_);
 	}
 
-	void close()
+	int close()
 	{
-		if (!f_)
-			return;
-		fclose(f_);
-		f_ = NULL;
+		return f_ ? fclose(release()) : 0;
 	}
 private:
 	FILE* f_ = NULL;

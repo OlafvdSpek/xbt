@@ -195,6 +195,13 @@ T parse(str_ref s)
 	return try_parse(d, s) ? 0 : d;
 }
 
+template<class T>
+void parse(T& d, str_ref s)
+{
+	if (try_parse(d, s))
+		d = 0;
+}
+
 inline long long to_int(str_ref v)
 {
 	return parse<long long>(v);

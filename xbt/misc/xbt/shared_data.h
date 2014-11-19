@@ -101,12 +101,12 @@ inline shared_data file_get(FILE* f)
 
 inline shared_data file_get(const std::string& fname)
 {
-	cfile f(fname.c_str(), "rb");
+	cfile f(fname, "rb");
 	return file_get(f);
 }
 
 inline int file_put(const std::string& fname, data_ref v)
 {
-	cfile f(fname.c_str(), "wb");
+	cfile f(fname, "wb");
 	return !f || f.write(v.data(), v.size()) != v.size();
 }
