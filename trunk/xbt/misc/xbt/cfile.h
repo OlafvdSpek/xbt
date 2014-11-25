@@ -4,6 +4,16 @@
 #include <cstdio>
 #include <string>
 
+inline size_t read(FILE* f, void* d, size_t cb_d)
+{
+	return fread(d, 1, cb_d, f);
+}
+
+inline size_t write(FILE* f, const void* d, size_t cb_d)
+{
+	return fwrite(d, 1, cb_d, f);
+}
+
 class cfile : boost::noncopyable
 {
 public:
