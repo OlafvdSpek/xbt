@@ -15,6 +15,14 @@ public:
 	{
 	}
 
+	explicit bstream(const char* name, int mode) : f_(open(name, mode))
+	{
+	}
+
+	explicit bstream(const std::string& name, int mode) : f_(open(name.c_str(), mode))
+	{
+	}
+
 	~bstream()
 	{
 		close();
@@ -34,7 +42,7 @@ public:
 
 	bool is_open() const
 	{
-		return f_;
+		return f_ != -1;
 	}
 
 	ptrdiff_t read(void* d, size_t cb_d)

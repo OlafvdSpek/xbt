@@ -54,7 +54,7 @@ public:
 
 	bool is_open() const
 	{
-		return f_;
+		return !!f_;
 	}
 
 	size_t read(void* d, size_t cb_d)
