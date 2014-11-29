@@ -11,7 +11,7 @@ public:
 	{
 	}
 
-	bstream(int f) : f_(f == -1 ? 0 : f)
+	explicit bstream(int f) : f_(f)
 	{
 	}
 
@@ -23,7 +23,7 @@ public:
 	int release()
 	{
 		int f = f_;
-		f_ = 0;
+		f_ = -1;
 		return f;
 	}
 
@@ -32,7 +32,7 @@ public:
 		return f_;
 	}
 
-	explicit operator int()
+	bool is_open() const
 	{
 		return f_;
 	}
@@ -49,8 +49,8 @@ public:
 
 	int close()
 	{
-		return f_ ? ::close(release()) : 0;
+		return is_open() ? ::close(release()) : 0;
 	}
 private:
-	int f_ = 0;
+	int f_ = -1;
 };

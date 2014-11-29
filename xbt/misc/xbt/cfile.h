@@ -52,6 +52,11 @@ public:
 		return f_;
 	}
 
+	bool is_open() const
+	{
+		return f_;
+	}
+
 	size_t read(void* d, size_t cb_d)
 	{
 		return fread(d, 1, cb_d, f_);
@@ -64,7 +69,7 @@ public:
 
 	int close()
 	{
-		return f_ ? fclose(release()) : 0;
+		return is_open() ? fclose(release()) : 0;
 	}
 private:
 	FILE* f_ = NULL;
