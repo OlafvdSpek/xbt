@@ -1,18 +1,17 @@
 #pragma once
 
-#include <cstdio>
+#include <io.h>
 
 class bstream
 {
 public:
 	bstream() = default;
 
-	bstream(bstream&& v) : f_(v.f_)
+	bstream(bstream&& v) : f_(v.release())
 	{
-		v.f_ = NULL;
 	}
 
-	bstream(FILE* f) : f_(f)
+	bstream(int f) : f_(f == -1 ? 0 : f)
 	{
 	}
 
@@ -21,28 +20,37 @@ public:
 		close();
 	}
 
-	operator FILE*()
+	int release()
+	{
+		int f = f_;
+		f_ = 0;
+		return f;
+	}
+
+	int get()
 	{
 		return f_;
 	}
 
-	size_t read(void* d, size_t cb_d)
+	explicit operator int()
 	{
-		return fread(d, 1, cb_d, f_);
+		return f_;
 	}
 
-	size_t write(const void* d, size_t cb_d)
+	ptrdiff_t read(void* d, size_t cb_d)
 	{
-		return fwrite(d, 1, cb_d, f_);
+		return ::read(f_, d, cb_d);
 	}
 
-	void close()
+	ptrdiff_t write(const void* d, size_t cb_d)
 	{
-		if (!f_)
-			return;
-		fclose(f_);
-		f_ = NULL;
+		return ::write(f_, d, cb_d);
+	}
+
+	int close()
+	{
+		return f_ ? ::close(release()) : 0;
 	}
 private:
-	FILE* f_ = NULL;
+	int f_ = 0;
 };
