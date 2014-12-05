@@ -49,19 +49,19 @@ public:
 		return f;
 	}
 
-	handle_type get()
+	handle_type get() const
 	{
 		return f_;
 	}
 
-	operator handle_type()
+	operator handle_type() const
 	{
 		return f_;
 	}
 
 	bool is_open() const
 	{
-		return !!f_;
+		return !!get();
 	}
 
 	explicit operator bool() const

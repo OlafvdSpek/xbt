@@ -37,14 +37,14 @@ public:
 		return f;
 	}
 
-	handle_type get()
+	handle_type get() const
 	{
 		return f_;
 	}
 
 	bool is_open() const
 	{
-		return f_ != -1;
+		return get() != -1;
 	}
 
 	explicit operator bool() const
