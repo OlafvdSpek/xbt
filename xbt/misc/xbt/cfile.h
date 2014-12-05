@@ -40,9 +40,9 @@ public:
 		return is_open();
 	}
 
-	void reset()
+	void reset(handle_type f = NULL)
 	{
-		f_ = NULL;
+		f_ = f;
 	}
 
 	size_t read(void* d, size_t cb_d)
