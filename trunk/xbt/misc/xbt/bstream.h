@@ -45,6 +45,11 @@ public:
 		return f_ != -1;
 	}
 
+	explicit operator bool() const
+	{
+		return is_open();
+	}
+
 	ptrdiff_t read(void* d, size_t cb_d)
 	{
 		return ::read(f_, d, cb_d);

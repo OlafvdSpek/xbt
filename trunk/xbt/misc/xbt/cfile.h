@@ -57,6 +57,11 @@ public:
 		return !!f_;
 	}
 
+	explicit operator bool() const
+	{
+		return is_open();
+	}
+
 	size_t read(void* d, size_t cb_d)
 	{
 		return fread(d, 1, cb_d, f_);
