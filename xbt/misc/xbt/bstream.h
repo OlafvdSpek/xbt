@@ -5,13 +5,15 @@
 class bstream
 {
 public:
+	typedef int handle_type;
+
 	bstream() = default;
 
 	bstream(bstream&& v) : f_(v.release())
 	{
 	}
 
-	explicit bstream(int f) : f_(f)
+	explicit bstream(handle_type f) : f_(f)
 	{
 	}
 
@@ -28,14 +30,14 @@ public:
 		close();
 	}
 
-	int release()
+	handle_type release()
 	{
-		int f = f_;
+		handle_type f = f_;
 		f_ = -1;
 		return f;
 	}
 
-	int get()
+	handle_type get()
 	{
 		return f_;
 	}
@@ -65,5 +67,5 @@ public:
 		return is_open() ? ::close(release()) : 0;
 	}
 private:
-	int f_ = -1;
+	handle_type f_ = -1;
 };
