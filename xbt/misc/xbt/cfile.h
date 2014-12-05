@@ -47,6 +47,11 @@ public:
 		return f;
 	}
 
+	FILE* get()
+	{
+		return f_;
+	}
+
 	operator FILE*()
 	{
 		return f_;
