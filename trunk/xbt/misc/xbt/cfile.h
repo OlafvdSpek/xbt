@@ -14,6 +14,50 @@ inline size_t write(FILE* f, const void* d, size_t cb_d)
 	return fwrite(d, 1, cb_d, f);
 }
 
+class cfile_handle
+{
+public:
+	typedef FILE* handle_type;
+
+	cfile_handle() = default;
+
+	explicit cfile_handle(handle_type f) : f_(f)
+	{
+	}
+
+	handle_type get() const
+	{
+		return f_;
+	}
+
+	bool is_open() const
+	{
+		return !!get();
+	}
+
+	explicit operator bool() const
+	{
+		return is_open();
+	}
+
+	void reset()
+	{
+		f_ = NULL;
+	}
+
+	size_t read(void* d, size_t cb_d)
+	{
+		return fread(d, 1, cb_d, get());
+	}
+
+	size_t write(const void* d, size_t cb_d)
+	{
+		return fwrite(d, 1, cb_d, get());
+	}
+private:
+	handle_type f_ = NULL;
+};
+
 class cfile : boost::noncopyable
 {
 public:
@@ -44,24 +88,24 @@ public:
 
 	handle_type release()
 	{
-		handle_type f = f_;
-		f_ = NULL;
+		handle_type f = f_.get();
+		f_.reset();
 		return f;
 	}
 
 	handle_type get() const
 	{
-		return f_;
+		return f_.get();
 	}
 
 	operator handle_type() const
 	{
-		return f_;
+		return get();
 	}
 
 	bool is_open() const
 	{
-		return !!get();
+		return f_.is_open();
 	}
 
 	explicit operator bool() const
@@ -71,12 +115,12 @@ public:
 
 	size_t read(void* d, size_t cb_d)
 	{
-		return fread(d, 1, cb_d, f_);
+		return f_.read(d, cb_d);
 	}
 
 	size_t write(const void* d, size_t cb_d)
 	{
-		return fwrite(d, 1, cb_d, f_);
+		return f_.write(d, cb_d);
 	}
 
 	int close()
@@ -84,5 +128,5 @@ public:
 		return is_open() ? fclose(release()) : 0;
 	}
 private:
-	handle_type f_ = NULL;
+	cfile_handle f_;
 };
