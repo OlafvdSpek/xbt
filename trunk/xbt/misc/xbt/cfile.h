@@ -17,13 +17,15 @@ inline size_t write(FILE* f, const void* d, size_t cb_d)
 class cfile : boost::noncopyable
 {
 public:
+	typedef FILE* handle_type;
+
 	cfile() = default;
 
 	cfile(cfile&& v) : f_(v.release())
 	{
 	}
 
-	explicit cfile(FILE* f) : f_(f)
+	explicit cfile(handle_type f) : f_(f)
 	{
 	}
 
@@ -40,19 +42,19 @@ public:
 		close();
 	}
 
-	FILE* release()
+	handle_type release()
 	{
-		FILE* f = f_;
+		handle_type f = f_;
 		f_ = NULL;
 		return f;
 	}
 
-	FILE* get()
+	handle_type get()
 	{
 		return f_;
 	}
 
-	operator FILE*()
+	operator handle_type()
 	{
 		return f_;
 	}
@@ -82,5 +84,5 @@ public:
 		return is_open() ? fclose(release()) : 0;
 	}
 private:
-	FILE* f_ = NULL;
+	handle_type f_ = NULL;
 };
