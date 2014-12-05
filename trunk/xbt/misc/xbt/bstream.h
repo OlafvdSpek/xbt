@@ -28,9 +28,9 @@ public:
 		return is_open();
 	}
 
-	void reset()
+	void reset(handle_type f = -1)
 	{
-		f_ = -1;
+		f_ = f;
 	}
 
 	ptrdiff_t read(void* d, size_t cb_d)
