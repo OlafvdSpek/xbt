@@ -2,6 +2,50 @@
 
 #include <io.h>
 
+class bstream_handle
+{
+public:
+	typedef int handle_type;
+
+	bstream_handle() = default;
+
+	explicit bstream_handle(handle_type f) : f_(f)
+	{
+	}
+
+	handle_type get() const
+	{
+		return f_;
+	}
+
+	bool is_open() const
+	{
+		return get() != -1;
+	}
+
+	explicit operator bool() const
+	{
+		return is_open();
+	}
+
+	void reset()
+	{
+		f_ = -1;
+	}
+
+	ptrdiff_t read(void* d, size_t cb_d)
+	{
+		return ::read(get(), d, cb_d);
+	}
+
+	ptrdiff_t write(const void* d, size_t cb_d)
+	{
+		return ::write(get(), d, cb_d);
+	}
+private:
+	handle_type f_ = -1;
+};
+
 class bstream
 {
 public:
@@ -32,19 +76,19 @@ public:
 
 	handle_type release()
 	{
-		handle_type f = f_;
-		f_ = -1;
+		handle_type f = f_.get();
+		f_.reset();
 		return f;
 	}
 
 	handle_type get() const
 	{
-		return f_;
+		return f_.get();
 	}
 
 	bool is_open() const
 	{
-		return get() != -1;
+		return f_.is_open();
 	}
 
 	explicit operator bool() const
@@ -54,12 +98,12 @@ public:
 
 	ptrdiff_t read(void* d, size_t cb_d)
 	{
-		return ::read(f_, d, cb_d);
+		return f_.read(d, cb_d);
 	}
 
 	ptrdiff_t write(const void* d, size_t cb_d)
 	{
-		return ::write(f_, d, cb_d);
+		return f_.write(d, cb_d);
 	}
 
 	int close()
@@ -67,5 +111,5 @@ public:
 		return is_open() ? ::close(release()) : 0;
 	}
 private:
-	handle_type f_ = -1;
+	bstream_handle f_;
 };
