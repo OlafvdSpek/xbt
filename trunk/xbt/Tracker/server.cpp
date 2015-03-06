@@ -794,22 +794,16 @@ std::string t_torrent::select_peers(const Ctracker_input& ti) const
 		candidates.push_back(v);
 	}
 	size_t c = 50;
+	if (candidates.size() <= c)
+		return std::string(candidates.begin()->data(), candidates.end()->data());
 	std::string d;
 	d.reserve(300);
-	if (candidates.size() > c)
+	while (c--)
 	{
-		while (c--)
-		{
-			int i = rand() % candidates.size();
-			d.append(candidates[i].begin(), candidates[i].end());
-			candidates[i] = candidates.back();
-			candidates.pop_back();
-		}
-	}
-	else
-	{
-		for (auto& i : candidates)
-			d.append(i.begin(), i.end());
+		int i = rand() % candidates.size();
+		d.append(candidates[i].begin(), candidates[i].end());
+		candidates[i] = candidates.back();
+		candidates.pop_back();
 	}
 	return d;
 }
