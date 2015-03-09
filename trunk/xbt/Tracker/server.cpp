@@ -40,7 +40,7 @@ time_t m_read_db_users_time;
 time_t m_time = time(NULL);
 time_t m_write_db_torrents_time;
 time_t m_write_db_users_time;
-long long m_secret;
+unsigned long long m_secret;
 int m_fid_end = 0;
 bool m_read_users_can_leech;
 bool m_read_users_peers_limit;
