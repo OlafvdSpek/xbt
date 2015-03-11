@@ -183,16 +183,7 @@ void read_db_torrents_sql()
 			Csql_result result = Csql_query(m_database, "select info_hash, @fid from @files where flags & 1").execute();
 			while (Csql_row row = result.fetch_row())
 			{
-				auto i = m_torrents.find(to_array<char, 20>(row[0]));
-				if (i != m_torrents.end())
-				{
-					for (auto& j : i->second.peers)
-					{
-						if (t_user* user = find_user_by_uid(j.second.uid))
-							(j.second.left ? user->incompletes : user->completes)--;
-					}
-					m_torrents.erase(i);
-				}
+				m_torrents.erase(to_array<char, 20>(row[0]));
 				Csql_query(m_database, "delete from @files where @fid = ?")(row[1]).execute();
 			}
 		}
@@ -434,8 +425,6 @@ void clean_up(t_torrent& t, time_t time)
 		if (i->second.mtime < time)
 		{
 			(i->second.left ? t.leechers : t.seeders)--;
-			if (t_user* user = find_user_by_uid(i->second.uid))
-				(i->second.left ? user->incompletes : user->completes)--;
 			t.peers.erase(i++);
 			t.dirty = true;
 		}
@@ -711,13 +700,7 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 	t_peers::key_type peer_key(v.m_ipa, user ? user->uid : 0);
 	t_peer* i = find_ptr(file.peers, peer_key);
 	if (i)
-	{
 		(i->left ? file.leechers : file.seeders)--;
-		if (t_user* old_user = find_user_by_uid(i->uid))
-			(i->left ? old_user->incompletes : old_user->completes)--;
-	}
-	else if (v.m_left && user && user->torrents_limit && user->incompletes >= user->torrents_limit)
-		return bts_torrents_limit_reached;
 	else if (v.m_left && user && user->peers_limit)
 	{
 		int c = 0;
@@ -766,8 +749,6 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 		peer.uid = user ? user->uid : 0;
 		peer.uploaded = v.m_uploaded;
 		(peer.left ? file.leechers : file.seeders)++;
-		if (user)
-			(peer.left ? user->incompletes : user->completes)++;
 		peer.mtime = srv_time();
 	}
 	if (v.m_event == Ctracker_input::e_completed)

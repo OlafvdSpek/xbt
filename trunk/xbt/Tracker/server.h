@@ -106,8 +106,6 @@ struct t_user
 	bool can_leech = true;
 	bool marked;
 	int uid;
-	int completes = 0;
-	int incompletes = 0;
 	int peers_limit = 0;
 	int torrent_pass_version = 0;
 	int torrents_limit = 0;
