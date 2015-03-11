@@ -9,7 +9,7 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 	{
 	case 'd':
 		if (name == "downloaded")
-			m_downloaded = atoll(value.c_str());
+			m_downloaded = to_int(value);
 		break;
 	case 'e':
 		if (name == "event")
@@ -35,7 +35,7 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 		break;
 	case 'l':
 		if (name == "left")
-			m_left = atoll(value.c_str());
+			m_left = to_int(value);
 		break;
 	case 'p':
 		if (name == "peer_id" && value.size() == 20)
@@ -45,7 +45,7 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 		break;
 	case 'u':
 		if (name == "uploaded")
-			m_uploaded = atoll(value.c_str());
+			m_uploaded = to_int(value);
 		break;
 	}
 }
