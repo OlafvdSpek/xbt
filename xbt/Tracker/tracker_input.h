@@ -6,6 +6,16 @@ public:
 	void set(const std::string& name, const std::string& value);
 	bool valid() const;
 
+	bool is_seeder() const
+	{
+		return !m_left;
+	}
+	
+	bool is_leecher() const
+	{
+		return m_left;
+	}
+
 	enum t_event
 	{
 		e_none,
