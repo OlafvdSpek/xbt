@@ -86,13 +86,11 @@ struct t_peer
 	std::array<char, 20> peer_id;
 };
 
-typedef boost::unordered_map<peer_key_c, t_peer> t_peers;
-
 struct t_torrent
 {
 	str_ref select_peers(mutable_str_ref d, const Ctracker_input&) const;
 
-	t_peers peers;
+	boost::unordered_map<peer_key_c, t_peer> peers;
 	time_t ctime;
 	int completed = 0;
 	int fid = 0;
