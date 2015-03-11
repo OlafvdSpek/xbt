@@ -758,7 +758,7 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 		file.peers.erase(peer_key);
 	else
 	{
-		t_peer& peer = file.peers[peer_key];
+		t_peer& peer = i ? *i : file.peers[peer_key];
 		peer.downloaded = v.m_downloaded;
 		peer.left = v.m_left;
 		peer.peer_id = v.m_peer_id;
