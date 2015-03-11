@@ -101,9 +101,8 @@ void Ctransaction::send_announce(data_ref r)
 	write_int(4, d + utoa_interval, srv_config().m_announce_interval);
 	write_int(4, d + utoa_leechers, torrent->leechers);
 	write_int(4, d + utoa_seeders, torrent->seeders);
-	std::string peers = torrent->select_peers(ti);
-	memcpy(d + utoa_size, peers.data(), peers.size());
-	send(data_ref(d, d + utoa_size + peers.size()));
+	str_ref peers = torrent->select_peers(mutable_str_ref(d + utoa_size, 300), ti);
+	send(data_ref(d, peers.end()));
 }
 
 void Ctransaction::send_scrape(data_ref r)
