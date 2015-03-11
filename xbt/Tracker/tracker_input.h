@@ -5,7 +5,6 @@ class Ctracker_input
 public:
 	void set(const std::string& name, const std::string& value);
 	bool valid() const;
-	Ctracker_input();
 
 	enum t_event
 	{
@@ -15,15 +14,13 @@ public:
 		e_stopped,
 	};
 
-	typedef std::vector<std::string> t_info_hashes;
-
-	t_event m_event;
+	t_event m_event = e_none;
 	std::string m_info_hash;
-	t_info_hashes m_info_hashes;
+	std::vector<std::string> m_info_hashes;
 	std::array<char, 20> m_peer_id;
-	long long m_downloaded;
-	long long m_left;
-	long long m_uploaded;
-	int m_ipa;
-	int m_port;
+	long long m_downloaded = 0;
+	long long m_left = 0;
+	long long m_uploaded = 0;
+	int m_ipa = 0;
+	int m_port = 0;
 };
