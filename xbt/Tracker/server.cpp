@@ -45,7 +45,6 @@ int m_fid_end = 0;
 bool m_read_users_can_leech;
 bool m_read_users_peers_limit;
 bool m_read_users_torrent_pass;
-bool m_read_users_torrents_limit;
 bool m_read_users_wait_time;
 bool m_use_sql;
 
@@ -250,8 +249,6 @@ void read_db_users()
 		if (m_read_users_torrent_pass)
 			q += ", torrent_pass";
 		q += ", torrent_pass_version";
-		if (m_read_users_torrents_limit)
-			q += ", torrents_limit";
 		if (m_read_users_wait_time)
 			q += ", wait_time";
 		q += " from @users";
@@ -277,8 +274,6 @@ void read_db_users()
 				c++;
 			}
 			user.torrent_pass_version = row[c++].i();
-			if (m_read_users_torrents_limit)
-				user.torrents_limit = row[c++].i();
 			if (m_read_users_wait_time)
 				user.wait_time = row[c++].i();
 		}
@@ -408,7 +403,6 @@ int test_sql()
 		m_read_users_can_leech = Csql_query(m_database, "show columns from @users like 'can_leech'").execute();
 		m_read_users_peers_limit = Csql_query(m_database, "show columns from @users like 'peers_limit'").execute();
 		m_read_users_torrent_pass = Csql_query(m_database, "show columns from @users like 'torrent_pass'").execute();
-		m_read_users_torrents_limit = Csql_query(m_database, "show columns from @users like 'torrents_limit'").execute();
 		m_read_users_wait_time = Csql_query(m_database, "show columns from @users like 'wait_time'").execute();
 		return 0;
 	}

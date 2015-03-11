@@ -103,13 +103,12 @@ struct t_torrent
 
 struct t_user
 {
-	bool can_leech = true;
-	bool marked;
 	int uid;
 	int peers_limit = 0;
 	int torrent_pass_version = 0;
-	int torrents_limit = 0;
 	int wait_time = 0;
+	bool can_leech = true;
+	bool marked;
 };
 
 const t_torrent* find_torrent(const std::string& id);
