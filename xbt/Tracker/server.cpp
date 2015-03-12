@@ -837,10 +837,10 @@ void debug(const t_torrent& t, std::ostream& os)
 	for (auto& i : t.peers)
 	{
 		os << "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
-			<< "<td align=right>" << ntohs(i.second.port)
-			<< "<td align=right>" << i.second.uid
-			<< "<td align=right>" << i.second.left
-			<< "<td align=right>" << ::time(NULL) - i.second.mtime
+			<< "<td class=ar>" << ntohs(i.second.port)
+			<< "<td class=ar>" << i.second.uid
+			<< "<td class=ar>" << i.second.left
+			<< "<td class=ar>" << ::time(NULL) - i.second.mtime
 			<< "<td>" << hex_encode(i.second.peer_id);
 	}
 }
@@ -848,7 +848,7 @@ void debug(const t_torrent& t, std::ostream& os)
 std::string srv_debug(const Ctracker_input& ti)
 {
 	std::ostringstream os;
-	os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
+	os << "<!DOCTYPE HTML><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	os << "<table>";
 	if (ti.m_info_hash.empty())
 	{
@@ -856,11 +856,11 @@ std::string srv_debug(const Ctracker_input& ti)
 		{
 			if (!i.second.leechers && !i.second.seeders)
 				continue;
-			os << "<tr><td align=right>" << i.second.fid
+			os << "<tr><td class=ar>" << i.second.fid
 				<< "<td><a href=\"?info_hash=" << uri_encode(i.first) << "\">" << hex_encode(i.first) << "</a>"
 				<< "<td>" << (i.second.dirty ? '*' : ' ')
-				<< "<td align=right>" << i.second.leechers
-				<< "<td align=right>" << i.second.seeders;
+				<< "<td class=ar>" << i.second.leechers
+				<< "<td class=ar>" << i.second.seeders;
 		}
 	}
 	else if (const t_torrent* i = find_torrent(ti.m_info_hash))
@@ -872,7 +872,8 @@ std::string srv_debug(const Ctracker_input& ti)
 std::string srv_statistics()
 {
 	std::ostringstream os;
-	os << "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
+	os << "<!DOCTYPE HTML><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
+	os << "<style>.ar { text-align: right }</style>";
 	int leechers = 0;
 	int seeders = 0;
 	int torrents = 0;
@@ -886,47 +887,47 @@ std::string srv_statistics()
 	time_t t = srv_time();
 	time_t up_time = std::max<time_t>(1, t - m_stats.start_time);
 	os << "<table>"
-		<< "<tr><td>peers<td align=right>" << peers;
+		<< "<tr><td>peers<td class=ar>" << peers;
 	if (peers)
 	{
-		os << "<tr><td>seeders<td align=right>" << seeders << "<td align=right>" << seeders * 100 / peers << " %"
-			<< "<tr><td>leechers<td align=right>" << leechers << "<td align=right>" << leechers * 100 / peers << " %";
+		os << "<tr><td>seeders<td class=ar>" << seeders << "<td class=ar>" << seeders * 100 / peers << " %"
+			<< "<tr><td>leechers<td class=ar>" << leechers << "<td class=ar>" << leechers * 100 / peers << " %";
 	}
-	os << "<tr><td>torrents<td align=right>" << torrents
+	os << "<tr><td>torrents<td class=ar>" << torrents
 		<< "<tr><td>"
-		<< "<tr><td>accepted tcp<td align=right>" << m_stats.accepted_tcp << "<td align=right>" << m_stats.accepted_tcp / up_time << " /s"
-		<< "<tr><td>slow tcp<td align=right>" << m_stats.slow_tcp << "<td align=right>" << m_stats.slow_tcp / up_time << " /s"
-		<< "<tr><td>rejected tcp<td align=right>" << m_stats.rejected_tcp
-		<< "<tr><td>accept errors<td align=right>" << m_stats.accept_errors;
+		<< "<tr><td>accepted tcp<td class=ar>" << m_stats.accepted_tcp << "<td class=ar>" << m_stats.accepted_tcp / up_time << " /s"
+		<< "<tr><td>slow tcp<td class=ar>" << m_stats.slow_tcp << "<td class=ar>" << m_stats.slow_tcp / up_time << " /s"
+		<< "<tr><td>rejected tcp<td class=ar>" << m_stats.rejected_tcp
+		<< "<tr><td>accept errors<td class=ar>" << m_stats.accept_errors;
 	if (m_stats.announced())
 	{
-		os << "<tr><td>announced<td align=right>" << m_stats.announced() << "<td align=right>" << m_stats.announced() * 100 / m_stats.accepted_tcp << " %"
-			<< "<tr><td>announced http <td align=right>" << m_stats.announced_http << "<td align=right>" << m_stats.announced_http * 100 / m_stats.announced() << " %"
-			<< "<tr><td>announced udp<td align=right>" << m_stats.announced_udp << "<td align=right>" << m_stats.announced_udp * 100 / m_stats.announced() << " %";
+		os << "<tr><td>announced<td class=ar>" << m_stats.announced() << "<td class=ar>" << m_stats.announced() * 100 / m_stats.accepted_tcp << " %"
+			<< "<tr><td>announced http <td class=ar>" << m_stats.announced_http << "<td class=ar>" << m_stats.announced_http * 100 / m_stats.announced() << " %"
+			<< "<tr><td>announced udp<td class=ar>" << m_stats.announced_udp << "<td class=ar>" << m_stats.announced_udp * 100 / m_stats.announced() << " %";
 	}
-	os << "<tr><td>scraped full<td align=right>" << m_stats.scraped_full;
-	os << "<tr><td>scraped multi<td align=right>" << m_stats.scraped_multi;
+	os << "<tr><td>scraped full<td class=ar>" << m_stats.scraped_full;
+	os << "<tr><td>scraped multi<td class=ar>" << m_stats.scraped_multi;
 	if (m_stats.scraped())
 	{
-		os << "<tr><td>scraped<td align=right>" << m_stats.scraped() << "<td align=right>" << m_stats.scraped() * 100 / m_stats.accepted_tcp << " %"
-			<< "<tr><td>scraped http<td align=right>" << m_stats.scraped_http << "<td align=right>" << m_stats.scraped_http * 100 / m_stats.scraped() << " %"
-			<< "<tr><td>scraped udp<td align=right>" << m_stats.scraped_udp << "<td align=right>" << m_stats.scraped_udp * 100 / m_stats.scraped() << " %";
+		os << "<tr><td>scraped<td class=ar>" << m_stats.scraped() << "<td class=ar>" << m_stats.scraped() * 100 / m_stats.accepted_tcp << " %"
+			<< "<tr><td>scraped http<td class=ar>" << m_stats.scraped_http << "<td class=ar>" << m_stats.scraped_http * 100 / m_stats.scraped() << " %"
+			<< "<tr><td>scraped udp<td class=ar>" << m_stats.scraped_udp << "<td class=ar>" << m_stats.scraped_udp * 100 / m_stats.scraped() << " %";
 	}
 	os << "<tr><td>"
-		<< "<tr><td>up time<td align=right>" << duration2a(up_time)
+		<< "<tr><td>up time<td class=ar>" << duration2a(up_time)
 		<< "<tr><td>"
-		<< "<tr><td>anonymous announce<td align=right>" << m_config.m_anonymous_announce
-		<< "<tr><td>anonymous scrape<td align=right>" << m_config.m_anonymous_scrape
-		<< "<tr><td>auto register<td align=right>" << m_config.m_auto_register
-		<< "<tr><td>full scrape<td align=right>" << m_config.m_full_scrape
-		<< "<tr><td>read config time<td align=right>" << t - m_read_config_time << " / " << m_config.m_read_config_interval
-		<< "<tr><td>clean up time<td align=right>" << t - m_clean_up_time << " / " << m_config.m_clean_up_interval
-		<< "<tr><td>read db files time<td align=right>" << t - m_read_db_torrents_time << " / " << m_config.m_read_db_interval;
+		<< "<tr><td>anonymous announce<td class=ar>" << m_config.m_anonymous_announce
+		<< "<tr><td>anonymous scrape<td class=ar>" << m_config.m_anonymous_scrape
+		<< "<tr><td>auto register<td class=ar>" << m_config.m_auto_register
+		<< "<tr><td>full scrape<td class=ar>" << m_config.m_full_scrape
+		<< "<tr><td>read config time<td class=ar>" << t - m_read_config_time << " / " << m_config.m_read_config_interval
+		<< "<tr><td>clean up time<td class=ar>" << t - m_clean_up_time << " / " << m_config.m_clean_up_interval
+		<< "<tr><td>read db files time<td class=ar>" << t - m_read_db_torrents_time << " / " << m_config.m_read_db_interval;
 	if (m_use_sql)
 	{
-		os << "<tr><td>read db users time<td align=right>" << t - m_read_db_users_time << " / " << m_config.m_read_db_interval
-			<< "<tr><td>write db files time<td align=right>" << t - m_write_db_torrents_time << " / " << m_config.m_write_db_interval
-			<< "<tr><td>write db users time<td align=right>" << t - m_write_db_users_time << " / " << m_config.m_write_db_interval;
+		os << "<tr><td>read db users time<td class=ar>" << t - m_read_db_users_time << " / " << m_config.m_read_db_interval
+			<< "<tr><td>write db files time<td class=ar>" << t - m_write_db_torrents_time << " / " << m_config.m_write_db_interval
+			<< "<tr><td>write db users time<td class=ar>" << t - m_write_db_users_time << " / " << m_config.m_write_db_interval;
 	}
 	os << "</table>";
 	return os.str();
