@@ -189,7 +189,7 @@ void read_db_torrents_sql()
 		if (m_config.m_auto_register && !m_torrents.empty())
 			return;
 		Csql_result result = Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute();
-		// m_torrents.reserve(m_torrents.size() + result.size());
+		m_torrents.reserve(m_torrents.size() + result.size());
 		while (Csql_row row = result.fetch_row())
 		{
 			m_fid_end = std::max<int>(m_fid_end, row[2].i() + 1);
@@ -253,7 +253,7 @@ void read_db_users()
 			q += ", wait_time";
 		q += " from @users";
 		Csql_result result = q.execute();
-		// m_users.reserve(result.size());
+		m_users.reserve(result.size());
 		for (auto& i : m_users)
 			i.second.marked = true;
 		m_users_torrent_passes.clear();
@@ -840,7 +840,7 @@ void debug(const t_torrent& t, std::ostream& os)
 			<< "<td class=ar>" << ntohs(i.second.port)
 			<< "<td class=ar>" << i.second.uid
 			<< "<td class=ar>" << i.second.left
-			<< "<td class=ar>" << ::time(NULL) - i.second.mtime
+			<< "<td class=ar>" << srv_time() - i.second.mtime
 			<< "<td>" << hex_encode(i.second.peer_id);
 	}
 }
