@@ -280,9 +280,9 @@ std::string bbformat(str_ref s)
 			d += "</font>";
 			break;
 		case bb_quote:
+			d += "<blockquote class=bq>";
 			if (a0)
 				d += "<b>" + encode_field(a0) + " wrote:</b>";
-			d += "<blockquote class=bq>";
 			break;
 		case bb_quote_close:
 			d += "</blockquote>";
