@@ -648,12 +648,12 @@ void accept(const Csocket& l)
 		if (s.blocking(false))
 			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 #endif
-		std::auto_ptr<Cconnection> connection(new Cconnection(s, a));
+		std::unique_ptr<Cconnection> connection(new Cconnection(s, a));
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{
 			m_stats.slow_tcp++;
-			m_connections.push_back(connection);
+			m_connections.push_back(connection.release());
 			m_epoll.ctl(EPOLL_CTL_ADD, m_connections.back().s(), EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP | EPOLLET, &m_connections.back());
 		}
 	}
