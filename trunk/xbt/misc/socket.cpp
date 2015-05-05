@@ -21,8 +21,6 @@ const int INADDR_NONE = -1;
 const int MSG_NOSIGNAL = 0;
 #endif
 
-static bool g_start_up_done = false;
-
 Csocket::Csocket(SOCKET s)
 {
 	if (s != INVALID_SOCKET)
@@ -218,10 +216,11 @@ std::string Csocket::inet_ntoa(int v)
 
 int Csocket::start_up()
 {
-	if (g_start_up_done)
-		return 0;
-	g_start_up_done = true;
 #ifdef WIN32
+	static bool done = false;
+	if (done)
+		return 0;
+	done = true;
 	WSADATA wsadata;
 	if (WSAStartup(MAKEWORD(2, 0), &wsadata))
 		return 1;
