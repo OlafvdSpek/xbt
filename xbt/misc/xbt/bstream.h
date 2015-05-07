@@ -1,6 +1,7 @@
 #pragma once
 
 #include <io.h>
+#include <string>
 
 class bstream_handle
 {
