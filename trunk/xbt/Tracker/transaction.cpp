@@ -24,7 +24,7 @@ void Ctransaction::recv()
 {
 	const int cb_b = 2 << 10;
 	char b[cb_b];
-	while (1)
+	for (int i = 0; i < 10000; i++)
 	{
 		socklen_t cb_a = sizeof(sockaddr_in);
 		int r = m_s.recvfrom(mutable_data_ref(b, cb_b), reinterpret_cast<sockaddr*>(&m_a), &cb_a);
