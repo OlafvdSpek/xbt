@@ -88,7 +88,7 @@ struct t_peer
 
 struct t_torrent
 {
-	str_ref select_peers(mutable_str_ref d, const Ctracker_input&) const;
+	void select_peers(mutable_str_ref& d, const Ctracker_input&) const;
 
 	boost::unordered_map<peer_key_c, t_peer> peers;
 	time_t ctime;
