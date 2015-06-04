@@ -876,8 +876,8 @@ std::string srv_statistics()
 	std::ostringstream os;
 	os << "<!DOCTYPE HTML><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	os << "<style>.ar { text-align: right }</style>";
-	int leechers = 0;
-	int seeders = 0;
+	long long leechers = 0;
+	long long seeders = 0;
 	int torrents = 0;
 	for (auto& i : m_torrents)
 	{
