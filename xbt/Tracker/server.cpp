@@ -752,10 +752,10 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 	return std::string();
 }
 
-str_ref t_torrent::select_peers(mutable_str_ref d, const Ctracker_input& ti) const
+void t_torrent::select_peers(mutable_str_ref& d, const Ctracker_input& ti) const
 {
 	if (ti.m_event == Ctracker_input::e_stopped)
-		return str_ref();
+		return;
 	std::vector<std::array<char, 6>> candidates;
 	candidates.reserve(peers.size());
 	for (auto& i : peers)
@@ -771,7 +771,8 @@ str_ref t_torrent::select_peers(mutable_str_ref d, const Ctracker_input& ti) con
 	if (candidates.size() <= c)
 	{
 		memcpy(d.data(), candidates);
-		return d.substr(0, 6 * candidates.size());
+		d.advance_begin(6 * candidates.size());
+		return;
 	}
 	const char* d0 = d.begin();
 	while (c--)
@@ -782,7 +783,6 @@ str_ref t_torrent::select_peers(mutable_str_ref d, const Ctracker_input& ti) con
 		candidates[i] = candidates.back();
 		candidates.pop_back();
 	}
-	return str_ref(d0, d.data());
 }
 
 std::string srv_select_peers(const Ctracker_input& ti)
@@ -791,7 +791,9 @@ std::string srv_select_peers(const Ctracker_input& ti)
 	if (!f)
 		return std::string();
 	std::array<char, 300> peers0;
-	str_ref peers = f->select_peers(peers0, ti);
+	mutable_str_ref peers = peers0;
+	f->select_peers(peers, ti);
+	peers.assign(peers0.data(), peers.data());
 	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
 		% f->seeders % f->leechers % m_config.m_announce_interval % m_config.m_announce_interval % peers.size() % peers).str();
 }
