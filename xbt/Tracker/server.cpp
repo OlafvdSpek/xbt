@@ -623,7 +623,7 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 void accept(const Csocket& l)
 {
 	sockaddr_in a;
-	while (1)
+	for (int i = 0; i < 10000; i++)
 	{
 		socklen_t cb_a = sizeof(sockaddr_in);
 #ifdef SOCK_NONBLOCK
