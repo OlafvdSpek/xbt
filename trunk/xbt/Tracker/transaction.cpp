@@ -34,6 +34,7 @@ void Ctransaction::recv()
 				std::cerr << "recv failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
 			return;
 		}
+		srv_stats().received_udp++;
 		if (r < uti_size)
 			return;
 		switch (read_int(4, b + uti_action, b + r))
@@ -152,4 +153,5 @@ void Ctransaction::send(data_ref b)
 {
 	if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != b.size())
 		std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+	srv_stats().sent_udp++;
 }
