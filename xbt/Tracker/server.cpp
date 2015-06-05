@@ -901,8 +901,8 @@ std::string srv_statistics()
 		<< "<tr><td>slow tcp<td class=ar>" << m_stats.slow_tcp << "<td class=ar>" << m_stats.slow_tcp / up_time << " /s"
 		<< "<tr><td>rejected tcp<td class=ar>" << m_stats.rejected_tcp
 		<< "<tr><td>accept errors<td class=ar>" << m_stats.accept_errors
-		<< "<tr><td>received udp<td class=ar>" << m_stats.received_udp
-		<< "<tr><td>sent udp<td class=ar>" << m_stats.sent_udp;
+		<< "<tr><td>received udp<td class=ar>" << m_stats.received_udp << "<td class=ar>" << m_stats.received_udp / up_time << " /s"
+		<< "<tr><td>sent udp<td class=ar>" << m_stats.sent_udp << "<td class=ar>" << m_stats.sent_udp / up_time << " /s";
 	if (m_stats.announced())
 	{
 		os << "<tr><td>announced<td class=ar>" << m_stats.announced() << "<td class=ar>" << m_stats.announced() * 100 / m_stats.accepted_tcp << " %"
