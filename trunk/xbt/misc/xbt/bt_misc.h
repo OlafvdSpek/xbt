@@ -15,6 +15,7 @@ bool is_private_ipa(int a);
 int merkle_tree_size(int v);
 std::string mk_sname(std::string);
 std::string n(long long);
+std::string n2a(long long v, const char* postfix = NULL);
 std::string native_slashes(const std::string&);
 std::string hex_decode(str_ref);
 std::string hex_encode(int l, int v);

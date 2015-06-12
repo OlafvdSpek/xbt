@@ -191,8 +191,8 @@ std::string b2a(long long v, const char* postfix)
 		v = -v;
 		*w++ = '-';
 	}
-	int l;
-	for (l = 0; v > 999999; l++)
+	int l = 0;
+	for (; v > 999999; l++)
 		v >>= 10;
 	if (v > 999)
 	{
@@ -208,6 +208,38 @@ std::string b2a(long long v, const char* postfix)
 	else
 		w += sprintf(w, "%d", static_cast<int>(v));
 	const char* a[] = {"", " k", " m", " g", " t", " p", " e", " z", " y"};
+	w += sprintf(w, "%s", a[l]);
+	if (postfix)
+		w += sprintf(w, "%s%s", l ? "" : " ", postfix);
+	return d;
+}
+
+std::string n2a(long long v, const char* postfix)
+{
+	char d[32];
+	char* w = d;
+	if (v < 0)
+	{
+		v = -v;
+		*w++ = '-';
+	}
+	int l = 0;
+	for (; v > 999999; l++)
+		v /= 1000;
+	if (v > 999)
+	{
+		l++;
+		int b = static_cast<int>(v % 1000 / 10);
+		v /= 1000;
+		w += sprintf(w, "%d", static_cast<int>(v));
+		if (v < 10 && b % 10)
+			w += sprintf(w, ".%02d", b);
+		else if (v < 100 && b > 9)
+			w += sprintf(w, ".%d", b / 10);
+	}
+	else
+		w += sprintf(w, "%d", static_cast<int>(v));
+	const char* a [] = { "", " k", " m", " g", " t", " p", " e", " z", " y" };
 	w += sprintf(w, "%s", a[l]);
 	if (postfix)
 		w += sprintf(w, "%s%s", l ? "" : " ", postfix);
