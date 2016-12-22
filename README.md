@@ -1,7 +1,7 @@
 # XBT Tracker
 High-performance BitTorrent Tracker
 
-Installing under Linux
+### Installing under Linux
 
 The following commands can be used to install the dependencies on Debian. The g++ version should be at least 4.7.
 
