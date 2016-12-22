@@ -774,7 +774,6 @@ void t_torrent::select_peers(mutable_str_ref& d, const Ctracker_input& ti) const
 		d.advance_begin(6 * candidates.size());
 		return;
 	}
-	const char* d0 = d.begin();
 	while (c--)
 	{
 		int i = rand() % candidates.size();
