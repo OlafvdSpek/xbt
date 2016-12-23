@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <ctime>
+#include <iostream>
 #include <socket.h>
 
 #ifdef WIN32

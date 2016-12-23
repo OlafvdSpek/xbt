@@ -1,7 +1,7 @@
 /*
 	XBT Make Merkle Tree
 	Olaf van der Spek
-	OvdSpek@LIACS.NL
+	olafvdspek@gmail.com
 	http://sourceforge.net/projects/xbtt/
 	http://open-content.net/specs/draft-jchapweske-thex-02.html
 
@@ -9,10 +9,18 @@
 	The tree is created bottom up and written to stdout.
 */
 
-#include "stdafx.h"
-
-#include "bt_misc.h"
-#include "sha1.h"
+#include <cstdint>
+#include <cstring>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <list>
+#include <map>
+#include <sha1.h>
+#include <socket.h>
+#include <vector>
+#include <xbt/bt_misc.h>
+#include <xbt/virtual_binary.h>
 
 typedef std::map<int, std::string> t_map;
 
@@ -36,7 +44,7 @@ int main(int argc, char* argv[])
 	{
 		// calculate hash of next leaf node (one 0 byte and up to 1024 data bytes)
 		*d = 0;
-		std::string h = Csha1(const_memory_range(d, cb_d + 1)).read();
+		std::string h = Csha1(data_ref(d, cb_d + 1)).read();
 		std::cout << "0: " << hex_encode(h) << std::endl;
 		// combine two hashes on the same tree level for one hash on the next level
 		*d = 1;
@@ -46,7 +54,7 @@ int main(int argc, char* argv[])
 			// calculate hash of the next intermediate node (one 1 byte and two hashes)
 			memcpy(d + 1, map.find(i)->second.c_str(), 20);
 			memcpy(d + 21, h.c_str(), 20);
-			h = Csha1(const_memory_range(d, 41)).read();
+			h = Csha1(data_ref(d, 41)).read();
 			std::cout << i + 1 << ": " << hex_encode(h) << std::endl;
 			map.erase(i);
 		}
@@ -66,7 +74,7 @@ int main(int argc, char* argv[])
 			std::cout << i + 1 << ": " << hex_encode(std::string(d + 21, 20)) << std::endl;
 		memcpy(d + 1, map.begin()->second.c_str(), 20);
 		map.erase(map.begin());
-		map[0] = Csha1(const_memory_range(d, 41)).read();
+		map[0] = Csha1(data_ref(d, 41)).read();
 		std::cout << i + 1 << ": " << hex_encode(map[0]) << std::endl;
 	}
 	return 0;
