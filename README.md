@@ -1,5 +1,4 @@
 # XBT Tracker
-High-performance BitTorrent Tracker
 
 ### Installing under Linux
 
