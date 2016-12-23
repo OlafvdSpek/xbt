@@ -131,9 +131,8 @@ void read_config()
 	{
 		try
 		{
-			Csql_result result = Csql_query(m_database, "select name, value from @config where value is not null").execute();
 			Cconfig config;
-			while (Csql_row row = result.fetch_row())
+			for (auto row : Csql_query(m_database, "select name, value from @config where value is not null").execute())
 			{
 				if (config.set(row[0].s(), row[1].s()))
 					std::cerr << "unknown config name: " << row[0].s() << std::endl;
@@ -179,8 +178,7 @@ void read_db_torrents_sql()
 	{
 		if (!m_config.m_auto_register)
 		{
-			Csql_result result = Csql_query(m_database, "select info_hash, @fid from @files where flags & 1").execute();
-			while (Csql_row row = result.fetch_row())
+			for (auto row : Csql_query(m_database, "select info_hash, @fid from @files where flags & 1").execute())
 			{
 				m_torrents.erase(to_array<char, 20>(row[0]));
 				Csql_query(m_database, "delete from @files where @fid = ?")(row[1]).execute();
@@ -188,9 +186,7 @@ void read_db_torrents_sql()
 		}
 		if (m_config.m_auto_register && !m_torrents.empty())
 			return;
-		Csql_result result = Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute();
-		// m_torrents.reserve(m_torrents.size() + result.size());
-		while (Csql_row row = result.fetch_row())
+		for (auto row : Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute())
 		{
 			m_fid_end = std::max<int>(m_fid_end, row[2].i() + 1);
 			if (row[0].size() != 20 || find_torrent(row[0].s()))
@@ -253,11 +249,11 @@ void read_db_users()
 			q += ", wait_time";
 		q += " from @users";
 		Csql_result result = q.execute();
-		// m_users.reserve(result.size());
+		m_users.reserve(result.size());
 		for (auto& i : m_users)
 			i.second.marked = true;
 		m_users_torrent_passes.clear();
-		while (Csql_row row = result.fetch_row())
+		for (auto row : result)
 		{
 			t_user& user = m_users[row[0].i()];
 			user.marked = false;
