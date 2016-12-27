@@ -25,6 +25,7 @@
 #include <stream_int.h>
 #include <string>
 #include <sys/stat.h>
+#include <unordered_map>
 #include <vector>
 #include <xbt/bt_misc.h>
 #include <xbt/database.h>

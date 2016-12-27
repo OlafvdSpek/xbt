@@ -6,7 +6,7 @@
 #include "epoll.h"
 #include "transaction.h"
 
-namespace boost
+namespace std
 {
 	template<class T, size_t N>
 	struct hash<std::array<T, N>>
@@ -20,9 +20,9 @@ namespace boost
 
 static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
-boost::unordered_map<std::array<char, 20>, t_torrent> m_torrents;
-boost::unordered_map<int, t_user> m_users;
-boost::unordered_map<std::array<char, 32>, t_user*> m_users_torrent_passes;
+std::unordered_map<std::array<char, 20>, t_torrent> m_torrents;
+std::unordered_map<int, t_user> m_users;
+std::unordered_map<std::array<char, 32>, t_user*> m_users_torrent_passes;
 Cconfig m_config;
 Cdatabase m_database;
 Cepoll m_epoll;
