@@ -6,12 +6,14 @@
 #include "epoll.h"
 #include "transaction.h"
 
+using namespace std;
+
 namespace std
 {
 	template<class T, size_t N>
-	struct hash<std::array<T, N>>
+	struct hash<array<T, N>>
 	{
-		size_t operator()(const std::array<T, N>& v) const
+		size_t operator()(const array<T, N>& v) const
 		{
 			return boost::hash_range(v.begin(), v.end());
 		}
@@ -20,19 +22,19 @@ namespace std
 
 static volatile bool g_sig_term = false;
 boost::ptr_list<Cconnection> m_connections;
-std::unordered_map<std::array<char, 20>, t_torrent> m_torrents;
-std::unordered_map<int, t_user> m_users;
-std::unordered_map<std::array<char, 32>, t_user*> m_users_torrent_passes;
+unordered_map<array<char, 20>, t_torrent> m_torrents;
+unordered_map<int, t_user> m_users;
+unordered_map<array<char, 32>, t_user*> m_users_torrent_passes;
 Cconfig m_config;
 Cdatabase m_database;
 Cepoll m_epoll;
 Cstats m_stats;
-std::string m_announce_log_buffer;
-std::string m_conf_file;
-std::string m_scrape_log_buffer;
-std::string m_table_prefix;
-std::string m_torrents_users_updates_buffer;
-std::string m_users_updates_buffer;
+string m_announce_log_buffer;
+string m_conf_file;
+string m_scrape_log_buffer;
+string m_table_prefix;
+string m_torrents_users_updates_buffer;
+string m_users_updates_buffer;
 time_t m_clean_up_time;
 time_t m_read_config_time;
 time_t m_read_db_torrents_time;
@@ -50,7 +52,7 @@ bool m_use_sql;
 
 void accept(const Csocket&);
 	
-static void async_query(const std::string& v)
+static void async_query(const string& v)
 {
 	m_database.query_nothrow(v);
 }
@@ -100,7 +102,7 @@ Cdatabase& srv_database()
 	return m_database;
 }
 
-const t_torrent* find_torrent(const std::string& id)
+const t_torrent* find_torrent(const string& id)
 {
 	return find_ptr(m_torrents, to_array<char, 20>(id));
 }
@@ -135,7 +137,7 @@ void read_config()
 			for (auto row : Csql_query(m_database, "select name, value from @config where value is not null").execute())
 			{
 				if (config.set(row[0].s(), row[1].s()))
-					std::cerr << "unknown config name: " << row[0].s() << std::endl;
+					cerr << "unknown config name: " << row[0].s() << endl;
 			}
 			config.load(m_conf_file);
 			if (config.m_torrent_pass_private_key.empty())
@@ -188,7 +190,7 @@ void read_db_torrents_sql()
 			return;
 		for (auto row : Csql_query(m_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(m_fid_end).execute())
 		{
-			m_fid_end = std::max<int>(m_fid_end, row[2].i() + 1);
+			m_fid_end = max<int>(m_fid_end, row[2].i() + 1);
 			if (row[0].size() != 20 || find_torrent(row[0].s()))
 				continue;
 			t_torrent& file = m_torrents[to_array<char, 20>(row[0])];
@@ -212,9 +214,9 @@ void read_db_torrents()
 		read_db_torrents_sql();
 	else if (!m_config.m_auto_register)
 	{
-		std::set<t_torrent*> new_torrents;
-		std::ifstream is("xbt_torrents.txt");
-		for (std::string s; getline(is, s); )
+		set<t_torrent*> new_torrents;
+		ifstream is("xbt_torrents.txt");
+		for (string s; getline(is, s); )
 		{
 			s = hex_decode(s);
 			if (s.size() == 20)
@@ -286,7 +288,7 @@ void read_db_users()
 	}
 }
 
-const std::string& db_name(const std::string& v)
+const string& db_name(const string& v)
 {
 	return m_database.name(v);
 }
@@ -298,7 +300,7 @@ void write_db_torrents()
 		return;
 	try
 	{
-		std::string buffer;
+		string buffer;
 		while (1)
 		{
 			for (auto& i : m_torrents)
@@ -430,7 +432,7 @@ void clean_up()
 	m_clean_up_time = srv_time();
 }
 
-int srv_run(const std::string& table_prefix, bool use_sql, const std::string& conf_file)
+int srv_run(const string& table_prefix, bool use_sql, const string& conf_file)
 {
 	for (int i = 0; i < 8; i++)
 		m_secret = m_secret << 8 ^ rand();
@@ -444,23 +446,23 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 		return 1;
 	if (m_epoll.create() == -1)
 	{
-		std::cerr << "epoll_create failed" << std::endl;
+		cerr << "epoll_create failed" << endl;
 		return 1;
 	}
-	std::list<Ctcp_listen_socket> lt;
-	std::list<Cudp_listen_socket> lu;
+	list<Ctcp_listen_socket> lt;
+	list<Cudp_listen_socket> lu;
 	for (auto& j : m_config.m_listen_ipas)
 	{
 		for (auto& i : m_config.m_listen_ports)
 		{
 			Csocket l;
 			if (l.open(SOCK_STREAM) == INVALID_SOCKET)
-				std::cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
 				l.bind(j, htons(i)))
-				std::cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l.listen())
-				std::cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+				cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 			{
 #ifdef SO_ACCEPTFILTER
@@ -468,10 +470,10 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 				bzero(&afa, sizeof(afa));
 				strcpy(afa.af_name, "httpready");
 				if (l.setsockopt(SOL_SOCKET, SO_ACCEPTFILTER, &afa, sizeof(afa)))
-					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+					cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #elif 0 // TCP_DEFER_ACCEPT
 				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, 90))
-					std::cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+					cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
 				lt.push_back(Ctcp_listen_socket(l));
 				if (!m_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
@@ -483,10 +485,10 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 		{
 			Csocket l;
 			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
-				std::cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
 				l.bind(j, htons(i)))
-				std::cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 			{
 				lu.push_back(Cudp_listen_socket(l));
@@ -508,21 +510,21 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 	if (m_config.m_daemon)
 	{
 		if (daemon(true, false))
-			std::cerr << "daemon failed" << std::endl;
-		std::ofstream(m_config.m_pid_file.c_str()) << getpid() << std::endl;
+			cerr << "daemon failed" << endl;
+		ofstream(m_config.m_pid_file.c_str()) << getpid() << endl;
 		struct sigaction act;
 		act.sa_handler = sig_handler;
 		sigemptyset(&act.sa_mask);
 		act.sa_flags = 0;
 		if (sigaction(SIGTERM, &act, NULL))
-			std::cerr << "sigaction failed" << std::endl;
+			cerr << "sigaction failed" << endl;
 		act.sa_handler = SIG_IGN;
 		if (sigaction(SIGPIPE, &act, NULL))
-			std::cerr << "sigaction failed" << std::endl;
+			cerr << "sigaction failed" << endl;
 	}
 #endif
 #ifdef EPOLL
-	std::array<epoll_event, 64> events;
+	array<epoll_event, 64> events;
 #else
 	fd_set fd_read_set;
 	fd_set fd_write_set;
@@ -533,7 +535,7 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 #ifdef EPOLL
 		int r = m_epoll.wait(events.data(), events.size(), 5000);
 		if (r == -1)
-			std::cerr << "epoll_wait failed: " << errno << std::endl;
+			cerr << "epoll_wait failed: " << errno << endl;
 		else
 		{
 			time_t prev_time = m_time;
@@ -558,23 +560,23 @@ int srv_run(const std::string& table_prefix, bool use_sql, const std::string& co
 		for (auto& i : m_connections)
 		{
 			int z = i.pre_select(&fd_read_set, &fd_write_set);
-			n = std::max(n, z);
+			n = max(n, z);
 		}
 		for (auto& i : lt)
 		{
 			FD_SET(i.s(), &fd_read_set);
-			n = std::max<int>(n, i.s());
+			n = max<int>(n, i.s());
 		}
 		for (auto& i : lu)
 		{
 			FD_SET(i.s(), &fd_read_set);
-			n = std::max<int>(n, i.s());
+			n = max<int>(n, i.s());
 		}
 		timeval tv;
 		tv.tv_sec = 5;
 		tv.tv_usec = 0;
 		if (select(n + 1, &fd_read_set, &fd_write_set, &fd_except_set, &tv) == SOCKET_ERROR)
-			std::cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+			cerr << "select failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 		else
 		{
 			m_time = ::time(NULL);
@@ -634,7 +636,7 @@ void accept(const Csocket& l)
 			if (WSAGetLastError() != WSAEWOULDBLOCK)
 			{
 				m_stats.accept_errors++;
-				std::cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+				cerr << "accept failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 				xbt_syslog("accept failed: " + Csocket::error2a(WSAGetLastError()));
 			}
 			break;
@@ -642,9 +644,9 @@ void accept(const Csocket& l)
 		m_stats.accepted_tcp++;
 #ifndef SOCK_NONBLOCK
 		if (s.blocking(false))
-			std::cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
+			cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
-		std::unique_ptr<Cconnection> connection(new Cconnection(s, a));
+		unique_ptr<Cconnection> connection(new Cconnection(s, a));
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{
@@ -655,7 +657,7 @@ void accept(const Csocket& l)
 	}
 }
 
-std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
+string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 {
 	if (m_use_sql && m_config.m_log_announce)
 	{
@@ -745,20 +747,20 @@ std::string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 		file.completed++;
 	(udp ? m_stats.announced_udp : m_stats.announced_http)++;
 	file.dirty = true;
-	return std::string();
+	return string();
 }
 
 void t_torrent::select_peers(mutable_str_ref& d, const Ctracker_input& ti) const
 {
 	if (ti.m_event == Ctracker_input::e_stopped)
 		return;
-	std::vector<std::array<char, 6>> candidates;
+	vector<array<char, 6>> candidates;
 	candidates.reserve(peers.size());
 	for (auto& i : peers)
 	{
 		if (!ti.m_left && !i.second.left)
 			continue;
-		std::array<char, 6> v;
+		array<char, 6> v;
 		memcpy(&v[0], &i.first.host_, 4);
 		memcpy(&v[4], &i.second.port, 2);
 		candidates.push_back(v);
@@ -780,12 +782,12 @@ void t_torrent::select_peers(mutable_str_ref& d, const Ctracker_input& ti) const
 	}
 }
 
-std::string srv_select_peers(const Ctracker_input& ti)
+string srv_select_peers(const Ctracker_input& ti)
 {
 	const t_torrent* f = find_torrent(ti.m_info_hash);
 	if (!f)
-		return std::string();
-	std::array<char, 300> peers0;
+		return string();
+	array<char, 300> peers0;
 	mutable_str_ref peers = peers0;
 	f->select_peers(peers, ti);
 	peers.assign(peers0.data(), peers.data());
@@ -793,13 +795,13 @@ std::string srv_select_peers(const Ctracker_input& ti)
 		% f->seeders % f->leechers % m_config.m_announce_interval % m_config.m_announce_interval % peers.size() % peers).str();
 }
 
-std::string srv_scrape(const Ctracker_input& ti, t_user* user)
+string srv_scrape(const Ctracker_input& ti, t_user* user)
 {
 	if (m_use_sql && m_config.m_log_scrape)
 		m_scrape_log_buffer += Csql_query(m_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(srv_time()).read();
 	if (!m_config.m_anonymous_scrape && !user)
 		return "d14:failure reason25:unregistered torrent passe";
-	std::string d;
+	string d;
 	d += "d5:filesd";
 	if (ti.m_info_hashes.empty())
 	{
@@ -829,7 +831,7 @@ std::string srv_scrape(const Ctracker_input& ti, t_user* user)
 	return d;
 }
 
-void debug(const t_torrent& t, std::ostream& os)
+void debug(const t_torrent& t, ostream& os)
 {
 	for (auto& i : t.peers)
 	{
@@ -842,9 +844,9 @@ void debug(const t_torrent& t, std::ostream& os)
 	}
 }
 
-std::string srv_debug(const Ctracker_input& ti)
+string srv_debug(const Ctracker_input& ti)
 {
-	std::ostringstream os;
+	ostringstream os;
 	os << "<!DOCTYPE HTML><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	os << "<table>";
 	if (ti.m_info_hash.empty())
@@ -866,9 +868,9 @@ std::string srv_debug(const Ctracker_input& ti)
 	return os.str();
 }
 
-std::string srv_statistics()
+string srv_statistics()
 {
-	std::ostringstream os;
+	ostringstream os;
 	os << "<!DOCTYPE HTML><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	os << "<style>.ar { text-align: right }</style>";
 	long long leechers = 0;
@@ -882,7 +884,7 @@ std::string srv_statistics()
 	}
 	int peers = leechers + seeders;
 	time_t t = srv_time();
-	time_t up_time = std::max<time_t>(1, t - m_stats.start_time);
+	time_t up_time = max<time_t>(1, t - m_stats.start_time);
 	os << "<table>"
 		<< "<tr><td>peers<td class=ar>" << peers;
 	if (peers)
@@ -957,13 +959,13 @@ void test_announce()
 	memcpy(i.m_peer_id.data(), str_ref("PIPIPIPIPIPIPIPIPIPI"));
 	i.m_ipa = htonl(0x7f000063);
 	i.m_port = 54321;
-	std::cout << srv_insert_peer(i, false, u) << std::endl;
+	cout << srv_insert_peer(i, false, u) << endl;
 	write_db_torrents();
 	write_db_users();
 	m_time++;
 	i.m_uploaded = 1 << 30;
 	i.m_downloaded = 1 << 20;
-	std::cout << srv_insert_peer(i, false, u) << std::endl;
+	cout << srv_insert_peer(i, false, u) << endl;
 	write_db_torrents();
 	write_db_users();
 	m_time += 3600;
