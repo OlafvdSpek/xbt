@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/utility/string_ref.hpp>
 #include <map>
 #include <stdexcept>
 #include "sql_result.h"
@@ -14,11 +15,12 @@ public:
 
 class Cdatabase : boost::noncopyable
 {
+	using string_view = boost::string_ref;
 public:
 	void open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors = false);
 	const std::string& name(const std::string&) const;
-	Csql_result query(const std::string&);
-	int query_nothrow(const std::string&);
+	Csql_result query(string_view);
+	int query_nothrow(string_view);
 	void set_name(const std::string&, std::string);
 	void set_query_log(std::ostream*);
 	int affected_rows();

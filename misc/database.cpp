@@ -30,7 +30,7 @@ void Cdatabase::open(const std::string& host, const std::string& user, const std
 	mysql_options(&m_handle, MYSQL_OPT_RECONNECT, &a0);
 }
 
-int Cdatabase::query_nothrow(const std::string& q)
+int Cdatabase::query_nothrow(string_view q)
 {
 	if (m_query_log)
 	{
@@ -51,7 +51,7 @@ int Cdatabase::query_nothrow(const std::string& q)
 	return 0;
 }
 
-Csql_result Cdatabase::query(const std::string& q)
+Csql_result Cdatabase::query(string_view q)
 {
 	if (query_nothrow(q))
 		throw bad_query(mysql_error(&m_handle));
