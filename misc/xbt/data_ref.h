@@ -5,6 +5,7 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/type_traits/is_class.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <boost/utility/string_ref.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -91,6 +92,11 @@ public:
 		while (!t.empty() && t.front() != v)
 			t.pop_front();
 		return t;
+	}
+
+	operator boost::string_ref() const
+	{
+		return boost::string_ref(data(), base_t::size());
 	}
 
 	float f() const
