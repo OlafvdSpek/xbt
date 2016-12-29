@@ -18,18 +18,6 @@ public:
 	Csql_query& operator()(long long);
 	Csql_query& operator()(str_ref);
 	Csql_query(Cdatabase&, std::string = "");
-
-#if 1
-	Csql_query& p(long long v)
-	{
-		return (*this)(v);
-	}
-
-	Csql_query& p(str_ref v)
-	{
-		return (*this)(v);
-	}
-#endif
 private:
 	std::string replace_names(const std::string&) const;
 
