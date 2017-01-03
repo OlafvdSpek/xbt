@@ -30,7 +30,7 @@ void Cdatabase::open(const std::string& host, const std::string& user, const std
 	mysql_options(&m_handle, MYSQL_OPT_RECONNECT, &a0);
 }
 
-int Cdatabase::query_nothrow(string_view q)
+int Cdatabase::query_nothrow(std::string_view q)
 {
 	if (m_query_log)
 	{
@@ -51,7 +51,7 @@ int Cdatabase::query_nothrow(string_view q)
 	return 0;
 }
 
-Csql_result Cdatabase::query(string_view q)
+Csql_result Cdatabase::query(std::string_view q)
 {
 	if (query_nothrow(q))
 		throw bad_query(mysql_error(&m_handle));
@@ -94,6 +94,5 @@ void Cdatabase::set_name(const std::string& a, std::string b)
 const std::string& Cdatabase::name(const std::string& v) const
 {
 	const std::string* i = find_ptr(m_names, v);
-	assert(i);
 	return i ? *i : v;
 }
