@@ -3,7 +3,7 @@
 #include "config.h"
 #include "server.h"
 
-std::string g_conf_file = "xbt_tracker.conf";
+static std::string g_conf_file = "xbt_tracker.conf";
 const char* g_service_name = "XBT Tracker";
 
 int main1()
