@@ -831,11 +831,11 @@ string srv_scrape(const Ctracker_input& ti, t_user* user)
 	return d;
 }
 
-void debug(const t_torrent& t, ostream& os)
+void debug(const t_torrent& t, string& os)
 {
 	for (auto& i : t.peers)
 	{
-		os << "<tr><td>" + Csocket::inet_ntoa(i.first.host_)
+		os << "<tr><td>" << Csocket::inet_ntoa(i.first.host_)
 			<< "<td class=ar>" << ntohs(i.second.port)
 			<< "<td class=ar>" << i.second.uid
 			<< "<td class=ar>" << i.second.left
@@ -846,7 +846,7 @@ void debug(const t_torrent& t, ostream& os)
 
 string srv_debug(const Ctracker_input& ti)
 {
-	ostringstream os;
+	string os;
 	os << "<!DOCTYPE HTML><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	os << "<table>";
 	if (ti.m_info_hash.empty())
@@ -865,12 +865,12 @@ string srv_debug(const Ctracker_input& ti)
 	else if (const t_torrent* i = find_torrent(ti.m_info_hash))
 		debug(*i, os);
 	os << "</table>";
-	return os.str();
+	return os;
 }
 
 string srv_statistics()
 {
-	ostringstream os;
+	string os;
 	os << "<!DOCTYPE HTML><meta http-equiv=refresh content=60><title>XBT Tracker</title>";
 	os << "<style>.ar { text-align: right }</style>";
 	long long leechers = 0;
@@ -931,7 +931,7 @@ string srv_statistics()
 			<< "<tr><td>write db users time<td class=ar>" << t - g_write_db_users_time << " / " << g_config.m_write_db_interval;
 	}
 	os << "</table>";
-	return os.str();
+	return os;
 }
 
 t_user* find_user_by_torrent_pass(str_ref v, str_ref info_hash)
