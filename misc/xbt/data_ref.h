@@ -163,20 +163,6 @@ inline str_ref read_until(str_ref& is, char sep)
 	return str_ref(a, b);
 }
 
-inline float to_float(data_ref v)
-{
-	if (v.empty())
-		return 0;
-	try
-	{
-		return boost::lexical_cast<float>(v);
-	}
-	catch (boost::bad_lexical_cast&)
-	{
-	}
-	return 0;
-}
-
 template<class T>
 int try_parse(T& d, str_ref s)
 {
@@ -206,23 +192,6 @@ void parse(T& d, str_ref s)
 {
 	if (try_parse(d, s))
 		d = 0;
-}
-
-inline long long to_int(str_ref v)
-{
-	return parse<long long>(v);
-	if (v.empty())
-		return 0;
-	if (!*v.end())
-		return atoll(v.data());
-	try
-	{
-		return boost::lexical_cast<long long>(v);
-	}
-	catch (boost::bad_lexical_cast&)
-	{
-	}
-	return 0;
 }
 
 inline const std::string to_string(str_ref v)
