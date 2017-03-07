@@ -19,9 +19,8 @@ public:
 		auto ms = (boost::posix_time::microsec_clock::universal_time() - t0_).total_milliseconds();
 		if (ms < limit_)
 			return;
-		std::stringstream s;
-		s << ms << " ms: " << text_;
-		xbt_syslog(s.str());
+		std::string s;
+		xbt_syslog(s << ms << " ms: " << text_);
 	}
 private:
 	int limit_;

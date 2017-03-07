@@ -1,14 +1,12 @@
 #pragma once
 
-#include <algorithm>
-#include <boost/lexical_cast.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <boost/type_traits/is_class.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <boost/utility/string_ref.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <xbt/string_view.h>
 
 template <class T, class U>
 class data_ref_base : public boost::iterator_range<T>
@@ -85,18 +83,9 @@ public:
 		return base_t::begin();
 	}
 
-	template<class V>
-	data_ref_base find0(V v) const
+	operator std::string_view() const
 	{
-		data_ref_base t = *this;
-		while (!t.empty() && t.front() != v)
-			t.pop_front();
-		return t;
-	}
-
-	operator boost::string_ref() const
-	{
-		return boost::string_ref(data(), base_t::size());
+		return std::string_view(data(), base_t::size());
 	}
 
 	float f() const
@@ -163,20 +152,6 @@ inline str_ref read_until(str_ref& is, char sep)
 	return str_ref(a, b);
 }
 
-inline float to_float(data_ref v)
-{
-	if (v.empty())
-		return 0;
-	try
-	{
-		return boost::lexical_cast<float>(v);
-	}
-	catch (boost::bad_lexical_cast&)
-	{
-	}
-	return 0;
-}
-
 template<class T>
 int try_parse(T& d, str_ref s)
 {
@@ -206,23 +181,6 @@ void parse(T& d, str_ref s)
 {
 	if (try_parse(d, s))
 		d = 0;
-}
-
-inline long long to_int(str_ref v)
-{
-	return parse<long long>(v);
-	if (v.empty())
-		return 0;
-	if (!*v.end())
-		return atoll(v.data());
-	try
-	{
-		return boost::lexical_cast<long long>(v);
-	}
-	catch (boost::bad_lexical_cast&)
-	{
-	}
-	return 0;
 }
 
 inline const std::string to_string(str_ref v)
