@@ -96,7 +96,7 @@ inline shared_data file_get(FILE* f)
 	if (fstat(fileno(f), &b))
 		return shared_data();
 	shared_data d(b.st_size);
-	return read(f, d.data(), b.st_size) == b.st_size ? d : shared_data();
+	return read(f, d.data(), b.st_size) == size_t(b.st_size) ? d : shared_data();
 }
 
 inline shared_data file_get(const std::string& fname)
