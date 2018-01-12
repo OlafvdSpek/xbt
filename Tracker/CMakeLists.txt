@@ -13,7 +13,7 @@ if(HAVE_SYS_EPOLL)
 	add_definitions(-DEPOLL)
 endif()
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-parentheses -Wno-sign-compare")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-implicit-fallthrough -Wno-parentheses -Wno-sign-compare")
 add_executable(
 	xbt_tracker
 	../misc/bt_misc.cpp
