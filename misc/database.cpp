@@ -3,10 +3,6 @@
 #include <iostream>
 #include <xbt/find_ptr.h>
 
-#ifndef WIN32
-#include <syslog.h>
-#endif
-
 Cdatabase::Cdatabase()
 {
 	mysql_init(&m_handle);
@@ -17,9 +13,8 @@ Cdatabase::~Cdatabase()
 	close();
 }
 
-void Cdatabase::open(const std::string& host, const std::string& user, const std::string& password, const std::string& database, bool echo_errors)
+void Cdatabase::open(const std::string& host, const std::string& user, const std::string& password, const std::string& database)
 {
-	m_echo_errors = echo_errors;
 	if (!mysql_init(&m_handle)
 		|| mysql_options(&m_handle, MYSQL_READ_DEFAULT_GROUP, "")
 		|| !mysql_real_connect(&m_handle, host.c_str(), user.c_str(), password.empty() ? NULL : password.c_str(), database.c_str(), database == "sphinx" ? 9306 : 0, NULL, 0))
@@ -31,19 +26,11 @@ void Cdatabase::open(const std::string& host, const std::string& user, const std
 int Cdatabase::query_nothrow(std::string_view q)
 {
 	if (m_query_log)
-	{
-		*m_query_log << q.substr(0, 999) << std::endl;
-	}
+		*m_query_log << q.substr(0, 999) << "\n";
 	if (mysql_real_query(&m_handle, q.data(), q.size()))
 	{
-		if (m_echo_errors)
-		{
-			std::cerr << mysql_error(&m_handle) << std::endl
-				<< q.substr(0, 239) << std::endl;
-		}
-#ifndef WIN32
-		syslog(LOG_ERR, "%s", mysql_error(&m_handle));
-#endif
+		std::cerr << mysql_error(&m_handle) << "\n"
+			<< q.substr(0, 239) << "\n";
 		return 1;
 	}
 	return 0;
