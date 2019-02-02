@@ -272,7 +272,7 @@ void write_db_torrents()
 					Csql_query(g_database, "insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())")(i.first).execute();
 					file.fid = g_database.insert_id();
 				}
-				buffer += Csql_query(g_database, "(?,?,?,?),")(file.leechers)(file.seeders)(file.completed)(file.fid).read();
+				buffer += make_query(g_database, "(?,?,?,?),", file.leechers, file.seeders, file.completed, file.fid);
 				file.dirty = false;
 				if (buffer.size() > 255 << 10)
 					break;
@@ -665,18 +665,17 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 			downloaded = v.m_downloaded - i->downloaded;
 			uploaded = v.m_uploaded - i->uploaded;
 		}
-		g_torrents_users_updates_buffer += Csql_query(g_database, "(?,1,?,?,?,?,?,?,?),")
-			(v.m_event != Ctracker_input::e_stopped)
-			(v.m_event == Ctracker_input::e_completed)
-			(downloaded)
-			(v.m_left)
-			(uploaded)
-			(srv_time())
-			(file.fid)
-			(user->uid)
-			.read();
+		g_torrents_users_updates_buffer += make_query(g_database, "(?,1,?,?,?,?,?,?,?),",
+			v.m_event != Ctracker_input::e_stopped,
+			v.m_event == Ctracker_input::e_completed,
+			downloaded,
+			v.m_left,
+			uploaded,
+			srv_time(),
+			file.fid,
+			user->uid);
 		if (downloaded || uploaded)
-			g_users_updates_buffer += Csql_query(g_database, "(?,?,?),")(downloaded)(uploaded)(user->uid).read();
+			g_users_updates_buffer += make_query(g_database, "(?,?,?),", downloaded, uploaded, user->uid);
 		if (g_torrents_users_updates_buffer.size() > 255 << 10)
 			write_db_users();
 	}
@@ -749,7 +748,7 @@ string srv_select_peers(const Ctracker_input& ti)
 string srv_scrape(const Ctracker_input& ti, user_t* user)
 {
 	if (g_config.m_log_scrape)
-		g_scrape_log_buffer += Csql_query(g_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(srv_time()).read();
+		g_scrape_log_buffer += make_query(g_database, "(?,?,?),", ntohl(ti.m_ipa), user ? user->uid : 0, srv_time());
 	if (!g_config.m_anonymous_scrape && !user)
 		return "d14:failure reason25:unregistered torrent passe";
 	string d;
