@@ -77,7 +77,7 @@ public:
 #endif
 };
 
-struct t_peer
+struct peer_t
 {
 	long long downloaded;
 	long long uploaded;
@@ -92,7 +92,7 @@ struct torrent_t
 {
 	void select_peers(mutable_str_ref& d, const Ctracker_input&) const;
 
-	boost::unordered_map<peer_key_c, t_peer> peers;
+	boost::unordered_map<peer_key_c, peer_t> peers;
 	time_t ctime;
 	int completed = 0;
 	int fid = 0;
