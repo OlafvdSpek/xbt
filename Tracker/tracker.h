@@ -116,12 +116,9 @@ t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 t_user* find_user_by_uid(int v);
 long long srv_secret();
 const Cconfig& srv_config();
-Cdatabase& srv_database();
 Cstats& srv_stats();
 time_t srv_time();
 
-int srv_run(const std::string& table_prefix, bool use_sql, const std::string& conf_file);
-void srv_term();
 std::string srv_debug(const Ctracker_input&);
 std::string srv_insert_peer(const Ctracker_input&, bool udp, t_user*);
 std::string srv_scrape(const Ctracker_input&, t_user*);

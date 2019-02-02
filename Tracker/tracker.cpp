@@ -49,7 +49,6 @@ static bool g_read_users_can_leech;
 static bool g_read_users_peers_limit;
 static bool g_read_users_torrent_pass;
 static bool g_read_users_wait_time;
-static bool g_use_sql = true;
 static const char g_service_name[] = "XBT Tracker";
 
 void accept(const Csocket&);
@@ -99,11 +98,6 @@ const Cconfig& srv_config()
 	return g_config;
 }
 
-Cdatabase& srv_database()
-{
-	return g_database;
-}
-
 const t_torrent* find_torrent(const string& id)
 {
 	return find_ptr(g_torrents, to_array<char, 20>(id));
@@ -131,43 +125,34 @@ time_t srv_time()
 
 void read_config()
 {
-	if (g_use_sql)
-	{
-		try
-		{
-			Cconfig config;
-			for (auto row : Csql_query(g_database, "select name, value from @config where value is not null").execute())
-			{
-				if (config.set(row[0].s(), row[1].s()))
-					cerr << "unknown config name: " << row[0].s() << endl;
-			}
-			config.load(g_conf_file);
-			if (config.m_torrent_pass_private_key.empty())
-			{
-				config.m_torrent_pass_private_key = generate_random_string(27);
-				Csql_query(g_database, "insert into @config (name, value) values ('torrent_pass_private_key', ?)")(config.m_torrent_pass_private_key).execute();
-			}
-			g_config = config;
-			g_database.set_name("completed", g_config.m_column_files_completed);
-			g_database.set_name("leechers", g_config.m_column_files_leechers);
-			g_database.set_name("seeders", g_config.m_column_files_seeders);
-			g_database.set_name("fid", g_config.m_column_files_fid);
-			g_database.set_name("uid", g_config.m_column_users_uid);
-			g_database.set_name("announce_log", g_config.m_table_announce_log.empty() ? g_table_prefix + "announce_log" : g_config.m_table_announce_log);
-			g_database.set_name("files", g_config.m_table_torrents.empty() ? g_table_prefix + "files" : g_config.m_table_torrents);
-			g_database.set_name("files_users", g_config.m_table_torrents_users.empty() ? g_table_prefix + "files_users" : g_config.m_table_torrents_users);
-			g_database.set_name("scrape_log", g_config.m_table_scrape_log.empty() ? g_table_prefix + "scrape_log" : g_config.m_table_scrape_log);
-			g_database.set_name("users", g_config.m_table_users.empty() ? g_table_prefix + "users" : g_config.m_table_users);
-		}
-		catch (bad_query&)
-		{
-		}
-	}
-	else
+	try
 	{
 		Cconfig config;
-		if (!config.load(g_conf_file))
-			g_config = config;
+		for (auto row : Csql_query(g_database, "select name, value from @config where value is not null").execute())
+		{
+			if (config.set(row[0].s(), row[1].s()))
+				cerr << "unknown config name: " << row[0].s() << endl;
+		}
+		config.load(g_conf_file);
+		if (config.m_torrent_pass_private_key.empty())
+		{
+			config.m_torrent_pass_private_key = generate_random_string(27);
+			Csql_query(g_database, "insert into @config (name, value) values ('torrent_pass_private_key', ?)")(config.m_torrent_pass_private_key).execute();
+		}
+		g_config = config;
+		g_database.set_name("completed", g_config.m_column_files_completed);
+		g_database.set_name("leechers", g_config.m_column_files_leechers);
+		g_database.set_name("seeders", g_config.m_column_files_seeders);
+		g_database.set_name("fid", g_config.m_column_files_fid);
+		g_database.set_name("uid", g_config.m_column_users_uid);
+		g_database.set_name("announce_log", g_config.m_table_announce_log.empty() ? g_table_prefix + "announce_log" : g_config.m_table_announce_log);
+		g_database.set_name("files", g_config.m_table_torrents.empty() ? g_table_prefix + "files" : g_config.m_table_torrents);
+		g_database.set_name("files_users", g_config.m_table_torrents_users.empty() ? g_table_prefix + "files_users" : g_config.m_table_torrents_users);
+		g_database.set_name("scrape_log", g_config.m_table_scrape_log.empty() ? g_table_prefix + "scrape_log" : g_config.m_table_scrape_log);
+		g_database.set_name("users", g_config.m_table_users.empty() ? g_table_prefix + "users" : g_config.m_table_users);
+	}
+	catch (bad_query&)
+	{
 	}
 	if (g_config.m_listen_ipas.empty())
 		g_config.m_listen_ipas.insert(htonl(INADDR_ANY));
@@ -176,8 +161,9 @@ void read_config()
 	g_read_config_time = srv_time();
 }
 
-void read_db_torrents_sql()
+void read_db_torrents()
 {
+	g_read_db_torrents_time = srv_time();
 	try
 	{
 		if (!g_config.m_auto_register)
@@ -209,36 +195,9 @@ void read_db_torrents_sql()
 	}
 }
 
-void read_db_torrents()
-{
-	g_read_db_torrents_time = srv_time();
-	if (g_use_sql)
-		read_db_torrents_sql();
-	else if (!g_config.m_auto_register)
-	{
-		set<t_torrent*> new_torrents;
-		ifstream is("xbt_torrents.txt");
-		for (string s; getline(is, s); )
-		{
-			s = hex_decode(s);
-			if (s.size() == 20)
-				new_torrents.insert(&g_torrents[to_array<char, 20>(s)]);
-		}
-		for (auto i = g_torrents.begin(); i != g_torrents.end(); )
-		{
-			if (new_torrents.count(&i->second))
-				i++;
-			else
-				g_torrents.erase(i++);
-		}
-	}
-}
-
 void read_db_users()
 {
 	g_read_db_users_time = srv_time();
-	if (!g_use_sql)
-		return;
 	try
 	{
 		Csql_query q(g_database, "select @uid");
@@ -298,8 +257,6 @@ const string& db_name(const string& v)
 void write_db_torrents()
 {
 	g_write_db_torrents_time = srv_time();
-	if (!g_use_sql)
-		return;
 	try
 	{
 		string buffer;
@@ -353,8 +310,6 @@ void write_db_torrents()
 void write_db_users()
 {
 	g_write_db_users_time = srv_time();
-	if (!g_use_sql)
-		return;
 	if (!g_torrents_users_updates_buffer.empty())
 	{
 		g_torrents_users_updates_buffer.pop_back();
@@ -385,8 +340,6 @@ void write_db_users()
 
 int test_sql()
 {
-	if (!g_use_sql)
-		return 0;
 	try
 	{
 		mysql_get_server_version(g_database);
@@ -658,7 +611,7 @@ void accept(const Csocket& l)
 
 string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 {
-	if (g_use_sql && g_config.m_log_announce)
+	if (g_config.m_log_announce)
 	{
 		g_announce_log_buffer += Csql_query(g_database, "(?,?,?,?,?,?,?,?,?,?),")
 			(ntohl(v.m_ipa))
@@ -700,7 +653,7 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 		if (c >= user->peers_limit)
 			return bts_peers_limit_reached;
 	}
-	if (g_use_sql && user && file.fid)
+	if (user && file.fid)
 	{
 		long long downloaded = 0;
 		long long uploaded = 0;
@@ -796,7 +749,7 @@ string srv_select_peers(const Ctracker_input& ti)
 
 string srv_scrape(const Ctracker_input& ti, t_user* user)
 {
-	if (g_use_sql && g_config.m_log_scrape)
+	if (g_config.m_log_scrape)
 		g_scrape_log_buffer += Csql_query(g_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(srv_time()).read();
 	if (!g_config.m_anonymous_scrape && !user)
 		return "d14:failure reason25:unregistered torrent passe";
@@ -922,13 +875,10 @@ string srv_statistics()
 		<< "<tr><td>full scrape<td class=ar>" << g_config.m_full_scrape
 		<< "<tr><td>read config time<td class=ar>" << t - g_read_config_time << " / " << g_config.m_read_config_interval
 		<< "<tr><td>clean up time<td class=ar>" << t - g_clean_up_time << " / " << g_config.m_clean_up_interval
-		<< "<tr><td>read db files time<td class=ar>" << t - g_read_db_torrents_time << " / " << g_config.m_read_db_interval;
-	if (g_use_sql)
-	{
-		os << "<tr><td>read db users time<td class=ar>" << t - g_read_db_users_time << " / " << g_config.m_read_db_interval
-			<< "<tr><td>write db files time<td class=ar>" << t - g_write_db_torrents_time << " / " << g_config.m_write_db_interval
-			<< "<tr><td>write db users time<td class=ar>" << t - g_write_db_users_time << " / " << g_config.m_write_db_interval;
-	}
+		<< "<tr><td>read db files time<td class=ar>" << t - g_read_db_torrents_time << " / " << g_config.m_read_db_interval
+		<< "<tr><td>read db users time<td class=ar>" << t - g_read_db_users_time << " / " << g_config.m_read_db_interval
+		<< "<tr><td>write db files time<td class=ar>" << t - g_write_db_torrents_time << " / " << g_config.m_write_db_interval
+		<< "<tr><td>write db users time<td class=ar>" << t - g_write_db_users_time << " / " << g_config.m_write_db_interval;
 	os << "</table>";
 	return os;
 }
@@ -987,26 +937,26 @@ int main1()
 			strrchr(b, '\\')[1] = 0;
 		strcat(b, "xbt_tracker.conf");
 		if (config.load(b))
-			std::cerr << "Unable to read " << g_conf_file << std::endl;
+			cerr << "Unable to read " << g_conf_file << endl;
 		else
 			g_conf_file = b;
 	}
 #else
-		std::cerr << "Unable to read " << g_conf_file << std::endl;
+		cerr << "Unable to read " << g_conf_file << endl;
 #endif
 	try
 	{
-		srv_database().open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database);
+		g_database.open(config.m_mysql_host, config.m_mysql_user, config.m_mysql_password, config.m_mysql_database);
 	}
 	catch (bad_query& e)
 	{
-		std::cerr << e.what() << std::endl;
+		cerr << e.what() << endl;
 		return 1;
 	}
 	if (!config.m_query_log.empty())
 	{
-		static std::ofstream os(config.m_query_log.c_str());
-		srv_database().set_query_log(&os);
+		static ofstream os(config.m_query_log.c_str());
+		g_database.set_query_log(&os);
 	}
 	g_table_prefix = config.m_mysql_table_prefix;
 	return srv_run();
@@ -1058,20 +1008,20 @@ int main(int argc, char* argv[])
 		{
 			if (nt_service_install(g_service_name))
 			{
-				std::cerr << "Failed to install service " << g_service_name << "." << std::endl;
+				cerr << "Failed to install service " << g_service_name << "." << endl;
 				return 1;
 			}
-			std::cout << "Service " << g_service_name << " has been installed." << std::endl;
+			cout << "Service " << g_service_name << " has been installed." << endl;
 			return 0;
 		}
 		else if (!strcmp(argv[1], "--uninstall"))
 		{
 			if (nt_service_uninstall(g_service_name))
 			{
-				std::cerr << "Failed to uninstall service " << g_service_name << "." << std::endl;
+				cerr << "Failed to uninstall service " << g_service_name << "." << endl;
 				return 1;
 			}
-			std::cout << "Service " << g_service_name << " has been uninstalled." << std::endl;
+			cout << "Service " << g_service_name << " has been uninstalled." << endl;
 			return 0;
 		}
 		else if (!strcmp(argv[1], "--conf_file") && argc >= 3)
@@ -1098,7 +1048,7 @@ int main(int argc, char* argv[])
 			g_conf_file = argv[2];
 		else
 		{
-			std::cerr << "  --conf_file arg (=xbt_tracker.conf)" << std::endl;
+			cerr << "  --conf_file arg (=xbt_tracker.conf)" << endl;
 			return 1;
 		}
 	}
