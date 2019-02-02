@@ -1,6 +1,7 @@
 #pragma once
 
-#include <boost/lexical_cast.hpp>
+#include <boost/convert.hpp>
+#include <boost/convert/strtol.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <string>
 
@@ -26,30 +27,10 @@ inline std::string& operator<<(std::string& a, long long b)
 
 inline float to_float(std::string_view v)
 {
-	// return boost::convert<float>(v, boost::cnv::strtol(), 0.0f);
-	if (v.empty())
-		return 0;
-	try
-	{
-		return boost::lexical_cast<float>(v);
-	}
-	catch (boost::bad_lexical_cast&)
-	{
-	}
-	return 0;
+	return boost::convert<float>(v, boost::cnv::strtol(), 0.0f);
 }
 
 inline long long to_int(std::string_view v)
 {
-	// return boost::convert<long long>(v, boost::cnv::strtol(), 0);
-	if (v.empty())
-		return 0;
-	try
-	{
-		return boost::lexical_cast<long long>(v);
-	}
-	catch (boost::bad_lexical_cast&)
-	{
-	}
-	return 0;
+	return boost::convert<long long>(v, boost::cnv::strtol(), 0);
 }
