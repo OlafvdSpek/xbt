@@ -26,17 +26,14 @@ inline void query_append(Cdatabase& db, std::string& s, std::string_view v)
 	s.back() = '\'';
 }
 
-inline void query_append(Cdatabase&, std::string& s, float v)
+template<size_t N>
+inline void query_append(Cdatabase& db, std::string& s, std::array<char, N> v)
 {
-	s << v;
+	query_append(db, s, std::string_view(v.data(), v.size()));
 }
 
-inline void query_append(Cdatabase&, std::string& s, int v)
-{
-	s << v;
-}
-
-inline void query_append(Cdatabase&, std::string& s, long long v)
+template<class T>
+inline std::enable_if_t<std::is_integral<T>::value> query_append(Cdatabase&, std::string& s, T v)
 {
 	s << v;
 }

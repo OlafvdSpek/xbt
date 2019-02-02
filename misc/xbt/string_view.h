@@ -20,7 +20,8 @@ inline std::string& operator<<(std::string& a, std::string_view b)
 	return a += b;
 }
 
-inline std::string& operator<<(std::string& a, long long b)
+template<class T>
+inline std::enable_if_t<std::is_integral<T>::value, std::string&> operator<<(std::string& a, T b)
 {
 	return a += std::to_string(b);
 }

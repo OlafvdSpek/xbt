@@ -613,18 +613,17 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 {
 	if (g_config.m_log_announce)
 	{
-		g_announce_log_buffer += Csql_query(g_database, "(?,?,?,?,?,?,?,?,?,?),")
-			(ntohl(v.m_ipa))
-			(ntohs(v.m_port))
-			(v.m_event)
-			(v.m_info_hash)
-			(v.m_peer_id)
-			(v.m_downloaded)
-			(v.m_left)
-			(v.m_uploaded)
-			(user ? user->uid : 0)
-			(srv_time())
-			.read();
+		g_announce_log_buffer += make_query(g_database, "(?,?,?,?,?,?,?,?,?,?),",
+			ntohl(v.m_ipa),
+			ntohs(v.m_port),
+			int(v.m_event),
+			v.m_info_hash,
+			v.m_peer_id,
+			v.m_downloaded,
+			v.m_left,
+			v.m_uploaded,
+			user ? user->uid : 0,
+			srv_time());
 	}
 	if (!g_config.m_offline_message.empty())
 		return g_config.m_offline_message;
