@@ -88,7 +88,7 @@ struct t_peer
 	std::array<char, 20> peer_id;
 };
 
-struct t_torrent
+struct torrent_t
 {
 	void select_peers(mutable_str_ref& d, const Ctracker_input&) const;
 
@@ -111,7 +111,7 @@ struct t_user
 	bool marked;
 };
 
-const t_torrent* find_torrent(const std::string& id);
+const torrent_t* find_torrent(const std::string& id);
 t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 t_user* find_user_by_uid(int v);
 long long srv_secret();

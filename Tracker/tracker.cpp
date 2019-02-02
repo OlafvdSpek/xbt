@@ -23,7 +23,7 @@ namespace std
 
 static volatile bool g_sig_term = false;
 static boost::ptr_list<Cconnection> g_connections;
-static unordered_map<array<char, 20>, t_torrent> g_torrents;
+static unordered_map<array<char, 20>, torrent_t> g_torrents;
 static unordered_map<int, t_user> g_users;
 static unordered_map<array<char, 32>, t_user*> g_users_torrent_passes;
 static Cconfig g_config;
@@ -98,7 +98,7 @@ const Cconfig& srv_config()
 	return g_config;
 }
 
-const t_torrent* find_torrent(const string& id)
+const torrent_t* find_torrent(const string& id)
 {
 	return find_ptr(g_torrents, to_array<char, 20>(id));
 }
@@ -181,7 +181,7 @@ void read_db_torrents()
 			g_fid_end = max<int>(g_fid_end, row[2].i() + 1);
 			if (row[0].size() != 20 || find_torrent(row[0].s()))
 				continue;
-			t_torrent& file = g_torrents[to_array<char, 20>(row[0])];
+			torrent_t& file = g_torrents[to_array<char, 20>(row[0])];
 			if (file.fid)
 				continue;
 			file.completed = row[1].i();
@@ -264,7 +264,7 @@ void write_db_torrents()
 		{
 			for (auto& i : g_torrents)
 			{
-				t_torrent& file = i.second;
+				torrent_t& file = i.second;
 				if (!file.dirty)
 					continue;
 				if (!file.fid)
@@ -365,7 +365,7 @@ int test_sql()
 	return 1;
 }
 
-void clean_up(t_torrent& t, time_t time)
+void clean_up(torrent_t& t, time_t time)
 {
 	for (auto i = t.peers.begin(); i != t.peers.end(); )
 	{
@@ -636,7 +636,7 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 		return bts_unregistered_torrent;
 	if (v.m_left && user && !user->can_leech)
 		return bts_can_not_leech;
-	t_torrent& file = g_torrents[to_array<char, 20>(v.m_info_hash)];
+	torrent_t& file = g_torrents[to_array<char, 20>(v.m_info_hash)];
 	if (!file.ctime)
 		file.ctime = srv_time();
 	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > srv_time())
@@ -702,7 +702,7 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
 	return string();
 }
 
-void t_torrent::select_peers(mutable_str_ref& d, const Ctracker_input& ti) const
+void torrent_t::select_peers(mutable_str_ref& d, const Ctracker_input& ti) const
 {
 	if (ti.m_event == Ctracker_input::e_stopped)
 		return;
@@ -736,7 +736,7 @@ void t_torrent::select_peers(mutable_str_ref& d, const Ctracker_input& ti) const
 
 string srv_select_peers(const Ctracker_input& ti)
 {
-	const t_torrent* f = find_torrent(ti.m_info_hash);
+	const torrent_t* f = find_torrent(ti.m_info_hash);
 	if (!f)
 		return string();
 	array<char, 300> peers0;
@@ -772,7 +772,7 @@ string srv_scrape(const Ctracker_input& ti, t_user* user)
 			g_stats.scraped_multi++;
 		for (auto& j : ti.m_info_hashes)
 		{
-			if (const t_torrent* i = find_torrent(j))
+			if (const torrent_t* i = find_torrent(j))
 				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % j % i->seeders % i->completed % i->leechers).str();
 		}
 	}
@@ -783,7 +783,7 @@ string srv_scrape(const Ctracker_input& ti, t_user* user)
 	return d;
 }
 
-void debug(const t_torrent& t, string& os)
+void debug(const torrent_t& t, string& os)
 {
 	for (auto& i : t.peers)
 	{
@@ -814,7 +814,7 @@ string srv_debug(const Ctracker_input& ti)
 				<< "<td class=ar>" << i.second.seeders;
 		}
 	}
-	else if (const t_torrent* i = find_torrent(ti.m_info_hash))
+	else if (const torrent_t* i = find_torrent(ti.m_info_hash))
 		debug(*i, os);
 	os << "</table>";
 	return os;
