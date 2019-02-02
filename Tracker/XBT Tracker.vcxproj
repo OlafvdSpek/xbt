@@ -141,8 +141,6 @@
     </ClCompile>
     <ClCompile Include="transaction.cpp">
     </ClCompile>
-    <ClCompile Include="XBT Tracker.cpp">
-    </ClCompile>
     <ClCompile Include="..\misc\xcc_z.cpp">
     </ClCompile>
   </ItemGroup>

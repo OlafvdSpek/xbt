@@ -28,7 +28,6 @@ add_executable(
 	server.cpp
 	tracker_input.cpp
 	transaction.cpp
-	"XBT Tracker.cpp"
 )
 target_link_libraries(xbt_tracker mysqlclient z)
 install(TARGETS xbt_tracker DESTINATION bin)
