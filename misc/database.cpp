@@ -81,3 +81,26 @@ const std::string& Cdatabase::name(const std::string& v) const
 	const std::string* i = find_ptr(m_names, v);
 	return i ? *i : v;
 }
+
+std::string Cdatabase::replace_names(std::string_view v) const
+{
+	std::string r;
+	while (1)
+	{
+		size_t i = v.find('@');
+		if (i == std::string_view::npos)
+		{
+			r += v;
+			break;
+		}
+		r.append(v, 0, i);
+		v.remove_prefix(i + 1);
+		i = v.find_first_of(" ,");
+		if (i == std::string::npos)
+			i = v.size();
+		r += name(std::string(v.substr(0, i)));
+		v.remove_prefix(i);
+	}
+	return r;
+}
+
