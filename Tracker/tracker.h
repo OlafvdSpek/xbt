@@ -101,7 +101,7 @@ struct torrent_t
 	bool dirty = true;
 };
 
-struct t_user
+struct user_t
 {
 	int uid;
 	int peers_limit = 0;
@@ -112,15 +112,15 @@ struct t_user
 };
 
 const torrent_t* find_torrent(const std::string& id);
-t_user* find_user_by_torrent_pass(str_ref, str_ref info_hash);
-t_user* find_user_by_uid(int v);
+user_t* find_user_by_torrent_pass(str_ref, str_ref info_hash);
+user_t* find_user_by_uid(int v);
 long long srv_secret();
 const Cconfig& srv_config();
 Cstats& srv_stats();
 time_t srv_time();
 
 std::string srv_debug(const Ctracker_input&);
-std::string srv_insert_peer(const Ctracker_input&, bool udp, t_user*);
-std::string srv_scrape(const Ctracker_input&, t_user*);
+std::string srv_insert_peer(const Ctracker_input&, bool udp, user_t*);
+std::string srv_scrape(const Ctracker_input&, user_t*);
 std::string srv_select_peers(const Ctracker_input&);
 std::string srv_statistics();

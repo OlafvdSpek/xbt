@@ -24,8 +24,8 @@ namespace std
 static volatile bool g_sig_term = false;
 static boost::ptr_list<Cconnection> g_connections;
 static unordered_map<array<char, 20>, torrent_t> g_torrents;
-static unordered_map<int, t_user> g_users;
-static unordered_map<array<char, 32>, t_user*> g_users_torrent_passes;
+static unordered_map<int, user_t> g_users;
+static unordered_map<array<char, 32>, user_t*> g_users_torrent_passes;
 static Cconfig g_config;
 static Cdatabase g_database;
 static Cepoll g_epoll;
@@ -103,7 +103,7 @@ const torrent_t* find_torrent(const string& id)
 	return find_ptr(g_torrents, to_array<char, 20>(id));
 }
 
-t_user* find_user_by_uid(int v)
+user_t* find_user_by_uid(int v)
 {
 	return find_ptr(g_users, v);
 }
@@ -218,7 +218,7 @@ void read_db_users()
 		g_users_torrent_passes.clear();
 		for (auto row : result)
 		{
-			t_user& user = g_users[row[0].i()];
+			user_t& user = g_users[row[0].i()];
 			user.marked = false;
 			int c = 0;
 			user.uid = row[c++].i();
@@ -609,7 +609,7 @@ void accept(const Csocket& l)
 	}
 }
 
-string srv_insert_peer(const Ctracker_input& v, bool udp, t_user* user)
+string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 {
 	if (g_config.m_log_announce)
 	{
@@ -747,7 +747,7 @@ string srv_select_peers(const Ctracker_input& ti)
 		% f->seeders % f->leechers % g_config.m_announce_interval % g_config.m_announce_interval % peers.size() % peers).str();
 }
 
-string srv_scrape(const Ctracker_input& ti, t_user* user)
+string srv_scrape(const Ctracker_input& ti, user_t* user)
 {
 	if (g_config.m_log_scrape)
 		g_scrape_log_buffer += Csql_query(g_database, "(?,?,?),")(ntohl(ti.m_ipa))(user ? user->uid : 0)(srv_time()).read();
@@ -883,11 +883,11 @@ string srv_statistics()
 	return os;
 }
 
-t_user* find_user_by_torrent_pass(str_ref v, str_ref info_hash)
+user_t* find_user_by_torrent_pass(str_ref v, str_ref info_hash)
 {
 	if (v.size() != 32)
 		return NULL;
-	if (t_user* user = find_user_by_uid(read_int(4, hex_decode(v.substr(0, 8)))))
+	if (user_t* user = find_user_by_uid(read_int(4, hex_decode(v.substr(0, 8)))))
 	{
 		if (Csha1((boost::format("%s %d %d %s") % g_config.m_torrent_pass_private_key % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8, 24)))
 			return user;
@@ -902,7 +902,7 @@ void srv_term()
 
 void test_announce()
 {
-	t_user* u = find_ptr(g_users, 1);
+	user_t* u = find_ptr(g_users, 1);
 	Ctracker_input i;
 	i.m_info_hash = "IHIHIHIHIHIHIHIHIHIH";
 	memcpy(i.m_peer_id.data(), str_ref("PIPIPIPIPIPIPIPIPIPI"));
