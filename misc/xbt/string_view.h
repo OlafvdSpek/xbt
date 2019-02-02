@@ -2,12 +2,12 @@
 
 #include <boost/convert.hpp>
 #include <boost/convert/strtol.hpp>
-#include <boost/utility/string_ref.hpp>
+#include <boost/utility/string_view.hpp>
 #include <string>
 
 namespace std 
 {
-	using string_view = boost::string_ref;
+	using string_view = boost::string_view;
 }
 
 inline std::string& operator+=(std::string& a, std::string_view b)
