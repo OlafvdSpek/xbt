@@ -398,7 +398,7 @@ int srv_run()
 		return 1;
 	if (g_epoll.create() == -1)
 	{
-		cerr << "epoll_create failed" << endl;
+		cerr << "epoll_create failed\n";
 		return 1;
 	}
 	list<Ctcp_listen_socket> lt;
@@ -462,17 +462,17 @@ int srv_run()
 	if (g_config.m_daemon)
 	{
 		if (daemon(true, false))
-			cerr << "daemon failed" << endl;
+			cerr << "daemon failed\n";
 		ofstream(g_config.m_pid_file.c_str()) << getpid() << endl;
 		struct sigaction act;
 		act.sa_handler = sig_handler;
 		sigemptyset(&act.sa_mask);
 		act.sa_flags = 0;
 		if (sigaction(SIGTERM, &act, NULL))
-			cerr << "sigaction failed" << endl;
+			cerr << "sigaction failed\n";
 		act.sa_handler = SIG_IGN;
 		if (sigaction(SIGPIPE, &act, NULL))
-			cerr << "sigaction failed" << endl;
+			cerr << "sigaction failed\n";
 	}
 #endif
 #ifdef EPOLL
@@ -1008,20 +1008,20 @@ int main(int argc, char* argv[])
 		{
 			if (nt_service_install(g_service_name))
 			{
-				cerr << "Failed to install service " << g_service_name << "." << endl;
+				cerr << "Failed to install service " << g_service_name << ".\n";
 				return 1;
 			}
-			cout << "Service " << g_service_name << " has been installed." << endl;
+			cout << "Service " << g_service_name << " has been installed.\n";
 			return 0;
 		}
 		else if (!strcmp(argv[1], "--uninstall"))
 		{
 			if (nt_service_uninstall(g_service_name))
 			{
-				cerr << "Failed to uninstall service " << g_service_name << "." << endl;
+				cerr << "Failed to uninstall service " << g_service_name << ".\n";
 				return 1;
 			}
-			cout << "Service " << g_service_name << " has been uninstalled." << endl;
+			cout << "Service " << g_service_name << " has been uninstalled.\n";
 			return 0;
 		}
 		else if (!strcmp(argv[1], "--conf_file") && argc >= 3)
@@ -1048,7 +1048,7 @@ int main(int argc, char* argv[])
 			g_conf_file = argv[2];
 		else
 		{
-			cerr << "  --conf_file arg (=xbt_tracker.conf)" << endl;
+			cerr << "  --conf_file arg (=xbt_tracker.conf)\n";
 			return 1;
 		}
 	}
