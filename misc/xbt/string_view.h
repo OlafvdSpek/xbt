@@ -35,3 +35,11 @@ inline long long to_int(std::string_view v)
 {
 	return boost::convert<long long>(v, boost::cnv::strtol(), 0);
 }
+
+inline std::string_view read_until(std::string_view& v, char sep, bool keep_sep = false)
+{
+	size_t i = v.find(sep);
+	std::string_view ret = v.substr(0, i);
+	v.remove_prefix(i == std::string_view::npos ? v.size() : keep_sep ? i : i + 1);
+	return ret;
+}
