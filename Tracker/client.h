@@ -1,13 +1,11 @@
 #pragma once
 
-class Cserver;
-
-class Cclient
+class client_t
 {
 public:
 	virtual void process_events(int) = 0;
 
-	virtual ~Cclient() {}
+	virtual ~client_t() = default;
 
 	const Csocket& s() const
 	{

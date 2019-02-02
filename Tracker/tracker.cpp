@@ -29,7 +29,7 @@ static unordered_map<array<char, 32>, user_t*> g_users_torrent_passes;
 static Cconfig g_config;
 static Cdatabase g_database;
 static Cepoll g_epoll;
-static Cstats g_stats;
+static stats_t g_stats;
 static string g_announce_log_buffer;
 static string g_conf_file = "xbt_tracker.conf";
 static string g_scrape_log_buffer;
@@ -64,10 +64,10 @@ static void sig_handler(int v)
 		g_sig_term = true;
 }
 
-class Ctcp_listen_socket : public Cclient
+class tcp_listen_socket_t : public client_t
 {
 public:
-	Ctcp_listen_socket(const Csocket& s)
+	tcp_listen_socket_t(const Csocket& s)
 	{
 		m_s = s;
 	}
@@ -78,10 +78,10 @@ public:
 	}
 };
 
-class Cudp_listen_socket : public Cclient
+class udp_listen_socket_t : public client_t
 {
 public:
-	Cudp_listen_socket(const Csocket& s)
+	udp_listen_socket_t(const Csocket& s)
 	{
 		m_s = s;
 	}
@@ -113,7 +113,7 @@ long long srv_secret()
 	return g_secret;
 }
 
-Cstats& srv_stats()
+stats_t& srv_stats()
 {
 	return g_stats;
 }
@@ -401,8 +401,8 @@ int srv_run()
 		cerr << "epoll_create failed\n";
 		return 1;
 	}
-	list<Ctcp_listen_socket> lt;
-	list<Cudp_listen_socket> lu;
+	list<tcp_listen_socket_t> lt;
+	list<udp_listen_socket_t> lu;
 	for (auto& j : g_config.m_listen_ipas)
 	{
 		for (auto& i : g_config.m_listen_ports)
@@ -427,7 +427,7 @@ int srv_run()
 				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, 90))
 					cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
-				lt.push_back(Ctcp_listen_socket(l));
+				lt.push_back(tcp_listen_socket_t(l));
 				if (!g_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
 					continue;
 			}
@@ -443,7 +443,7 @@ int srv_run()
 				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else
 			{
-				lu.push_back(Cudp_listen_socket(l));
+				lu.push_back(udp_listen_socket_t(l));
 				if (!g_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP, &lu.back()))
 					continue;
 			}
@@ -493,7 +493,7 @@ int srv_run()
 			time_t prev_time = g_time;
 			g_time = ::time(NULL);
 			for (int i = 0; i < r; i++)
-				reinterpret_cast<Cclient*>(events[i].data.ptr)->process_events(events[i].events);
+				reinterpret_cast<client_t*>(events[i].data.ptr)->process_events(events[i].events);
 			if (g_time == prev_time)
 				continue;
 			for (auto i = g_connections.begin(); i != g_connections.end(); )

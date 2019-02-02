@@ -3,7 +3,7 @@
 #include "config.h"
 #include "tracker_input.h"
 
-class Cstats
+class stats_t
 {
 public:
 	long long announced() const
@@ -116,7 +116,7 @@ user_t* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 user_t* find_user_by_uid(int v);
 long long srv_secret();
 const Cconfig& srv_config();
-Cstats& srv_stats();
+stats_t& srv_stats();
 time_t srv_time();
 
 std::string srv_debug(const Ctracker_input&);

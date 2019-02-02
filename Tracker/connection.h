@@ -2,7 +2,7 @@
 
 #include "client.h"
 
-class Cconnection : public Cclient, boost::noncopyable
+class Cconnection : public client_t, boost::noncopyable
 {
 public:
 	int run();
