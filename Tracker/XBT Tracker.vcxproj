@@ -125,7 +125,7 @@
     </ClCompile>
     <ClCompile Include="..\misc\windows\nt_service.cpp">
     </ClCompile>
-    <ClCompile Include="server.cpp">
+    <ClCompile Include="tracker.cpp">
     </ClCompile>
     <ClCompile Include="..\misc\sha1.cpp">
     </ClCompile>
@@ -151,7 +151,7 @@
     <ClInclude Include="epoll.h" />
     <ClInclude Include="..\misc\windows\nt_service.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="server.h" />
+    <ClInclude Include="tracker.h" />
     <ClInclude Include="..\misc\sha1.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="..\misc\stream_int.h" />

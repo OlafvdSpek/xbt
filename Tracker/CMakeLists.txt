@@ -25,7 +25,7 @@ add_executable(
 	config.cpp
 	connection.cpp
 	epoll.cpp
-	server.cpp
+	tracker.cpp
 	tracker_input.cpp
 	transaction.cpp
 )

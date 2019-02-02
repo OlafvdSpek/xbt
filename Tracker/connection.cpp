@@ -2,7 +2,7 @@
 #include "connection.h"
 
 #include "epoll.h"
-#include "server.h"
+#include "tracker.h"
 
 Cconnection::Cconnection(const Csocket& s, const sockaddr_in& a)
 {

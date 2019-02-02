@@ -2,7 +2,7 @@
 #include "transaction.h"
 
 #include <sha1.h>
-#include "server.h"
+#include "tracker.h"
 
 Ctransaction::Ctransaction(const Csocket& s) : 
 	m_s(s)
