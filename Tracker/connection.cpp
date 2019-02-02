@@ -10,7 +10,6 @@ Cconnection::Cconnection(const Csocket& s, const sockaddr_in& a)
 	m_a = a;
 	m_ctime = srv_time();
 
-	m_state = 0;
 	m_w = m_read_b;
 }
 
