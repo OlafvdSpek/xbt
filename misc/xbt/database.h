@@ -17,7 +17,7 @@ class Cdatabase : boost::noncopyable
 {
 public:
 	void open(const std::string& host, const std::string& user, const std::string& password, const std::string& database);
-	const std::string& name(const std::string&) const;
+	std::string_view name(std::string_view) const;
 	Csql_result query(std::string_view);
 	int query_nothrow(std::string_view);
 	void set_name(const std::string&, std::string);
@@ -36,6 +36,6 @@ public:
 	}
 private:
 	MYSQL m_handle;
-	std::map<std::string, std::string> m_names;
+	std::map<std::string, std::string, std::less<>> m_names;
 	std::ostream* m_query_log = NULL;
 };

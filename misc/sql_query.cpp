@@ -60,7 +60,7 @@ void Csql_query::operator+=(const std::string& v)
 
 Csql_query& Csql_query::p_name(const std::string& v0)
 {
-	const std::string& v = m_database.name(v0);
+	std::string_view v = m_database.name(v0);
 	std::vector<char> r(2 * v.size() + 2);
 	r.resize(mysql_real_escape_string(m_database, &r[1], v.data(), v.size()) + 2);
 	r.front() = '`';

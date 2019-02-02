@@ -38,9 +38,9 @@ inline std::enable_if_t<std::is_integral<T>::value> query_append(Cdatabase&, std
 	s << v;
 }
 
-inline void query0(Cdatabase&, std::string& s, std::string_view q)
+inline void query0(Cdatabase& db, std::string& s, std::string_view q)
 {
-	s << q;
+	s << db.replace_names(q);
 }
 
 template<class T, class... A>
@@ -50,10 +50,10 @@ void query0(Cdatabase& db, std::string& s, std::string_view q, const T& v, const
 	assert(i != std::string::npos);
   if (i == std::string::npos)
   {
-    s << q;
+    s << db.replace_names(q);
     return;
   }
-  s.append(q.data(), i);
+  s += db.replace_names(q.substr(0, i));
   query_append(db, s, v);
 	query0(db, s, q.substr(i + 1), a...);
 }
