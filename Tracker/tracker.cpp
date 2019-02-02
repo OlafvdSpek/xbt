@@ -22,11 +22,11 @@ namespace std
 }
 
 static volatile bool g_sig_term = false;
-static boost::ptr_list<Cconnection> g_connections;
+static boost::ptr_list<connection_t> g_connections;
 static unordered_map<array<char, 20>, torrent_t> g_torrents;
 static unordered_map<int, user_t> g_users;
 static unordered_map<array<char, 32>, user_t*> g_users_torrent_passes;
-static Cconfig g_config;
+static config_t g_config;
 static Cdatabase g_database;
 static Cepoll g_epoll;
 static stats_t g_stats;
@@ -93,7 +93,7 @@ public:
 	}
 };
 
-const Cconfig& srv_config()
+const config_t& srv_config()
 {
 	return g_config;
 }
@@ -127,7 +127,7 @@ void read_config()
 {
 	try
 	{
-		Cconfig config;
+		config_t config;
 		for (auto row : Csql_query(g_database, "select name, value from @config where value is not null").execute())
 		{
 			if (config.set(row[0].s(), row[1].s()))
@@ -598,7 +598,7 @@ void accept(const Csocket& l)
 		if (s.blocking(false))
 			cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
-		unique_ptr<Cconnection> connection(new Cconnection(s, a));
+		unique_ptr<connection_t> connection(new connection_t(s, a));
 		connection->process_events(EPOLLIN);
 		if (connection->s() != INVALID_SOCKET)
 		{
@@ -926,7 +926,7 @@ void test_announce()
 int main1()
 {
 	srand(static_cast<int>(time(NULL)));
-	Cconfig config;
+	config_t config;
 	if (config.load(g_conf_file))
 #ifdef WIN32
 	{

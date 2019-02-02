@@ -2,15 +2,15 @@
 
 #include <config_base.h>
 
-class Cconfig: public Cconfig_base
+class config_t: public Cconfig_base
 {
 public:
 	int set(const std::string& name, const std::string& value);
 	int set(const std::string& name, int value);
 	int set(const std::string& name, bool value);
-	Cconfig();
-	Cconfig(const Cconfig&);
-	const Cconfig& operator=(const Cconfig&);
+	config_t();
+	config_t(const config_t&);
+	const config_t& operator=(const config_t&);
 
 	bool m_anonymous_announce;
 	bool m_anonymous_scrape;
@@ -51,5 +51,5 @@ public:
 	std::set<int> m_listen_ipas;
 	std::set<int> m_listen_ports;
 private:
-	void fill_maps(const Cconfig*);
+	void fill_maps(const config_t*);
 };

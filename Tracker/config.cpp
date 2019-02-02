@@ -1,23 +1,23 @@
 #include "stdafx.h"
 #include "config.h"
 
-Cconfig::Cconfig()
+config_t::config_t()
 {
 	fill_maps(NULL);
 }
 
-Cconfig::Cconfig(const Cconfig& v)
+config_t::config_t(const config_t& v)
 {
 	fill_maps(&v);
 }
 
-const Cconfig& Cconfig::operator=(const Cconfig& v)
+const config_t& config_t::operator=(const config_t& v)
 {
 	fill_maps(&v);
 	return *this;
 }
 
-void Cconfig::fill_maps(const Cconfig* v)
+void config_t::fill_maps(const config_t* v)
 {
 	{
 		t_attribute<bool> attributes[] =
@@ -83,7 +83,7 @@ void Cconfig::fill_maps(const Cconfig* v)
 	}
 }
 
-int Cconfig::set(const std::string& name, const std::string& value)
+int config_t::set(const std::string& name, const std::string& value)
 {
 	if (t_attribute<std::string>* i = find_ptr(m_attributes_string, name))
 		*i->value = value;
@@ -97,7 +97,7 @@ int Cconfig::set(const std::string& name, const std::string& value)
 	return 0;
 }
 
-int Cconfig::set(const std::string& name, int value)
+int config_t::set(const std::string& name, int value)
 {
 	if (t_attribute<int>* i = find_ptr(m_attributes_int, name))
 		*i->value = value;
@@ -108,7 +108,7 @@ int Cconfig::set(const std::string& name, int value)
 	return 0;
 }
 
-int Cconfig::set(const std::string& name, bool value)
+int config_t::set(const std::string& name, bool value)
 {
 	if (t_attribute<bool>* i = find_ptr(m_attributes_bool, name))
 		*i->value = value;

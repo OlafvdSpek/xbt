@@ -4,7 +4,7 @@
 #include "epoll.h"
 #include "tracker.h"
 
-Cconnection::Cconnection(const Csocket& s, const sockaddr_in& a)
+connection_t::connection_t(const Csocket& s, const sockaddr_in& a)
 {
 	m_s = s;
 	m_a = a;
@@ -13,7 +13,7 @@ Cconnection::Cconnection(const Csocket& s, const sockaddr_in& a)
 	m_w = m_read_b;
 }
 
-int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
+int connection_t::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
 	FD_SET(m_s, fd_read_set);
 	if (!m_r.empty())
@@ -21,7 +21,7 @@ int Cconnection::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
 	return m_s;
 }
 
-int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
+int connection_t::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 {
 	return FD_ISSET(m_s, fd_read_set) && recv()
 		|| FD_ISSET(m_s, fd_write_set) && send()
@@ -29,7 +29,7 @@ int Cconnection::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
 		|| m_state == 5 && m_r.empty();
 }
 
-int Cconnection::recv()
+int connection_t::recv()
 {
 	int r = m_s.recv(m_w);
 	if (!r)
@@ -88,7 +88,7 @@ int Cconnection::recv()
 	return 0;
 }
 
-int Cconnection::send()
+int connection_t::send()
 {
 	if (m_r.empty())
 		return 0;
@@ -113,7 +113,7 @@ int Cconnection::send()
 	return 0;
 }
 
-void Cconnection::read(const std::string& v)
+void connection_t::read(const std::string& v)
 {
 #ifndef NDEBUG
 	std::cout << v << std::endl;
@@ -263,7 +263,7 @@ void Cconnection::read(const std::string& v)
 		m_write_b.clear();
 }
 
-void Cconnection::process_events(int events)
+void connection_t::process_events(int events)
 {
 	if (events & (EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP) && recv()
 		|| events & EPOLLOUT && send()
@@ -271,7 +271,7 @@ void Cconnection::process_events(int events)
 		m_s.close();
 }
 
-int Cconnection::run()
+int connection_t::run()
 {
 	return s() == INVALID_SOCKET || srv_time() - m_ctime > 10;
 }

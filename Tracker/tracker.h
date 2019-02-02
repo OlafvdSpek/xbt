@@ -115,7 +115,7 @@ const torrent_t* find_torrent(const std::string& id);
 user_t* find_user_by_torrent_pass(str_ref, str_ref info_hash);
 user_t* find_user_by_uid(int v);
 long long srv_secret();
-const Cconfig& srv_config();
+const config_t& srv_config();
 stats_t& srv_stats();
 time_t srv_time();
 
