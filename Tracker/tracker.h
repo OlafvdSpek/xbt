@@ -31,10 +31,10 @@ public:
 	time_t start_time = time(NULL);
 };
 
-class peer_key_c
+class peer_key_t
 {
 public:
-	peer_key_c(int host, int uid)
+	peer_key_t(int host, int uid)
 	{
 		host_ = host;
 #ifdef PEERS_KEY
@@ -44,7 +44,7 @@ public:
 #endif
 	}
 
-	bool operator==(peer_key_c v) const
+	bool operator==(peer_key_t v) const
 	{
 #ifdef PEERS_KEY
 		return host_ == v.host_ && uid_ == v.uid_;
@@ -53,7 +53,7 @@ public:
 #endif
 	}
 
-	bool operator<(peer_key_c v) const
+	bool operator<(peer_key_t v) const
 	{
 #ifdef PEERS_KEY
 		return host_ < v.host_ || host_ == v.host_ && uid_ < v.uid_;
@@ -62,7 +62,7 @@ public:
 #endif
 	}
 
-	friend std::size_t hash_value(const peer_key_c& v)
+	friend std::size_t hash_value(const peer_key_t& v)
 	{
 		std::size_t seed = boost::hash_value(v.host_);
 #ifdef PEERS_KEY
@@ -92,7 +92,7 @@ struct torrent_t
 {
 	void select_peers(mutable_str_ref& d, const Ctracker_input&) const;
 
-	boost::unordered_map<peer_key_c, peer_t> peers;
+	boost::unordered_map<peer_key_t, peer_t> peers;
 	time_t ctime;
 	int completed = 0;
 	int fid = 0;

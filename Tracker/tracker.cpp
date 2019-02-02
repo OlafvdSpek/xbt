@@ -641,7 +641,7 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 		file.ctime = srv_time();
 	if (v.m_left && user && user->wait_time && file.ctime + user->wait_time > srv_time())
 		return bts_wait_time;
-	peer_key_c peer_key(v.m_ipa, user ? user->uid : 0);
+	peer_key_t peer_key(v.m_ipa, user ? user->uid : 0);
 	peer_t* i = find_ptr(file.peers, peer_key);
 	if (i)
 		(i->left ? file.leechers : file.seeders)--;
