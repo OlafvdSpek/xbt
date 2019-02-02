@@ -53,9 +53,10 @@ static const char g_service_name[] = "XBT Tracker";
 
 void accept(const Csocket&);
 	
-static void async_query(const string& v)
+template<class... A>
+static void async_query(const A&... a)
 {
-	g_database.query_nothrow(v);
+	g_database.query_nothrow(make_query(g_database, a...));
 }
 
 template<class... A>
@@ -286,12 +287,12 @@ void write_db_torrents()
 			if (buffer.empty())
 				break;
 			buffer.pop_back();
-			async_query(make_query(g_database, "insert into @files (@leechers, @seeders, @completed, @fid) values ?"
+			async_query("insert into @files (@leechers, @seeders, @completed, @fid) values ?"
 				" on duplicate key update"
 				"  @leechers = values(@leechers),"
 				"  @seeders = values(@seeders),"
 				"  @completed = values(@completed),"
-				"  mtime = unix_timestamp()", raw(buffer)));
+				"  mtime = unix_timestamp()", raw(buffer));
 			buffer.clear();
 		}
 	}
@@ -301,13 +302,13 @@ void write_db_torrents()
 	if (!g_announce_log_buffer.empty())
 	{
 		g_announce_log_buffer.pop_back();
-		async_query(make_query(g_database, "insert delayed into @announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values ?", raw(g_announce_log_buffer)));
+		async_query("insert delayed into @announce_log (ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime) values ?", raw(g_announce_log_buffer));
 		g_announce_log_buffer.erase();
 	}
 	if (!g_scrape_log_buffer.empty())
 	{
 		g_scrape_log_buffer.pop_back();
-		async_query(make_query(g_database, "insert delayed into @scrape_log (ipa, uid, mtime) values ", raw(g_scrape_log_buffer)));
+		async_query("insert delayed into @scrape_log (ipa, uid, mtime) values ", raw(g_scrape_log_buffer));
 		g_scrape_log_buffer.erase();
 	}
 }
@@ -318,24 +319,24 @@ void write_db_users()
 	if (!g_torrents_users_updates_buffer.empty())
 	{
 		g_torrents_users_updates_buffer.pop_back();
-		async_query(make_query(g_database, "insert into @files_users (active, completed, downloaded, `left`, uploaded, mtime, fid, uid) values ?"
+		async_query("insert into @files_users (active, completed, downloaded, `left`, uploaded, mtime, fid, uid) values ?"
 			" on duplicate key update"
 			"  active = values(active),"
 			"  completed = completed + values(completed),"
 			"  downloaded = downloaded + values(downloaded),"
 			"  `left` = values(`left`),"
 			"  uploaded = uploaded + values(uploaded),"
-			"  mtime = values(mtime)", raw(g_torrents_users_updates_buffer)));
+			"  mtime = values(mtime)", raw(g_torrents_users_updates_buffer));
 		g_torrents_users_updates_buffer.erase();
 	}
-	async_query(make_query(g_database, "update @files_users set active = 0 where mtime < unix_timestamp() - 60 * 60"));
+	async_query("update @files_users set active = 0 where mtime < unix_timestamp() - 60 * 60");
 	if (!g_users_updates_buffer.empty())
 	{
 		g_users_updates_buffer.pop_back();
-		async_query(make_query(g_database, "insert into @users (downloaded, uploaded, @uid) values ?"
+		async_query("insert into @users (downloaded, uploaded, @uid) values ?"
 			" on duplicate key update"
 			"  downloaded = downloaded + values(downloaded),"
-			"  uploaded = uploaded + values(uploaded)", raw(g_users_updates_buffer)));
+			"  uploaded = uploaded + values(uploaded)", raw(g_users_updates_buffer));
 		g_users_updates_buffer.erase();
 	}
 }
