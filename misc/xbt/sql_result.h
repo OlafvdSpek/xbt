@@ -71,9 +71,9 @@ public:
 	{
 	}
 
-	operator const void*() const
+	explicit operator bool() const
 	{
-		return size() ? this : NULL;
+		return size();
 	}
 
 	int c_fields() const

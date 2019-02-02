@@ -58,6 +58,12 @@ static void async_query(const string& v)
 	g_database.query_nothrow(v);
 }
 
+template<class... A>
+Csql_result query(std::string_view q, const A&... a)
+{
+	return query(g_database, q, a...);
+}
+
 static void sig_handler(int v)
 {
 	if (v == SIGTERM)
@@ -128,7 +134,7 @@ void read_config()
 	try
 	{
 		config_t config;
-		for (auto row : Csql_query(g_database, "select name, value from @config where value is not null").execute())
+		for (auto row : query("select name, value from @config where value is not null"))
 		{
 			if (config.set(row[0].s(), row[1].s()))
 				cerr << "unknown config name: " << row[0].s() << endl;
@@ -137,7 +143,7 @@ void read_config()
 		if (config.m_torrent_pass_private_key.empty())
 		{
 			config.m_torrent_pass_private_key = generate_random_string(27);
-			Csql_query(g_database, "insert into @config (name, value) values ('torrent_pass_private_key', ?)")(config.m_torrent_pass_private_key).execute();
+			query("insert into @config (name, value) values ('torrent_pass_private_key', ?)", config.m_torrent_pass_private_key);
 		}
 		g_config = config;
 		g_database.set_name("completed", g_config.m_column_files_completed);
@@ -168,15 +174,15 @@ void read_db_torrents()
 	{
 		if (!g_config.m_auto_register)
 		{
-			for (auto row : Csql_query(g_database, "select info_hash, @fid from @files where flags & 1").execute())
+			for (auto row : query(g_database, "select info_hash, @fid from @files where flags & 1"))
 			{
 				g_torrents.erase(to_array<char, 20>(row[0]));
-				Csql_query(g_database, "delete from @files where @fid = ?")(row[1]).execute();
+				query("delete from @files where @fid = ?", row[1]);
 			}
 		}
 		if (g_config.m_auto_register && !g_torrents.empty())
 			return;
-		for (auto row : Csql_query(g_database, "select info_hash, @completed, @fid, ctime from @files where @fid >= ?")(g_fid_end).execute())
+		for (auto row : query("select info_hash, @completed, @fid, ctime from @files where @fid >= ?", g_fid_end))
 		{
 			g_fid_end = max<int>(g_fid_end, row[2].i() + 1);
 			if (row[0].size() != 20 || find_torrent(row[0].s()))
@@ -269,7 +275,7 @@ void write_db_torrents()
 					continue;
 				if (!file.fid)
 				{
-					Csql_query(g_database, "insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())")(i.first).execute();
+					query("insert into @files (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())", i.first);
 					file.fid = g_database.insert_id();
 				}
 				buffer += make_query(g_database, "(?,?,?,?),", file.leechers, file.seeders, file.completed, file.fid);
@@ -340,19 +346,19 @@ int test_sql()
 	{
 		mysql_get_server_version(g_database);
 		if (g_config.m_log_announce)
-			Csql_query(g_database, "select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0").execute();
-		query(g_database, "select name, value from @config where 0");
-		Csql_query(g_database, "select @fid, info_hash, @leechers, @seeders, flags, mtime, ctime from @files where 0").execute();
-		Csql_query(g_database, "select fid, uid, active, completed, downloaded, `left`, uploaded from @files_users where 0").execute();
+			query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0");
+		query("select name, value from @config where 0");
+		query("select @fid, info_hash, @leechers, @seeders, flags, mtime, ctime from @files where 0");
+		query("select fid, uid, active, completed, downloaded, `left`, uploaded from @files_users where 0");
 		if (g_config.m_log_scrape)
-			Csql_query(g_database, "select id, ipa, uid, mtime from @scrape_log where 0").execute();
-		Csql_query(g_database, "select @uid, torrent_pass_version, downloaded, uploaded from @users where 0").execute();
-		Csql_query(g_database, "update @files set @leechers = 0, @seeders = 0").execute();
-		// Csql_query(g_database, "update @files_users set active = 0").execute();
-		g_read_users_can_leech = Csql_query(g_database, "show columns from @users like 'can_leech'").execute();
-		g_read_users_peers_limit = Csql_query(g_database, "show columns from @users like 'peers_limit'").execute();
-		g_read_users_torrent_pass = Csql_query(g_database, "show columns from @users like 'torrent_pass'").execute();
-		g_read_users_wait_time = Csql_query(g_database, "show columns from @users like 'wait_time'").execute();
+			query("select id, ipa, uid, mtime from @scrape_log where 0");
+		query("select @uid, torrent_pass_version, downloaded, uploaded from @users where 0");
+		query("update @files set @leechers = 0, @seeders = 0");
+		// query("update @files_users set active = 0");
+		g_read_users_can_leech = query("show columns from @users like 'can_leech'").size();
+		g_read_users_peers_limit = query("show columns from @users like 'peers_limit'").size();
+		g_read_users_torrent_pass = query("show columns from @users like 'torrent_pass'").size();
+		g_read_users_wait_time = query("show columns from @users like 'wait_time'").size();
 		return 0;
 	}
 	catch (bad_query&)
