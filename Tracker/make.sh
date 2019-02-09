@@ -1,4 +1,4 @@
-g++ $@ -DEPOLL -DNDEBUG -I ../misc -I . -O3 -o xbt_tracker -std=c++11 \
+g++ $@ -DEPOLL -DNDEBUG -I ../misc -I . -O3 -o xbt_tracker -std=c++14 \
 	../misc/bt_misc.cpp \
 	../misc/database.cpp \
 	../misc/sha1.cpp \
