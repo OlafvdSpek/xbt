@@ -90,7 +90,7 @@ std::string Cdatabase::replace_names(std::string_view v) const
 		r += read_until(v, '@');
 		if (v.empty())
 			break;
-		size_t i = v.find_first_of(" ,");
+		size_t i = v.find_first_of(" ),");
 		if (i == std::string_view::npos)
 			i = v.size();
 		r += name(std::string(v.substr(0, i)));
