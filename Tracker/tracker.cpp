@@ -153,9 +153,9 @@ void read_config()
 		g_database.set_name("fid", g_config.column_torrents_tid_);
 		g_database.set_name("uid", g_config.column_users_uid_);
 		g_database.set_name("announce_log", g_config.table_announce_log_.empty() ? g_table_prefix + "announce_log" : g_config.table_announce_log_);
-		g_database.set_name("torrents", g_config.table_torrents_.empty() ? g_table_prefix + "files" : g_config.table_torrents_);
-		g_database.set_name("files_users", g_config.table_torrents_users_.empty() ? g_table_prefix + "files_users" : g_config.table_torrents_users_);
 		g_database.set_name("scrape_log", g_config.table_scrape_log_.empty() ? g_table_prefix + "scrape_log" : g_config.table_scrape_log_);
+		g_database.set_name("torrents", g_config.table_torrents_.empty() ? g_table_prefix + "files" : g_config.table_torrents_);
+		g_database.set_name("torrents_users", g_config.table_torrents_users_.empty() ? g_table_prefix + "files_users" : g_config.table_torrents_users_);
 		g_database.set_name("users", g_config.table_users_.empty() ? g_table_prefix + "users" : g_config.table_users_);
 	}
 	catch (bad_query&)
