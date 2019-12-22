@@ -83,14 +83,14 @@ void config_t::fill_maps(const config_t* v)
 	}
 }
 
-int config_t::set(const std::string_view name, const std::string& value)
+int config_t::set(const std::string_view name, const std::string_view value)
 {
 	if (attribute_t<std::string>* i = find_ptr(attributes_string_, name))
 		*i->value = value;
 	else if (name == "listen_ipa")
 	{
 		if (value != "*")
-			listen_ipas_.insert(inet_addr(value.c_str()));
+			listen_ipas_.insert(inet_addr(std::string(value).c_str()));
 	}
 	else
 		return set(name, int(to_int(value)));

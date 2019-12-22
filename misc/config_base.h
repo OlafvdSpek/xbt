@@ -20,7 +20,7 @@ public:
 	template <class T>
 	using attributes_t = std::map<std::string, attribute_t<T>, std::less<>>;
 
-	virtual int set(const std::string_view name, const std::string& value)
+	virtual int set(const std::string_view name, const std::string_view value)
 	{
 		if (attribute_t<std::string>* i = find_ptr(attributes_string_, name))
 			*i->value = value;
