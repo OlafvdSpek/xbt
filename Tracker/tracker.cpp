@@ -147,10 +147,10 @@ void read_config()
 			query("insert into @config (name, value) values ('torrent_pass_private_key', ?)", config.torrent_pass_private_key_);
 		}
 		g_config = config;
-		g_database.set_name("completed", g_config.column_files_completed_);
-		g_database.set_name("leechers", g_config.column_files_leechers_);
-		g_database.set_name("seeders", g_config.column_files_seeders_);
-		g_database.set_name("fid", g_config.column_files_fid_);
+		g_database.set_name("completed", g_config.column_torrents_completed_);
+		g_database.set_name("leechers", g_config.column_torrents_leechers_);
+		g_database.set_name("seeders", g_config.column_torrents_seeders_);
+		g_database.set_name("fid", g_config.column_torrents_tid_);
 		g_database.set_name("uid", g_config.column_users_uid_);
 		g_database.set_name("announce_log", g_config.table_announce_log_.empty() ? g_table_prefix + "announce_log" : g_config.table_announce_log_);
 		g_database.set_name("files", g_config.table_torrents_.empty() ? g_table_prefix + "files" : g_config.table_torrents_);

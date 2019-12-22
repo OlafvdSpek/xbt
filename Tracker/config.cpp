@@ -52,10 +52,10 @@ void config_t::fill_maps(const config_t* v)
 	{
 		t_attribute<std::string> attributes[] =
 		{
-			{ "column_files_completed", &column_files_completed_, "completed" },
-			{ "column_files_fid", &column_files_fid_, "fid" },
-			{ "column_files_leechers", &column_files_leechers_, "leechers" },
-			{ "column_files_seeders", &column_files_seeders_, "seeders" },
+			{ "column_files_completed", &column_torrents_completed_, "completed" },
+			{ "column_files_fid", &column_torrents_tid_, "fid" },
+			{ "column_files_leechers", &column_torrents_leechers_, "leechers" },
+			{ "column_files_seeders", &column_torrents_seeders_, "seeders" },
 			{ "column_users_uid", &column_users_uid_, "uid" },
 			{ "mysql_database", &mysql_database_, "xbt" },
 			{ "mysql_host", &mysql_host_, "" },

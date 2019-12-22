@@ -28,10 +28,10 @@ public:
 	int read_db_interval_;
 	int scrape_interval_;
 	int write_db_interval_;
-	std::string column_files_completed_;
-	std::string column_files_fid_;
-	std::string column_files_leechers_;
-	std::string column_files_seeders_;
+	std::string column_torrents_completed_;
+	std::string column_torrents_tid_;
+	std::string column_torrents_leechers_;
+	std::string column_torrents_seeders_;
 	std::string column_users_uid_;
 	std::string mysql_database_;
 	std::string mysql_host_;
