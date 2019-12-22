@@ -118,7 +118,7 @@ void connection_t::read(const std::string& v)
 #ifndef NDEBUG
 	std::cout << v << std::endl;
 #endif
-	if (srv_config().m_log_access)
+	if (srv_config().log_access_)
 	{
 		static std::ofstream f("xbt_tracker_raw.log");
 		f << srv_time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << std::endl;
@@ -172,7 +172,7 @@ void connection_t::read(const std::string& v)
 		}
 		break;
 	case 'd':
-		if (srv_config().m_debug)
+		if (srv_config().debug_)
 		{
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = srv_debug(ti);
@@ -184,21 +184,21 @@ void connection_t::read(const std::string& v)
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = srv_statistics();
 		}
-		else if (srv_config().m_full_scrape || !ti.m_info_hash.empty())
+		else if (srv_config().full_scrape_ || !ti.m_info_hash.empty())
 		{
-			gzip = srv_config().m_gzip_scrape && ti.m_info_hash.empty();
+			gzip = srv_config().gzip_scrape_ && ti.m_info_hash.empty();
  			s = srv_scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
 		}
 		break;
 	}
 	if (s.empty())
 	{
-		if (!ti.m_info_hash.empty() || srv_config().m_redirect_url.empty())
+		if (!ti.m_info_hash.empty() || srv_config().redirect_url_.empty())
 			h = "HTTP/1.0 404 Not Found\r\n";
 		else
 		{
 			h = "HTTP/1.0 302 Found\r\n"
-				"Location: " + srv_config().m_redirect_url + (ti.m_info_hash.empty() ? "" : "?info_hash=" + uri_encode(ti.m_info_hash)) + "\r\n";
+				"Location: " + srv_config().redirect_url_ + (ti.m_info_hash.empty() ? "" : "?info_hash=" + uri_encode(ti.m_info_hash)) + "\r\n";
 		}
 	}
 	else if (gzip)

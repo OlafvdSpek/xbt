@@ -71,7 +71,7 @@ void Ctransaction::send_announce(data_ref r)
 {
 	if (read_int(8, &r[uti_connection_id], r.end()) != connection_id())
 		return;
-	if (!srv_config().m_anonymous_announce)
+	if (!srv_config().anonymous_announce_)
 	{
 		send_error(r, "access denied");
 		return;
@@ -99,7 +99,7 @@ void Ctransaction::send_announce(data_ref r)
 	char d[2 << 10];
 	write_int(4, d + uto_action, uta_announce);
 	write_int(4, d + uto_transaction_id, read_int(4, &r[uti_transaction_id], r.end()));
-	write_int(4, d + utoa_interval, srv_config().m_announce_interval);
+	write_int(4, d + utoa_interval, srv_config().announce_interval_);
 	write_int(4, d + utoa_leechers, torrent->leechers);
 	write_int(4, d + utoa_seeders, torrent->seeders);
 	mutable_str_ref peers(d + utoa_size, 300);
@@ -111,7 +111,7 @@ void Ctransaction::send_scrape(data_ref r)
 {
 	if (read_int(8, &r[uti_connection_id], r.end()) != connection_id())
 		return;
-	if (!srv_config().m_anonymous_scrape)
+	if (!srv_config().anonymous_scrape_)
 	{
 		send_error(r, "access denied");
 		return;
