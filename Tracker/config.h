@@ -7,7 +7,6 @@ class config_t : public config_base_t
 public:
 	int set(const std::string& name, const std::string& value);
 	int set(const std::string& name, int value);
-	int set(const std::string& name, bool value);
 	config_t();
 	config_t(const config_t&);
 	const config_t& operator=(const config_t&);

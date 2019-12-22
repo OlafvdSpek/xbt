@@ -107,12 +107,3 @@ int config_t::set(const std::string& name, int value)
 		return set(name, static_cast<bool>(value));
 	return 0;
 }
-
-int config_t::set(const std::string& name, bool value)
-{
-	if (attribute_t<bool>* i = find_ptr(attributes_bool_, name))
-		*i->value = value;
-	else
-		return 1;
-	return 0;
-}
