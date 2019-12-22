@@ -2,13 +2,13 @@
 
 ### Installing under Linux
 
-The following commands can be used to install the dependencies on Debian and Ubuntu. The g++ version should be at least 6.
+The following commands can be used to install the dependencies on Debian and Ubuntu. The g++ version should be at least 7.
 
 ```
 apt install cmake default-libmysqlclient-dev g++ git libboost-dev make zlib1g-dev
 ```
 
-The following commands can be used to install some of the dependencies on CentOS, Fedora and Red Hat. The g++ version should be at least 6.
+The following commands can be used to install some of the dependencies on CentOS, Fedora and Red Hat. The g++ version should be at least 7.
 
 ```
 yum install boost-devel cmake gcc-c++ git mysql-devel
