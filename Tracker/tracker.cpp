@@ -150,7 +150,7 @@ void read_config()
 		g_database.set_name("completed", g_config.column_torrents_completed_);
 		g_database.set_name("leechers", g_config.column_torrents_leechers_);
 		g_database.set_name("seeders", g_config.column_torrents_seeders_);
-		g_database.set_name("fid", g_config.column_torrents_tid_);
+		g_database.set_name("tid", g_config.column_torrents_tid_);
 		g_database.set_name("uid", g_config.column_users_uid_);
 		g_database.set_name("announce_log", g_config.table_announce_log_.empty() ? g_table_prefix + "announce_log" : g_config.table_announce_log_);
 		g_database.set_name("scrape_log", g_config.table_scrape_log_.empty() ? g_table_prefix + "scrape_log" : g_config.table_scrape_log_);
@@ -175,15 +175,15 @@ void read_db_torrents()
 	{
 		if (!g_config.auto_register_)
 		{
-			for (auto row : query(g_database, "select info_hash, @fid from @torrents where flags & 1"))
+			for (auto row : query(g_database, "select info_hash, @tid from @torrents where flags & 1"))
 			{
 				g_torrents.erase(to_array<char, 20>(row[0]));
-				query("delete from @torrents where @fid = ?", row[1]);
+				query("delete from @torrents where @tid = ?", row[1]);
 			}
 		}
 		if (g_config.auto_register_ && !g_torrents.empty())
 			return;
-		for (auto row : query("select info_hash, @completed, @fid, ctime from @torrents where @fid >= ?", g_fid_end))
+		for (auto row : query("select info_hash, @completed, @tid, ctime from @torrents where @tid >= ?", g_fid_end))
 		{
 			g_fid_end = max<int>(g_fid_end, row[2].i() + 1);
 			if (row[0].size() != 20 || find_torrent(row[0].s()))
@@ -287,7 +287,7 @@ void write_db_torrents()
 			if (buffer.empty())
 				break;
 			buffer.pop_back();
-			async_query("insert into @torrents (@leechers, @seeders, @completed, @fid) values ?"
+			async_query("insert into @torrents (@leechers, @seeders, @completed, @tid) values ?"
 				" on duplicate key update"
 				"  @leechers = values(@leechers),"
 				"  @seeders = values(@seeders),"
@@ -349,7 +349,7 @@ int test_sql()
 		if (g_config.log_announce_)
 			query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0");
 		query("select name, value from @config where 0");
-		query("select @fid, info_hash, @leechers, @seeders, flags, mtime, ctime from @torrents where 0");
+		query("select @tid, info_hash, @leechers, @seeders, flags, mtime, ctime from @torrents where 0");
 		query("select fid, uid, active, completed, downloaded, `left`, uploaded from @torrents_users where 0");
 		if (g_config.log_scrape_)
 			query("select id, ipa, uid, mtime from @scrape_log where 0");
