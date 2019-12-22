@@ -22,9 +22,8 @@ public:
 
 	virtual int set(const std::string& name, const std::string& value)
 	{
-		attributes_t<std::string>::iterator i = attributes_string_.find(name);
-		if (i != attributes_string_.end())
-			*i->second.value = value;
+		if (attribute_t<std::string>* i = find_ptr(attributes_string_, name))
+			*i->value = value;
 		else
 			return set(name, int(to_int(value)));
 		return 0;
@@ -32,9 +31,8 @@ public:
 
 	virtual int set(const std::string& name, int value)
 	{
-		attributes_t<int>::iterator i = attributes_int_.find(name);
-		if (i != attributes_int_.end())
-			*i->second.value = value;
+		if (attribute_t<int>* i = find_ptr(attributes_int_, name))
+			*i->value = value;
 		else
 			return set(name, static_cast<bool>(value));
 		return 0;
@@ -42,9 +40,8 @@ public:
 
 	virtual int set(const std::string& name, bool value)
 	{
-		attributes_t<bool>::iterator i = attributes_bool_.find(name);
-		if (i != attributes_bool_.end())
-			*i->second.value = value;
+		if (attribute_t<bool>* i = find_ptr(attributes_bool_, name))
+			*i->value = value;
 		else
 			return 1;
 		return 0;
