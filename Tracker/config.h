@@ -2,7 +2,7 @@
 
 #include <config_base.h>
 
-class config_t: public Cconfig_base
+class config_t : public config_base_t
 {
 public:
 	int set(const std::string& name, const std::string& value);

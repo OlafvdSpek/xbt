@@ -6,7 +6,7 @@
 #include <set>
 #include <string>
 
-class Cconfig_base
+class config_base_t
 {
 public:
 	template <class T>
@@ -18,9 +18,7 @@ public:
 	};
 
 	template <class T>
-	class attributes_t : public std::map<std::string, attribute_t<T>>
-	{
-	};
+	using attributes_t = std::map<std::string, attribute_t<T>>;
 
 	virtual int set(const std::string& name, const std::string& value)
 	{
@@ -90,7 +88,7 @@ protected:
 	{
 		for (attribute_t<T>* i = attributes; i->key; i++)
 		{
-			*i->value = s ? *s->find(i->key)->second.value : i->default_value;
+			*i->value = s ? *find_ref(*s, i->key).value : i->default_value;
 			d[i->key] = *i;
 		}
 	}
