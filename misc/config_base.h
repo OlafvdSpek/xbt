@@ -18,9 +18,9 @@ public:
 	};
 
 	template <class T>
-	using attributes_t = std::map<std::string, attribute_t<T>>;
+	using attributes_t = std::map<std::string, attribute_t<T>, std::less<>>;
 
-	virtual int set(const std::string& name, const std::string& value)
+	virtual int set(const std::string_view name, const std::string& value)
 	{
 		if (attribute_t<std::string>* i = find_ptr(attributes_string_, name))
 			*i->value = value;
@@ -29,7 +29,7 @@ public:
 		return 0;
 	}
 
-	virtual int set(const std::string& name, int value)
+	virtual int set(const std::string_view name, int value)
 	{
 		if (attribute_t<int>* i = find_ptr(attributes_int_, name))
 			*i->value = value;
@@ -38,7 +38,7 @@ public:
 		return 0;
 	}
 
-	virtual int set(const std::string& name, bool value)
+	virtual int set(const std::string_view name, bool value)
 	{
 		if (attribute_t<bool>* i = find_ptr(attributes_bool_, name))
 			*i->value = value;

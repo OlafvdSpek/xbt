@@ -83,7 +83,7 @@ void config_t::fill_maps(const config_t* v)
 	}
 }
 
-int config_t::set(const std::string& name, const std::string& value)
+int config_t::set(const std::string_view name, const std::string& value)
 {
 	if (attribute_t<std::string>* i = find_ptr(attributes_string_, name))
 		*i->value = value;
@@ -97,7 +97,7 @@ int config_t::set(const std::string& name, const std::string& value)
 	return 0;
 }
 
-int config_t::set(const std::string& name, int value)
+int config_t::set(const std::string_view name, int value)
 {
 	if (attribute_t<int>* i = find_ptr(attributes_int_, name))
 		*i->value = value;
