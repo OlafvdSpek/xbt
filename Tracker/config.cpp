@@ -20,7 +20,7 @@ const config_t& config_t::operator=(const config_t& v)
 void config_t::fill_maps(const config_t* v)
 {
 	{
-		t_attribute<bool> attributes[] =
+		attribute_t<bool> attributes[] =
 		{
 			{ "auto_register", &auto_register_, false },
 			{ "anonymous_announce", &anonymous_announce_, false },
@@ -34,10 +34,10 @@ void config_t::fill_maps(const config_t* v)
 			{ "log_scrape", &log_scrape_, false },
 			{ NULL, NULL, false }
 		};
-		fill_map(attributes, v ? &v->m_attributes_bool : NULL, m_attributes_bool);
+		fill_map(attributes, v ? &v->attributes_bool_ : NULL, attributes_bool_);
 	}
 	{
-		t_attribute<int> attributes[] =
+		attribute_t<int> attributes[] =
 		{
 			{ "announce_interval", &announce_interval_, 1800 },
 			{ "clean_up_interval", &clean_up_interval_, 60 },
@@ -47,10 +47,10 @@ void config_t::fill_maps(const config_t* v)
 			{ "write_db_interval", &write_db_interval_, 15 },
 			{ NULL, NULL, 0 }
 		};
-		fill_map(attributes, v ? &v->m_attributes_int : NULL, m_attributes_int);
+		fill_map(attributes, v ? &v->attributes_int_ : NULL, attributes_int_);
 	}
 	{
-		t_attribute<std::string> attributes[] =
+		attribute_t<std::string> attributes[] =
 		{
 			{ "column_files_completed", &column_torrents_completed_, "completed" },
 			{ "column_files_fid", &column_torrents_tid_, "fid" },
@@ -74,7 +74,7 @@ void config_t::fill_maps(const config_t* v)
 			{ "torrent_pass_private_key", &torrent_pass_private_key_, "" },
 			{ NULL, NULL, "" }
 		};
-		fill_map(attributes, v ? &v->m_attributes_string : NULL, m_attributes_string);
+		fill_map(attributes, v ? &v->attributes_string_ : NULL, attributes_string_);
 	}
 	if (v)
 	{
@@ -85,7 +85,7 @@ void config_t::fill_maps(const config_t* v)
 
 int config_t::set(const std::string& name, const std::string& value)
 {
-	if (t_attribute<std::string>* i = find_ptr(m_attributes_string, name))
+	if (attribute_t<std::string>* i = find_ptr(attributes_string_, name))
 		*i->value = value;
 	else if (name == "listen_ipa")
 	{
@@ -93,13 +93,13 @@ int config_t::set(const std::string& name, const std::string& value)
 			listen_ipas_.insert(inet_addr(value.c_str()));
 	}
 	else
-		return set(name, atoi(value.c_str()));
+		return set(name, int(to_int(value)));
 	return 0;
 }
 
 int config_t::set(const std::string& name, int value)
 {
-	if (t_attribute<int>* i = find_ptr(m_attributes_int, name))
+	if (attribute_t<int>* i = find_ptr(attributes_int_, name))
 		*i->value = value;
 	else if (name == "listen_port")
 		listen_ports_.insert(value);
@@ -110,7 +110,7 @@ int config_t::set(const std::string& name, int value)
 
 int config_t::set(const std::string& name, bool value)
 {
-	if (t_attribute<bool>* i = find_ptr(m_attributes_bool, name))
+	if (attribute_t<bool>* i = find_ptr(attributes_bool_, name))
 		*i->value = value;
 	else
 		return 1;
