@@ -95,7 +95,7 @@ struct torrent_t
 	boost::unordered_map<peer_key_t, peer_t> peers;
 	time_t ctime;
 	int completed = 0;
-	int fid = 0;
+	int tid = 0;
 	int leechers = 0;
 	int seeders = 0;
 	bool dirty = true;
@@ -111,9 +111,9 @@ struct user_t
 	bool marked;
 };
 
-const torrent_t* find_torrent(const std::string& id);
+const torrent_t* find_torrent(std::string_view info_hash);
 user_t* find_user_by_torrent_pass(str_ref, str_ref info_hash);
-user_t* find_user_by_uid(int v);
+user_t* find_user_by_uid(int);
 long long srv_secret();
 const config_t& srv_config();
 stats_t& srv_stats();

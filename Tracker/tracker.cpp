@@ -44,7 +44,7 @@ static time_t g_time = time(NULL);
 static time_t g_write_db_torrents_time;
 static time_t g_write_db_users_time;
 static unsigned long long g_secret;
-static int g_fid_end = 0;
+static int g_tid_end = 0;
 static bool g_read_users_can_leech;
 static bool g_read_users_peers_limit;
 static bool g_read_users_torrent_pass;
@@ -105,9 +105,9 @@ const config_t& srv_config()
 	return g_config;
 }
 
-const torrent_t* find_torrent(const string& id)
+const torrent_t* find_torrent(string_view info_hash)
 {
-	return find_ptr(g_torrents, to_array<char, 20>(id));
+	return find_ptr(g_torrents, to_array<char, 20>(info_hash));
 }
 
 user_t* find_user_by_uid(int v)
@@ -183,18 +183,18 @@ void read_db_torrents()
 		}
 		if (g_config.auto_register_ && !g_torrents.empty())
 			return;
-		for (auto row : query("select info_hash, @completed, @tid, ctime from @torrents where @tid >= ?", g_fid_end))
+		for (auto row : query("select info_hash, @completed, @tid, ctime from @torrents where @tid >= ?", g_tid_end))
 		{
-			g_fid_end = max<int>(g_fid_end, row[2].i() + 1);
-			if (row[0].size() != 20 || find_torrent(row[0].s()))
+			g_tid_end = max<int>(g_tid_end, row[2].i() + 1);
+			if (row[0].size() != 20 || find_torrent(row[0]))
 				continue;
-			torrent_t& file = g_torrents[to_array<char, 20>(row[0])];
-			if (file.fid)
+			torrent_t& t = g_torrents[to_array<char, 20>(row[0])];
+			if (t.tid)
 				continue;
-			file.completed = row[1].i();
-			file.dirty = false;
-			file.fid = row[2].i();
-			file.ctime = row[3].i();
+			t.completed = row[1].i();
+			t.dirty = false;
+			t.tid = row[2].i();
+			t.ctime = row[3].i();
 		}
 	}
 	catch (bad_query&)
@@ -274,12 +274,12 @@ void write_db_torrents()
 				torrent_t& file = i.second;
 				if (!file.dirty)
 					continue;
-				if (!file.fid)
+				if (!file.tid)
 				{
 					query("insert into @torrents (info_hash, mtime, ctime) values (?, unix_timestamp(), unix_timestamp())", i.first);
-					file.fid = g_database.insert_id();
+					file.tid = g_database.insert_id();
 				}
-				buffer += make_query(g_database, "(?,?,?,?),", file.leechers, file.seeders, file.completed, file.fid);
+				buffer += make_query(g_database, "(?,?,?,?),", file.leechers, file.seeders, file.completed, file.tid);
 				file.dirty = false;
 				if (buffer.size() > 255 << 10)
 					break;
@@ -655,7 +655,7 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 		if (c >= user->peers_limit)
 			return bts_peers_limit_reached;
 	}
-	if (user && file.fid)
+	if (user && file.tid)
 	{
 		long long downloaded = 0;
 		long long uploaded = 0;
@@ -675,7 +675,7 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 			v.m_left,
 			uploaded,
 			srv_time(),
-			file.fid,
+			file.tid,
 			user->uid);
 		if (downloaded || uploaded)
 			g_users_updates_buffer += make_query(g_database, "(?,?,?),", downloaded, uploaded, user->uid);
@@ -737,15 +737,15 @@ void torrent_t::select_peers(mutable_str_ref& d, const Ctracker_input& ti) const
 
 string srv_select_peers(const Ctracker_input& ti)
 {
-	const torrent_t* f = find_torrent(ti.m_info_hash);
-	if (!f)
+	const torrent_t* t = find_torrent(ti.m_info_hash);
+	if (!t)
 		return string();
 	array<char, 300> peers0;
 	mutable_str_ref peers = peers0;
-	f->select_peers(peers, ti);
+	t->select_peers(peers, ti);
 	peers.assign(peers0.data(), peers.data());
 	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
-		% f->seeders % f->leechers % g_config.announce_interval_ % g_config.announce_interval_ % peers.size() % peers).str();
+		% t->seeders % t->leechers % g_config.announce_interval_ % g_config.announce_interval_ % peers.size() % peers).str();
 }
 
 string srv_scrape(const Ctracker_input& ti, user_t* user)
@@ -808,7 +808,7 @@ string srv_debug(const Ctracker_input& ti)
 		{
 			if (!i.second.leechers && !i.second.seeders)
 				continue;
-			os << "<tr><td class=ar>" << i.second.fid
+			os << "<tr><td class=ar>" << i.second.tid
 				<< "<td><a href=\"?info_hash=" << uri_encode(i.first) << "\">" << hex_encode(i.first) << "</a>"
 				<< "<td>" << (i.second.dirty ? '*' : ' ')
 				<< "<td class=ar>" << i.second.leechers
