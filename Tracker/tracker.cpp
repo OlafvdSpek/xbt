@@ -644,9 +644,9 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 	if (v.m_left && user && user->wait_time && t.ctime + user->wait_time > srv_time())
 		return bts_wait_time;
 	peer_key_t peer_key(v.m_ipa, user ? user->uid : 0);
-	peer_t* i = find_ptr(t.peers, peer_key);
-	if (i)
-		(i->left ? t.leechers : t.seeders)--;
+	peer_t* p = find_ptr(t.peers, peer_key);
+	if (p)
+		(p->left ? t.leechers : t.seeders)--;
 	else if (v.m_left && user && user->peers_limit)
 	{
 		int c = 0;
@@ -659,14 +659,14 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 	{
 		long long downloaded = 0;
 		long long uploaded = 0;
-		if (i
-			&& i->uid == user->uid
-			&& boost::equals(i->peer_id, v.m_peer_id)
-			&& v.m_downloaded >= i->downloaded
-			&& v.m_uploaded >= i->uploaded)
+		if (p
+			&& p->uid == user->uid
+			&& boost::equals(p->peer_id, v.m_peer_id)
+			&& v.m_downloaded >= p->downloaded
+			&& v.m_uploaded >= p->uploaded)
 		{
-			downloaded = v.m_downloaded - i->downloaded;
-			uploaded = v.m_uploaded - i->uploaded;
+			downloaded = v.m_downloaded - p->downloaded;
+			uploaded = v.m_uploaded - p->uploaded;
 		}
 		g_torrents_users_updates_buffer += make_query(g_database, "(?,?,?,?,?,?,?,?),",
 			v.m_event != Ctracker_input::e_stopped,
@@ -686,7 +686,7 @@ string srv_insert_peer(const Ctracker_input& v, bool udp, user_t* user)
 		t.peers.erase(peer_key);
 	else
 	{
-		peer_t& peer = i ? *i : t.peers[peer_key];
+		peer_t& peer = p ? *p : t.peers[peer_key];
 		peer.downloaded = v.m_downloaded;
 		peer.left = v.m_left;
 		peer.peer_id = v.m_peer_id;
