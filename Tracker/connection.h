@@ -6,7 +6,7 @@ class connection_t : public client_t, boost::noncopyable
 {
 public:
 	int run();
-	void read(const std::string&);
+	void read(std::string_view);
 	int recv();
 	int send();
 	virtual void process_events(int);

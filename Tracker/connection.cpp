@@ -113,7 +113,7 @@ int connection_t::send()
 	return 0;
 }
 
-void connection_t::read(const std::string& v)
+void connection_t::read(std::string_view v)
 {
 #ifndef NDEBUG
 	std::cout << v << std::endl;
@@ -147,14 +147,14 @@ void connection_t::read(const std::string& v)
 	}
 	if (!ti.ipa_ || !is_private_ipa(m_a.sin_addr.s_addr))
 		ti.ipa_ = m_a.sin_addr.s_addr;
-	str_ref torrent_pass;
+	std::string_view torrent_pass;
 	size_t a = 4;
 	if (a < e && v[a] == '/')
 	{
 		a++;
 		if (a + 32 < e && v[a + 32] == '/')
 		{
-			torrent_pass.assign(&v[a], 32);
+			torrent_pass = std::string_view(&v[a], 32);
 			a += 33;
 		}
 	}

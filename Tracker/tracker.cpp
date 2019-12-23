@@ -884,7 +884,7 @@ string srv_statistics()
 	return os;
 }
 
-user_t* find_user_by_torrent_pass(str_ref v, str_ref info_hash)
+user_t* find_user_by_torrent_pass(std::string_view v, std::string_view info_hash)
 {
 	if (v.size() != 32)
 		return NULL;

@@ -112,7 +112,7 @@ struct user_t
 };
 
 const torrent_t* find_torrent(std::string_view info_hash);
-user_t* find_user_by_torrent_pass(str_ref, str_ref info_hash);
+user_t* find_user_by_torrent_pass(std::string_view, std::string_view info_hash);
 user_t* find_user_by_uid(int);
 long long srv_secret();
 const config_t& srv_config();
