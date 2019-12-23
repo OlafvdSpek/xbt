@@ -137,8 +137,8 @@ void read_config()
 		config_t config;
 		for (auto row : query("select name, value from @config where value is not null"))
 		{
-			if (config.set(row[0].s(), row[1].s()))
-				cerr << "unknown config name: " << row[0].s() << endl;
+			if (config.set(row[0], string_view(row[1])))
+				cerr << "unknown config name: " << row[0] << endl;
 		}
 		config.load(g_conf_file);
 		if (config.torrent_pass_private_key_.empty())

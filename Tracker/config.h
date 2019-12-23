@@ -5,8 +5,9 @@
 class config_t : public config_base_t
 {
 public:
-	int set(const std::string_view name, const std::string_view value);
-	int set(const std::string_view name, int value);
+	int set(std::string_view name, std::string_view value);
+	int set(std::string_view name, int value);
+	int set(std::string_view name, bool value);
 	config_t();
 	config_t(const config_t&);
 	const config_t& operator=(const config_t&);
