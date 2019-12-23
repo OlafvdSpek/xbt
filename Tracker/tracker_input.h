@@ -1,22 +1,22 @@
 #pragma once
 
-class Ctracker_input
+class tracker_input_t
 {
 public:
-	void set(const std::string& name, const std::string& value);
+	void set(std::string_view name, std::string_view value);
 	bool valid() const;
 
 	bool is_seeder() const
 	{
-		return !m_left;
+		return !left_;
 	}
 	
 	bool is_leecher() const
 	{
-		return m_left;
+		return left_;
 	}
 
-	enum t_event
+	enum event_t
 	{
 		e_none,
 		e_completed,
@@ -24,13 +24,13 @@ public:
 		e_stopped,
 	};
 
-	t_event m_event = e_none;
-	std::string m_info_hash;
-	std::vector<std::string> m_info_hashes;
-	std::array<char, 20> m_peer_id;
-	long long m_downloaded = 0;
-	long long m_left = 0;
-	long long m_uploaded = 0;
-	int m_ipa = 0;
-	int m_port = 0;
+	event_t event_ = e_none;
+	std::string info_hash_;
+	std::vector<std::string> info_hashes_;
+	std::array<char, 20> peer_id_;
+	long long downloaded_ = 0;
+	long long left_ = 0;
+	long long uploaded_ = 0;
+	int ipa_ = 0;
+	int port_ = 0;
 };

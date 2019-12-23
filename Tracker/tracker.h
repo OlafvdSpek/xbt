@@ -90,7 +90,7 @@ struct peer_t
 
 struct torrent_t
 {
-	void select_peers(mutable_str_ref& d, const Ctracker_input&) const;
+	void select_peers(mutable_str_ref& d, const tracker_input_t&) const;
 
 	boost::unordered_map<peer_key_t, peer_t> peers;
 	time_t ctime;
@@ -119,8 +119,8 @@ const config_t& srv_config();
 stats_t& srv_stats();
 time_t srv_time();
 
-std::string srv_debug(const Ctracker_input&);
-std::string srv_insert_peer(const Ctracker_input&, bool udp, user_t*);
-std::string srv_scrape(const Ctracker_input&, user_t*);
-std::string srv_select_peers(const Ctracker_input&);
+std::string srv_debug(const tracker_input_t&);
+std::string srv_insert_peer(const tracker_input_t&, bool udp, user_t*);
+std::string srv_scrape(const tracker_input_t&, user_t*);
+std::string srv_select_peers(const tracker_input_t&);
 std::string srv_statistics();

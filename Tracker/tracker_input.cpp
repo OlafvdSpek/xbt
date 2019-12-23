@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "tracker_input.h"
 
-void Ctracker_input::set(const std::string& name, const std::string& value)
+void tracker_input_t::set(std::string_view name, std::string_view value)
 {
 	if (name.empty())
 		return;
@@ -9,54 +9,54 @@ void Ctracker_input::set(const std::string& name, const std::string& value)
 	{
 	case 'd':
 		if (name == "downloaded")
-			m_downloaded = to_int(value);
+			downloaded_ = to_int(value);
 		break;
 	case 'e':
 		if (name == "event")
 		{
 			if (value == "completed")
-				m_event = e_completed;
+				event_ = e_completed;
 			else if (value == "started")
-				m_event = e_started;
+				event_ = e_started;
 			else if (value == "stopped")
-				m_event = e_stopped;
+				event_ = e_stopped;
 			else
-				m_event = e_none;
+				event_ = e_none;
 		}
 		break;
 	case 'i':
 		if (name == "info_hash" && value.size() == 20)
 		{
-			m_info_hash = value;
-			m_info_hashes.push_back(value);
+			info_hash_ = value;
+			info_hashes_.emplace_back(value);
 		}
 		else if (name == "ip")
-			m_ipa = inet_addr(value.c_str());
+			ipa_ = inet_addr(std::string(value).c_str());
 		break;
 	case 'l':
 		if (name == "left")
-			m_left = to_int(value);
+			left_ = to_int(value);
 		break;
 	case 'p':
 		if (name == "peer_id" && value.size() == 20)
-			memcpy(m_peer_id, value);
+			memcpy(peer_id_, value);
 		else if (name == "port")
-			m_port = htons(to_int(value));
+			port_ = htons(to_int(value));
 		break;
 	case 'u':
 		if (name == "uploaded")
-			m_uploaded = to_int(value);
+			uploaded_ = to_int(value);
 		break;
 	}
 }
 
-bool Ctracker_input::valid() const
+bool tracker_input_t::valid() const
 {
-	return m_downloaded >= 0
-		&& (m_event != e_completed || !m_left)
-		&& m_info_hash.size() == 20
-		&& m_left >= -1
-		&& m_peer_id.size() == 20
-		&& m_port >= 0
-		&& m_uploaded >= 0;
+	return downloaded_ >= 0
+		&& (event_ != e_completed || !left_)
+		&& info_hash_.size() == 20
+		&& left_ >= -1
+		&& peer_id_.size() == 20
+		&& port_ >= 0
+		&& uploaded_ >= 0;
 }

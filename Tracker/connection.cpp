@@ -123,7 +123,7 @@ void connection_t::read(const std::string& v)
 		static std::ofstream f("xbt_tracker_raw.log");
 		f << srv_time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << std::endl;
 	}
-	Ctracker_input ti;
+	tracker_input_t ti;
 	size_t e = v.find('?');
 	if (e == std::string::npos)
 		e = v.size();
@@ -145,8 +145,8 @@ void connection_t::read(const std::string& v)
 			a = d + 1;
 		}
 	}
-	if (!ti.m_ipa || !is_private_ipa(m_a.sin_addr.s_addr))
-		ti.m_ipa = m_a.sin_addr.s_addr;
+	if (!ti.ipa_ || !is_private_ipa(m_a.sin_addr.s_addr))
+		ti.ipa_ = m_a.sin_addr.s_addr;
 	str_ref torrent_pass;
 	size_t a = 4;
 	if (a < e && v[a] == '/')
@@ -167,7 +167,7 @@ void connection_t::read(const std::string& v)
 		if (ti.valid())
 		{
 			gzip = false;
-			std::string error = srv_insert_peer(ti, false, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
+			std::string error = srv_insert_peer(ti, false, find_user_by_torrent_pass(torrent_pass, ti.info_hash_));
 			s = error.empty() ? srv_select_peers(ti) : (boost::format("d14:failure reason%d:%se") % error.size() % error).str();
 		}
 		break;
@@ -184,21 +184,21 @@ void connection_t::read(const std::string& v)
 			h += "Content-Type: text/html; charset=us-ascii\r\n";
 			s = srv_statistics();
 		}
-		else if (srv_config().full_scrape_ || !ti.m_info_hash.empty())
+		else if (srv_config().full_scrape_ || !ti.info_hash_.empty())
 		{
-			gzip = srv_config().gzip_scrape_ && ti.m_info_hash.empty();
- 			s = srv_scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.m_info_hash));
+			gzip = srv_config().gzip_scrape_ && ti.info_hash_.empty();
+ 			s = srv_scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.info_hash_));
 		}
 		break;
 	}
 	if (s.empty())
 	{
-		if (!ti.m_info_hash.empty() || srv_config().redirect_url_.empty())
+		if (!ti.info_hash_.empty() || srv_config().redirect_url_.empty())
 			h = "HTTP/1.0 404 Not Found\r\n";
 		else
 		{
 			h = "HTTP/1.0 302 Found\r\n"
-				"Location: " + srv_config().redirect_url_ + (ti.m_info_hash.empty() ? "" : "?info_hash=" + uri_encode(ti.m_info_hash)) + "\r\n";
+				"Location: " + srv_config().redirect_url_ + (ti.info_hash_.empty() ? "" : "?info_hash=" + uri_encode(ti.info_hash_)) + "\r\n";
 		}
 	}
 	else if (gzip)
