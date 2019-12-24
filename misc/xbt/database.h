@@ -32,10 +32,10 @@ public:
 
 	operator MYSQL*()
 	{
-		return &m_handle;
+		return &handle_;
 	}
 private:
-	MYSQL m_handle;
-	std::map<std::string, std::string, std::less<>> m_names;
-	std::ostream* m_query_log = NULL;
+	MYSQL handle_;
+	std::map<std::string, std::string, std::less<>> names_;
+	std::ostream* query_log_ = NULL;
 };

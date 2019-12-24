@@ -20,7 +20,7 @@ int Csql_query::execute_nothrow() const
 	return m_database.query_nothrow(read());
 }
 
-std::string Csql_query::replace_names(const std::string& v) const
+std::string Csql_query::replace_names(std::string_view v) const
 {
 	std::string r;
 	for (size_t i = 0; ; )
@@ -53,12 +53,12 @@ void Csql_query::operator=(std::string v)
 	m_out.clear();
 }
 
-void Csql_query::operator+=(const std::string& v)
+void Csql_query::operator+=(std::string_view v)
 {
 	m_in += v;
 }
 
-Csql_query& Csql_query::p_name(const std::string& v0)
+Csql_query& Csql_query::p_name(std::string_view v0)
 {
 	std::string_view v = m_database.name(v0);
 	std::vector<char> r(2 * v.size() + 2);
@@ -83,13 +83,7 @@ Csql_query& Csql_query::p_raw(data_ref v)
 
 Csql_query& Csql_query::operator()(long long v)
 {
-	char b[21];
-#ifdef WIN32
-	sprintf(b, "%I64d", v);
-#else
-	sprintf(b, "%lld", v);
-#endif
-	p_raw(data_ref(b));
+	p_raw(std::to_string(v));
 	return *this;
 }
 

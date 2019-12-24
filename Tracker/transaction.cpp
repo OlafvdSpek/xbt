@@ -140,7 +140,7 @@ void Ctransaction::send_scrape(data_ref r)
 	send(data_ref(d, w));
 }
 
-void Ctransaction::send_error(data_ref r, const std::string& msg)
+void Ctransaction::send_error(data_ref r, std::string_view msg)
 {
 	char d[2 << 10];
 	write_int(4, d + uto_action, uta_error);

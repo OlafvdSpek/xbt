@@ -5,7 +5,7 @@
 
 Cdatabase::Cdatabase()
 {
-	mysql_init(&m_handle);
+	mysql_init(&handle_);
 }
 
 Cdatabase::~Cdatabase()
@@ -15,21 +15,21 @@ Cdatabase::~Cdatabase()
 
 void Cdatabase::open(const std::string& host, const std::string& user, const std::string& password, const std::string& database)
 {
-	if (!mysql_init(&m_handle)
-		|| mysql_options(&m_handle, MYSQL_READ_DEFAULT_GROUP, "")
-		|| !mysql_real_connect(&m_handle, host.c_str(), user.c_str(), password.empty() ? NULL : password.c_str(), database.c_str(), database == "sphinx" ? 9306 : 0, NULL, 0))
-		throw bad_query(mysql_error(&m_handle));
+	if (!mysql_init(&handle_)
+		|| mysql_options(&handle_, MYSQL_READ_DEFAULT_GROUP, "")
+		|| !mysql_real_connect(&handle_, host.c_str(), user.c_str(), password.empty() ? NULL : password.c_str(), database.c_str(), database == "sphinx" ? 9306 : 0, NULL, 0))
+		throw bad_query(mysql_error(&handle_));
 	char a0 = true;
-	mysql_options(&m_handle, MYSQL_OPT_RECONNECT, &a0);
+	mysql_options(&handle_, MYSQL_OPT_RECONNECT, &a0);
 }
 
 int Cdatabase::query_nothrow(std::string_view q)
 {
-	if (m_query_log)
-		*m_query_log << q.substr(0, 999) << "\n";
-	if (mysql_real_query(&m_handle, q.data(), q.size()))
+	if (query_log_)
+		*query_log_ << q.substr(0, 999) << "\n";
+	if (mysql_real_query(&handle_, q.data(), q.size()))
 	{
-		std::cerr << mysql_error(&m_handle) << "\n"
+		std::cerr << mysql_error(&handle_) << "\n"
 			<< q.substr(0, 239) << "\n";
 		return 1;
 	}
@@ -39,46 +39,46 @@ int Cdatabase::query_nothrow(std::string_view q)
 Csql_result Cdatabase::query(std::string_view q)
 {
 	if (query_nothrow(q))
-		throw bad_query(mysql_error(&m_handle));
-	MYSQL_RES* result = mysql_store_result(&m_handle);
-	if (!result && mysql_errno(&m_handle))
-		throw bad_query(mysql_error(&m_handle));
+		throw bad_query(mysql_error(&handle_));
+	MYSQL_RES* result = mysql_store_result(&handle_);
+	if (!result && mysql_errno(&handle_))
+		throw bad_query(mysql_error(&handle_));
 	return Csql_result(result);
 }
 
 void Cdatabase::close()
 {
-	mysql_close(&m_handle);
+	mysql_close(&handle_);
 }
 
 int Cdatabase::affected_rows()
 {
-	return mysql_affected_rows(&m_handle);
+	return mysql_affected_rows(&handle_);
 }
 
 int Cdatabase::insert_id()
 {
-	return mysql_insert_id(&m_handle);
+	return mysql_insert_id(&handle_);
 }
 
 int Cdatabase::select_db(const std::string& v)
 {
-	return mysql_select_db(&m_handle, v.c_str());
+	return mysql_select_db(&handle_, v.c_str());
 }
 
 void Cdatabase::set_query_log(std::ostream* v)
 {
-	m_query_log = v;
+	query_log_ = v;
 }
 
 void Cdatabase::set_name(const std::string& a, std::string b)
 {
-	m_names[a] = std::move(b);
+	names_[a] = std::move(b);
 }
 
 std::string_view Cdatabase::name(std::string_view v) const
 {
-	const std::string* i = find_ptr(m_names, v);
+	const std::string* i = find_ptr(names_, v);
 	return i ? *i : v;
 }
 

@@ -37,44 +37,28 @@ public:
 	peer_key_t(int host, int uid)
 	{
 		host_ = host;
-#ifdef PEERS_KEY
 		uid_ = uid;
-#else
-		(void)uid;
-#endif
 	}
 
 	bool operator==(peer_key_t v) const
 	{
-#ifdef PEERS_KEY
 		return host_ == v.host_ && uid_ == v.uid_;
-#else
-		return host_ == v.host_;
-#endif
 	}
 
 	bool operator<(peer_key_t v) const
 	{
-#ifdef PEERS_KEY
 		return host_ < v.host_ || host_ == v.host_ && uid_ < v.uid_;
-#else
-		return host_ < v.host_;
-#endif
 	}
 
 	friend std::size_t hash_value(const peer_key_t& v)
 	{
 		std::size_t seed = boost::hash_value(v.host_);
-#ifdef PEERS_KEY
 		boost::hash_combine(seed, v.uid_);
-#endif
 		return seed;
 	}
 
 	int host_;
-#ifdef PEERS_KEY
 	int uid_;
-#endif
 };
 
 struct peer_t
