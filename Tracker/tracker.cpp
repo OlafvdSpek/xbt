@@ -154,8 +154,8 @@ void read_config()
 		g_database.set_name("uid", g_config.column_users_uid_);
 		g_database.set_name("announce_log", g_config.table_announce_log_.empty() ? g_table_prefix + "announce_log" : g_config.table_announce_log_);
 		g_database.set_name("scrape_log", g_config.table_scrape_log_.empty() ? g_table_prefix + "scrape_log" : g_config.table_scrape_log_);
-		g_database.set_name("torrents", g_config.table_torrents_.empty() ? g_table_prefix + "files" : g_config.table_torrents_);
-		g_database.set_name("torrents_users", g_config.table_torrents_users_.empty() ? g_table_prefix + "files_users" : g_config.table_torrents_users_);
+		g_database.set_name("torrents", g_config.table_torrents_.empty() ? g_table_prefix + "torrents" : g_config.table_torrents_);
+		g_database.set_name("torrents_users", g_config.table_torrents_users_.empty() ? g_table_prefix + "peers" : g_config.table_torrents_users_);
 		g_database.set_name("users", g_config.table_users_.empty() ? g_table_prefix + "users" : g_config.table_users_);
 	}
 	catch (bad_query&)
@@ -319,7 +319,7 @@ void write_db_users()
 	if (!g_torrents_users_updates_buffer.empty())
 	{
 		g_torrents_users_updates_buffer.pop_back();
-		async_query("insert into @torrents_users (active, completed, downloaded, `left`, uploaded, mtime, fid, uid) values ?"
+		async_query("insert into @torrents_users (active, completed, downloaded, `left`, uploaded, mtime, tid, uid) values ?"
 			" on duplicate key update"
 			"  active = values(active),"
 			"  completed = completed + values(completed),"
@@ -350,7 +350,7 @@ int test_sql()
 			query("select id, ipa, port, event, info_hash, peer_id, downloaded, left0, uploaded, uid, mtime from @announce_log where 0");
 		query("select name, value from @config where 0");
 		query("select @tid, info_hash, @leechers, @seeders, flags, mtime, ctime from @torrents where 0");
-		query("select fid, uid, active, completed, downloaded, `left`, uploaded from @torrents_users where 0");
+		query("select tid, uid, active, completed, downloaded, `left`, uploaded from @torrents_users where 0");
 		if (g_config.log_scrape_)
 			query("select id, ipa, uid, mtime from @scrape_log where 0");
 		query("select @uid, torrent_pass_version, downloaded, uploaded from @users where 0");
