@@ -31,20 +31,6 @@ create table if not exists xbt_config
 	-- end int unsigned not null
 -- );
 
-create table if not exists xbt_files
-(
-	fid int not null auto_increment,
-	info_hash binary(20) not null,
-	seeders int not null default 0,
-	leechers int not null default 0,
-	completed int not null default 0,
-	flags int not null default 0,
-	mtime int not null,
-	ctime int not null,
-	primary key (fid),
-	unique key (info_hash)
-);
-
 create table if not exists xbt_files_users
 (
 	fid int not null,
@@ -68,6 +54,20 @@ create table if not exists xbt_files_users
 	-- primary key (id)
 -- ) engine = myisam;
 
+create table if not exists xbt_torrents
+(
+	tid int not null auto_increment,
+	info_hash binary(20) not null,
+	seeders int not null default 0,
+	leechers int not null default 0,
+	completed int not null default 0,
+	flags int not null default 0,
+	mtime int not null,
+	ctime int not null,
+	primary key (fid),
+	unique key (info_hash)
+);
+
 create table if not exists xbt_users
 (
 	uid int not null auto_increment,
@@ -84,5 +84,5 @@ create table if not exists xbt_users
 -- alter table xbt_files_users add down_rate int unsigned not null;
 -- alter table xbt_files_users add up_rate int unsigned not null;
 
--- alter table xbt_files_users add foreign key (fid) references xbt_files (fid) on delete cascade;
+-- alter table xbt_files_users add foreign key (fid) references xbt_torrents (fid) on delete cascade;
 -- alter table xbt_files_users add foreign key (uid) references xbt_users (uid) on delete cascade;
