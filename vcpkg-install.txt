@@ -1,1 +1,1 @@
-vcpkg install boost-convert boost-format boost-ptr-container
+vcpkg install boost-convert boost-format boost-ptr-container libmariadb
