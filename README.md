@@ -11,7 +11,7 @@ apt install cmake default-libmysqlclient-dev g++ git libboost-dev make zlib1g-de
 The following commands can be used to install some of the dependencies on CentOS, Fedora and Red Hat. The g++ version should be at least 7.
 
 ```
-yum install boost-devel cmake gcc-c++ git mysql-devel
+yum install boost-devel cmake gcc-c++ git make mysql-devel
 ```
 
 Enter the following commands in a terminal. Be patient while g++ is running, it'll take a few minutes.
