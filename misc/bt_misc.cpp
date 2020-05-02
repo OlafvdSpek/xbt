@@ -331,7 +331,7 @@ std::string time2a(time_t v)
 	const tm* date = localtime(&v);
 	if (!date)
 		return std::string();
-	char b[20];
+	char b[72];
 	sprintf(b, "%04d-%02d-%02d %02d:%02d:%02d", date->tm_year + 1900, date->tm_mon + 1, date->tm_mday, date->tm_hour, date->tm_min, date->tm_sec);
 	return b;
 }
