@@ -287,7 +287,7 @@ void write_db_torrents()
 			if (buffer.empty())
 				break;
 			buffer.pop_back();
-			async_query("insert into @torrents (@leechers, @seeders, @completed, @tid) values ?"
+			async_query("insert ignore into @torrents (@leechers, @seeders, @completed, @tid) values ?"
 				" on duplicate key update"
 				"  @leechers = values(@leechers),"
 				"  @seeders = values(@seeders),"
@@ -319,7 +319,7 @@ void write_db_users()
 	if (!g_torrents_users_updates_buffer.empty())
 	{
 		g_torrents_users_updates_buffer.pop_back();
-		async_query("insert into @torrents_users (active, completed, downloaded, `left`, uploaded, mtime, tid, uid) values ?"
+		async_query("insert ignore into @torrents_users (active, completed, downloaded, `left`, uploaded, mtime, tid, uid) values ?"
 			" on duplicate key update"
 			"  active = values(active),"
 			"  completed = completed + values(completed),"
@@ -333,7 +333,7 @@ void write_db_users()
 	if (!g_users_updates_buffer.empty())
 	{
 		g_users_updates_buffer.pop_back();
-		async_query("insert into @users (downloaded, uploaded, @uid) values ?"
+		async_query("insert ignore into @users (downloaded, uploaded, @uid) values ?"
 			" on duplicate key update"
 			"  downloaded = downloaded + values(downloaded),"
 			"  uploaded = uploaded + values(uploaded)", raw(g_users_updates_buffer));
