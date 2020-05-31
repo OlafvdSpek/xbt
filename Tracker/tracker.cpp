@@ -850,7 +850,7 @@ string srv_select_peers6(const tracker_input_t& ti)
 	mutable_str_ref peers = peers0;
 	t->select_peers6(peers, ti);
 	peers.assign(peers0.data(), peers.data());
-	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
+	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers6%d:%se")
 		% t->seeders % t->leechers % g_config.announce_interval_ % g_config.announce_interval_ % peers.size() % peers).str();
 }
 
