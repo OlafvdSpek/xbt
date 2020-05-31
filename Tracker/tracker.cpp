@@ -7,6 +7,10 @@
 #include "epoll.h"
 #include "transaction.h"
 
+#ifdef XBT_SYSTEMD
+#include <systemd/sd-daemon.h>
+#endif
+
 using namespace std;
 
 namespace std
@@ -405,51 +409,71 @@ int srv_run()
 	}
 	list<tcp_listen_socket_t> lt;
 	list<udp_listen_socket_t> lu;
-	for (auto& j : g_config.listen_ipas_)
+#ifdef XBT_SYSTEMD
 	{
-		for (auto& i : g_config.listen_ports_)
+		int count = sd_listen_fds(true);
+		for (int i = 0; i < count; i++)
 		{
-			Csocket l;
-			if (l.open(SOCK_STREAM) == INVALID_SOCKET)
-				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-				l.bind(j, htons(i)))
-				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else if (l.listen())
-				cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else
+			Csocket s(SD_LISTEN_FDS_START + i);
+			if (s.blocking(false))
 			{
-#ifdef SO_ACCEPTFILTER
-				accept_filter_arg afa;
-				bzero(&afa, sizeof(afa));
-				strcpy(afa.af_name, "httpready");
-				if (l.setsockopt(SOL_SOCKET, SO_ACCEPTFILTER, &afa, sizeof(afa)))
-					cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-#elif 0 // TCP_DEFER_ACCEPT
-				if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, 90))
-					cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-#endif
-				lt.push_back(tcp_listen_socket_t(l));
-				if (!g_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
-					continue;
+				cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << '\n';
+				return 1;
 			}
-			return 1;
+			lt.push_back(tcp_listen_socket_t(s));
+			if (m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
+				return 1;
 		}
-		for (auto& i : g_config.listen_ports_)
+	}
+#endif
+	if (lt.empty())
+	{
+		for (auto& j : g_config.listen_ipas_)
 		{
-			Csocket l;
-			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
-				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-				l.bind(j, htons(i)))
-				cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-			else
+			for (auto& i : g_config.listen_ports_)
 			{
-				lu.push_back(udp_listen_socket_t(l));
-				if (!g_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP, &lu.back()))
-					continue;
+				Csocket l;
+				if (l.open(SOCK_STREAM) == INVALID_SOCKET)
+					cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
+					l.bind(j, htons(i)))
+					cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				else if (l.listen())
+					cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				else
+				{
+#ifdef SO_ACCEPTFILTER
+					accept_filter_arg afa;
+					bzero(&afa, sizeof(afa));
+					strcpy(afa.af_name, "httpready");
+					if (l.setsockopt(SOL_SOCKET, SO_ACCEPTFILTER, &afa, sizeof(afa)))
+						cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+#elif 0 // TCP_DEFER_ACCEPT
+					if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, 90))
+						cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+#endif
+					lt.push_back(tcp_listen_socket_t(l));
+					if (!g_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
+						continue;
+				}
+				return 1;
 			}
-			return 1;
+			for (auto& i : g_config.listen_ports_)
+			{
+				Csocket l;
+				if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
+					cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
+					l.bind(j, htons(i)))
+					cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				else
+				{
+					lu.push_back(udp_listen_socket_t(l));
+					if (!g_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP, &lu.back()))
+						continue;
+				}
+				return 1;
+			}
 		}
 	}
 	query("update @torrents set @leechers = 0, @seeders = 0");
