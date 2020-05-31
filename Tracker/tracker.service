@@ -1,0 +1,8 @@
+[Unit]
+After=mysql.service network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/xbt_tracker
+
+[Install]
+WantedBy=default.target
