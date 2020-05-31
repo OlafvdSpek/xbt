@@ -1156,9 +1156,11 @@ int main(int argc, char* argv[])
 	{
 		if (!strcmp(argv[1], "--conf_file") && argc >= 3)
 			g_conf_file = argv[2];
+		else if (!strcmp(argv[1], "--conf-file") && argc >= 3)
+			g_conf_file = argv[2];
 		else
 		{
-			cerr << "  --conf_file arg (=xbt_tracker.conf)\n";
+			cerr << "  --conf-file arg (=xbt_tracker.conf)\n";
 			return 1;
 		}
 	}
