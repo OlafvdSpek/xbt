@@ -2,7 +2,7 @@
 After=mysql.service network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/xbt_tracker
+ExecStart=/usr/local/bin/xbt_tracker --conf-file /etc/xbt_tracker.conf
 
 [Install]
 WantedBy=default.target
