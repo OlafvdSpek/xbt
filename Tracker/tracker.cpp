@@ -104,6 +104,27 @@ public:
 	}
 };
 
+static bool is_ipv4(std::array<char, 16> v)
+{
+	return v[0] == 0
+		&& v[1] == 0
+		&& v[2] == 0
+		&& v[3] == 0
+		&& v[4] == 0
+		&& v[5] == 0
+		&& v[6] == -1
+		&& v[7] == -1
+		&& v[8] == 0
+		&& v[9] == 0
+		&& v[10] == 0
+		&& v[11] == 0;
+}
+
+string to_sql(std::array<char, 16> v)
+{
+	return is_ipv4(v) ? string(&v[12], 4) : string(&v[0], 16);
+}
+
 const config_t& srv_config()
 {
 	return g_config;
@@ -641,7 +662,7 @@ string srv_insert_peer(const tracker_input_t& in, bool udp, user_t* user)
 	if (g_config.log_announce_)
 	{
 		g_announce_log_buffer += make_query(g_database, "(?,?,?,?,?,?,?,?,?,?),",
-			ntohl(in.ipa_),
+			to_sql(in.ipv6_),
 			ntohs(in.port_),
 			int(in.event_),
 			in.info_hash_,
@@ -716,8 +737,10 @@ string srv_insert_peer(const tracker_input_t& in, bool udp, user_t* user)
 		peer.uploaded = in.uploaded_;
 		(peer.left ? t.leechers : t.seeders)++;
 		peer.mtime = srv_time();
-		memcpy(peer.ipv4.data(), &in.ipa_, 4);
-		// peer.ipv6 = ;
+		if (is_ipv4(in.ipv6_))
+			memcpy(peer.ipv4.data(), &in.ipv6_[12], 4);
+		else
+			peer.ipv6 = in.ipv6_;
 	}
 	if (in.event_ == tracker_input_t::e_completed)
 		t.completed++;
@@ -774,7 +797,7 @@ string srv_select_peers(const tracker_input_t& ti)
 string srv_scrape(const tracker_input_t& ti, user_t* user)
 {
 	if (g_config.log_scrape_)
-		g_scrape_log_buffer += make_query(g_database, "(?,?,?),", ntohl(ti.ipa_), user ? user->uid : 0, srv_time());
+		g_scrape_log_buffer += make_query(g_database, "(?,?,?),", to_sql(ti.ipv6_), user ? user->uid : 0, srv_time());
 	if (!g_config.anonymous_scrape_ && !user)
 		return "d14:failure reason25:unregistered torrent passe";
 	string d;
@@ -930,7 +953,7 @@ void test_announce()
 	tracker_input_t i;
 	i.info_hash_ = "IHIHIHIHIHIHIHIHIHIH";
 	memcpy(i.peer_id_.data(), str_ref("PIPIPIPIPIPIPIPIPIPI"));
-	i.ipa_ = htonl(0x7f000063);
+	i.ipv6_ = {};
 	i.port_ = 54321;
 	cout << srv_insert_peer(i, false, u) << endl;
 	write_db_torrents();

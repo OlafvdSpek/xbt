@@ -4,7 +4,14 @@
 #include <sha1.h>
 #include "tracker.h"
 
-Ctransaction::Ctransaction(const Csocket& s) : 
+static std::array<char, 16> to_ipv6(uint32_t v)
+{
+	std::array<char, 16> res = { 0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0 };
+	memcpy(&res[12], &v, 4);
+	return res;
+}
+
+Ctransaction::Ctransaction(const Csocket& s) :
 	m_s(s)
 {
 }
@@ -80,9 +87,9 @@ void Ctransaction::send_announce(data_ref r)
 	ti.downloaded_ = read_int(8, &r[utia_downloaded], r.end());
 	ti.event_ = static_cast<tracker_input_t::event_t>(read_int(4, &r[utia_event], r.end()));
 	ti.info_hash_.assign(reinterpret_cast<const char*>(&r[utia_info_hash]), 20);
-	ti.ipa_ = read_int(4, &r[utia_ipa], r.end()) && is_private_ipa(m_a.sin_addr.s_addr)
-		? htonl(read_int(4, &r[utia_ipa], r.end()))
-		: m_a.sin_addr.s_addr;
+	ti.ipv6_ = read_int(4, &r[utia_ipa], r.end()) && is_private_ipa(m_a.sin_addr.s_addr)
+		? to_ipv6(htonl(read_int(4, &r[utia_ipa], r.end())))
+		: to_ipv6(m_a.sin_addr.s_addr);
 	ti.left_ = read_int(8, &r[utia_left], r.end());
 	memcpy(ti.peer_id_.data(), &r[utia_peer_id], 20);
 	ti.port_ = htons(read_int(2, &r[utia_port], r.end()));

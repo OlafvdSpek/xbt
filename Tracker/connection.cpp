@@ -4,6 +4,13 @@
 #include "epoll.h"
 #include "tracker.h"
 
+static std::array<char, 16> to_ipv6(uint32_t v)
+{
+	std::array<char, 16> res = { 0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0 };
+	memcpy(&res[12], &v, 4);
+	return res;
+}
+
 connection_t::connection_t(const Csocket& s, const sockaddr_in& a)
 {
 	m_s = s;
@@ -145,8 +152,8 @@ void connection_t::read(std::string_view v)
 			a = d + 1;
 		}
 	}
-	if (!ti.ipa_ || !is_private_ipa(m_a.sin_addr.s_addr))
-		ti.ipa_ = m_a.sin_addr.s_addr;
+	if (ti.ipv6_ == std::array<char, 16>() || !is_private_ipa(m_a.sin_addr.s_addr))
+		ti.ipv6_ = to_ipv6(m_a.sin_addr.s_addr);
 	std::string_view torrent_pass;
 	size_t a = 4;
 	if (a < e && v[a] == '/')

@@ -27,10 +27,10 @@ public:
 	event_t event_ = e_none;
 	std::string info_hash_;
 	std::vector<std::string> info_hashes_;
-	std::array<char, 20> peer_id_;
+	std::array<char, 20> peer_id_ = {};
 	long long downloaded_ = 0;
 	long long left_ = 0;
 	long long uploaded_ = 0;
-	int ipa_ = 0;
+	std::array<char, 16> ipv6_ = {};
 	int port_ = 0;
 };

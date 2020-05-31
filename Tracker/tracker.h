@@ -39,8 +39,8 @@ struct peer_t
 	int uid;
 	short port;
 	bool left;
-	std::array<char, 4> ipv4;
-	std::array<char, 16> ipv6;
+	std::array<char, 4> ipv4 = {};
+	std::array<char, 16> ipv6 = {};
 };
 
 struct torrent_t

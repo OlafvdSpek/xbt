@@ -1,6 +1,13 @@
 #include "stdafx.h"
 #include "tracker_input.h"
 
+static std::array<char, 16> to_ipv6(uint32_t v)
+{
+	std::array<char, 16> res = {0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0};
+	memcpy(&res[12], &v, 4);
+	return res;
+}
+
 void tracker_input_t::set(std::string_view name, std::string_view value)
 {
 	if (name.empty())
@@ -31,7 +38,25 @@ void tracker_input_t::set(std::string_view name, std::string_view value)
 			info_hashes_.emplace_back(value);
 		}
 		else if (name == "ip")
-			ipa_ = inet_addr(std::string(value).c_str());
+		{
+			if (inet_pton(AF_INET, std::string(value).c_str(), &ipv6_[12]) == 1)
+			{
+				ipv6_[0] = 0;
+				ipv6_[1] = 0;
+				ipv6_[2] = 0;
+				ipv6_[3] = 0;
+				ipv6_[4] = 0;
+				ipv6_[5] = 0;
+				ipv6_[6] = -1;
+				ipv6_[7] = -1;
+				ipv6_[8] = 0;
+				ipv6_[9] = 0;
+				ipv6_[10] = 0;
+				ipv6_[11] = 0;
+			}
+			else if (inet_pton(AF_INET6, std::string(value).c_str(), ipv6_.data()) != 1)
+				xbt_syslog("inet_pton failed: " + std::string(value));
+		}
 		break;
 	case 'l':
 		if (name == "left")
