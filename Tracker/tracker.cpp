@@ -120,6 +120,15 @@ static bool is_ipv4(std::array<char, 16> v)
 		&& v[11] == 0;
 }
 
+template <size_t N>
+static bool is_zero(std::array<char, N> v)
+{
+	return std::all_of(v.begin(), v.end(), [](char c)
+	{
+		return !c;
+	});
+}
+
 string to_sql(std::array<char, 16> v)
 {
 	return is_ipv4(v) ? string(&v[12], 4) : string(&v[0], 16);
@@ -757,7 +766,9 @@ void torrent_t::select_peers(mutable_str_ref& d, const tracker_input_t& ti) cons
 	candidates.reserve(peers.size());
 	for (auto& i : peers)
 	{
-		if (!ti.left_ && !i.second.left)
+		if (ti.is_seeder() && !i.second.left)
+			continue;
+		if (is_zero(i.second.ipv4))
 			continue;
 		array<char, 6> v;
 		memcpy(&v[0], &i.second.ipv4, 4);
@@ -789,7 +800,9 @@ void torrent_t::select_peers6(mutable_str_ref& d, const tracker_input_t& ti) con
 	candidates.reserve(peers.size());
 	for (auto& i : peers)
 	{
-		if (!ti.left_ && !i.second.left)
+		if (ti.is_seeder() && !i.second.left)
+			continue;
+		if (is_zero(i.second.ipv6))
 			continue;
 		array<char, 18> v;
 		memcpy(&v[0], &i.second.ipv6, 16);
@@ -821,6 +834,19 @@ string srv_select_peers(const tracker_input_t& ti)
 	array<char, 300> peers0;
 	mutable_str_ref peers = peers0;
 	t->select_peers(peers, ti);
+	peers.assign(peers0.data(), peers.data());
+	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
+		% t->seeders % t->leechers % g_config.announce_interval_ % g_config.announce_interval_ % peers.size() % peers).str();
+}
+
+string srv_select_peers6(const tracker_input_t& ti)
+{
+	const torrent_t* t = find_torrent(ti.info_hash_);
+	if (!t)
+		return string();
+	array<char, 900> peers0;
+	mutable_str_ref peers = peers0;
+	t->select_peers6(peers, ti);
 	peers.assign(peers0.data(), peers.data());
 	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
 		% t->seeders % t->leechers % g_config.announce_interval_ % g_config.announce_interval_ % peers.size() % peers).str();

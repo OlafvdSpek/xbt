@@ -79,4 +79,5 @@ std::string srv_debug(const tracker_input_t&);
 std::string srv_insert_peer(const tracker_input_t&, bool udp, user_t*);
 std::string srv_scrape(const tracker_input_t&, user_t*);
 std::string srv_select_peers(const tracker_input_t&);
+std::string srv_select_peers6(const tracker_input_t&);
 std::string srv_statistics();
