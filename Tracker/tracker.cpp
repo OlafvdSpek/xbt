@@ -643,8 +643,7 @@ string srv_insert_peer(const tracker_input_t& v, bool udp, user_t* user)
 		t.ctime = srv_time();
 	if (v.left_ && user && user->wait_time && t.ctime + user->wait_time > srv_time())
 		return bts_wait_time;
-	peer_key_t peer_key(v.ipa_, user ? user->uid : 0);
-	peer_t* p = find_ptr(t.peers, peer_key);
+	peer_t* p = find_ptr(t.peers, v.peer_id_);
 	if (p)
 		(p->left ? t.leechers : t.seeders)--;
 	else if (v.left_ && user && user->peers_limit)
@@ -661,7 +660,6 @@ string srv_insert_peer(const tracker_input_t& v, bool udp, user_t* user)
 		long long uploaded = 0;
 		if (p
 			&& p->uid == user->uid
-			&& boost::equals(p->peer_id, v.peer_id_)
 			&& v.downloaded_ >= p->downloaded
 			&& v.uploaded_ >= p->uploaded)
 		{
@@ -683,18 +681,19 @@ string srv_insert_peer(const tracker_input_t& v, bool udp, user_t* user)
 			write_db_users();
 	}
 	if (v.event_ == tracker_input_t::e_stopped)
-		t.peers.erase(peer_key);
+		t.peers.erase(v.peer_id_);
 	else
 	{
-		peer_t& peer = p ? *p : t.peers[peer_key];
+		peer_t& peer = p ? *p : t.peers[v.peer_id_];
 		peer.downloaded = v.downloaded_;
 		peer.left = v.left_;
-		peer.peer_id = v.peer_id_;
 		peer.port = v.port_;
 		peer.uid = user ? user->uid : 0;
 		peer.uploaded = v.uploaded_;
 		(peer.left ? t.leechers : t.seeders)++;
 		peer.mtime = srv_time();
+		memcpy(peer.ipv4.data(), &v.ipa_, 4);
+		// peer.ipv6 = ;
 	}
 	if (v.event_ == tracker_input_t::e_completed)
 		t.completed++;
@@ -714,7 +713,7 @@ void torrent_t::select_peers(mutable_str_ref& d, const tracker_input_t& ti) cons
 		if (!ti.left_ && !i.second.left)
 			continue;
 		array<char, 6> v;
-		memcpy(&v[0], &i.first.host_, 4);
+		memcpy(&v[0], &i.second.ipv4, 4);
 		memcpy(&v[4], &i.second.port, 2);
 		candidates.push_back(v);
 	}
@@ -788,12 +787,12 @@ void debug(const torrent_t& t, string& os)
 {
 	for (auto& i : t.peers)
 	{
-		os << "<tr><td>" << Csocket::inet_ntoa(i.first.host_)
+		os << "<tr><td>" << Csocket::inet_ntoa(reinterpret_cast<const uint32_t&>(i.second.ipv4))
 			<< "<td class=ar>" << ntohs(i.second.port)
 			<< "<td class=ar>" << i.second.uid
 			<< "<td class=ar>" << i.second.left
 			<< "<td class=ar>" << srv_time() - i.second.mtime
-			<< "<td>" << hex_encode(i.second.peer_id);
+			<< "<td>" << hex_encode(i.first);
 	}
 }
 

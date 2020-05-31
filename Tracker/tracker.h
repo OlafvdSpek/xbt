@@ -69,14 +69,15 @@ struct peer_t
 	int uid;
 	short port;
 	bool left;
-	std::array<char, 20> peer_id;
+	std::array<char, 4> ipv4;
+	std::array<char, 16> ipv6;
 };
 
 struct torrent_t
 {
 	void select_peers(mutable_str_ref& d, const tracker_input_t&) const;
 
-	boost::unordered_map<peer_key_t, peer_t> peers;
+	boost::unordered_map<std::array<char, 20>, peer_t> peers;
 	time_t ctime;
 	int completed = 0;
 	int tid = 0;
