@@ -832,13 +832,16 @@ string srv_scrape(const tracker_input_t& ti, user_t* user)
 
 void debug(const torrent_t& t, string& os)
 {
+	os << "<tr><th>IPv4<th>IPv6<th>Port<th>UID<th>Seeder<th>Modified<th>Peer ID";
 	for (auto& i : t.peers)
 	{
-		os << "<tr><td>" << Csocket::inet_ntoa(reinterpret_cast<const uint32_t&>(i.second.ipv4))
+		os << "<tr>"
+			<< "<td>" << Csocket::inet_ntoa(i.second.ipv4)
+			<< "<td>" << Csocket::inet_ntoa(i.second.ipv6)
 			<< "<td class=ar>" << ntohs(i.second.port)
 			<< "<td class=ar>" << i.second.uid
-			<< "<td class=ar>" << i.second.left
-			<< "<td class=ar>" << srv_time() - i.second.mtime
+			<< "<td class=ar>" << !i.second.left
+			<< "<td class=ar>" << duration2a(srv_time() - i.second.mtime) << " ago"
 			<< "<td>" << hex_encode(i.first);
 	}
 }

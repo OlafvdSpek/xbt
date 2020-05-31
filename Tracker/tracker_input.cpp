@@ -3,7 +3,7 @@
 
 static std::array<char, 16> to_ipv6(uint32_t v)
 {
-	std::array<char, 16> res = {0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0};
+	std::array<char, 16> res = { 0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0 };
 	memcpy(&res[12], &v, 4);
 	return res;
 }

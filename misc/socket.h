@@ -7,6 +7,7 @@
 
 #ifdef WIN32
 #include <winsock2.h>
+#include <ws2tcpip.h>
 
 typedef int socklen_t;
 #else
@@ -97,6 +98,8 @@ public:
 	static std::string error2a(int v);
 	static int get_host(const std::string& name);
 	static std::string inet_ntoa(int h);
+	static std::string inet_ntoa(std::array<char, 4>);
+	static std::string inet_ntoa(std::array<char, 16>);
 	static int start_up();
 	int accept(int& h, int& p);
 	int bind(int h, int p);

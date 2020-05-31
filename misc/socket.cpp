@@ -214,6 +214,18 @@ std::string Csocket::inet_ntoa(int v)
 	return ::inet_ntoa(a);
 }
 
+std::string Csocket::inet_ntoa(std::array<char, 4> v)
+{
+	std::array<char, INET_ADDRSTRLEN> d;
+	return inet_ntop(AF_INET, v.data(), d.data(), d.size());
+}
+
+std::string Csocket::inet_ntoa(std::array<char, 16> v)
+{
+	std::array<char, INET6_ADDRSTRLEN> d;
+	return inet_ntop(AF_INET6, v.data(), d.data(), d.size());
+}
+
 int Csocket::start_up()
 {
 #ifdef WIN32
