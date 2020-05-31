@@ -831,6 +831,8 @@ string srv_select_peers(const tracker_input_t& ti)
 	const torrent_t* t = find_torrent(ti.info_hash_);
 	if (!t)
 		return string();
+	if (!is_ipv4(ti.ipv6_))
+		return srv_select_peers6(ti);
 	array<char, 300> peers0;
 	mutable_str_ref peers = peers0;
 	t->select_peers(peers, ti);
