@@ -46,6 +46,7 @@ struct peer_t
 struct torrent_t
 {
 	void select_peers(mutable_str_ref& d, const tracker_input_t&) const;
+	void select_peers6(mutable_str_ref& d, const tracker_input_t&) const;
 
 	boost::unordered_map<std::array<char, 20>, peer_t> peers;
 	time_t ctime;

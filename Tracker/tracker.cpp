@@ -781,6 +781,38 @@ void torrent_t::select_peers(mutable_str_ref& d, const tracker_input_t& ti) cons
 	}
 }
 
+void torrent_t::select_peers6(mutable_str_ref& d, const tracker_input_t& ti) const
+{
+	if (ti.event_ == tracker_input_t::e_stopped)
+		return;
+	vector<array<char, 18>> candidates;
+	candidates.reserve(peers.size());
+	for (auto& i : peers)
+	{
+		if (!ti.left_ && !i.second.left)
+			continue;
+		array<char, 18> v;
+		memcpy(&v[0], &i.second.ipv6, 16);
+		memcpy(&v[16], &i.second.port, 2);
+		candidates.push_back(v);
+	}
+	size_t c = d.size() / 18;
+	if (candidates.size() <= c)
+	{
+		memcpy(d.data(), candidates);
+		d.advance_begin(18 * candidates.size());
+		return;
+	}
+	while (c--)
+	{
+		int i = rand() % candidates.size();
+		memcpy(d.data(), candidates[i]);
+		d.advance_begin(18);
+		candidates[i] = candidates.back();
+		candidates.pop_back();
+	}
+}
+
 string srv_select_peers(const tracker_input_t& ti)
 {
 	const torrent_t* t = find_torrent(ti.info_hash_);
