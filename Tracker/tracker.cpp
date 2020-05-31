@@ -421,7 +421,7 @@ int srv_run()
 				return 1;
 			}
 			lt.push_back(tcp_listen_socket_t(s));
-			if (m_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
+			if (g_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
 				return 1;
 		}
 	}

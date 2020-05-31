@@ -33,6 +33,11 @@ add_executable(
 	tracker_input.cpp
 	transaction.cpp
 )
-target_link_libraries(xbt_tracker mysqlclient z)
+target_link_libraries(
+	xbt_tracker
+	mysqlclient
+	systemd
+	z
+)
 install(TARGETS xbt_tracker DESTINATION bin)
 include(CPack)
