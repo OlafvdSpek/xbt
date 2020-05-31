@@ -31,36 +31,6 @@ public:
 	time_t start_time = time(NULL);
 };
 
-class peer_key_t
-{
-public:
-	peer_key_t(int host, int uid)
-	{
-		host_ = host;
-		uid_ = uid;
-	}
-
-	bool operator==(peer_key_t v) const
-	{
-		return host_ == v.host_ && uid_ == v.uid_;
-	}
-
-	bool operator<(peer_key_t v) const
-	{
-		return host_ < v.host_ || host_ == v.host_ && uid_ < v.uid_;
-	}
-
-	friend std::size_t hash_value(const peer_key_t& v)
-	{
-		std::size_t seed = boost::hash_value(v.host_);
-		boost::hash_combine(seed, v.uid_);
-		return seed;
-	}
-
-	int host_;
-	int uid_;
-};
-
 struct peer_t
 {
 	long long downloaded;
