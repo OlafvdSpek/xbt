@@ -37,7 +37,7 @@ struct peer_t
 	long long uploaded;
 	time_t mtime = 0;
 	int uid;
-	short port;
+	uint16_t port;
 	bool left;
 	std::array<char, 4> ipv4 = {};
 	std::array<char, 16> ipv6 = {};
