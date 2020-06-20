@@ -100,7 +100,7 @@ public:
 	static std::string inet_ntoa(int h);
 	static std::string inet_ntoa(std::array<char, 4>);
 	static std::string inet_ntoa(std::array<char, 16>);
-	static std::string inet_ntoa(unsigned char[16]);
+	static std::string inet_ntoa(in6_addr);
 	static int start_up();
 	int accept(int& h, int& p);
 	int bind(int h, int p);

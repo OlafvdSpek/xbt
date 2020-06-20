@@ -243,10 +243,10 @@ std::string Csocket::inet_ntoa(std::array<char, 16> v)
 	return inet_ntop(AF_INET6, v.data(), d.data(), d.size());
 }
 
-std::string Csocket::inet_ntoa(unsigned char v[16])
+std::string Csocket::inet_ntoa(in6_addr v)
 {
 	std::array<char, INET6_ADDRSTRLEN> d;
-	return inet_ntop(AF_INET6, v, d.data(), d.size());
+	return inet_ntop(AF_INET6, v.s6_addr, d.data(), d.size());
 }
 
 int Csocket::start_up()

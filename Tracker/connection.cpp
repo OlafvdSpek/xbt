@@ -123,13 +123,13 @@ int connection_t::send()
 void connection_t::read(std::string_view v)
 {
 #ifndef NDEBUG
-	// std::cout << Csocket::inet_ntoa(m_a.sin6_addr.s6_addr) << "; ";
+	// std::cout << Csocket::inet_ntoa(m_a.sin6_addr) << "; ";
 	std::cout << v << std::endl;
 #endif
 	if (srv_config().log_access_)
 	{
 		static std::ofstream f("xbt_tracker_raw.log");
-		f << srv_time() << '\t' << Csocket::inet_ntoa(m_a.sin6_addr.s6_addr) << '\t' << ntohs(m_a.sin6_port) << '\t' << v << std::endl;
+		f << srv_time() << '\t' << Csocket::inet_ntoa(m_a.sin6_addr) << '\t' << ntohs(m_a.sin6_port) << '\t' << v << std::endl;
 	}
 	tracker_input_t ti;
 	size_t e = v.find('?');
