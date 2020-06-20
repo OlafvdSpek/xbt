@@ -10,8 +10,8 @@ public:
 	int recv();
 	int send();
 	virtual void process_events(int);
-	int pre_select(fd_set* read, fd_set* write);
-	int post_select(fd_set* read, fd_set* write);
+	int pre_select(fd_set& read, fd_set& write);
+	int post_select(fd_set& read, fd_set& write);
 	connection_t(const Csocket&, const sockaddr_in6&);
 private:
 	sockaddr_in6 m_a;

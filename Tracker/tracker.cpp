@@ -571,7 +571,7 @@ int srv_run()
 		int n = 0;
 		for (auto& i : g_connections)
 		{
-			int z = i.pre_select(&fd_read_set, &fd_write_set);
+			int z = i.pre_select(fd_read_set, fd_write_set);
 			n = max(n, z);
 		}
 		for (auto& i : lt)
@@ -604,7 +604,7 @@ int srv_run()
 			}
 			for (auto i = g_connections.begin(); i != g_connections.end(); )
 			{
-				if (i->post_select(&fd_read_set, &fd_write_set))
+				if (i->post_select(fd_read_set, fd_write_set))
 					i = g_connections.erase(i);
 				else
 					i++;

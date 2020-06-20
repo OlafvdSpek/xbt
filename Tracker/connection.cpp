@@ -20,18 +20,18 @@ connection_t::connection_t(const Csocket& s, const sockaddr_in6& a)
 	m_w = m_read_b;
 }
 
-int connection_t::pre_select(fd_set* fd_read_set, fd_set* fd_write_set)
+int connection_t::pre_select(fd_set& fd_read_set, fd_set& fd_write_set)
 {
-	FD_SET(m_s, fd_read_set);
+	FD_SET(m_s, &fd_read_set);
 	if (!m_r.empty())
-		FD_SET(m_s, fd_write_set);
+		FD_SET(m_s, &fd_write_set);
 	return m_s;
 }
 
-int connection_t::post_select(fd_set* fd_read_set, fd_set* fd_write_set)
+int connection_t::post_select(fd_set& fd_read_set, fd_set& fd_write_set)
 {
-	return FD_ISSET(m_s, fd_read_set) && recv()
-		|| FD_ISSET(m_s, fd_write_set) && send()
+	return FD_ISSET(m_s, &fd_read_set) && recv()
+		|| FD_ISSET(m_s, &fd_write_set) && send()
 		|| srv_time() - m_ctime > 10
 		|| m_state == 5 && m_r.empty();
 }
