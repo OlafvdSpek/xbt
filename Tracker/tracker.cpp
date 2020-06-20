@@ -837,8 +837,16 @@ string srv_select_peers(const tracker_input_t& ti)
 	mutable_str_ref peers = peers0;
 	t->select_peers(peers, ti);
 	peers.assign(peers0.data(), peers.data());
-	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers%d:%se")
-		% t->seeders % t->leechers % g_config.announce_interval_ % g_config.announce_interval_ % peers.size() % peers).str();
+	string s;
+	s.reserve(1 << 10);
+	s << "d"
+		<< "8:completei" << t->seeders << "e"
+		<< "10:incompletei" << t->leechers << "e"
+		<< "8:intervali" << g_config.announce_interval_ << "e"
+		<< "12:min intervali" << g_config.announce_interval_ << "e"
+		<< "5:peers" << peers.size() << ":" << peers
+		<< "e";
+	return s;
 }
 
 string srv_select_peers6(const tracker_input_t& ti)
