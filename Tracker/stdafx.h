@@ -34,5 +34,3 @@
 #include <xbt/sql_query.h>
 #include <xbt/to_array.h>
 #include <xbt/xcc_z.h>
-
-typedef unsigned char byte;

@@ -105,7 +105,7 @@ public:
 	}
 };
 
-static bool is_ipv4(std::array<char, 16> v)
+static bool is_ipv4(std::array<unsigned char, 16> v)
 {
 	return v[0] == 0
 		&& v[1] == 0
@@ -122,7 +122,7 @@ static bool is_ipv4(std::array<char, 16> v)
 }
 
 template <size_t N>
-static bool is_zero(std::array<char, N> v)
+static bool is_zero(std::array<unsigned char, N> v)
 {
 	return std::all_of(v.begin(), v.end(), [](char c)
 	{
@@ -130,9 +130,9 @@ static bool is_zero(std::array<char, N> v)
 	});
 }
 
-string to_sql(std::array<char, 16> v)
+string to_sql(std::array<unsigned char, 16> v)
 {
-	return is_ipv4(v) ? string(&v[12], 4) : string(&v[0], 16);
+	return is_ipv4(v) ? string(reinterpret_cast<const char*>(&v[12]), 4) : string(to_string_view(v));
 }
 
 const config_t& srv_config()

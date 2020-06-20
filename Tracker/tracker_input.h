@@ -31,6 +31,6 @@ public:
 	long long downloaded_ = 0;
 	long long left_ = 0;
 	long long uploaded_ = 0;
-	std::array<char, 16> ipv6_ = {};
+	std::array<unsigned char, 16> ipv6_ = {};
 	int port_ = 0;
 };

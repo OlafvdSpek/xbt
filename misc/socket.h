@@ -98,8 +98,8 @@ public:
 	static std::string error2a(int v);
 	static int get_host(const std::string& name);
 	static std::string inet_ntoa(int h);
-	static std::string inet_ntoa(std::array<char, 4>);
-	static std::string inet_ntoa(std::array<char, 16>);
+	static std::string inet_ntoa(std::array<unsigned char, 4>);
+	static std::string inet_ntoa(std::array<unsigned char, 16>);
 	static std::string inet_ntoa(in6_addr);
 	static int start_up();
 	int accept(int& h, int& p);
