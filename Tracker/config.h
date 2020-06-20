@@ -48,7 +48,6 @@ public:
 	std::string table_scrape_log_;
 	std::string table_users_;
 	std::string torrent_pass_private_key_;
-	std::set<int> listen_ipas_;
 	std::set<int> listen_ports_;
 private:
 	void fill_maps(const config_t*);
