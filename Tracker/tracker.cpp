@@ -132,7 +132,7 @@ static bool is_zero(std::array<unsigned char, N> v)
 
 string to_sql(std::array<unsigned char, 16> v)
 {
-	return is_ipv4(v) ? string(reinterpret_cast<const char*>(&v[12]), 4) : string(to_string_view(v));
+	return string(is_ipv4(v) ? to_string_view(v).substr(12) : to_string_view(v));
 }
 
 const config_t& srv_config()
