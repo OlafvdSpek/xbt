@@ -117,8 +117,8 @@ static bool is_ipv4(std::array<unsigned char, 16> v)
 		&& v[7] == 0
 		&& v[8] == 0
 		&& v[9] == 0
-		&& v[10] == -1
-		&& v[11] == -1;
+		&& v[10] == 0xff
+		&& v[11] == 0xff;
 }
 
 template <size_t N>
