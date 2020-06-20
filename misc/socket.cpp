@@ -54,10 +54,9 @@ int Csocket::bind(int h, int p)
 
 int Csocket::bind6(int p)
 {
-	sockaddr_in a;
-	memset(&a, 0, sizeof(a));
-	a.sin_family = AF_INET6;
-	a.sin_port = htons(p);
+	sockaddr_in6 a = {};
+	a.sin6_family = AF_INET6;
+	a.sin6_port = htons(p);
 	return ::bind(*this, reinterpret_cast<sockaddr*>(&a), sizeof(a));
 }
 
@@ -242,6 +241,12 @@ std::string Csocket::inet_ntoa(std::array<char, 16> v)
 {
 	std::array<char, INET6_ADDRSTRLEN> d;
 	return inet_ntop(AF_INET6, v.data(), d.data(), d.size());
+}
+
+std::string Csocket::inet_ntoa(unsigned char v[16])
+{
+	std::array<char, INET6_ADDRSTRLEN> d;
+	return inet_ntop(AF_INET6, v, d.data(), d.size());
 }
 
 int Csocket::start_up()
