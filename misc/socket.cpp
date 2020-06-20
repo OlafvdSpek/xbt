@@ -44,8 +44,7 @@ int Csocket::accept(int& h, int& p)
 
 int Csocket::bind(int h, int p)
 {
-	sockaddr_in a;
-  memset(&a, 0, sizeof(a));
+	sockaddr_in a = {};
 	a.sin_family = AF_INET;
 	a.sin_addr.s_addr = h;
 	a.sin_port = p;
@@ -77,12 +76,11 @@ void Csocket::close()
 
 int Csocket::connect(int h, int p)
 {
-	sockaddr_in a;
-  memset(&a, 0, sizeof(a));
+	sockaddr_in a = {};
 	a.sin_family = AF_INET;
 	a.sin_addr.s_addr = h;
 	a.sin_port = p;
-	return ::connect(*this, reinterpret_cast<sockaddr*>(&a), sizeof(sockaddr_in));
+	return ::connect(*this, reinterpret_cast<sockaddr*>(&a), sizeof(a));
 }
 
 int Csocket::listen()
