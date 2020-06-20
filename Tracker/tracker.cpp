@@ -208,7 +208,7 @@ void read_db_torrents()
 	{
 		if (!g_config.auto_register_)
 		{
-			for (auto row : query(g_database, "select info_hash, @tid from @torrents where flags & 1"))
+			for (auto row : query(g_database, "select info_hash, @tid from @torrents where flags != 0 and flags & 1"))
 			{
 				g_torrents.erase(to_array<char, 20>(row[0]));
 				query("delete from @torrents where @tid = ?", row[1]);
@@ -362,7 +362,7 @@ void write_db_users()
 			"  mtime = values(mtime)", raw(g_torrents_users_updates_buffer));
 		g_torrents_users_updates_buffer.erase();
 	}
-	async_query("update @torrents_users set active = 0 where mtime < unix_timestamp() - 60 * 60");
+	async_query("update @torrents_users set active = 0 where active = 1 and mtime < unix_timestamp() - 60 * 60");
 	if (!g_users_updates_buffer.empty())
 	{
 		g_users_updates_buffer.pop_back();

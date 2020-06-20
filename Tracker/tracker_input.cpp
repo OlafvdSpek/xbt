@@ -47,12 +47,12 @@ void tracker_input_t::set(std::string_view name, std::string_view value)
 				ipv6_[3] = 0;
 				ipv6_[4] = 0;
 				ipv6_[5] = 0;
-				ipv6_[6] = -1;
-				ipv6_[7] = -1;
+				ipv6_[6] = 0;
+				ipv6_[7] = 0;
 				ipv6_[8] = 0;
 				ipv6_[9] = 0;
-				ipv6_[10] = 0;
-				ipv6_[11] = 0;
+				ipv6_[10] = -1;
+				ipv6_[11] = -1;
 			}
 			else if (inet_pton(AF_INET6, std::string(value).c_str(), ipv6_.data()) != 1)
 				xbt_syslog("inet_pton failed: " + std::string(value));
