@@ -12,9 +12,9 @@ public:
 	virtual void process_events(int);
 	int pre_select(fd_set* read, fd_set* write);
 	int post_select(fd_set* read, fd_set* write);
-	connection_t(const Csocket&, const sockaddr_in&);
+	connection_t(const Csocket&, const sockaddr_in6&);
 private:
-	sockaddr_in m_a;
+	sockaddr_in6 m_a;
 	time_t m_ctime;
 	int m_state = 0;
 	std::array<char, 4 << 10> m_read_b;

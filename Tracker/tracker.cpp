@@ -463,10 +463,10 @@ int srv_run()
 			for (auto& i : g_config.listen_ports_)
 			{
 				Csocket l;
-				if (l.open(SOCK_STREAM) == INVALID_SOCKET)
+				if (l.open6(SOCK_STREAM) == INVALID_SOCKET)
 					cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 				else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-					l.bind(j, htons(i)))
+					l.bind6(i))
 					cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 				else if (l.listen())
 					cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
@@ -629,10 +629,10 @@ int srv_run()
 
 void accept(const Csocket& l)
 {
-	sockaddr_in a;
+	sockaddr_in6 a;
 	for (int i = 0; i < 10000; i++)
 	{
-		socklen_t cb_a = sizeof(sockaddr_in);
+		socklen_t cb_a = sizeof(sockaddr_in6);
 #ifdef SOCK_NONBLOCK
 		Csocket s = accept4(l, reinterpret_cast<sockaddr*>(&a), &cb_a, SOCK_NONBLOCK);
 #else

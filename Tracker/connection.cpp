@@ -11,7 +11,7 @@ static std::array<char, 16> to_ipv6(uint32_t v)
 	return res;
 }
 
-connection_t::connection_t(const Csocket& s, const sockaddr_in& a)
+connection_t::connection_t(const Csocket& s, const sockaddr_in6& a)
 {
 	m_s = s;
 	m_a = a;
@@ -123,12 +123,13 @@ int connection_t::send()
 void connection_t::read(std::string_view v)
 {
 #ifndef NDEBUG
+	// std::cout << Csocket::inet_ntoa(m_a.sin6_addr.s6_addr) << "; ";
 	std::cout << v << std::endl;
 #endif
 	if (srv_config().log_access_)
 	{
 		static std::ofstream f("xbt_tracker_raw.log");
-		f << srv_time() << '\t' << inet_ntoa(m_a.sin_addr) << '\t' << ntohs(m_a.sin_port) << '\t' << v << std::endl;
+		f << srv_time() << '\t' << Csocket::inet_ntoa(m_a.sin6_addr.s6_addr) << '\t' << ntohs(m_a.sin6_port) << '\t' << v << std::endl;
 	}
 	tracker_input_t ti;
 	size_t e = v.find('?');
@@ -152,8 +153,8 @@ void connection_t::read(std::string_view v)
 			a = d + 1;
 		}
 	}
-	if (ti.ipv6_ == std::array<char, 16>() || !is_private_ipa(m_a.sin_addr.s_addr))
-		ti.ipv6_ = to_ipv6(m_a.sin_addr.s_addr);
+	// if (ti.ipv6_ == std::array<char, 16>() || !is_private_ipa(m_a.sin6_addr.s6_addr))
+		memcpy(ti.ipv6_.data(), m_a.sin6_addr.s6_addr, 16);
 	std::string_view torrent_pass;
 	size_t a = 4;
 	if (a < e && v[a] == '/')
