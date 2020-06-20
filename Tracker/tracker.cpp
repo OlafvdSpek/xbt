@@ -52,6 +52,7 @@ static int g_tid_end = 0;
 static bool g_read_users_can_leech;
 static bool g_read_users_peers_limit;
 static bool g_read_users_torrent_pass;
+static bool g_read_users_torrent_pass_version;
 static bool g_read_users_wait_time;
 static const char g_service_name[] = "XBT Tracker";
 
@@ -247,7 +248,8 @@ void read_db_users()
 			q += ", peers_limit";
 		if (g_read_users_torrent_pass)
 			q += ", torrent_pass";
-		q += ", torrent_pass_version";
+		if (g_read_users_torrent_pass_version)
+			q += ", torrent_pass_version";
 		if (g_read_users_wait_time)
 			q += ", wait_time";
 		q += " from @users";
@@ -272,7 +274,8 @@ void read_db_users()
 					g_users_torrent_passes[to_array<char, 32>(row[c])] = &user;
 				c++;
 			}
-			user.torrent_pass_version = row[c++].i();
+			if (g_read_users_torrent_pass_version)
+				user.torrent_pass_version = row[c++].i();
 			if (g_read_users_wait_time)
 				user.wait_time = row[c++].i();
 		}
@@ -387,10 +390,10 @@ int test_sql()
 		if (g_config.log_scrape_)
 			query("select id, ipv6, uid, mtime from @scrape_log where 0");
 		query("select @uid, torrent_pass_version, downloaded, uploaded from @users where 0");
-		// query("update @torrents_users set active = 0");
 		g_read_users_can_leech = query("show columns from @users like 'can_leech'").size();
 		g_read_users_peers_limit = query("show columns from @users like 'peers_limit'").size();
 		g_read_users_torrent_pass = query("show columns from @users like 'torrent_pass'").size();
+		g_read_users_torrent_pass_version = query("show columns from @users like 'torrent_pass_version'").size();
 		g_read_users_wait_time = query("show columns from @users like 'wait_time'").size();
 		return 0;
 	}
