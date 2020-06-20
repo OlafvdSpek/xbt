@@ -87,7 +87,7 @@ int config_t::set(std::string_view name, std::string_view value)
 {
 	if (attribute_t<std::string>* i = find_ptr(attributes_string_, name))
 		*i->value = value;
-	else if (name == "listen_ipa")
+	else if (0) // name == "listen_ipa")
 	{
 		if (value != "*")
 			listen_ipas_.insert(inet_addr(std::string(value).c_str()));

@@ -78,7 +78,7 @@ static void sig_handler(int v)
 class tcp_listen_socket_t : public client_t
 {
 public:
-	tcp_listen_socket_t(const Csocket& s)
+	explicit tcp_listen_socket_t(const Csocket& s)
 	{
 		m_s = s;
 	}
@@ -465,8 +465,11 @@ int srv_run()
 				Csocket l;
 				if (l.open6(SOCK_STREAM) == INVALID_SOCKET)
 					cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-				else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true),
-					l.bind6(i))
+				else if (l.setsockopt(IPPROTO_IPV6, IPV6_V6ONLY, false))
+					cerr << "setsockopt IPV6_V6ONLY failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true))
+					cerr << "setsockopt SO_REUSEADDR failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+				else if (l.bind6(i))
 					cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 				else if (l.listen())
 					cerr << "listen failed: " << Csocket::error2a(WSAGetLastError()) << endl;
@@ -482,7 +485,7 @@ int srv_run()
 					if (l.setsockopt(IPPROTO_TCP, TCP_DEFER_ACCEPT, 90))
 						cerr << "setsockopt failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 #endif
-					lt.push_back(tcp_listen_socket_t(l));
+					lt.emplace_back(l);
 					if (!g_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
 						continue;
 				}
