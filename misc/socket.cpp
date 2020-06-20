@@ -49,7 +49,16 @@ int Csocket::bind(int h, int p)
 	a.sin_family = AF_INET;
 	a.sin_addr.s_addr = h;
 	a.sin_port = p;
-	return ::bind(*this, reinterpret_cast<sockaddr*>(&a), sizeof(sockaddr_in));
+	return ::bind(*this, reinterpret_cast<sockaddr*>(&a), sizeof(a));
+}
+
+int Csocket::bind6(int p)
+{
+	sockaddr_in a;
+	memset(&a, 0, sizeof(a));
+	a.sin_family = AF_INET6;
+	a.sin_port = htons(p);
+	return ::bind(*this, reinterpret_cast<sockaddr*>(&a), sizeof(a));
 }
 
 int Csocket::blocking(bool v)
@@ -86,6 +95,15 @@ const Csocket& Csocket::open(int t, bool _blocking)
 {
 	start_up();
 	*this = socket(AF_INET, t, 0);
+	if (*this != INVALID_SOCKET && !_blocking && blocking(false))
+		close();
+	return *this;
+}
+
+const Csocket& Csocket::open6(int t, bool _blocking)
+{
+	start_up();
+	*this = socket(AF_INET6, t, 0);
 	if (*this != INVALID_SOCKET && !_blocking && blocking(false))
 		close();
 	return *this;
