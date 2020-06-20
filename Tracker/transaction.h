@@ -13,5 +13,5 @@ public:
 	Ctransaction(const Csocket&);
 private:
 	const Csocket& m_s;
-	sockaddr_in m_a;
+	sockaddr_in6 m_a;
 };
