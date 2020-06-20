@@ -448,7 +448,7 @@ int srv_run()
 				cerr << "ioctlsocket failed: " << Csocket::error2a(WSAGetLastError()) << '\n';
 				return 1;
 			}
-			lt.push_back(tcp_listen_socket_t(s));
+			lt.emplace_back(s);
 			if (g_epoll.ctl(EPOLL_CTL_ADD, s, EPOLLIN | EPOLLOUT | EPOLLPRI | EPOLLERR | EPOLLHUP, &lt.back()))
 				return 1;
 		}
@@ -490,7 +490,7 @@ int srv_run()
 		for (auto& i : g_config.listen_ports_)
 		{
 			Csocket l;
-			if (l.open(SOCK_DGRAM) == INVALID_SOCKET)
+			if (l.open6(SOCK_DGRAM) == INVALID_SOCKET)
 				cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 			else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true))
 				cerr << "setsockopt SO_REUSEADDR failed: " << Csocket::error2a(WSAGetLastError()) << endl;
