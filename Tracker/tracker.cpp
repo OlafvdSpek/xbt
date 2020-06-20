@@ -92,7 +92,7 @@ public:
 class udp_listen_socket_t : public client_t
 {
 public:
-	udp_listen_socket_t(const Csocket& s)
+	explicit udp_listen_socket_t(const Csocket& s)
 	{
 		m_s = s;
 	}
@@ -501,7 +501,7 @@ int srv_run()
 					cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 				else
 				{
-					lu.push_back(udp_listen_socket_t(l));
+					lu.emplace_back(l);
 					if (!g_epoll.ctl(EPOLL_CTL_ADD, l, EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP, &lu.back()))
 						continue;
 				}
