@@ -498,7 +498,7 @@ int srv_run()
 					cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 				else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true))
 					cerr << "setsockopt SO_REUSEADDR failed: " << Csocket::error2a(WSAGetLastError()) << endl;
-				else if (l.bind(j, htons(i)))
+				else if (l.bind6(i))
 					cerr << "bind failed: " << Csocket::error2a(WSAGetLastError()) << endl;
 				else
 				{
