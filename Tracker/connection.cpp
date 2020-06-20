@@ -4,13 +4,6 @@
 #include "epoll.h"
 #include "tracker.h"
 
-static std::array<char, 16> to_ipv6(uint32_t v)
-{
-	std::array<char, 16> res = { 0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0 };
-	memcpy(&res[12], &v, 4);
-	return res;
-}
-
 connection_t::connection_t(const Csocket& s, const sockaddr_in6& a)
 {
 	m_s = s;
