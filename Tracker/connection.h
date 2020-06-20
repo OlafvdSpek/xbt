@@ -14,11 +14,11 @@ public:
 	int post_select(fd_set& read, fd_set& write);
 	connection_t(const Csocket&, const sockaddr_in6&);
 private:
-	sockaddr_in6 m_a;
-	time_t m_ctime;
-	int m_state = 0;
-	std::array<char, 4 << 10> m_read_b;
-	shared_data m_write_b;
-	str_ref m_r;
-	mutable_str_ref m_w;
+	sockaddr_in6 addr_;
+	time_t ctime_;
+	int state_ = 0;
+	str_ref r_;
+	mutable_str_ref w_;
+	shared_data write_b_;
+	std::array<char, 4 << 10> read_b_;
 };

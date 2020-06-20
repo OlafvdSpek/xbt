@@ -14,16 +14,16 @@ static std::array<char, 16> to_ipv6(uint32_t v)
 connection_t::connection_t(const Csocket& s, const sockaddr_in6& a)
 {
 	m_s = s;
-	m_a = a;
-	m_ctime = srv_time();
+	addr_ = a;
+	ctime_ = srv_time();
 
-	m_w = m_read_b;
+	w_ = read_b_;
 }
 
 int connection_t::pre_select(fd_set& fd_read_set, fd_set& fd_write_set)
 {
 	FD_SET(m_s, &fd_read_set);
-	if (!m_r.empty())
+	if (!r_.empty())
 		FD_SET(m_s, &fd_write_set);
 	return m_s;
 }
@@ -32,16 +32,16 @@ int connection_t::post_select(fd_set& fd_read_set, fd_set& fd_write_set)
 {
 	return FD_ISSET(m_s, &fd_read_set) && recv()
 		|| FD_ISSET(m_s, &fd_write_set) && send()
-		|| srv_time() - m_ctime > 10
-		|| m_state == 5 && m_r.empty();
+		|| srv_time() - ctime_ > 10
+		|| state_ == 5 && r_.empty();
 }
 
 int connection_t::recv()
 {
-	int r = m_s.recv(m_w);
+	int r = m_s.recv(w_);
 	if (!r)
 	{
-		m_state = 5;
+		state_ = 5;
 		return 0;
 	}
 	if (r == SOCKET_ERROR)
@@ -58,48 +58,48 @@ int connection_t::recv()
 		std::cerr << "recv failed: " << Csocket::error2a(e) << std::endl;
 		return 1;
 	}
-	if (m_state == 5)
+	if (state_ == 5)
 		return 0;
-	const char* a = m_w.data();
-	m_w.advance_begin(r);
+	const char* a = w_.data();
+	w_.advance_begin(r);
 	int state;
 	do
 	{
-		state = m_state;
-		while (a < m_w.begin() && *a != '\n' && *a != '\r')
+		state = state_;
+		while (a < w_.begin() && *a != '\n' && *a != '\r')
 		{
 			a++;
-			if (m_state)
-				m_state = 1;
+			if (state_)
+				state_ = 1;
 		}
-		if (a < m_w.begin())
+		if (a < w_.begin())
 		{
-			switch (m_state)
+			switch (state_)
 			{
 			case 0:
-				read(std::string(&m_read_b.front(), a - &m_read_b.front()));
-				m_state = 1;
+				read(std::string(&read_b_.front(), a - &read_b_.front()));
+				state_ = 1;
 			case 1:
 			case 3:
-				m_state += *a == '\n' ? 2 : 1;
+				state_ += *a == '\n' ? 2 : 1;
 				break;
 			case 2:
 			case 4:
-				m_state++;
+				state_++;
 				break;
 			}
 			a++;
 		}
 	}
-	while (state != m_state);
+	while (state != state_);
 	return 0;
 }
 
 int connection_t::send()
 {
-	if (m_r.empty())
+	if (r_.empty())
 		return 0;
-	int r = m_s.send(m_r);
+	int r = m_s.send(r_);
 	if (r == SOCKET_ERROR)
 	{
 		int e = WSAGetLastError();
@@ -114,22 +114,22 @@ int connection_t::send()
 		std::cerr << "send failed: " << Csocket::error2a(e) << std::endl;
 		return 1;
 	}
-	m_r.advance_begin(r);
-	if (m_r.empty())
-		m_write_b.clear();
+	r_.advance_begin(r);
+	if (r_.empty())
+		write_b_.clear();
 	return 0;
 }
 
 void connection_t::read(std::string_view v)
 {
 #ifndef NDEBUG
-	// std::cout << Csocket::inet_ntoa(m_a.sin6_addr) << "; ";
+	// std::cout << Csocket::inet_ntoa(addr_.sin6_addr) << "; ";
 	std::cout << v << std::endl;
 #endif
 	if (srv_config().log_access_)
 	{
 		static std::ofstream f("xbt_tracker_raw.log");
-		f << srv_time() << '\t' << Csocket::inet_ntoa(m_a.sin6_addr) << '\t' << ntohs(m_a.sin6_port) << '\t' << v << std::endl;
+		f << srv_time() << '\t' << Csocket::inet_ntoa(addr_.sin6_addr) << '\t' << ntohs(addr_.sin6_port) << '\t' << v << std::endl;
 	}
 	tracker_input_t ti;
 	size_t e = v.find('?');
@@ -153,8 +153,8 @@ void connection_t::read(std::string_view v)
 			a = d + 1;
 		}
 	}
-	// if (ti.ipv6_ == std::array<char, 16>() || !is_private_ipa(m_a.sin6_addr.s6_addr))
-		memcpy(ti.ipv6_.data(), m_a.sin6_addr.s6_addr, 16);
+	// if (ti.ipv6_ == std::array<char, 16>() || !is_private_ipa(addr_.sin6_addr.s6_addr))
+		memcpy(ti.ipv6_.data(), addr_.sin6_addr.s6_addr, 16);
 	std::string_view torrent_pass;
 	size_t a = 4;
 	if (a < e && v[a] == '/')
@@ -224,10 +224,10 @@ void connection_t::read(std::string_view v)
 	}
 	h += "\r\n";
 #ifdef WIN32
-	m_write_b = shared_data(h.size() + s.size());
-	memcpy(m_write_b.data(), h);
-	memcpy(m_write_b.data() + h.size(), s);
-	int r = m_s.send(m_write_b);
+	write_b_ = shared_data(h.size() + s.size());
+	memcpy(write_b_.data(), h);
+	memcpy(write_b_.data() + h.size(), s);
+	int r = m_s.send(write_b_);
 #else
 	std::array<iovec, 2> d;
 	d[0].iov_base = const_cast<char*>(h.data());
@@ -254,32 +254,32 @@ void connection_t::read(std::string_view v)
 #ifndef WIN32
 		if (r < h.size())
 		{
-			m_write_b = shared_data(h.size() + s.size());
-			memcpy(m_write_b.data(), h);
-			memcpy(m_write_b.data() + h.size(), s);
+			write_b_ = shared_data(h.size() + s.size());
+			memcpy(write_b_.data(), h);
+			memcpy(write_b_.data() + h.size(), s);
 		}
 		else
 		{
-			m_write_b = make_shared_data(s);
+			write_b_ = make_shared_data(s);
 			r -= h.size();
 		}
 #endif
-		m_r = m_write_b;
-		m_r.advance_begin(r);
+		r_ = write_b_;
+		r_.advance_begin(r);
 	}
-	if (m_r.empty())
-		m_write_b.clear();
+	if (r_.empty())
+		write_b_.clear();
 }
 
 void connection_t::process_events(int events)
 {
 	if (events & (EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP) && recv()
 		|| events & EPOLLOUT && send()
-		|| m_state == 5 && m_write_b.empty())
+		|| state_ == 5 && write_b_.empty())
 		m_s.close();
 }
 
 int connection_t::run()
 {
-	return s() == INVALID_SOCKET || srv_time() - m_ctime > 10;
+	return s() == INVALID_SOCKET || srv_time() - ctime_ > 10;
 }
