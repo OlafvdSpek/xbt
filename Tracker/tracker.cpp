@@ -56,6 +56,7 @@ static bool g_read_users_wait_time;
 static const char g_service_name[] = "XBT Tracker";
 
 void accept(const Csocket&);
+void test_announce();
 	
 template<class... A>
 static void async_query(const A&... a)
@@ -849,7 +850,7 @@ string srv_select_peers6(const tracker_input_t& ti)
 	mutable_str_ref peers = peers0;
 	t->select_peers6(peers, ti);
 	peers.assign(peers0.data(), peers.data());
-	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de5:peers6%d:%se")
+	return (boost::format("d8:completei%de10:incompletei%de8:intervali%de12:min intervali%de6:peers6%d:%se")
 		% t->seeders % t->leechers % g_config.announce_interval_ % g_config.announce_interval_ % peers.size() % peers).str();
 }
 
@@ -1011,9 +1012,10 @@ void srv_term()
 
 void test_announce()
 {
+	assert(!g_torrents.empty());
 	user_t* u = find_ptr(g_users, 1);
 	tracker_input_t i;
-	i.info_hash_ = "IHIHIHIHIHIHIHIHIHIH";
+	i.info_hash_.assign(g_torrents.begin()->first.data(), 20);
 	memcpy(i.peer_id_.data(), str_ref("PIPIPIPIPIPIPIPIPIPI"));
 	i.ipv6_ = {};
 	i.port_ = 54321;
