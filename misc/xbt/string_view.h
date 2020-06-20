@@ -26,6 +26,12 @@ inline long long to_int(std::string_view v)
 	return boost::convert<long long>(v, boost::cnv::strtol(), 0);
 }
 
+template<size_t N>
+std::string_view to_string_view(const std::array<char, N>& v)
+{
+	return std::string_view(v.data(), v.size());
+}
+
 inline std::string_view read_until(std::string_view& v, char sep, bool keep_sep = false)
 {
 	size_t i = v.find(sep);

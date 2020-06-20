@@ -885,7 +885,7 @@ string srv_scrape(const tracker_input_t& ti, user_t* user)
 		for (auto& i : g_torrents)
 		{
 			if (i.second.leechers || i.second.seeders)
-				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % boost::make_iterator_range(i.first) % i.second.seeders % i.second.completed % i.second.leechers).str();
+				d << "20:" << to_string_view(i.first) << "d8:completei" << i.second.seeders << "e10:downloadedi" << i.second.completed << "e10:incompletei" << i.second.leechers << "ee";
 		}
 	}
 	else
@@ -893,15 +893,15 @@ string srv_scrape(const tracker_input_t& ti, user_t* user)
 		g_stats.scraped_http++;
 		if (ti.info_hashes_.size() > 1)
 			g_stats.scraped_multi++;
-		for (auto& j : ti.info_hashes_)
+		for (auto& i : ti.info_hashes_)
 		{
-			if (const torrent_t* i = find_torrent(j))
-				d += (boost::format("20:%sd8:completei%de10:downloadedi%de10:incompletei%dee") % j % i->seeders % i->completed % i->leechers).str();
+			if (const torrent_t* t = find_torrent(i))
+				d << "20:" << i << "d8:completei" << t->seeders << "e10:downloadedi" << t->completed << "e10:incompletei" << t->leechers << "ee";
 		}
 	}
 	d += "e";
 	if (g_config.scrape_interval_)
-		d += (boost::format("5:flagsd20:min_request_intervali%dee") % g_config.scrape_interval_).str();
+		d << "5:flagsd20:min_request_intervali" << g_config.scrape_interval_ << "ee";
 	d += "e";
 	return d;
 }
