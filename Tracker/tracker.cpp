@@ -389,7 +389,7 @@ int test_sql()
 		query("select tid, uid, active, completed, downloaded, `left`, uploaded from @torrents_users where 0");
 		if (g_config.log_scrape_)
 			query("select id, ipv6, uid, mtime from @scrape_log where 0");
-		query("select @uid, torrent_pass_version, downloaded, uploaded from @users where 0");
+		query("select @uid, torrent_pass, downloaded, uploaded from @users where 0");
 		g_read_users_can_leech = query("show columns from @users like 'can_leech'").size();
 		g_read_users_peers_limit = query("show columns from @users like 'peers_limit'").size();
 		g_read_users_torrent_pass = query("show columns from @users like 'torrent_pass'").size();
