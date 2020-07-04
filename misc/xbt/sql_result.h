@@ -20,7 +20,7 @@ public:
 		m_source = std::move(source);
 	}
 
-	operator const void*() const
+	explicit operator bool() const
 	{
 		return m_data;
 	}
