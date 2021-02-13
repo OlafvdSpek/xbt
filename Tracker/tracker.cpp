@@ -344,7 +344,7 @@ void write_db_torrents()
 	if (!g_scrape_log_buffer.empty())
 	{
 		g_scrape_log_buffer.pop_back();
-		async_query("insert delayed into @scrape_log (ipv6, uid, mtime) values ", raw(g_scrape_log_buffer));
+		async_query("insert delayed into @scrape_log (ipv6, uid, mtime) values ?", raw(g_scrape_log_buffer));
 		g_scrape_log_buffer.erase();
 	}
 }
