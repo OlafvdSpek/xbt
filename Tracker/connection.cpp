@@ -191,6 +191,16 @@ void connection_t::read(std::string_view v)
  			s = srv_scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.info_hash_));
 		}
 		break;
+	case 'f':
+                if (v.size() >= 7)
+                {
+                        std::ifstream fin("favicon.ico", std::ios::in | std::ios::binary);
+                        std::ostringstream oss;
+                        oss << fin.rdbuf();
+                        h += "Content-Type: image/png\r\n";
+                        s = oss.str();
+                }
+                break;
 	}
 	if (s.empty())
 	{
