@@ -1,0 +1,10 @@
+{
+  "name": "xbt",
+  "version-string": "0",
+  "dependencies": [
+    "boost-convert",
+    "boost-format",
+    "boost-ptr-container",
+    "libmariadb"
+  ]
+}
