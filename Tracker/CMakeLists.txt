@@ -18,8 +18,8 @@ if(HAVE_SYSTEMD)
 endif()
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-implicit-fallthrough -Wno-parentheses -Wno-sign-compare")
-add_executable(
-	xbt_tracker
+
+set(tracker_SOURCES
 	../misc/bt_misc.cpp
 	../misc/database.cpp
 	../misc/sha1.cpp
@@ -33,11 +33,30 @@ add_executable(
 	tracker_input.cpp
 	transaction.cpp
 )
+
+if(WIN32)
+set(tracker_SOURCES
+	${tracker_SOURCES}
+	../misc/windows/nt_service.cpp
+	"XBT Tracker.rc")
+endif()
+
+add_executable(
+	xbt_tracker
+	${tracker_SOURCES}
+)
+
+if(WIN32)
+set(tracker_LIBS ws2_32)
+else()
+set(tracker_LIBS systemd)
+endif()
+
 target_link_libraries(
 	xbt_tracker
 	mysqlclient
-	systemd
 	z
+	${tracker_LIBS}
 )
 install(TARGETS xbt_tracker DESTINATION bin)
 include(CPack)
