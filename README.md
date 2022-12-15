@@ -23,3 +23,15 @@ cmake .
 make
 cp xbt_tracker.conf.default xbt_tracker.conf
 ```
+
+### Run from Docker
+```
+git clone https://github.com/OlafvdSpek/xbt
+cd xbt
+
+docker build -f Dockerfile -t xbt .
+docker run -d --rm -p 2710:2710 \
+   -v `pwd`/Tracker/xbt_tracker.conf.default:/app/xbt_tracker.conf \
+   --name xbt \
+   xbt
+```
