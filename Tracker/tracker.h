@@ -6,65 +6,65 @@
 class stats_t
 {
 public:
-	long long announced() const
-	{
-		return announced_http + announced_udp;
-	}
+  long long announced() const
+  {
+    return announced_http + announced_udp;
+  }
 
-	long long scraped() const
-	{
-		return scraped_http + scraped_udp;
-	}
+  long long scraped() const
+  {
+    return scraped_http + scraped_udp;
+  }
 
-	long long accept_errors = 0;
-	long long accepted_tcp = 0;
-	long long announced_http = 0;
-	long long announced_udp = 0;
-	long long received_udp = 0;
-	long long rejected_tcp = 0;
-	long long scraped_full = 0;
-	long long scraped_http = 0;
-	long long scraped_multi = 0;
-	long long scraped_udp = 0;
-	long long sent_udp = 0;
-	long long slow_tcp = 0;
-	time_t start_time = time(NULL);
+  long long accept_errors = 0;
+  long long accepted_tcp = 0;
+  long long announced_http = 0;
+  long long announced_udp = 0;
+  long long received_udp = 0;
+  long long rejected_tcp = 0;
+  long long scraped_full = 0;
+  long long scraped_http = 0;
+  long long scraped_multi = 0;
+  long long scraped_udp = 0;
+  long long sent_udp = 0;
+  long long slow_tcp = 0;
+  time_t start_time = time(NULL);
 };
 
 struct peer_t
 {
-	long long downloaded;
-	long long uploaded;
-	time_t mtime = 0;
-	int uid;
-	uint16_t port;
-	bool left;
-	std::array<unsigned char, 4> ipv4 = {};
-	std::array<unsigned char, 16> ipv6 = {};
+  long long downloaded;
+  long long uploaded;
+  time_t mtime = 0;
+  int uid;
+  uint16_t port;
+  bool left;
+  std::array<unsigned char, 4> ipv4 = {};
+  std::array<unsigned char, 16> ipv6 = {};
 };
 
 struct torrent_t
 {
-	void select_peers(mutable_str_ref&, const tracker_input_t&) const;
-	void select_peers6(mutable_str_ref&, const tracker_input_t&) const;
+  void select_peers(mutable_str_ref&, const tracker_input_t&) const;
+  void select_peers6(mutable_str_ref&, const tracker_input_t&) const;
 
-	boost::unordered_map<std::array<char, 20>, peer_t> peers;
-	time_t ctime;
-	int completed = 0;
-	int tid = 0;
-	int leechers = 0;
-	int seeders = 0;
-	bool dirty = true;
+  boost::unordered_map<std::array<char, 20>, peer_t> peers;
+  time_t ctime;
+  int completed = 0;
+  int tid = 0;
+  int leechers = 0;
+  int seeders = 0;
+  bool dirty = true;
 };
 
 struct user_t
 {
-	int uid;
-	int peers_limit = 0;
-	int torrent_pass_version = 0;
-	int wait_time = 0;
-	bool can_leech = true;
-	bool marked;
+  int uid;
+  int peers_limit = 0;
+  int torrent_pass_version = 0;
+  int wait_time = 0;
+  bool can_leech = true;
+  bool marked;
 };
 
 const torrent_t* find_torrent(std::string_view info_hash);
