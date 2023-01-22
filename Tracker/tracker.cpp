@@ -1012,6 +1012,46 @@ string srv_statistics()
 	return os;
 }
 
+string srv_metrics()
+{
+	string os;
+	long long leechers = 0;
+	long long seeders = 0;
+	int torrents = 0;
+	for (auto& i : g_torrents)
+	{
+		leechers += i.second.leechers;
+		seeders += i.second.seeders;
+		torrents += i.second.leechers || i.second.seeders;
+	}
+	time_t t = srv_time();
+	time_t up_time = max<time_t>(1, t - g_stats.start_time);
+
+        os << "xbt_uptime " << up_time << "\n"
+                << "xbt_infohashes_count " << torrents << "\n"
+                << "xbt_peers_count{type=\"seeders\"} " << seeders << "\n"
+                << "xbt_peers_count{type=\"leechers\"} " << leechers << "\n"
+                << "xbt_connections_count{proto=\"tcp\",type=\"accepted\"} " << g_stats.accepted_tcp << "\n"
+                << "xbt_connections_count{proto=\"tcp\",type=\"slow\"} " << g_stats.slow_tcp << "\n"
+                << "xbt_connections_count{proto=\"tcp\",type=\"rejected\"} " << g_stats.rejected_tcp << "\n"
+                << "xbt_connections_count{proto=\"tcp\",type=\"accept_errors\"} " << g_stats.accept_errors << "\n"
+                << "xbt_connections_count{proto=\"udp\",type=\"received\"} " << g_stats.received_udp << "\n"
+                << "xbt_connections_count{proto=\"udp\",type=\"sent\"} " << g_stats.sent_udp << "\n";
+
+	if (g_stats.announced())
+	{
+            os << "xbt_requests_count{proto=\"http\",method=\"announce\"} " << g_stats.announced_http << "\n"
+                << "xbt_requests_count{proto=\"udp\",method=\"announce\"} " << g_stats.announced_udp << "\n";
+        }
+	if (g_stats.scraped())
+	{
+            os << "xbt_requests_count{proto=\"http\",method=\"scrape\"} " << g_stats.scraped_http << "\n"
+                << "xbt_requests_count{proto=\"udp\",method=\"scrape\"} " << g_stats.scraped_udp << "\n";
+        }
+
+        return os;
+}
+
 user_t* find_user_by_torrent_pass(std::string_view v, std::string_view info_hash)
 {
 	if (v.size() != 32)

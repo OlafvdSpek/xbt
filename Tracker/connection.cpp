@@ -191,6 +191,11 @@ void connection_t::read(std::string_view v)
  			s = srv_scrape(ti, find_user_by_torrent_pass(torrent_pass, ti.info_hash_));
 		}
 		break;
+        case 'm':
+		gzip = false;
+                h += "Content-Type: text/plain; charset=us-ascii\r\n";
+                s = srv_metrics();
+                break;
 	}
 	if (s.empty())
 	{
