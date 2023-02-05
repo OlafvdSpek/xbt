@@ -1,13 +1,6 @@
 #include "stdafx.h"
 #include "tracker_input.h"
 
-static std::array<char, 16> to_ipv6(uint32_t v)
-{
-  std::array<char, 16> res = { 0, 0, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0 };
-  memcpy(&res[12], &v, 4);
-  return res;
-}
-
 void tracker_input_t::set(std::string_view name, std::string_view value)
 {
   if (name.empty())
