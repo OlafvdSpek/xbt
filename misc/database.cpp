@@ -3,16 +3,6 @@
 #include <iostream>
 #include <xbt/find_ptr.h>
 
-Cdatabase::Cdatabase()
-{
-  mysql_init(&handle_);
-}
-
-Cdatabase::~Cdatabase()
-{
-  close();
-}
-
 void Cdatabase::open(const std::string& host, const std::string& user, const std::string& password, const std::string& database)
 {
   if (!mysql_init(&handle_)
@@ -44,26 +34,6 @@ Csql_result Cdatabase::query(std::string_view q)
   if (!result && mysql_errno(&handle_))
     throw bad_query(mysql_error(&handle_));
   return Csql_result(result);
-}
-
-void Cdatabase::close()
-{
-  mysql_close(&handle_);
-}
-
-int Cdatabase::affected_rows()
-{
-  return mysql_affected_rows(&handle_);
-}
-
-int Cdatabase::insert_id()
-{
-  return mysql_insert_id(&handle_);
-}
-
-int Cdatabase::select_db(const std::string& v)
-{
-  return mysql_select_db(&handle_, v.c_str());
 }
 
 void Cdatabase::set_query_log(std::ostream* v)
