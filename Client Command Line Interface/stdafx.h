@@ -36,8 +36,8 @@
 #define O_BINARY 0
 #define _lseeki64 lseek
 #endif
-#include <bt_misc.h>
 #include <bvalue.h>
+#include <xbt/bt_misc.h>
 #include <xbt/virtual_binary.h>
 
 typedef unsigned char byte;
