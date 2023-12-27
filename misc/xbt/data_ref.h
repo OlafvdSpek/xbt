@@ -11,6 +11,7 @@
 template <class T, class U>
 class data_ref_base : public boost::iterator_range<T>
 {
+  typedef boost::iterator_range<T> base_t;
 public:
   data_ref_base()
   {
@@ -112,16 +113,12 @@ public:
   {
     return data_ref_base(base_t::begin() + pos, sz);
   }
-private:
-  typedef boost::iterator_range<T> base_t;
 };
 
 typedef data_ref_base<const unsigned char*, const void*> data_ref;
 typedef data_ref_base<unsigned char*, void*> mutable_data_ref;
 typedef data_ref_base<const char*, const void*> str_ref;
 typedef data_ref_base<char*, void*> mutable_str_ref;
-
-// bool operator==(str_ref a, const char* b);
 
 inline size_t memcpy(void* d, data_ref s)
 {

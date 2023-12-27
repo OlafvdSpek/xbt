@@ -14,7 +14,7 @@
 #include <syslog.h>
 #endif
 
-std::string escape_string(const std::string& v)
+std::string escape_string(std::string_view v)
 {
 	std::string w;
 	w.reserve(v.length());

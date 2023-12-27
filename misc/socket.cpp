@@ -218,9 +218,7 @@ std::string Csocket::error2a(int v)
   case WSA_E_NO_MORE: return "E_NO_MORE";
 #endif
   }
-  char b[12];
-  sprintf(b, "%d", v);
-  return b;
+  return std::to_string(v);
 }
 
 std::string Csocket::inet_ntoa(int v)
