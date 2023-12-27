@@ -53,9 +53,10 @@ int Csocket::bind(int h, int p)
 
 int Csocket::bind6(int p)
 {
-  sockaddr_in6 a = {};
-  a.sin6_family = AF_INET6;
-  a.sin6_port = htons(p);
+  sockaddr_in6 a = {
+    .sin6_family = AF_INET6,
+    .sin6_port = htons(p),
+  };
   return ::bind(*this, reinterpret_cast<sockaddr*>(&a), sizeof(a));
 }
 
