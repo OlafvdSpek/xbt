@@ -21,7 +21,6 @@ public:
   long long announced_http = 0;
   long long announced_udp = 0;
   long long received_udp = 0;
-  long long rejected_tcp = 0;
   long long scraped_full = 0;
   long long scraped_http = 0;
   long long scraped_multi = 0;
