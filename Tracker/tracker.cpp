@@ -977,7 +977,6 @@ string srv_statistics()
     << "<tr><td>"
     << "<tr><td>accepted tcp<td class=ar>" << n2a(g_stats.accepted_tcp) << "<td class=ar>" << g_stats.accepted_tcp / up_time << " /s"
     << "<tr><td>slow tcp<td class=ar>" << n2a(g_stats.slow_tcp) << "<td class=ar>" << g_stats.slow_tcp / up_time << " /s"
-    << "<tr><td>rejected tcp<td class=ar>" << n2a(g_stats.rejected_tcp)
     << "<tr><td>accept errors<td class=ar>" << n2a(g_stats.accept_errors)
     << "<tr><td>received udp<td class=ar>" << n2a(g_stats.received_udp) << "<td class=ar>" << g_stats.received_udp / up_time << " /s"
     << "<tr><td>sent udp<td class=ar>" << n2a(g_stats.sent_udp) << "<td class=ar>" << g_stats.sent_udp / up_time << " /s";
@@ -1033,7 +1032,6 @@ string srv_metrics()
                 << "xbt_peers_count{type=\"leechers\"} " << leechers << "\n"
                 << "xbt_connections_count{proto=\"tcp\",type=\"accepted\"} " << g_stats.accepted_tcp << "\n"
                 << "xbt_connections_count{proto=\"tcp\",type=\"slow\"} " << g_stats.slow_tcp << "\n"
-                << "xbt_connections_count{proto=\"tcp\",type=\"rejected\"} " << g_stats.rejected_tcp << "\n"
                 << "xbt_connections_count{proto=\"tcp\",type=\"accept_errors\"} " << g_stats.accept_errors << "\n"
                 << "xbt_connections_count{proto=\"udp\",type=\"received\"} " << g_stats.received_udp << "\n"
                 << "xbt_connections_count{proto=\"udp\",type=\"sent\"} " << g_stats.sent_udp << "\n";
