@@ -17,7 +17,7 @@ if(HAVE_SYSTEMD)
   add_definitions(-DXBT_SYSTEMD)
 endif()
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-implicit-fallthrough -Wno-parentheses -Wno-sign-compare")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-missing-field-initializers")
 
 set(tracker_SOURCES
   ../misc/bt_misc.cpp
