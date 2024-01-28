@@ -23,10 +23,10 @@ int connection_t::pre_select(fd_set& fd_read_set, fd_set& fd_write_set)
 
 int connection_t::post_select(fd_set& fd_read_set, fd_set& fd_write_set)
 {
-  return FD_ISSET(m_s, &fd_read_set) && recv()
-    || FD_ISSET(m_s, &fd_write_set) && send()
+  return (FD_ISSET(m_s, &fd_read_set) && recv())
+    || (FD_ISSET(m_s, &fd_write_set) && send())
     || srv_time() - ctime_ > 10
-    || state_ == 5 && r_.empty();
+    || (state_ == 5 && r_.empty());
 }
 
 int connection_t::recv()
@@ -272,9 +272,9 @@ void connection_t::read(std::string_view v)
 
 void connection_t::process_events(int events)
 {
-  if (events & (EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP) && recv()
-    || events & EPOLLOUT && send()
-    || state_ == 5 && write_b_.empty())
+  if ((events & (EPOLLIN | EPOLLPRI | EPOLLERR | EPOLLHUP) && recv())
+    || (events & EPOLLOUT && send())
+    || (state_ == 5 && write_b_.empty()))
     m_s.close();
 }
 
