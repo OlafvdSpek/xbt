@@ -72,6 +72,7 @@ int connection_t::recv()
       case 0:
         read(std::string(&read_b_.front(), a - &read_b_.front()));
         state_ = 1;
+        [[fallthrough]];
       case 1:
       case 3:
         state_ += *a == '\n' ? 2 : 1;
