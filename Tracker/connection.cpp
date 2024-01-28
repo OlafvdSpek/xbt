@@ -247,10 +247,10 @@ void connection_t::read(std::string_view v)
     if (WSAGetLastError() != WSAECONNRESET)
       std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
   }
-  else if (r != h.size() + s.size())
+  else if (r != ssize(h) + ssize(s))
   {
 #ifndef WIN32
-    if (r < h.size())
+    if (r < ssize(h))
     {
       write_b_ = shared_data(h.size() + s.size());
       memcpy(write_b_.data(), h);

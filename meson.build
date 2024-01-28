@@ -1,5 +1,5 @@
 project('xbt', 'cpp',
-	default_options : ['cpp_std=c++17'],
+	default_options : ['cpp_std=c++20'],
 	version : '1.0')
 
 exe = executable('xbt_tracker', [

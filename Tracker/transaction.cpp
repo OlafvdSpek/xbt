@@ -149,7 +149,7 @@ void Ctransaction::send_error(data_ref r, std::string_view msg)
 
 void Ctransaction::send(data_ref b)
 {
-  if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != b.size())
+  if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != std::ssize(b))
     std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
   srv_stats().sent_udp++;
 }
