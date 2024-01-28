@@ -111,6 +111,7 @@ std::string js_encode(str_ref v)
 		case '\'':
 		case '\\':
 			r += '\\';
+      [[fallthrough]];
 		default:
 			r += i;
 		}
