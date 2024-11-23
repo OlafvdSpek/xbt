@@ -14,7 +14,7 @@ long long Ctransaction::connection_id() const
   const int cb_s = 24;
   char s[cb_s];
   write_int(8, s, srv_secret());
-  memcpy(s, m_a.sin6_addr.s6_addr, 16);
+  memcpy(s + 8, m_a.sin6_addr.s6_addr, 16);
   char d[20];
   Csha1(data_ref(s, cb_s)).read(d);
   return read_int(8, d);
@@ -26,7 +26,7 @@ void Ctransaction::recv()
   char b[cb_b];
   for (int i = 0; i < 10000; i++)
   {
-    socklen_t cb_a = sizeof(sockaddr_in);
+    socklen_t cb_a = sizeof(sockaddr_in6);
     int r = m_s.recvfrom(mutable_data_ref(b, cb_b), reinterpret_cast<sockaddr*>(&m_a), &cb_a);
     if (r == SOCKET_ERROR)
     {
@@ -149,7 +149,7 @@ void Ctransaction::send_error(data_ref r, std::string_view msg)
 
 void Ctransaction::send(data_ref b)
 {
-  if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != std::ssize(b))
+  if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in6)) != std::ssize(b))
     std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
   srv_stats().sent_udp++;
 }
