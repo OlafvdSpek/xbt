@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.10)
 project(xbt-tracker)
 set(CMAKE_BUILD_TYPE release)
 # set(CMAKE_CXX_COMPILER clang++)
@@ -35,10 +35,10 @@ set(tracker_SOURCES
 )
 
 if(WIN32)
-set(tracker_SOURCES
-  ${tracker_SOURCES}
-  ../misc/windows/nt_service.cpp
-  "XBT Tracker.rc")
+  set(tracker_SOURCES
+    ${tracker_SOURCES}
+    ../misc/windows/nt_service.cpp
+    "XBT Tracker.rc")
 endif()
 
 add_executable(
@@ -47,9 +47,9 @@ add_executable(
 )
 
 if(WIN32)
-set(tracker_LIBS ws2_32)
+  set(tracker_LIBS ws2_32)
 else()
-set(tracker_LIBS systemd)
+  set(tracker_LIBS systemd)
 endif()
 
 target_link_libraries(
