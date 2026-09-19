@@ -1,6 +1,7 @@
 #pragma once
 
 #include <xbt/data_ref.h>
+#include <array>
 #include <string>
 
 std::string b2a(long long v, const char* postfix = NULL);
@@ -11,6 +12,7 @@ std::string forward_slashes(std::string);
 std::string generate_random_string(int);
 std::string get_env(const std::string&);
 int hms2i(int h, int m, int s);
+bool is_ipv4(const std::array<unsigned char, 16>&);
 bool is_private_ipa(int a);
 int merkle_tree_size(int v);
 std::string mk_sname(std::string);

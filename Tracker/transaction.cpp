@@ -14,7 +14,7 @@ long long Ctransaction::connection_id() const
   const int cb_s = 24;
   char s[cb_s];
   write_int(8, s, srv_secret());
-  memcpy(s, m_a.sin6_addr.s6_addr, 16);
+  memcpy(s + 8, m_a.sin6_addr.s6_addr, 16);
   char d[20];
   Csha1(data_ref(s, cb_s)).read(d);
   return read_int(8, d);
@@ -26,7 +26,7 @@ void Ctransaction::recv()
   char b[cb_b];
   for (int i = 0; i < 10000; i++)
   {
-    socklen_t cb_a = sizeof(sockaddr_in);
+    socklen_t cb_a = sizeof(sockaddr_in6);
     int r = m_s.recvfrom(mutable_data_ref(b, cb_b), reinterpret_cast<sockaddr*>(&m_a), &cb_a);
     if (r == SOCKET_ERROR)
     {
@@ -78,13 +78,19 @@ void Ctransaction::send_announce(data_ref r)
   }
   tracker_input_t ti;
   ti.downloaded_ = read_int(8, &r[utia_downloaded], r.end());
-  ti.event_ = static_cast<tracker_input_t::event_t>(read_int(4, &r[utia_event], r.end()));
+  const auto event = read_int(4, &r[utia_event], r.end());
+  ti.event_ = event >= tracker_input_t::e_none && event <= tracker_input_t::e_stopped ? static_cast<tracker_input_t::event_t>(event) : tracker_input_t::e_none;
   ti.info_hash_.assign(reinterpret_cast<const char*>(&r[utia_info_hash]), 20);
   memcpy(ti.ipv6_.data(), m_a.sin6_addr.s6_addr, 16);
   ti.left_ = read_int(8, &r[utia_left], r.end());
   memcpy(ti.peer_id_.data(), &r[utia_peer_id], 20);
   ti.port_ = htons(read_int(2, &r[utia_port], r.end()));
   ti.uploaded_ = read_int(8, &r[utia_uploaded], r.end());
+  if (!ti.valid())
+  {
+    send_error(r, "invalid announce");
+    return;
+  }
   std::string error = srv_insert_peer(ti, true, NULL);
   if (!error.empty())
   {
@@ -100,9 +106,18 @@ void Ctransaction::send_announce(data_ref r)
   write_int(4, d + utoa_interval, srv_config().announce_interval_);
   write_int(4, d + utoa_leechers, torrent->leechers);
   write_int(4, d + utoa_seeders, torrent->seeders);
-  mutable_str_ref peers(d + utoa_size, 300);
-  torrent->select_peers(peers, ti);
-  send(data_ref(d, peers.begin()));
+  if (is_ipv4(ti.ipv6_)) 
+  {
+    mutable_str_ref peers(d + utoa_size, 300);
+    torrent->select_peers(peers, ti);
+    send(data_ref(d, peers.begin()));
+  } 
+  else 
+  {
+    mutable_str_ref peers6(d + utoa_size, 900);
+    torrent->select_peers6(peers6, ti);
+    send(data_ref(d, peers6.begin()));
+  }
 }
 
 void Ctransaction::send_scrape(data_ref r)
@@ -149,7 +164,7 @@ void Ctransaction::send_error(data_ref r, std::string_view msg)
 
 void Ctransaction::send(data_ref b)
 {
-  if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in)) != std::ssize(b))
+  if (m_s.sendto(b, reinterpret_cast<const sockaddr*>(&m_a), sizeof(sockaddr_in6)) != std::ssize(b))
     std::cerr << "send failed: " << Csocket::error2a(WSAGetLastError()) << std::endl;
   srv_stats().sent_udp++;
 }
