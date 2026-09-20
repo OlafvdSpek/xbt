@@ -181,7 +181,7 @@ void connection_t::read(std::string_view v)
     }
     break;
   case 's':
-    if (v.size() >= 7 && v[6] == 't')
+    if (a + 1 < v.size() && v[a + 1] == 't')
     {
       h += "Content-Type: text/html; charset=us-ascii\r\n";
       s = srv_statistics();
