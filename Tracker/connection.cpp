@@ -147,7 +147,7 @@ void connection_t::read(std::string_view v)
       a = d + 1;
     }
   }
-  // if (ti.ipv6_ == std::array<char, 16>() || !is_private_ipa(addr_.sin6_addr.s6_addr))
+  if (ti.ipv6_ == std::array<unsigned char, 16>() || !is_private_ipa(addr_.sin6_addr.s6_addr))
     memcpy(ti.ipv6_.data(), addr_.sin6_addr.s6_addr, 16);
   std::string_view torrent_pass;
   size_t a = 4;

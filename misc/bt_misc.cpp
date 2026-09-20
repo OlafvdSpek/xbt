@@ -176,12 +176,65 @@ std::string uri_encode(str_ref v)
 	return r;
 }
 
-bool is_private_ipa(int a)
+bool is_ipv4(const std::array<unsigned char, 16>& v)
 {
-	return (ntohl(a) & 0xff000000) == 0x0a000000
-		|| (ntohl(a) & 0xff000000) == 0x7f000000
-		|| (ntohl(a) & 0xfff00000) == 0xac100000
-		|| (ntohl(a) & 0xffff0000) == 0xc0a80000;
+    return v[0] == 0
+           && v[1] == 0
+           && v[2] == 0
+           && v[3] == 0
+           && v[4] == 0
+           && v[5] == 0
+           && v[6] == 0
+           && v[7] == 0
+           && v[8] == 0
+           && v[9] == 0
+           && v[10] == 0xff
+           && v[11] == 0xff;
+}
+
+bool is_private_ipv4(int a)
+{
+	int ip = ntohl(a);
+	return (ip & 0xff000000) == 0x0a000000
+		|| (ip & 0xff000000) == 0x7f000000
+		|| (ip & 0xfff00000) == 0xac100000
+		|| (ip & 0xffff0000) == 0xc0a80000;
+}
+
+bool is_private_ipa(const unsigned char* a)
+{
+	std::array<unsigned char, 16> v;
+	memcpy(v.data(), a, 16);
+
+	if (is_ipv4(v))
+	{
+		int ipv4;
+		memcpy(&ipv4, &v[12], 4);
+		return is_private_ipv4(ipv4);
+	}
+
+	// IPv6 loopback (::1)
+	if (v[0] == 0 && v[1] == 0 && v[2] == 0 && v[3] == 0 &&
+		v[4] == 0 && v[5] == 0 && v[6] == 0 && v[7] == 0 &&
+		v[8] == 0 && v[9] == 0 && v[10] == 0 && v[11] == 0 &&
+		v[12] == 0 && v[13] == 0 && v[14] == 0 && v[15] == 1)
+	{
+		return true;
+	}
+
+	// IPv6 unique local addresses (fc00::/7)
+	if ((v[0] & 0xfe) == 0xfc)
+	{
+		return true;
+	}
+
+	// IPv6 link-local addresses (fe80::/10)
+	if (v[0] == 0xfe && (v[1] & 0xc0) == 0x80)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 std::string b2a(long long v, const char* postfix)

@@ -106,22 +106,6 @@ public:
   }
 };
 
-static bool is_ipv4(std::array<unsigned char, 16> v)
-{
-  return v[0] == 0
-    && v[1] == 0
-    && v[2] == 0
-    && v[3] == 0
-    && v[4] == 0
-    && v[5] == 0
-    && v[6] == 0
-    && v[7] == 0
-    && v[8] == 0
-    && v[9] == 0
-    && v[10] == 0xff
-    && v[11] == 0xff;
-}
-
 template <size_t N>
 static bool is_zero(std::array<unsigned char, N> v)
 {
@@ -496,6 +480,8 @@ int srv_run()
       Csocket l;
       if (l.open6(SOCK_DGRAM) == INVALID_SOCKET)
         cerr << "socket failed: " << Csocket::error2a(WSAGetLastError()) << endl;
+      else if (l.setsockopt(IPPROTO_IPV6, IPV6_V6ONLY, false))
+        cerr << "setsockopt IPV6_V6ONLY failed: " << Csocket::error2a(WSAGetLastError()) << endl;
       else if (l.setsockopt(SOL_SOCKET, SO_REUSEADDR, true))
         cerr << "setsockopt SO_REUSEADDR failed: " << Csocket::error2a(WSAGetLastError()) << endl;
       else if (l.bind6(i))
