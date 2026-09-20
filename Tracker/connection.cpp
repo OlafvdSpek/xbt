@@ -137,13 +137,13 @@ void connection_t::read(std::string_view v)
       return;
     while (a < b)
     {
-      size_t c = v.find('=', a);
-      if (c++ == std::string::npos)
-        break;
-      size_t d = v.find_first_of(" &", c);
-      if (d == std::string::npos)
-        break;
-      ti.set(v.substr(a, c - a - 1), uri_decode(v.substr(c, d - c)));
+      size_t d = v.find('&', a);
+      if (d == std::string_view::npos || d > b)
+        d = b;
+      std::string_view parameter = v.substr(a, d - a);
+      size_t c = parameter.find('=');
+      if (c != std::string_view::npos)
+        ti.set(parameter.substr(0, c), uri_decode(parameter.substr(c + 1)));
       a = d + 1;
     }
   }
