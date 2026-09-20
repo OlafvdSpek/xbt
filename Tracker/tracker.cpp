@@ -982,7 +982,7 @@ string srv_statistics()
     << "<tr><td>sent udp<td class=ar>" << n2a(g_stats.sent_udp) << "<td class=ar>" << g_stats.sent_udp / up_time << " /s";
   if (g_stats.announced())
   {
-    os << "<tr><td>announced<td class=ar>" << n2a(g_stats.announced()) << "<td class=ar>" << g_stats.announced() * 100 / g_stats.accepted_tcp << " %"
+    os << "<tr><td>announced<td class=ar>" << n2a(g_stats.announced()) << "<td class=ar>" << g_stats.announced() * 100 / (g_stats.accepted_tcp + g_stats.received_udp) << " %"
       << "<tr><td>announced http <td class=ar>" << n2a(g_stats.announced_http) << "<td class=ar>" << g_stats.announced_http * 100 / g_stats.announced() << " %"
       << "<tr><td>announced udp<td class=ar>" << n2a(g_stats.announced_udp) << "<td class=ar>" << g_stats.announced_udp * 100 / g_stats.announced() << " %";
   }
@@ -990,7 +990,7 @@ string srv_statistics()
   os << "<tr><td>scraped multi<td class=ar>" << n2a(g_stats.scraped_multi);
   if (g_stats.scraped())
   {
-    os << "<tr><td>scraped<td class=ar>" << n2a(g_stats.scraped()) << "<td class=ar>" << g_stats.scraped() * 100 / g_stats.accepted_tcp << " %"
+    os << "<tr><td>scraped<td class=ar>" << n2a(g_stats.scraped()) << "<td class=ar>" << g_stats.scraped() * 100 / (g_stats.accepted_tcp + g_stats.received_udp) << " %"
       << "<tr><td>scraped http<td class=ar>" << n2a(g_stats.scraped_http) << "<td class=ar>" << g_stats.scraped_http * 100 / g_stats.scraped() << " %"
       << "<tr><td>scraped udp<td class=ar>" << n2a(g_stats.scraped_udp) << "<td class=ar>" << g_stats.scraped_udp * 100 / g_stats.scraped() << " %";
   }
