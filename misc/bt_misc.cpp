@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <ctime>
 #include <iostream>
+#include <random>
 #include <socket.h>
 
 #ifdef WIN32
@@ -39,9 +40,10 @@ std::string escape_string(std::string_view v)
 
 std::string generate_random_string(int l)
 {
-	std::string v;
+	std::random_device rd;
+  std::string v;
 	while (l--)
-		v += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"[rand() % 62];
+		v += "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"[rd() % 62];
 	return v;
 }
 

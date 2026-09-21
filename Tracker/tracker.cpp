@@ -2,6 +2,7 @@
 #include "tracker.h"
 
 #include <bt_strings.h>
+#include <random>
 #include <windows/nt_service.h>
 #include "connection.h"
 #include "epoll.h"
@@ -427,8 +428,8 @@ void clean_up()
 
 int srv_run()
 {
-  for (int i = 0; i < 8; i++)
-    g_secret = g_secret << 8 ^ rand();
+  std::random_device rd;
+  g_secret = (static_cast<unsigned long long>(rd()) << 32) | rd();
   g_database.set_name("config", g_table_prefix + "config");
 
   read_config();
