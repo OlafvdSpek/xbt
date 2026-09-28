@@ -35,6 +35,7 @@ struct peer_t
   long long downloaded;
   long long uploaded;
   time_t mtime = 0;
+  time_t mtime_hybrid_v2 = 0;
   int uid;
   uint16_t port;
   bool left;

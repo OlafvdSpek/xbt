@@ -59,7 +59,8 @@ create table if not exists xbt_peers
 create table if not exists xbt_torrents
 (
   tid int not null auto_increment,
-  info_hash binary(20) not null,
+  info_hash binary(20),
+  info_hash_v2 varbinary(32),
   seeders int not null default 0,
   leechers int not null default 0,
   completed int not null default 0,
@@ -67,7 +68,9 @@ create table if not exists xbt_torrents
   mtime int not null,
   ctime int not null,
   primary key (tid),
-  unique key (info_hash)
+  unique key (info_hash),
+  unique key (info_hash_v2),
+  check (info_hash_v2 is null or length(info_hash_v2) in (20, 32))
 );
 
 create table if not exists xbt_users
@@ -85,6 +88,8 @@ create table if not exists xbt_users
 
 -- alter table xbt_peers add down_rate int unsigned not null;
 -- alter table xbt_peers add up_rate int unsigned not null;
+
+-- alter table xbt_torrents modify info_hash binary(20), add info_hash_v2 varbinary(32), add unique key (info_hash_v2), add check (info_hash_v2 is null or length(info_hash_v2) in (20, 32));
 
 -- alter table xbt_peers add foreign key (tid) references xbt_torrents (tid) on delete cascade;
 -- alter table xbt_peers add foreign key (uid) references xbt_users (uid) on delete cascade;

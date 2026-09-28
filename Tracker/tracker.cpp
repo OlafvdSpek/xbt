@@ -28,6 +28,7 @@ namespace std
 static volatile bool g_sig_term = false;
 static boost::ptr_list<connection_t> g_connections;
 static unordered_map<array<char, 20>, torrent_t> g_torrents;
+static unordered_map<array<char, 20>, array<char, 20>> g_info_hash_aliases;
 static unordered_map<int, user_t> g_users;
 static unordered_map<array<char, 32>, user_t*> g_users_torrent_passes;
 static config_t g_config;
@@ -49,6 +50,7 @@ static time_t g_write_db_torrents_time;
 static time_t g_write_db_users_time;
 static unsigned long long g_secret;
 static int g_tid_end = 0;
+static bool g_read_torrents_info_hash_v2;
 static bool g_read_users_can_leech;
 static bool g_read_users_peers_limit;
 static bool g_read_users_torrent_pass;
@@ -141,9 +143,24 @@ const config_t& srv_config()
   return g_config;
 }
 
+static string_view canonical_info_hash(string_view info_hash)
+{
+  if (info_hash.size() == 20)
+  {
+    if (const array<char, 20>* i = find_ptr(g_info_hash_aliases, to_array<char, 20>(info_hash)))
+      return to_string_view(*i);
+  }
+  return info_hash;
+}
+
+static bool is_hybrid_v2(string_view info_hash)
+{
+  return canonical_info_hash(info_hash) != info_hash;
+}
+
 const torrent_t* find_torrent(string_view info_hash)
 {
-  return find_ptr(g_torrents, to_array<char, 20>(info_hash));
+  return find_ptr(g_torrents, to_array<char, 20>(canonical_info_hash(info_hash)));
 }
 
 user_t* find_user_by_uid(int v)
@@ -207,17 +224,28 @@ void read_db_torrents()
   g_read_db_torrents_time = srv_time();
   try
   {
+    const string info_hash_sql = g_read_torrents_info_hash_v2 ? "coalesce(info_hash, left(info_hash_v2, 20))" : "info_hash";
     if (!g_config.auto_register_)
     {
-      for (auto row : query(g_database, "select info_hash, @tid from @torrents where flags != 0 and flags & 1"))
+      for (auto row : query(g_database, "select " + info_hash_sql + ", @tid from @torrents where flags != 0 and flags & 1"))
       {
-        g_torrents.erase(to_array<char, 20>(row[0]));
+        if (row[0].size() == 20)
+          g_torrents.erase(to_array<char, 20>(row[0]));
         query("delete from @torrents where @tid = ?", row[1]);
+      }
+    }
+    if (g_read_torrents_info_hash_v2)
+    {
+      g_info_hash_aliases.clear();
+      for (auto row : query("select info_hash, left(info_hash_v2, 20) from @torrents where info_hash is not null and info_hash_v2 is not null"))
+      {
+        if (row[0].size() == 20 && row[1].size() == 20 && string_view(row[0]) != string_view(row[1]))
+          g_info_hash_aliases[to_array<char, 20>(row[1])] = to_array<char, 20>(row[0]);
       }
     }
     if (g_config.auto_register_ && !g_torrents.empty())
       return;
-    for (auto row : query("select info_hash, @completed, @tid, ctime from @torrents where @tid >= ?", g_tid_end))
+    for (auto row : query("select " + info_hash_sql + ", @completed, @tid, ctime from @torrents where @tid >= ?", g_tid_end))
     {
       g_tid_end = max<int>(g_tid_end, row[2].i() + 1);
       if (row[0].size() != 20 || find_torrent(row[0]))
@@ -390,6 +418,7 @@ int test_sql()
     if (g_config.log_scrape_)
       query("select id, ipv6, uid, mtime from @scrape_log where 0");
     query("select @uid, torrent_pass, downloaded, uploaded from @users where 0");
+    g_read_torrents_info_hash_v2 = query("show columns from @torrents like 'info_hash_v2'").size();
     g_read_users_can_leech = query("show columns from @users like 'can_leech'").size();
     g_read_users_peers_limit = query("show columns from @users like 'peers_limit'").size();
     g_read_users_torrent_pass = query("show columns from @users like 'torrent_pass'").size();
@@ -408,6 +437,10 @@ void clean_up(torrent_t& t, time_t time)
   for (auto i = t.peers.begin(); i != t.peers.end(); )
   {
     if (i->second.mtime < time)
+      i->second.mtime = 0;
+    if (i->second.mtime_hybrid_v2 < time)
+      i->second.mtime_hybrid_v2 = 0;
+    if (!i->second.mtime && !i->second.mtime_hybrid_v2)
     {
       (i->second.left ? t.leechers : t.seeders)--;
       t.peers.erase(i++);
@@ -695,12 +728,15 @@ string srv_insert_peer(const tracker_input_t& in, bool udp, user_t* user)
     return bts_unregistered_torrent;
   if (in.left_ && user && !user->can_leech)
     return bts_can_not_leech;
-  torrent_t& t = g_torrents[to_array<char, 20>(in.info_hash_)];
+  torrent_t& t = g_torrents[to_array<char, 20>(canonical_info_hash(in.info_hash_))];
   if (!t.ctime)
     t.ctime = srv_time();
   if (in.left_ && user && user->wait_time && t.ctime + user->wait_time > srv_time())
     return bts_wait_time;
+  bool hybrid_v2 = is_hybrid_v2(in.info_hash_);
   peer_t* p = find_ptr(t.peers, in.peer_id_);
+  bool announced_other_hash = p && (hybrid_v2 ? p->mtime : p->mtime_hybrid_v2);
+  bool completed = in.event_ == tracker_input_t::e_completed && (!p || p->left);
   if (p)
     (p->left ? t.leechers : t.seeders)--;
   else if (in.left_ && user && user->peers_limit)
@@ -724,8 +760,8 @@ string srv_insert_peer(const tracker_input_t& in, bool udp, user_t* user)
       uploaded = in.uploaded_ - p->uploaded;
     }
     g_torrents_users_updates_buffer += make_query(g_database, "(?,?,?,?,?,?,?,?),",
-      in.event_ != tracker_input_t::e_stopped,
-      in.event_ == tracker_input_t::e_completed,
+      in.event_ != tracker_input_t::e_stopped || announced_other_hash,
+      completed,
       downloaded,
       in.left_,
       uploaded,
@@ -737,7 +773,7 @@ string srv_insert_peer(const tracker_input_t& in, bool udp, user_t* user)
     if (g_torrents_users_updates_buffer.size() > 255 << 10)
       write_db_users();
   }
-  if (in.event_ == tracker_input_t::e_stopped)
+  if (in.event_ == tracker_input_t::e_stopped && !announced_other_hash)
     t.peers.erase(in.peer_id_);
   else
   {
@@ -748,13 +784,17 @@ string srv_insert_peer(const tracker_input_t& in, bool udp, user_t* user)
     peer.uid = user ? user->uid : 0;
     peer.uploaded = in.uploaded_;
     (peer.left ? t.leechers : t.seeders)++;
-    peer.mtime = srv_time();
+    time_t mtime = in.event_ == tracker_input_t::e_stopped ? 0 : srv_time();
+    if (hybrid_v2)
+      peer.mtime_hybrid_v2 = mtime;
+    else
+      peer.mtime = mtime;
     if (is_ipv4(in.ipv6_))
       memcpy(peer.ipv4.data(), &in.ipv6_[12], 4);
     else
       peer.ipv6 = in.ipv6_;
   }
-  if (in.event_ == tracker_input_t::e_completed)
+  if (completed)
     t.completed++;
   (udp ? g_stats.announced_udp : g_stats.announced_http)++;
   t.dirty = true;
@@ -765,10 +805,13 @@ void torrent_t::select_peers(mutable_str_ref& d, const tracker_input_t& ti) cons
 {
   if (ti.event_ == tracker_input_t::e_stopped)
     return;
+  bool hybrid_v2 = is_hybrid_v2(ti.info_hash_);
   vector<array<char, 6>> candidates;
   candidates.reserve(peers.size());
   for (auto& i : peers)
   {
+    if (!(hybrid_v2 ? i.second.mtime_hybrid_v2 : i.second.mtime))
+      continue;
     if (ti.is_seeder() && !i.second.left)
       continue;
     if (is_zero(i.second.ipv4))
@@ -799,10 +842,13 @@ void torrent_t::select_peers6(mutable_str_ref& d, const tracker_input_t& ti) con
 {
   if (ti.event_ == tracker_input_t::e_stopped)
     return;
+  bool hybrid_v2 = is_hybrid_v2(ti.info_hash_);
   vector<array<char, 18>> candidates;
   candidates.reserve(peers.size());
   for (auto& i : peers)
   {
+    if (!(hybrid_v2 ? i.second.mtime_hybrid_v2 : i.second.mtime))
+      continue;
     if (ti.is_seeder() && !i.second.left)
       continue;
     if (is_zero(i.second.ipv6))
@@ -920,7 +966,7 @@ void debug(const torrent_t& t, string& os)
       << "<td class=ar>" << ntohs(i.second.port)
       << "<td class=ar>" << i.second.uid
       << "<td class=ar>" << !i.second.left
-      << "<td class=ar>" << duration2a(srv_time() - i.second.mtime) << " ago"
+      << "<td class=ar>" << duration2a(srv_time() - max(i.second.mtime, i.second.mtime_hybrid_v2)) << " ago"
       << "<td>" << hex_encode(i.first);
   }
 }
@@ -973,7 +1019,21 @@ string srv_statistics()
     os << "<tr><td>seeders<td class=ar>" << n2a(seeders) << "<td class=ar>" << seeders * 100 / peers << " %"
       << "<tr><td>leechers<td class=ar>" << n2a(leechers) << "<td class=ar>" << leechers * 100 / peers << " %";
   }
-  os << "<tr><td>torrents<td class=ar>" << n2a(torrents)
+  os << "<tr><td>torrents<td class=ar>" << n2a(torrents);
+  if (!g_info_hash_aliases.empty())
+  {
+    long long hybrid_peers_v2 = 0;
+    for (auto& i : g_info_hash_aliases)
+    {
+      if (const torrent_t* t = find_ptr(g_torrents, i.second))
+      {
+        for (auto& j : t->peers)
+          hybrid_peers_v2 += j.second.mtime_hybrid_v2 != 0;
+      }
+    }
+    os << "<tr><td>v2 hybrid peers<td class=ar>" << n2a(hybrid_peers_v2);
+  }
+  os
     << "<tr><td>"
     << "<tr><td>accepted tcp<td class=ar>" << n2a(g_stats.accepted_tcp) << "<td class=ar>" << g_stats.accepted_tcp / up_time << " /s"
     << "<tr><td>slow tcp<td class=ar>" << n2a(g_stats.slow_tcp) << "<td class=ar>" << g_stats.slow_tcp / up_time << " /s"
@@ -1056,7 +1116,7 @@ user_t* find_user_by_torrent_pass(std::string_view v, std::string_view info_hash
     return NULL;
   if (user_t* user = find_user_by_uid(read_int(4, hex_decode(v.substr(0, 8)))))
   {
-    if (Csha1((boost::format("%s %d %d %s") % g_config.torrent_pass_private_key_ % user->torrent_pass_version % user->uid % info_hash).str()).read().substr(0, 12) == hex_decode(v.substr(8, 24)))
+    if (Csha1((boost::format("%s %d %d %s") % g_config.torrent_pass_private_key_ % user->torrent_pass_version % user->uid % canonical_info_hash(info_hash)).str()).read().substr(0, 12) == hex_decode(v.substr(8, 24)))
       return user;
   }
   return find_ptr2(g_users_torrent_passes, to_array<char, 32>(v));
